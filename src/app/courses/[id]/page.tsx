@@ -1,0 +1,492 @@
+"use client";
+
+import { Navbar } from "@/components/ui/navbar";
+import { Footer } from "@/components/ui/footer";
+import { Button } from "@/components/ui/button";
+import { PaymentModal } from "@/components/courses/payment-modal";
+import { Invoice } from "@/components/courses/invoice";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { CheckCircle, Clock, BarChart, Users, Globe, PlayCircle, Lock, ClipboardList, FileText, Calendar } from "lucide-react";
+import Link from "next/link";
+
+export default function CourseDetailsPage() {
+    const { id } = useParams();
+    const router = useRouter();
+    const [course, setCourse] = useState < any > (null);
+    const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState < any > (null);
+    const [isEnrolled, setIsEnrolled] = useState(false);
+    const [showPayment, setShowPayment] = useState(false);
+    const [showInvoice, setShowInvoice] = useState(false);
+    const [transactionData, setTransactionData] = useState < any > (null);
+    const [quizzes, setQuizzes] = useState < any[] > ([]);
+    const [assignments, setAssignments] = useState < any[] > ([]);
+    const [certificateData, setCertificateData] = useState < any > (null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const resCourse = await fetch(`/api/courses/${id}`);
+                if (resCourse.ok) {
+                    const data = await resCourse.json();
+                    setCourse(data.course);
+
+                    try {
+                        const resQuizzes = await fetch(`/api/admin/courses/${id}/quizzes`);
+                        if (resQuizzes.ok) {
+                            const quizData = await resQuizzes.json();
+                            setQuizzes(quizData.quizzes || []);
+                        }
+                    } catch (err) {
+                        console.log('No quizzes found');
+                    }
+
+                    try {
+                        const resAssignments = await fetch(`/api/admin/courses/${id}/assignments`);
+                        if (resAssignments.ok) {
+                            const assignmentData = await resAssignments.json();
+                            setAssignments(assignmentData.assignments || []);
+                        }
+                    } catch (err) {
+                        console.log('No assignments found');
+                    }
+                }
+
+                const resAuth = await fetch("/api/auth/me");
+                if (resAuth.ok) {
+                    const userData = await resAuth.json();
+                    setUser(userData.user);
+
+                    const resEnroll = await fetch("/api/user/enrollments");
+                    if (resEnroll.ok) {
+                        const enrollData = await resEnroll.json();
+                        const enrolled = enrollData.enrollments.some(
+                            (e: any) => e.course?._id?.toString() === id
+                        );
+                        setIsEnrolled(enrolled);
+
+                        if (enrolled) {
+                            // Fetch certificate eligibility
+                            try {
+                                const resCert = await fetch(`/api/courses/${id}/certificate-eligibility`);
+                                if (resCert.ok) {
+                                    const certData = await resCert.json();
+                                    setCertificateData(certData);
+                                }
+                            } catch (err) {
+                                console.error("Failed to fetch certificate data", err);
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch data", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (id) fetchData();
+    }, [id]);
+
+    const handleBuyClick = () => {
+        if (!user) {
+            router.push("/login");
+            return;
+        }
+        setShowPayment(true);
+    };
+
+
+    const handlePaymentSuccess = async (transactionId: string, promoCode?: string) => {
+        try {
+            const res = await fetch("/api/courses/enroll", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ courseId: id, transactionId, promoCode }),
+            });
+
+            if (res.ok) {
+                setIsEnrolled(true);
+                setShowPayment(false);
+                // Refresh certificate data
+                const resCert = await fetch(`/api/courses/${id}/certificate-eligibility`);
+                if (resCert.ok) {
+                    const certData = await resCert.json();
+                    setCertificateData(certData);
+                }
+            } else {
+                console.error("Enrollment failed");
+            }
+        } catch (error) {
+            console.error("Enrollment failed", error);
+        }
+    };
+
+    const handleDownloadInvoice = () => {
+        const invoiceData = {
+            transactionId: `TXN-${Date.now()}`,
+            courseTitle: course.title,
+            amount: course.price,
+            date: new Date().toLocaleDateString(),
+            userEmail: user?.email || 'student@example.com',
+        };
+        setTransactionData(invoiceData);
+        setShowInvoice(true);
+    };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-background flex items-center justify-center text-white">
+                Loading course details...
+            </div>
+        );
+    }
+
+    if (!course) {
+        return (
+            <div className="min-h-screen bg-background flex items-center justify-center text-white">
+                Course not found.
+            </div>
+        );
+    }
+
+    const videoProgress = certificateData?.videoProgress || 0;
+    const quizzesUnlocked = videoProgress >= 25;
+
+    return (
+        <main className="min-h-screen bg-background">
+            <Navbar />
+
+            <div className="pt-32 pb-20 container mx-auto px-4">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                    <div className="lg:col-span-2">
+                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">{course.title}</h1>
+                        <p className="text-xl text-gray-400 mb-8 leading-relaxed">{course.description}</p>
+
+                        <div className="flex flex-wrap gap-6 mb-12">
+                            <div className="flex items-center text-gray-300">
+                                <BarChart className="mr-2 text-blue-400" size={20} />
+                                {course.level}
+                            </div>
+                            <div className="flex items-center text-gray-300">
+                                <Users className="mr-2 text-purple-400" size={20} />
+                                {course.studentsCount} Students
+                            </div>
+                            <div className="flex items-center text-gray-300">
+                                <Globe className="mr-2 text-green-400" size={20} />
+                                English
+                            </div>
+                            <div className="flex items-center text-gray-300">
+                                <Clock className="mr-2 text-orange-400" size={20} />
+                                {course.duration}
+                            </div>
+                            <div className="flex items-center text-gray-300">
+                                <Calendar className="mr-2 text-yellow-400" size={20} />
+                                Last Updated: {new Date(course.createdAt).toLocaleDateString()}
+                            </div>
+                        </div>
+
+                        <div className="glass-card p-8 rounded-2xl mb-12">
+                            <h2 className="text-2xl font-bold text-white mb-6">What you'll learn</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {course.curriculum.map((topic: string, index: number) => (
+                                    <div key={index} className="flex items-start text-gray-300">
+                                        <CheckCircle className="mr-3 text-blue-500 flex-shrink-0 mt-1" size={18} />
+                                        {topic}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="glass-card p-8 rounded-2xl mb-12">
+                            <h2 className="text-2xl font-bold text-white mb-6">Course Content</h2>
+                            {course.videos && course.videos.length > 0 ? (
+                                <div className="space-y-4">
+                                    {course.videos.map((video: any, index: number) => (
+                                        <div key={index} className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:bg-white/10 transition-colors">
+                                            <div className="flex items-center text-gray-300 flex-1">
+                                                <PlayCircle className="mr-3 text-gray-500" size={20} />
+                                                <div>
+                                                    <span className="text-white font-medium">{video.title}</span>
+                                                    <p className="text-xs text-gray-500">{video.duration}</p>
+                                                </div>
+                                            </div>
+                                            {isEnrolled ? (
+                                                <Link href={`/courses/${id}/video/${index}`}>
+                                                    <Button size="sm" variant="ghost" className="text-blue-400 hover:text-blue-300">
+                                                        Play
+                                                    </Button>
+                                                </Link>
+                                            ) : (
+                                                <Lock size={16} className="text-gray-600" />
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-center py-10 text-gray-500">
+                                    <p>No videos available yet.</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {isEnrolled && quizzes.length > 0 && (
+                            <div className="glass-card p-8 rounded-2xl mb-12">
+                                <div className="flex items-center justify-between mb-6">
+                                    <h2 className="text-2xl font-bold text-white">Quizzes & Tests</h2>
+                                    {!quizzesUnlocked && (
+                                        <span className="text-sm text-yellow-400">
+                                            Watch 25% videos to unlock
+                                        </span>
+                                    )}
+                                </div>
+                                <div className="space-y-4">
+                                    {quizzes.map((quiz) => (
+                                        <div key={quiz._id} className={`p-4 rounded-xl border transition-all ${quizzesUnlocked
+                                            ? 'bg-white/5 border-white/10 hover:bg-white/10'
+                                            : 'bg-white/5 border-white/5 opacity-50'
+                                            }`}>
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <ClipboardList className={quizzesUnlocked ? "text-purple-400" : "text-gray-600"} size={20} />
+                                                    <div>
+                                                        <h3 className="text-white font-medium">{quiz.title}</h3>
+                                                        <p className="text-gray-400 text-sm">
+                                                            {quiz.questions.length} questions • {quiz.duration} min • Pass: {quiz.passingScore}%
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                {quizzesUnlocked ? (
+                                                    <Link href={`/courses/${id}/quiz/${quiz._id}`}>
+                                                        <Button size="sm" className="bg-gradient-to-r from-purple-600 to-blue-600">
+                                                            Start Quiz
+                                                        </Button>
+                                                    </Link>
+                                                ) : (
+                                                    <Lock size={16} className="text-gray-600" />
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {isEnrolled && assignments.length > 0 && (
+                            <div className="glass-card p-8 rounded-2xl">
+                                <h2 className="text-2xl font-bold text-white mb-6">Assignments</h2>
+                                <div className="space-y-4">
+                                    {assignments.map((assignment) => (
+                                        <div key={assignment._id} className="p-4 rounded-xl border bg-white/5 border-white/10 hover:bg-white/10 transition-all">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <FileText className="text-green-400" size={20} />
+                                                    <div>
+                                                        <h3 className="text-white font-medium">{assignment.title}</h3>
+                                                        <p className="text-gray-400 text-sm">
+                                                            Due: {new Date(assignment.dueDate).toLocaleDateString()} • {assignment.totalMarks} marks
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <Link href={`/courses/${id}/assignment/${assignment._id}`}>
+                                                    <Button size="sm" className="bg-gradient-to-r from-green-600 to-teal-600">
+                                                        Submit
+                                                    </Button>
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="lg:col-span-1">
+                        <div className="glass-card p-8 rounded-2xl sticky top-32 border-t-4 border-t-blue-500">
+                            {isEnrolled ? (
+                                <>
+                                    <div className="mb-6">
+                                        <h3 className="text-xl font-bold text-white mb-4">Course Access</h3>
+                                        <div className="space-y-3 text-gray-300">
+                                            <div className="flex items-center justify-between">
+                                                <span>Access</span>
+                                                <span className="text-white">Lifetime</span>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <span>Certificate</span>
+                                                <span className="text-white">Yes</span>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <span>Support</span>
+                                                <span className="text-white">24/7</span>
+                                            </div>
+                                            {quizzes.length > 0 && (
+                                                <div className="flex items-center justify-between">
+                                                    <span>Quizzes</span>
+                                                    <span className="text-white">{quizzes.length}</span>
+                                                </div>
+                                            )}
+                                            {assignments.length > 0 && (
+                                                <div className="flex items-center justify-between">
+                                                    <span>Assignments</span>
+                                                    <span className="text-white">{assignments.length}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <Button
+                                        onClick={handleDownloadInvoice}
+                                        className="w-full bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white h-12 font-semibold mb-6"
+                                    >
+                                        📄 Download Invoice
+                                    </Button>
+
+                                    {/* Certificate Section */}
+                                    {certificateData && (
+                                        <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                                            <div className="flex items-center gap-3 mb-4">
+                                                {certificateData.isEligible ? (
+                                                    <div className="p-2 bg-yellow-500/20 rounded-lg text-yellow-400">
+                                                        <CheckCircle size={24} />
+                                                    </div>
+                                                ) : (
+                                                    <div className="p-2 bg-gray-700/50 rounded-lg text-gray-400">
+                                                        <Lock size={24} />
+                                                    </div>
+                                                )}
+                                                <div>
+                                                    <h3 className="text-white font-bold">Course Certificate</h3>
+                                                    <p className="text-xs text-gray-400">
+                                                        {certificateData.isEligible ? "Unlocked & Ready" : "Complete requirements to unlock"}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-3 mb-4">
+                                                <div>
+                                                    <div className="flex justify-between text-xs text-gray-400 mb-1">
+                                                        <span>Video Progress</span>
+                                                        <span className={certificateData.videoProgress >= 100 ? "text-green-400" : ""}>
+                                                            {Math.round(certificateData.videoProgress)}% / 100%
+                                                        </span>
+                                                    </div>
+                                                    <div className="h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                                                        <div
+                                                            className={`h-full rounded-full ${certificateData.videoProgress >= 100 ? "bg-green-500" : "bg-blue-500"}`}
+                                                            style={{ width: `${Math.min(certificateData.videoProgress, 100)}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <div className="flex justify-between text-xs text-gray-400 mb-1">
+                                                        <span>Overall Grade (Required: 90%)</span>
+                                                        <span className={certificateData.overallScore >= 90 ? "text-green-400 font-semibold" : "text-white font-semibold"}>
+                                                            {certificateData.overallScore}%
+                                                        </span>
+                                                    </div>
+                                                    <div className="h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                                                        <div
+                                                            className={`h-full rounded-full ${certificateData.overallScore >= 90 ? "bg-green-500" : "bg-purple-500"}`}
+                                                            style={{ width: `${Math.min(certificateData.overallScore, 100)}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {certificateData.isEligible ? (
+                                                <Link href={`/courses/${id}/certificate`}>
+                                                    <Button className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold">
+                                                        🏆 View Certificate
+                                                    </Button>
+                                                </Link>
+                                            ) : (
+                                                <Button disabled className="w-full bg-gray-700 text-gray-400 cursor-not-allowed">
+                                                    Locked
+                                                </Button>
+                                            )}
+                                        </div>
+                                    )}
+                                </>
+                            ) : (
+                                <>
+                                    <div className="mb-8">
+                                        <span className="text-gray-400 text-lg mb-3 block">Price</span>
+                                        <div className="flex items-center gap-3 flex-wrap">
+                                            {/* Discounted Price */}
+                                            <span className="text-5xl font-bold text-white">
+                                                ₹{course.discountPercentage > 0 && course.originalPrice > 0
+                                                    ? Math.round(course.originalPrice * (1 - course.discountPercentage / 100))
+                                                    : course.price}
+                                            </span>
+
+                                            {/* Original Price (if discount exists) */}
+                                            {course.discountPercentage > 0 && course.originalPrice > 0 && (
+                                                <>
+                                                    <span className="text-gray-500 line-through text-2xl">
+                                                        ₹{course.originalPrice}
+                                                    </span>
+                                                    <span className="bg-green-500/20 text-green-400 px-3 py-1.5 rounded-full text-base font-bold border border-green-500/30">
+                                                        {course.discountPercentage}% off
+                                                    </span>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <Button
+                                        onClick={handleBuyClick}
+                                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white h-14 text-lg font-bold mb-4 shadow-lg shadow-blue-500/25"
+                                    >
+                                        Buy Now
+                                    </Button>
+
+                                    <p className="text-center text-gray-500 text-sm mb-6">30-Day Money-Back Guarantee</p>
+
+                                    <div className="space-y-4 text-gray-300">
+                                        <div className="flex items-center justify-between">
+                                            <span>Access</span>
+                                            <span className="text-white">Lifetime</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span>Certificate</span>
+                                            <span className="text-white">Yes</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span>Support</span>
+                                            <span className="text-white">24/7</span>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <PaymentModal
+                isOpen={showPayment}
+                onClose={() => setShowPayment(false)}
+                onSuccess={handlePaymentSuccess}
+                courseTitle={course.title}
+                price={course.discountPercentage > 0 && course.originalPrice > 0
+                    ? Math.round(course.originalPrice * (1 - course.discountPercentage / 100))
+                    : course.price}
+                originalPrice={course.originalPrice}
+                discountPercentage={course.discountPercentage}
+            />
+
+            {showInvoice && transactionData && (
+                <Invoice
+                    {...transactionData}
+                    onClose={() => setShowInvoice(false)}
+                />
+            )}
+
+            <Footer />
+        </main>
+    );
+}

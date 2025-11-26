@@ -1,0 +1,10 @@
+
+> skill-webory@0.1.0 lint
+> eslint
+
+
+C:\Users\91620\Desktop\skill-webory\src\app\login\page.tsx
+  57:28  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+Γ£û 1 problem (1 error, 0 warnings)
+
