@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, models } from 'mongoose';
+import mongoose, { Schema, model, models } from "mongoose";
 
 const InternshipSchema = new Schema({
   title: {
@@ -49,14 +49,7 @@ const InternshipSchema = new Schema({
   },
 });
 
-// Force model rebuild for dev
-if (process.env.NODE_ENV === 'development' && models.Internship) {
-  delete models.Internship;
-}
-
-
-
-const Internship = models.Internship || model('Internship', InternshipSchema);
+const Internship = models.Internship || model("Internship", InternshipSchema);
 
 export default Internship;
 // Rebuild trigger

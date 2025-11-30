@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ClipboardList, FileText, GraduationCap, Users, BookOpen, Briefcase } from "lucide-react";
+import { ClipboardList, FileText, GraduationCap, Users, BookOpen, Briefcase, Star } from "lucide-react";
 import Link from "next/link";
 
 export default function AdminDashboard() {
@@ -37,6 +37,14 @@ export default function AdminDashboard() {
             description: "View reports and statistics",
             link: "/admin/analytics",
             color: "from-green-600 to-teal-600",
+        },
+        {
+            id: "feedback",
+            name: "Feedback",
+            icon: Star,
+            description: "Manage user feedback",
+            link: "/admin/feedback",
+            color: "from-yellow-500 to-orange-500",
         },
     ];
 

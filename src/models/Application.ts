@@ -1,14 +1,14 @@
-import mongoose, { Schema, model, models } from 'mongoose';
+import mongoose, { Schema, model, models } from "mongoose";
 
 const ApplicationSchema = new Schema({
   student: {
     type: Schema.Types.ObjectId,
-    ref: 'User',
+    ref: "User",
     required: true,
   },
   internship: {
     type: Schema.Types.ObjectId,
-    ref: 'Internship',
+    ref: "Internship",
     required: true,
   },
   resume: {
@@ -21,16 +21,22 @@ const ApplicationSchema = new Schema({
   },
   portfolio: {
     type: String,
-    default: '',
+    default: "",
   },
   linkedin: {
     type: String,
-    default: '',
+    default: "",
   },
   status: {
     type: String,
-    enum: ['pending', 'accepted', 'rejected', 'interview_scheduled', 'completed'],
-    default: 'pending',
+    enum: [
+      "pending",
+      "accepted",
+      "rejected",
+      "interview_scheduled",
+      "completed",
+    ],
+    default: "pending",
   },
   transactionId: {
     type: String,
@@ -65,9 +71,13 @@ const ApplicationSchema = new Schema({
   },
   certificateId: {
     type: String,
-  }
+  },
+  certificateKey: {
+    type: String,
+  },
 });
 
-const Application = models.Application || model('Application', ApplicationSchema);
+const Application =
+  models.Application || model("Application", ApplicationSchema);
 
 export default Application;

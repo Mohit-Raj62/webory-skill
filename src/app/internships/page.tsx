@@ -7,7 +7,7 @@ import { MapPin, Clock, DollarSign, CheckCircle2, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { PaymentModal } from "@/components/courses/payment-modal";
+import { UPIPaymentModal } from "@/components/courses/upi-payment-modal";
 import { Invoice } from "@/components/courses/invoice";
 
 // Fallback data for initial render or error
@@ -108,39 +108,31 @@ export default function InternshipsPage() {
         setShowPayment(true);
     };
 
-    const handlePaymentSuccess = async (transactionId: string) => {
+    const handlePaymentSuccess = async (transactionId: string, promoCode?: string) => {
         setShowPayment(false);
         setSubmitting(true);
 
         try {
-            const res = await fetch("/api/internships/apply", {
+            const internshipDetails = internships.find(i => i._id === selectedInternship);
+            
+            // Submit payment proof for verification (not direct enrollment)
+            const res = await fetch("/api/payments/submit-proof", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     internshipId: selectedInternship,
-                    ...formData,
                     transactionId,
-                    amountPaid: internships.find(i => i._id === selectedInternship)?.price || 0,
+                    amount: internshipDetails?.price || 0,
+                    screenshot: "pending", // This will be set by the UPI modal
+                    promoCode,
+                    type: "internship", // Mark as internship payment
                 }),
             });
 
             if (res.ok) {
-                setApplied([...applied, selectedInternship]);
-
-                // Find selected internship details for invoice
-                const internshipDetails = internships.find(i => i._id === selectedInternship);
-
-                setTransactionData({
-                    transactionId,
-                    courseTitle: `Internship Application: ${internshipDetails?.title}`,
-                    amount: internshipDetails?.price || 0,
-                    date: new Date().toLocaleDateString(),
-                    userEmail: user?.email || "",
-                });
-
+                alert("Application submitted! Your payment will be verified by admin within 1-2 hours.");
                 setSelectedInternship(null);
                 setFormData({ resume: "", coverLetter: "", portfolio: "", linkedin: "" });
-                setShowInvoice(true);
             } else {
                 const data = await res.json();
                 alert(data.error || "Application failed. Please try again.");
@@ -299,12 +291,13 @@ export default function InternshipsPage() {
             </AnimatePresence>
 
             {selectedInternship && (
-                <PaymentModal
+                <UPIPaymentModal
                     isOpen={showPayment}
                     onClose={() => setShowPayment(false)}
                     onSuccess={handlePaymentSuccess}
                     courseTitle={`Internship: ${internships.find(i => i._id === selectedInternship)?.title}`}
                     price={internships.find(i => i._id === selectedInternship)?.price || 0}
+                    internshipId={selectedInternship}
                 />
             )}
 

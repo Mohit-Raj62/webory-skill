@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { InactivityLogout } from "@/components/auth/inactivity-logout";
 import { SessionProvider } from "@/components/auth/session-provider";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
@@ -37,6 +38,7 @@ export default function RootLayout({
                     <InactivityLogout />
                     {children}
                 </SessionProvider>
+                <Toaster position="top-right" richColors />
             </body>
         </html>
     );

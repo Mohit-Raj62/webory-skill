@@ -26,11 +26,16 @@ export async function GET(
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+      userId: string;
+    };
     const userId = decoded.userId;
 
     // 1. Video Progress
-    const enrollment = await Enrollment.findOne({ student: userId, course: courseId });
+    const enrollment = await Enrollment.findOne({
+      student: userId,
+      course: courseId,
+    });
     const videoProgress = enrollment?.progress || 0;
 
     // 2. Quizzes
@@ -40,9 +45,11 @@ export async function GET(
 
     for (const quiz of quizzes) {
       // Find best attempt
-      const bestAttempt = await QuizAttempt.findOne({ userId, quizId: quiz._id })
-        .sort({ percentage: -1 });
-      
+      const bestAttempt = await QuizAttempt.findOne({
+        userId,
+        quizId: quiz._id,
+      }).sort({ percentage: -1 });
+
       if (bestAttempt) {
         totalQuizPercentage += bestAttempt.percentage;
         attemptedQuizzes++;
@@ -55,9 +62,13 @@ export async function GET(
     let submittedAssignments = 0;
 
     for (const assignment of assignments) {
-      const submission = await AssignmentSubmission.findOne({ userId, assignmentId: assignment._id });
+      const submission = await AssignmentSubmission.findOne({
+        userId,
+        assignmentId: assignment._id,
+      });
       if (submission && submission.marksObtained != null) {
-        const percentage = (submission.marksObtained / assignment.totalMarks) * 100;
+        const percentage =
+          (submission.marksObtained / assignment.totalMarks) * 100;
         totalAssignmentPercentage += percentage;
         submittedAssignments++;
       }
@@ -86,64 +97,111 @@ export async function GET(
     const isEligible = isVideoComplete && isScoreEligible;
 
     // Send certificate unlock email if newly eligible
-    if (isEligible && enrollment && !enrollment.certificateEmailSent) {
-      try {
-        const user = await User.findById(userId);
-        const course = await Course.findById(courseId);
-        
-        if (user && course) {
-          const certificateLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/courses/${courseId}/certificate`;
-          await sendEmail(
-            user.email,
-            `🎓 Certificate Unlocked - ${course.title}`,
-            emailTemplates.certificateUnlocked(user.firstName, course.title, certificateLink)
-          );
-          
-          // Mark email as sent
-          enrollment.certificateEmailSent = true;
-          await enrollment.save();
-          
-          console.log('✅ Certificate unlock email sent to:', user.email);
+    if (isEligible && enrollment) {
+      let needsSave = false;
+
+      // Generate Certificate ID and Key if missing
+      if (!enrollment.certificateId) {
+        // Generate Certificate ID based on Course Title
+        const courseTitleSlug = course.title
+          .split(" ")
+          .map((word: string) => word[0])
+          .join("")
+          .toUpperCase()
+          .substring(0, 4);
+
+        const certId = `${courseTitleSlug}-${userId
+          .substring(0, 6)
+          .toUpperCase()}-${Date.now().toString().substring(8)}`;
+        // Generate a random 16-character alphanumeric key
+        const certKey =
+          Math.random().toString(36).substring(2, 10).toUpperCase() +
+          Math.random().toString(36).substring(2, 10).toUpperCase();
+
+        enrollment.certificateId = certId;
+        enrollment.certificateKey = certKey;
+        needsSave = true;
+      }
+
+      if (!enrollment.certificateEmailSent) {
+        try {
+          const user = await User.findById(userId);
+          const course = await Course.findById(courseId);
+
+          if (user && course) {
+            const certificateLink = `${
+              process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+            }/courses/${courseId}/certificate`;
+            await sendEmail(
+              user.email,
+              `🎓 Certificate Unlocked - ${course.title}`,
+              emailTemplates.certificateUnlocked(
+                user.firstName,
+                course.title,
+                certificateLink
+              )
+            );
+
+            // Mark email as sent
+            enrollment.certificateEmailSent = true;
+            needsSave = true;
+
+            console.log("✅ Certificate unlock email sent to:", user.email);
+          }
+        } catch (emailError) {
+          console.error("❌ Failed to send certificate email:", emailError);
+          // Don't fail the request if email fails
         }
-      } catch (emailError) {
-        console.error('❌ Failed to send certificate email:', emailError);
-        // Don't fail the request if email fails
+      }
+
+      if (needsSave) {
+        await enrollment.save();
       }
     }
 
     // Debug logging
-    console.log('=== CERTIFICATE ELIGIBILITY DEBUG ===');
-    console.log('Course ID:', courseId);
-    console.log('User ID:', userId);
-    console.log('Video Progress:', videoProgress);
-    console.log('Overall Score:', overallScore);
-    console.log('Is Video Complete:', isVideoComplete);
-    console.log('Is Score Eligible:', isScoreEligible);
-    console.log('Is Eligible:', isEligible);
-    console.log('Quizzes:', quizzes.length);
-    console.log('Assignments:', assignments.length);
-    console.log('=====================================');
+    console.log("=== CERTIFICATE ELIGIBILITY DEBUG ===");
+    console.log("Course ID:", courseId);
+    console.log("User ID:", userId);
+    console.log("Video Progress:", videoProgress);
+    console.log("Overall Score:", overallScore);
+    console.log("Is Video Complete:", isVideoComplete);
+    console.log("Is Score Eligible:", isScoreEligible);
+    console.log("Is Eligible:", isEligible);
+    console.log("Quizzes:", quizzes.length);
+    console.log("Assignments:", assignments.length);
+    console.log("=====================================");
 
     return NextResponse.json({
       videoProgress,
       overallScore: Math.round(overallScore),
       isEligible,
+      certificateId: enrollment?.certificateId,
+      certificateKey: enrollment?.certificateKey,
       details: {
         quizzes: {
           total: quizzes.length,
           attempted: attemptedQuizzes,
-          average: quizzes.length > 0 ? Math.round(totalQuizPercentage / quizzes.length) : 0
+          average:
+            quizzes.length > 0
+              ? Math.round(totalQuizPercentage / quizzes.length)
+              : 0,
         },
         assignments: {
           total: assignments.length,
           submitted: submittedAssignments,
-          average: assignments.length > 0 ? Math.round(totalAssignmentPercentage / assignments.length) : 0
-        }
-      }
+          average:
+            assignments.length > 0
+              ? Math.round(totalAssignmentPercentage / assignments.length)
+              : 0,
+        },
+      },
     });
-
   } catch (error) {
     console.error("Certificate eligibility check error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

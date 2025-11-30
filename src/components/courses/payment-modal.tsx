@@ -34,9 +34,12 @@ export function PaymentModal({
     const [appliedPromo, setAppliedPromo] = useState < any > (null);
     const [finalPrice, setFinalPrice] = useState(price);
 
+    const [errorMessage, setErrorMessage] = useState("");
+
     const handleValidatePromo = async () => {
+        setErrorMessage("");
         if (!promoCode.trim()) {
-            toast.error("Please enter a promo code");
+            setErrorMessage("Please enter a promo code");
             return;
         }
 
@@ -48,6 +51,7 @@ export function PaymentModal({
                 body: JSON.stringify({
                     code: promoCode,
                     itemType: "course",
+                    price: price,
                 }),
             });
 
@@ -67,12 +71,15 @@ export function PaymentModal({
                 toast.success(`Promo code applied! You save ₹${price - newPrice}`);
             } else {
                 const error = await res.json();
-                toast.error(error.error || "Invalid promo code");
+                const msg = error.error || "Invalid promo code";
+                setErrorMessage(msg);
+                toast.error(msg);
                 setAppliedPromo(null);
                 setFinalPrice(price);
             }
         } catch (error) {
             console.error("Error validating promo code:", error);
+            setErrorMessage("Failed to validate promo code");
             toast.error("Failed to validate promo code");
             setAppliedPromo(null);
             setFinalPrice(price);
@@ -167,23 +174,34 @@ export function PaymentModal({
                             </label>
 
                             {!appliedPromo ? (
-                                <div className="flex gap-2">
-                                    <input
-                                        type="text"
-                                        placeholder="Enter code"
-                                        className="flex-1 bg-black/20 border border-white/10 rounded-lg p-2 text-white focus:border-purple-500/50 outline-none uppercase"
-                                        value={promoCode}
-                                        onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                                    />
-                                    <Button
-                                        type="button"
-                                        onClick={handleValidatePromo}
-                                        disabled={validatingPromo || !promoCode.trim()}
-                                        className="bg-purple-600 hover:bg-purple-700"
-                                    >
-                                        {validatingPromo ? "..." : "Apply"}
-                                    </Button>
-                                </div>
+                                <>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            placeholder="Enter code"
+                                            className="flex-1 bg-black/20 border border-white/10 rounded-lg p-2 text-white focus:border-purple-500/50 outline-none uppercase"
+                                            value={promoCode}
+                                            onChange={(e) => {
+                                                setPromoCode(e.target.value.toUpperCase());
+                                                setErrorMessage("");
+                                            }}
+                                        />
+                                        <Button
+                                            type="button"
+                                            onClick={handleValidatePromo}
+                                            disabled={validatingPromo || !promoCode.trim()}
+                                            className="bg-purple-600 hover:bg-purple-700"
+                                        >
+                                            {validatingPromo ? "..." : "Apply"}
+                                        </Button>
+                                    </div>
+                                    {errorMessage && (
+                                        <p className="text-red-400 text-sm mt-2 flex items-center gap-1">
+                                            <X size={14} />
+                                            {errorMessage}
+                                        </p>
+                                    )}
+                                </>
                             ) : (
                                 <div className="flex items-center justify-between bg-green-500/20 border border-green-500/30 rounded-lg p-3">
                                     <div className="flex items-center gap-2">

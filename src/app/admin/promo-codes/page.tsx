@@ -2,22 +2,22 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
-import { Trash2, Plus, Tag } from "lucide-react";
+import { Plus, Trash2, Edit, Tag, X, Check } from "lucide-react";
+import Link from "next/link";
 
 export default function PromoCodesPage() {
-    const [promoCodes, setPromoCodes] = useState < any[] > ([]);
+    const [promoCodes, setPromoCodes] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [showForm, setShowForm] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingId, setEditingId] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         code: "",
         discountType: "percentage",
         discountValue: 0,
-        applicableTo: "both",
+        minOrderValue: 0,
         maxUses: "",
         expiresAt: "",
+        isActive: true,
     });
 
     useEffect(() => {
@@ -26,14 +26,13 @@ export default function PromoCodesPage() {
 
     const fetchPromoCodes = async () => {
         try {
-            const res = await fetch("/api/promo-codes");
+            const res = await fetch("/api/admin/promo-codes");
             if (res.ok) {
                 const data = await res.json();
                 setPromoCodes(data.promoCodes);
             }
         } catch (error) {
-            console.error("Failed to fetch promo codes:", error);
-            toast.error("Failed to load promo codes");
+            console.error("Failed to fetch promo codes", error);
         } finally {
             setLoading(false);
         }
@@ -41,37 +40,33 @@ export default function PromoCodesPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
         try {
-            const res = await fetch("/api/promo-codes", {
-                method: "POST",
+            const url = editingId
+                ? `/api/admin/promo-codes/${editingId}`
+                : "/api/admin/promo-codes";
+            const method = editingId ? "PUT" : "POST";
+
+            const res = await fetch(url, {
+                method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     ...formData,
-                    maxUses: formData.maxUses ? parseInt(formData.maxUses) : null,
+                    maxUses: formData.maxUses ? Number(formData.maxUses) : null,
                     expiresAt: formData.expiresAt || null,
                 }),
             });
 
             if (res.ok) {
-                toast.success("Promo code created successfully!");
-                setShowForm(false);
-                setFormData({
-                    code: "",
-                    discountType: "percentage",
-                    discountValue: 0,
-                    applicableTo: "both",
-                    maxUses: "",
-                    expiresAt: "",
-                });
                 fetchPromoCodes();
+                closeModal();
+                alert(editingId ? "Promo code updated!" : "Promo code created!");
             } else {
                 const data = await res.json();
-                toast.error(data.error || "Failed to create promo code");
+                alert(data.error || "Operation failed");
             }
         } catch (error) {
-            console.error("Error creating promo code:", error);
-            toast.error("Failed to create promo code");
+            console.error("Submit error:", error);
+            alert("Operation failed");
         }
     };
 
@@ -79,216 +74,264 @@ export default function PromoCodesPage() {
         if (!confirm("Are you sure you want to delete this promo code?")) return;
 
         try {
-            const res = await fetch(`/api/promo-codes?id=${id}`, {
+            const res = await fetch(`/api/admin/promo-codes/${id}`, {
                 method: "DELETE",
             });
 
             if (res.ok) {
-                toast.success("Promo code deleted");
-                fetchPromoCodes();
+                setPromoCodes(promoCodes.filter((code) => code._id !== id));
             } else {
-                toast.error("Failed to delete promo code");
+                alert("Failed to delete promo code");
             }
         } catch (error) {
-            console.error("Error deleting promo code:", error);
-            toast.error("Failed to delete promo code");
+            console.error("Delete error:", error);
+            alert("Failed to delete promo code");
         }
     };
 
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white p-8">
-                <div className="max-w-6xl mx-auto">
-                    <p>Loading...</p>
-                </div>
-            </div>
-        );
-    }
+    const openModal = (code?: any) => {
+        if (code) {
+            setEditingId(code._id);
+            setFormData({
+                code: code.code,
+                discountType: code.discountType,
+                discountValue: code.discountValue,
+                minOrderValue: code.minOrderValue || 0,
+                maxUses: code.maxUses || "",
+                expiresAt: code.expiresAt ? new Date(code.expiresAt).toISOString().split('T')[0] : "",
+                isActive: code.isActive,
+            });
+        } else {
+            setEditingId(null);
+            setFormData({
+                code: "",
+                discountType: "percentage",
+                discountValue: 0,
+                minOrderValue: 0,
+                maxUses: "",
+                expiresAt: "",
+                isActive: true,
+            });
+        }
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setEditingId(null);
+    };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white p-8">
-            <div className="max-w-6xl mx-auto">
-                <div className="flex justify-between items-center mb-8">
-                    <div>
-                        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                            Promo Codes
-                        </h1>
-                        <p className="text-gray-400 mt-2">Manage discount codes for courses and internships</p>
-                    </div>
-                    <Button
-                        onClick={() => setShowForm(!showForm)}
-                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                    >
-                        <Plus className="mr-2 h-4 w-4" />
-                        {showForm ? "Cancel" : "Create Promo Code"}
-                    </Button>
+        <div className="p-8">
+            <div className="flex justify-between items-center mb-8">
+                <div>
+                    <h1 className="text-4xl font-bold text-white mb-2">Promo Codes</h1>
+                    <p className="text-gray-400">Manage discount coupons</p>
                 </div>
+                <Button
+                    onClick={() => openModal()}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600"
+                >
+                    <Plus size={20} className="mr-2" />
+                    Create New
+                </Button>
+            </div>
 
-                {/* Create Form */}
-                {showForm && (
-                    <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700 mb-8">
-                        <h2 className="text-xl font-semibold mb-4">Create New Promo Code</h2>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <Label>Code *</Label>
-                                    <Input
-                                        value={formData.code}
-                                        onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
-                                        placeholder="SAVE20"
-                                        required
-                                        className="bg-gray-900 border-gray-700"
-                                    />
+            {loading ? (
+                <div className="text-white">Loading...</div>
+            ) : (
+                <div className="grid gap-4">
+                    {promoCodes.map((code) => (
+                        <div
+                            key={code._id}
+                            className="glass-card p-6 rounded-xl flex items-center justify-between"
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
+                                    <Tag size={24} />
                                 </div>
-
                                 <div>
-                                    <Label>Discount Type *</Label>
-                                    <select
-                                        value={formData.discountType}
-                                        onChange={(e) => setFormData({ ...formData, discountType: e.target.value })}
-                                        className="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white"
-                                    >
-                                        <option value="percentage">Percentage</option>
-                                        <option value="fixed">Fixed Amount</option>
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <Label>Discount Value *</Label>
-                                    <Input
-                                        type="number"
-                                        value={formData.discountValue}
-                                        onChange={(e) => setFormData({ ...formData, discountValue: parseFloat(e.target.value) })}
-                                        placeholder={formData.discountType === "percentage" ? "20" : "500"}
-                                        required
-                                        min="0"
-                                        className="bg-gray-900 border-gray-700"
-                                    />
-                                    <p className="text-xs text-gray-400 mt-1">
-                                        {formData.discountType === "percentage" ? "Enter percentage (0-100)" : "Enter amount in ₹"}
+                                    <div className="flex items-center gap-2">
+                                        <h3 className="text-xl font-bold text-white">{code.code}</h3>
+                                        <span
+                                            className={`px-2 py-0.5 rounded text-xs ${code.isActive
+                                                    ? "bg-green-500/20 text-green-300"
+                                                    : "bg-red-500/20 text-red-300"
+                                                }`}
+                                        >
+                                            {code.isActive ? "Active" : "Inactive"}
+                                        </span>
+                                        <span
+                                            className={`px-2 py-0.5 rounded text-xs ${code.discountType === "percentage"
+                                                    ? "bg-purple-500/20 text-purple-300"
+                                                    : "bg-blue-500/20 text-blue-300"
+                                                }`}
+                                        >
+                                            {code.discountType === "percentage" ? "Percentage" : "Fixed Amount"}
+                                        </span>
+                                    </div>
+                                    <p className="text-gray-400 text-sm mt-1">
+                                        <span className="text-white font-medium">
+                                            {code.discountType === "percentage"
+                                                ? `${code.discountValue}% Off`
+                                                : `₹${code.discountValue} Off`}
+                                        </span>
+                                        {code.minOrderValue > 0 && (
+                                            <span className="text-yellow-400 ml-2">
+                                                • Min Order: ₹{code.minOrderValue}
+                                            </span>
+                                        )}
+                                        <span className="ml-2 text-gray-500">
+                                            • Used: {code.usedCount}
+                                            {code.maxUses ? ` / ${code.maxUses}` : ""}
+                                        </span>
+                                        {code.expiresAt && (
+                                            <span className="ml-2 text-gray-500">
+                                                • Expires: {new Date(code.expiresAt).toLocaleDateString()}
+                                            </span>
+                                        )}
                                     </p>
                                 </div>
+                            </div>
 
+                            <div className="flex gap-2">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => openModal(code)}
+                                    className="text-blue-400 hover:text-blue-300"
+                                >
+                                    <Edit size={18} />
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleDelete(code._id)}
+                                    className="text-red-400 hover:text-red-300"
+                                >
+                                    <Trash2 size={18} />
+                                </Button>
+                            </div>
+                        </div>
+                    ))}
+
+                    {promoCodes.length === 0 && (
+                        <div className="text-center py-12 text-gray-400">
+                            No promo codes found. Create one to get started.
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Modal */}
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl w-full max-w-md p-6">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-2xl font-bold text-white">
+                                {editingId ? "Edit Promo Code" : "New Promo Code"}
+                            </h2>
+                            <button onClick={closeModal} className="text-gray-400 hover:text-white">
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div>
+                                <label className="text-sm text-gray-300 block mb-2">Code</label>
+                                <input
+                                    type="text"
+                                    required
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none uppercase"
+                                    value={formData.code}
+                                    onChange={(e) => setFormData({ ...formData, code: e.target.value })}
+                                    placeholder="e.g., SUMMER2024"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <Label>Applicable To</Label>
+                                    <label className="text-sm text-gray-300 block mb-2">Type</label>
                                     <select
-                                        value={formData.applicableTo}
-                                        onChange={(e) => setFormData({ ...formData, applicableTo: e.target.value })}
-                                        className="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none"
+                                        value={formData.discountType}
+                                        onChange={(e) => setFormData({ ...formData, discountType: e.target.value })}
                                     >
-                                        <option value="both">Both</option>
-                                        <option value="course">Courses Only</option>
-                                        <option value="internship">Internships Only</option>
+                                        <option value="percentage">Percentage (%)</option>
+                                        <option value="fixed">Fixed Amount (₹)</option>
                                     </select>
                                 </div>
-
                                 <div>
-                                    <Label>Max Uses (Optional)</Label>
-                                    <Input
+                                    <label className="text-sm text-gray-300 block mb-2">Value</label>
+                                    <input
                                         type="number"
+                                        required
+                                        min="0"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none"
+                                        value={formData.discountValue}
+                                        onChange={(e) => setFormData({ ...formData, discountValue: Number(e.target.value) })}
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="text-sm text-gray-300 block mb-2">Minimum Order Value (₹)</label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none"
+                                    value={formData.minOrderValue}
+                                    onChange={(e) => setFormData({ ...formData, minOrderValue: Number(e.target.value) })}
+                                    placeholder="0 for no minimum"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-sm text-gray-300 block mb-2">Max Uses</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none"
                                         value={formData.maxUses}
                                         onChange={(e) => setFormData({ ...formData, maxUses: e.target.value })}
-                                        placeholder="Leave empty for unlimited"
-                                        min="1"
-                                        className="bg-gray-900 border-gray-700"
+                                        placeholder="Unlimited"
                                     />
                                 </div>
-
                                 <div>
-                                    <Label>Expires At (Optional)</Label>
-                                    <Input
-                                        type="datetime-local"
+                                    <label className="text-sm text-gray-300 block mb-2">Expires At</label>
+                                    <input
+                                        type="date"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none"
                                         value={formData.expiresAt}
                                         onChange={(e) => setFormData({ ...formData, expiresAt: e.target.value })}
-                                        className="bg-gray-900 border-gray-700"
                                     />
                                 </div>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    id="isActive"
+                                    className="w-4 h-4 rounded border-gray-300"
+                                    checked={formData.isActive}
+                                    onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                                />
+                                <label htmlFor="isActive" className="text-white cursor-pointer">
+                                    Active
+                                </label>
                             </div>
 
                             <Button
                                 type="submit"
-                                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 mt-4"
                             >
-                                Create Promo Code
+                                {editingId ? "Update Code" : "Create Code"}
                             </Button>
                         </form>
                     </div>
-                )}
-
-                {/* Promo Codes List */}
-                <div className="space-y-4">
-                    {promoCodes.length === 0 ? (
-                        <div className="bg-gray-800/30 rounded-xl p-12 text-center border border-gray-700">
-                            <Tag className="mx-auto h-12 w-12 text-gray-500 mb-4" />
-                            <p className="text-gray-400">No promo codes yet. Create one to get started!</p>
-                        </div>
-                    ) : (
-                        promoCodes.map((promo) => (
-                            <div
-                                key={promo._id}
-                                className="bg-gray-800/50 rounded-xl p-6 border border-gray-700 hover:border-gray-600 transition-all"
-                            >
-                                <div className="flex justify-between items-start">
-                                    <div className="flex-1">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <span className="text-2xl font-bold text-blue-400">{promo.code}</span>
-                                            {promo.isActive ? (
-                                                <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded-full border border-green-500/30">
-                                                    Active
-                                                </span>
-                                            ) : (
-                                                <span className="px-2 py-1 bg-red-500/20 text-red-400 text-xs rounded-full border border-red-500/30">
-                                                    Inactive
-                                                </span>
-                                            )}
-                                        </div>
-
-                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                                            <div>
-                                                <p className="text-gray-400">Discount</p>
-                                                <p className="text-white font-semibold">
-                                                    {promo.discountType === "percentage"
-                                                        ? `${promo.discountValue}%`
-                                                        : `₹${promo.discountValue}`}
-                                                </p>
-                                            </div>
-
-                                            <div>
-                                                <p className="text-gray-400">Applicable To</p>
-                                                <p className="text-white font-semibold capitalize">{promo.applicableTo}</p>
-                                            </div>
-
-                                            <div>
-                                                <p className="text-gray-400">Usage</p>
-                                                <p className="text-white font-semibold">
-                                                    {promo.usedCount} / {promo.maxUses || "∞"}
-                                                </p>
-                                            </div>
-
-                                            <div>
-                                                <p className="text-gray-400">Expires</p>
-                                                <p className="text-white font-semibold">
-                                                    {promo.expiresAt
-                                                        ? new Date(promo.expiresAt).toLocaleDateString()
-                                                        : "Never"}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <Button
-                                        onClick={() => handleDelete(promo._id)}
-                                        variant="ghost"
-                                        className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
-                                    >
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            </div>
-                        ))
-                    )}
                 </div>
-            </div>
+            )}
         </div>
     );
 }

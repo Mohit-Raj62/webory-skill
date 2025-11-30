@@ -21,6 +21,7 @@ interface Application {
     duration: string;
     completedAt: string;
     certificateId: string;
+    certificateKey?: string;
 }
 
 export default function CertificatePage() {
@@ -122,7 +123,7 @@ export default function CertificatePage() {
                     {/* Header */}
                     <div className="mb-12">
                         <h4 className="text-2x1 font-serif text-right">Webory skill </h4>
-                        <h1 className="text-5xl font-serif font-bold text-blue-900 mb-4 tracking-wider uppercase">Webory skill's </h1>
+                        <h1 className="text-5xl font-serif font-bold text-blue-900 mb-4 tracking-wider uppercase">Webory skill&apos;s </h1>
                         <h2 className="text-2xl font-light text-gray-600 uppercase tracking-widest">Certificate of Completion</h2>
                     </div>
 
@@ -179,7 +180,7 @@ export default function CertificatePage() {
                                 />
                             </div>
                             <p className="text-xs text-gray-600 mt-2 font-semibold">Scan to Verify</p>
-                            <p className="text-xs text-gray-400">ID: {application.certificateId || 'N/A'}</p>
+                            <p className="text-[10px] text-gray-400">ID: {application.certificateId || 'N/A'}</p>
                         </div>
 
                         <div className="text-center">

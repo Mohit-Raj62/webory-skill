@@ -5,6 +5,7 @@ import { EnrolledCourses } from "@/components/landing/enrolled-courses";
 import { AppliedInternships } from "@/components/landing/applied-internships";
 import { CoursesPreview } from "@/components/landing/courses-preview";
 import { Internships } from "@/components/landing/internships";
+import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { Footer } from "@/components/ui/footer";
 
 export default function Home() {
@@ -17,6 +18,7 @@ export default function Home() {
             <AppliedInternships />
             <CoursesPreview />
             <Internships />
+            <TestimonialsSection />
             <Footer />
         </main>
     );

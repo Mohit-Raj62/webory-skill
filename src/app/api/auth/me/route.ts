@@ -14,11 +14,18 @@ export async function GET() {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string, sessionId?: string };
     const user = await User.findById(decoded.userId);
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Check if session is valid
+    if (decoded.sessionId && user.currentSessionId !== decoded.sessionId) {
+      const response = NextResponse.json({ error: "Session expired" }, { status: 401 });
+      response.cookies.delete("token");
+      return response;
     }
 
     return NextResponse.json({ user }, { status: 200 });

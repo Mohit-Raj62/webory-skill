@@ -10,17 +10,25 @@ export function middleware(request: NextRequest) {
   // Define paths that are for admins only
   const isAdminPath = path.startsWith("/admin");
 
+  // Define paths that are for teachers only
+  const isTeacherPath = path.startsWith("/teacher");
+
   // Get the token from the cookies
   const token = request.cookies.get("token")?.value || "";
 
   // Helper to decode JWT payload safely (without external libs)
   const getRoleFromToken = (token: string) => {
     try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
+      const base64Url = token.split(".")[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split("")
+          .map(function (c) {
+            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+          })
+          .join("")
+      );
       return JSON.parse(jsonPayload).role;
     } catch (e) {
       return null;
@@ -30,8 +38,10 @@ export function middleware(request: NextRequest) {
   // 1. If user has a token and tries to access public paths (login/signup)
   if (isPublicPath && token) {
     const role = getRoleFromToken(token);
-    if (role === 'admin') {
+    if (role === "admin") {
       return NextResponse.redirect(new URL("/admin", request.nextUrl));
+    } else if (role === "teacher") {
+      return NextResponse.redirect(new URL("/teacher", request.nextUrl));
     } else {
       return NextResponse.redirect(new URL("/profile", request.nextUrl));
     }
@@ -46,7 +56,21 @@ export function middleware(request: NextRequest) {
 
     // If token exists but not admin, redirect to home
     const role = getRoleFromToken(token);
-    if (role !== 'admin') {
+    if (role !== "admin") {
+      return NextResponse.redirect(new URL("/", request.nextUrl));
+    }
+  }
+
+  // 3. If user tries to access teacher paths
+  if (isTeacherPath) {
+    // If no token, redirect to login
+    if (!token) {
+      return NextResponse.redirect(new URL("/login", request.nextUrl));
+    }
+
+    // If token exists but not teacher, redirect to home
+    const role = getRoleFromToken(token);
+    if (role !== "teacher") {
       return NextResponse.redirect(new URL("/", request.nextUrl));
     }
   }
@@ -54,9 +78,5 @@ export function middleware(request: NextRequest) {
 
 // Matching paths
 export const config = {
-  matcher: [
-    "/login",
-    "/signup",
-    "/admin/:path*",
-  ],
+  matcher: ["/login", "/signup", "/admin/:path*", "/teacher/:path*"],
 };

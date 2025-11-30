@@ -185,6 +185,7 @@ export default function UsersPage() {
                                             className="bg-black/20 border border-white/10 rounded-lg px-3 py-1 text-white text-sm focus:border-blue-500/50 outline-none"
                                         >
                                             <option value="student">Student</option>
+                                            <option value="teacher">Teacher</option>
                                             <option value="admin">Admin</option>
                                         </select>
                                     </td>

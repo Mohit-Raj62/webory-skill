@@ -5,7 +5,7 @@ import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { User, Mail, Award, Briefcase, LogOut, ExternalLink, Trophy, Calendar, Video } from "lucide-react";
+import { User, Mail, Award, Briefcase, LogOut, ExternalLink, Trophy, Calendar, Video, FileText } from "lucide-react";
 import { ActivityDashboard } from "@/components/dashboard/activity-dashboard";
 import { GradesDashboard } from "@/components/dashboard/grades-dashboard";
 
@@ -94,9 +94,19 @@ export default function ProfilePage() {
                                 </span>
                             </div>
                         </div>
-                        <Button variant="outline" onClick={handleLogout} className="border-red-500/30 text-red-400 hover:bg-red-500/10">
-                            <LogOut className="mr-2 h-4 w-4" /> Log Out
-                        </Button>
+                        <div className="flex flex-col gap-2">
+                            <div className="flex gap-2">
+                                <Button onClick={() => router.push(`/portfolio/${user._id}`)} className="bg-blue-600 hover:bg-blue-700">
+                                    <ExternalLink className="mr-2 h-4 w-4" /> Portfolio
+                                </Button>
+                                <Button onClick={() => router.push('/resume')} variant="outline" className="border-white/20 text-white hover:bg-white/10">
+                                    <Briefcase className="mr-2 h-4 w-4" /> Resume
+                                </Button>
+                            </div>
+                            <Button variant="outline" onClick={handleLogout} className="border-red-500/30 text-red-400 hover:bg-red-500/10 w-full">
+                                <LogOut className="mr-2 h-4 w-4" /> Log Out
+                            </Button>
+                        </div>
                     </div>
 
                     {/* Activity Dashboard Tabs */}
@@ -236,27 +246,37 @@ export default function ProfilePage() {
                                                     </div>
                                                 )}
 
-                                                <div className="flex gap-3">
+                                                <div className="flex gap-3 flex-wrap">
                                                     {app.resume && (
                                                         <a href={app.resume} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-400 flex items-center gap-1 hover:underline">
                                                             View Resume <ExternalLink size={10} />
                                                         </a>
                                                     )}
-                                                    {app.status === 'accepted' && (
-                                                        <button
-                                                            onClick={() => router.push(`/internships/applications/${app._id}/offer-letter`)}
-                                                            className="text-xs text-green-400 flex items-center gap-1 hover:underline font-semibold"
-                                                        >
-                                                            📄 View Offer Letter
-                                                        </button>
-                                                    )}
-                                                    {app.status === 'completed' && (
-                                                        <button
-                                                            onClick={() => router.push(`/internships/applications/${app._id}/certificate`)}
-                                                            className="text-xs text-blue-400 flex items-center gap-1 hover:underline font-semibold"
-                                                        >
-                                                            🎓 Download Certificate
-                                                        </button>
+                                                    {(app.status === 'accepted' || app.status === 'completed') && (
+                                                        <>
+                                                            <button
+                                                                onClick={() => router.push(`/internships/${app.internship._id}/tasks`)}
+                                                                className="text-xs text-purple-400 flex items-center gap-1 hover:underline font-semibold"
+                                                            >
+                                                                <FileText size={12} /> View Tasks
+                                                            </button>
+                                                            {app.status === 'accepted' && (
+                                                                <button
+                                                                    onClick={() => router.push(`/internships/applications/${app._id}/offer-letter`)}
+                                                                    className="text-xs text-green-400 flex items-center gap-1 hover:underline font-semibold"
+                                                                >
+                                                                    📄 View Offer Letter
+                                                                </button>
+                                                            )}
+                                                            {app.status === 'completed' && (
+                                                                <button
+                                                                    onClick={() => router.push(`/internships/applications/${app._id}/certificate`)}
+                                                                    className="text-xs text-blue-400 flex items-center gap-1 hover:underline font-semibold"
+                                                                >
+                                                                    🎓 Download Certificate
+                                                                </button>
+                                                            )}
+                                                        </>
                                                     )}
                                                 </div>
                                             </div>

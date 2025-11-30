@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { BookOpen, Briefcase, LayoutDashboard, ShieldCheck, Trophy, Zap } from "lucide-react";
+import { BookOpen, Briefcase, LayoutDashboard, ShieldCheck, Trophy, Zap, HeartHandshake ,  BriefcaseBusiness,FileUser } from "lucide-react";
 
 const features = [
     {
@@ -10,38 +10,64 @@ const features = [
             {
                 icon: BookOpen,
                 title: "Skill Courses",
-                description: "Access curated courses with video lessons, assignments, and mini-projects.",
+                description: "Learn in a structured, easy to follow format and build strong, job ready skills.",
             },
             {
                 icon: Briefcase,
                 title: "Real Internships",
-                description: "Apply for internships, track status, and gain real-world experience.",
+                description: "Work on live tasks with real teams and gain practical experience you can add to your resume.",
             },
             {
-                icon: Trophy,
-                title: "Certificate Engine",
-                description: "Earn verifiable certificates with QR codes upon course completion.",
+                icon:HeartHandshake ,
+                // icon: ,
+                title: "Expert Guidance",
+                description: "Get step by step support from industry experts to help you learn, grow, and complete your tasks with confidence.",
             },
+            // {
+            //     icon: BriefcaseBusiness,
+            //     title: "portfolio",
+            //     description: "automatically  portfolio builder.",
+            // },
+            // {
+            //     icon: FileUser,
+            //     title: "Resume",
+            //     description: "Resume Builder with AI and cover letter generator.",
+            // }
         ],
     },
     {
-        title: "For Admins",
+        title: "Benefits for Students ",
         items: [
-            {
-                icon: LayoutDashboard,
-                title: "Comprehensive Dashboard",
-                description: "Track student activity, course progress, and platform analytics.",
+            // {
+            //     icon: LayoutDashboard,
+            //     title: "Comprehensive Dashboard",
+            //     description: "Track student activity, course progress, and platform analytics.",
+            // },
+            // {
+            //     icon: ShieldCheck,
+            //     title: "Task Approval",
+            //     description: "Review and approve student tasks and projects efficiently.",
+            // },
+            // {
+            //     icon: Zap,
+            //     title: "Automated Workflows",
+            //     description: "Streamline internship management and certificate generation.",
+            // },
+             {
+                icon: Trophy,
+                title: "Certificate",
+                description: "Earn verifiable certificates with QR codes that confirm your achievements and course completions.",
             },
             {
-                icon: ShieldCheck,
-                title: "Task Approval",
-                description: "Review and approve student tasks and projects efficiently.",
+                icon: BriefcaseBusiness,
+                title: "Portfolio Builder",
+                description: "Build a personal portfolio that presents your projects and skills in a clear and impressive way.",
             },
             {
-                icon: Zap,
-                title: "Automated Workflows",
-                description: "Streamline internship management and certificate generation.",
-            },
+                icon: FileUser,
+                title: "Resume Build",
+                description: "Create polished, professional resumes with smart templates that highlight your strengths.",
+            }
         ],
     },
 ];
@@ -65,7 +91,7 @@ export function Features() {
                             <h3 className="text-2xl font-bold text-white border-l-4 border-blue-500 pl-4">
                                 {group.title}
                             </h3>
-                            <div className="grid gap-6">
+                            <div className="grid gap-6 ">
                                 {group.items.map((feature, index) => (
                                     <motion.div
                                         key={index}

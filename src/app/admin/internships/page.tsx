@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Edit, Trash2, Search } from "lucide-react";
+import { Plus, Edit, Trash2, Search, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -166,6 +166,11 @@ export default function InternshipsAdminPage() {
                                             >
                                                 <Trash2 size={18} />
                                             </button>
+                                            <Link href={`/admin/internships/${internship._id}/tasks`}>
+                                                <button className="p-2 hover:bg-purple-500/10 rounded-lg transition-colors text-purple-400" title="Manage Tasks">
+                                                    <FileText size={18} />
+                                                </button>
+                                            </Link>
                                         </div>
                                     </td>
                                 </tr>

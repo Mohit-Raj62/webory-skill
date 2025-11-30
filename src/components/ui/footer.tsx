@@ -26,7 +26,7 @@ export function Footer() {
                             <li><Link href="/courses" className="hover:text-blue-400 transition-colors">Courses</Link></li>
                             <li><Link href="/internships" className="hover:text-blue-400 transition-colors">Internships</Link></li>
                             <li><Link href="/mentorship" className="hover:text-blue-400 transition-colors">Mentorship</Link></li>
-                            <li><Link href="/blog" className="hover:text-blue-400 transition-colors">Blog</Link></li>
+                            {/* <li><Link href="/blog" className="hover:text-blue-400 transition-colors">Blog</Link></li> */}
                         </ul>
                     </div>
 
@@ -66,6 +66,7 @@ export function Footer() {
                     <div className="flex space-x-6 text-sm text-gray-500">
                         <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
                         <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
+                        <Link href="/refund-policy" className="hover:text-white transition-colors">Refund Policy</Link>
                     </div>
                 </div>
             </div>

@@ -3,11 +3,11 @@
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
-import { PaymentModal } from "@/components/courses/payment-modal";
+import { UPIPaymentModal } from "@/components/courses/upi-payment-modal";
 import { Invoice } from "@/components/courses/invoice";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { CheckCircle, Clock, BarChart, Users, Globe, PlayCircle, Lock, ClipboardList, FileText, Calendar } from "lucide-react";
+import { CheckCircle, Clock, BarChart, Users, Globe, PlayCircle, Lock, ClipboardList, FileText, Calendar, Video } from "lucide-react";
 import Link from "next/link";
 
 export default function CourseDetailsPage() {
@@ -22,6 +22,7 @@ export default function CourseDetailsPage() {
     const [transactionData, setTransactionData] = useState < any > (null);
     const [quizzes, setQuizzes] = useState < any[] > ([]);
     const [assignments, setAssignments] = useState < any[] > ([]);
+    const [liveClasses, setLiveClasses] = useState < any[] > ([]);
     const [certificateData, setCertificateData] = useState < any > (null);
 
     useEffect(() => {
@@ -50,6 +51,16 @@ export default function CourseDetailsPage() {
                         }
                     } catch (err) {
                         console.log('No assignments found');
+                    }
+
+                    try {
+                        const resLiveClasses = await fetch(`/api/courses/${id}/live-classes`);
+                        if (resLiveClasses.ok) {
+                            const liveClassData = await resLiveClasses.json();
+                            setLiveClasses(liveClassData.liveClasses || []);
+                        }
+                    } catch (err) {
+                        console.log('No live classes found');
                     }
                 }
 
@@ -199,6 +210,77 @@ export default function CourseDetailsPage() {
                                 ))}
                             </div>
                         </div>
+
+                        {/* Live Classes Section */}
+                        {liveClasses.length > 0 && (
+                            <div className="glass-card p-8 rounded-2xl mb-12 border border-purple-500/30 bg-purple-500/5">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="p-2 bg-purple-500/20 rounded-lg text-purple-400">
+                                        <Video size={24} />
+                                    </div>
+                                    <h2 className="text-2xl font-bold text-white">Live Classes</h2>
+                                </div>
+                                <div className="space-y-4">
+                                    {liveClasses.map((liveClass) => (
+                                        <div key={liveClass._id} className="p-4 rounded-xl border bg-white/5 border-white/10 hover:bg-white/10 transition-all">
+                                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <span className={`text-xs px-2 py-1 rounded-full border ${
+                                                            new Date(liveClass.date) > new Date()
+                                                                ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                                                                : 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+                                                        }`}>
+                                                            {new Date(liveClass.date) > new Date() ? 'Upcoming' : 'Past'}
+                                                        </span>
+                                                        <span className="text-gray-400 text-sm flex items-center gap-1">
+                                                            <Calendar size={12} />
+                                                            {new Date(liveClass.date).toLocaleDateString()}
+                                                        </span>
+                                                        <span className="text-gray-400 text-sm flex items-center gap-1">
+                                                            <Clock size={12} />
+                                                            {new Date(liveClass.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                        </span>
+                                                    </div>
+                                                    <h3 className="text-white font-bold text-lg">{liveClass.title}</h3>
+                                                    <p className="text-gray-400 text-sm line-clamp-1">{liveClass.description}</p>
+                                                </div>
+                                                
+                                                {isEnrolled ? (
+                                                    <div className="flex gap-2">
+                                                        <a 
+                                                            href={liveClass.meetingUrl} 
+                                                            target="_blank" 
+                                                            rel="noopener noreferrer"
+                                                        >
+                                                            <Button size="sm" className="bg-purple-600 hover:bg-purple-700">
+                                                                Join
+                                                            </Button>
+                                                        </a>
+                                                        {liveClass.recordingUrl && (
+                                                            <a 
+                                                                href={liveClass.recordingUrl} 
+                                                                target="_blank" 
+                                                                rel="noopener noreferrer"
+                                                            >
+                                                                <Button size="sm" variant="outline" className="border-white/20 text-white hover:bg-white/10">
+                                                                    Recording
+                                                                </Button>
+                                                            </a>
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex items-center gap-2 text-gray-500 bg-white/5 px-3 py-2 rounded-lg">
+                                                        <Lock size={16} />
+                                                        <span className="text-sm">Enroll to join</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         <div className="glass-card p-8 rounded-2xl mb-12">
                             <h2 className="text-2xl font-bold text-white mb-6">Course Content</h2>
@@ -467,7 +549,7 @@ export default function CourseDetailsPage() {
                 </div>
             </div>
 
-            <PaymentModal
+            <UPIPaymentModal
                 isOpen={showPayment}
                 onClose={() => setShowPayment(false)}
                 onSuccess={handlePaymentSuccess}
@@ -477,6 +559,7 @@ export default function CourseDetailsPage() {
                     : course.price}
                 originalPrice={course.originalPrice}
                 discountPercentage={course.discountPercentage}
+                courseId={id as string}
             />
 
             {showInvoice && transactionData && (

@@ -17,9 +17,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Find promo code
-    const promoCode = await PromoCode.findOne({ 
+    const promoCode = await PromoCode.findOne({
       code: code.toUpperCase(),
-      isActive: true 
+      isActive: true,
     });
 
     if (!promoCode) {
@@ -46,9 +46,15 @@ export async function POST(req: NextRequest) {
     }
 
     // Check applicability
-    if (itemType && promoCode.applicableTo !== 'both' && promoCode.applicableTo !== itemType) {
+    if (
+      itemType &&
+      promoCode.applicableTo !== "both" &&
+      promoCode.applicableTo !== itemType
+    ) {
       return NextResponse.json(
-        { error: `This promo code is only valid for ${promoCode.applicableTo}s` },
+        {
+          error: `This promo code is only valid for ${promoCode.applicableTo}s`,
+        },
         { status: 400 }
       );
     }
@@ -58,6 +64,18 @@ export async function POST(req: NextRequest) {
       if (!promoCode.applicableIds.includes(itemId)) {
         return NextResponse.json(
           { error: "This promo code is not applicable to this item" },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Check minimum order value
+    if (body.price !== undefined && promoCode.minOrderValue > 0) {
+      if (body.price < promoCode.minOrderValue) {
+        return NextResponse.json(
+          {
+            error: `This promo code requires a minimum order value of ₹${promoCode.minOrderValue}`,
+          },
           { status: 400 }
         );
       }

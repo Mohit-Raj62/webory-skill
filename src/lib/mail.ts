@@ -1,7 +1,7 @@
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: "gmail",
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -10,33 +10,33 @@ const transporter = nodemailer.createTransport({
 
 export const sendEmail = async (to: string, subject: string, html: string) => {
   try {
-    console.log('📨 Sending email via Nodemailer...');
-    console.log('Service: Gmail');
-    console.log('From:', process.env.EMAIL_USER);
-    console.log('To:', to);
-    
+    console.log("📨 Sending email via Nodemailer...");
+    console.log("Service: Gmail");
+    console.log("From:", process.env.EMAIL_USER);
+    console.log("To:", to);
+
     const info = await transporter.sendMail({
       from: `"Skill Webory" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html,
     });
-    
+
     console.log("✅ Message sent successfully!");
     console.log("Message ID:", info.messageId);
     return true;
   } catch (error) {
     console.error("❌ Error sending email:");
     console.error(error);
-    
+
     // More specific error messages
     if (error instanceof Error) {
       console.error("Error message:", error.message);
-      if ('code' in error) {
+      if ("code" in error) {
         console.error("Error code:", (error as any).code);
       }
     }
-    
+
     return false;
   }
 };
@@ -51,18 +51,31 @@ export const emailTemplates = {
       <p>Best Regards,<br/>Skill Webory Team</p>
     </div>
   `,
-  interviewScheduled: (name: string, internshipTitle: string, date: string, link?: string) => `
+  interviewScheduled: (
+    name: string,
+    internshipTitle: string,
+    date: string,
+    link?: string
+  ) => `
     <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
       <h2 style="color: #9333ea;">Interview Scheduled! 📅</h2>
       <p>Hi ${name},</p>
       <p>Great news! We have scheduled an interview for your <strong>${internshipTitle}</strong> application.</p>
       <p><strong>Date & Time:</strong> ${new Date(date).toLocaleString()}</p>
-      ${link ? `<p><strong>Meeting Link:</strong> <a href="${link}">${link}</a></p>` : ''}
+      ${
+        link
+          ? `<p><strong>Meeting Link:</strong> <a href="${link}">${link}</a></p>`
+          : ""
+      }
       <p>Please be ready 5 minutes before the scheduled time.</p>
       <p>Good Luck!<br/>Skill Webory Team</p>
     </div>
   `,
-  applicationAccepted: (name: string, internshipTitle: string, offerLink: string) => `
+  applicationAccepted: (
+    name: string,
+    internshipTitle: string,
+    offerLink: string
+  ) => `
     <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
       <h2 style="color: #16a34a;">Congratulations! You're Hired! 🎉</h2>
       <p>Hi ${name},</p>
@@ -109,7 +122,9 @@ export const emailTemplates = {
         <li>📝 Take quizzes and track your progress</li>
       </ul>
       <div style="text-align: center; margin: 30px 0;">
-        <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/courses" style="background-color: #2563eb; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">Explore Courses</a>
+        <a href="${
+          process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+        }/courses" style="background-color: #2563eb; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">Explore Courses</a>
       </div>
       <p>If you have any questions, feel free to reach out to us.</p>
       <p>Happy Learning!<br/>Skill Webory Team</p>
@@ -136,22 +151,42 @@ export const emailTemplates = {
       <p>Best Regards,<br/>Skill Webory Team</p>
     </div>
   `,
-  quizCompleted: (name: string, courseTitle: string, score: number, totalQuestions: number, passed: boolean) => `
+  quizCompleted: (
+    name: string,
+    courseTitle: string,
+    score: number,
+    totalQuestions: number,
+    passed: boolean
+  ) => `
     <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
-      <h2 style="color: ${passed ? '#16a34a' : '#f59e0b'};">Quiz ${passed ? 'Passed' : 'Completed'}! ${passed ? '🎉' : '📊'}</h2>
+      <h2 style="color: ${passed ? "#16a34a" : "#f59e0b"};">Quiz ${
+    passed ? "Passed" : "Completed"
+  }! ${passed ? "🎉" : "📊"}</h2>
       <p>Hi ${name},</p>
       <p>You have completed the quiz for <strong>${courseTitle}</strong>.</p>
-      <div style="background: ${passed ? '#f0fdf4' : '#fef3c7'}; border-left: 4px solid ${passed ? '#16a34a' : '#f59e0b'}; padding: 15px; margin: 20px 0;">
+      <div style="background: ${
+        passed ? "#f0fdf4" : "#fef3c7"
+      }; border-left: 4px solid ${
+    passed ? "#16a34a" : "#f59e0b"
+  }; padding: 15px; margin: 20px 0;">
         <p style="margin: 0; font-size: 18px;"><strong>Your Score: ${score}/${totalQuestions}</strong></p>
-        <p style="margin: 5px 0 0 0; color: #666;">Percentage: ${Math.round((score/totalQuestions) * 100)}%</p>
+        <p style="margin: 5px 0 0 0; color: #666;">Percentage: ${Math.round(
+          (score / totalQuestions) * 100
+        )}%</p>
       </div>
-      ${passed 
-        ? '<p>🎉 <strong>Congratulations!</strong> You passed the quiz. Keep up the great work!</p>' 
-        : '<p>Keep practicing! You can retake the quiz to improve your score.</p>'}
+      ${
+        passed
+          ? "<p>🎉 <strong>Congratulations!</strong> You passed the quiz. Keep up the great work!</p>"
+          : "<p>Keep practicing! You can retake the quiz to improve your score.</p>"
+      }
       <p>Best Regards,<br/>Skill Webory Team</p>
     </div>
   `,
-  certificateUnlocked: (name: string, courseTitle: string, certificateLink: string) => `
+  certificateUnlocked: (
+    name: string,
+    courseTitle: string,
+    certificateLink: string
+  ) => `
     <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #9333ea;">Certificate Unlocked! 🎓</h2>
       <p>Hi ${name},</p>
@@ -168,7 +203,14 @@ export const emailTemplates = {
       <p>Congratulations once again!<br/>Skill Webory Team</p>
     </div>
   `,
-  invoice: (name: string, itemTitle: string, amount: number, transactionId: string, date: string, itemType: 'course' | 'internship') => `
+  invoice: (
+    name: string,
+    itemTitle: string,
+    amount: number,
+    transactionId: string,
+    date: string,
+    itemType: "course" | "internship"
+  ) => `
     <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
       <div style="text-align: center; margin-bottom: 30px;">
         <h1 style="color: #2563eb; margin: 0;">INVOICE</h1>
@@ -177,7 +219,9 @@ export const emailTemplates = {
       
       <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
         <p style="margin: 5px 0;"><strong>Invoice To:</strong> ${name}</p>
-        <p style="margin: 5px 0;"><strong>Date:</strong> ${new Date(date).toLocaleDateString()}</p>
+        <p style="margin: 5px 0;"><strong>Date:</strong> ${new Date(
+          date
+        ).toLocaleDateString()}</p>
         <p style="margin: 5px 0;"><strong>Transaction ID:</strong> ${transactionId}</p>
       </div>
 
@@ -191,7 +235,9 @@ export const emailTemplates = {
         <tbody>
           <tr>
             <td style="padding: 12px; border: 1px solid #ddd;">
-              <strong>${itemType === 'course' ? '📚 Course' : '💼 Internship'}: ${itemTitle}</strong>
+              <strong>${
+                itemType === "course" ? "📚 Course" : "💼 Internship"
+              }: ${itemTitle}</strong>
             </td>
             <td style="padding: 12px; text-align: right; border: 1px solid #ddd;">₹${amount.toLocaleString()}</td>
           </tr>
@@ -227,5 +273,36 @@ export const emailTemplates = {
       <p style="color: #999; font-size: 12px;">Best Regards,<br/>Skill Webory Team</p>
     </div>
   `,
-};
+  adminPaymentNotification: (
+    adminName: string,
+    studentName: string,
+    itemTitle: string,
+    amount: number,
+    transactionId: string,
+    itemType: "course" | "internship"
+  ) => `
+    <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #ea580c;">New Payment Received! 💰</h2>
+      <p>Hi ${adminName},</p>
+      <p>A new payment proof has been submitted for verification.</p>
+      
+      <div style="background: #fff7ed; border-left: 4px solid #ea580c; padding: 15px; margin: 20px 0;">
+        <p style="margin: 5px 0;"><strong>Student:</strong> ${studentName}</p>
+        <p style="margin: 5px 0;"><strong>${
+          itemType === "course" ? "📚 Course" : "💼 Internship"
+        }:</strong> ${itemTitle}</p>
+        <p style="margin: 5px 0;"><strong>Amount:</strong> ₹${amount.toLocaleString()}</p>
+        <p style="margin: 5px 0;"><strong>Transaction ID:</strong> ${transactionId}</p>
+      </div>
 
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${
+          process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+        }/admin/payments" style="background-color: #ea580c; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">Verify Payment</a>
+      </div>
+      
+      <p>Please verify the screenshot and approve/reject the payment.</p>
+      <p>Best Regards,<br/>Skill Webory System</p>
+    </div>
+  `,
+};

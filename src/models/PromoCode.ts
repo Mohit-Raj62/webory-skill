@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, models } from 'mongoose';
+import mongoose, { Schema, model, models } from "mongoose";
 
 const PromoCodeSchema = new Schema({
   code: {
@@ -10,7 +10,7 @@ const PromoCodeSchema = new Schema({
   },
   discountType: {
     type: String,
-    enum: ['percentage', 'fixed'],
+    enum: ["percentage", "fixed"],
     required: true,
   },
   discountValue: {
@@ -18,10 +18,15 @@ const PromoCodeSchema = new Schema({
     required: true,
     min: 0,
   },
+  minOrderValue: {
+    type: Number,
+    default: 0,
+    min: 0,
+  },
   applicableTo: {
     type: String,
-    enum: ['course', 'internship', 'both'],
-    default: 'both',
+    enum: ["course", "internship", "both"],
+    default: "both",
   },
   applicableIds: {
     type: [String], // Array of course/internship IDs, empty means all
@@ -49,6 +54,6 @@ const PromoCodeSchema = new Schema({
   },
 });
 
-const PromoCode = models.PromoCode || model('PromoCode', PromoCodeSchema);
+const PromoCode = models.PromoCode || model("PromoCode", PromoCodeSchema);
 
 export default PromoCode;

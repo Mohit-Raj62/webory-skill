@@ -1,78 +1,104 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import { JobApplication } from "@/models/JobApplication";
-import { sendEmail } from "@/lib/mail";
+import cloudinary from "@/lib/cloudinary";
+import { sendEmail, emailTemplates } from "@/lib/mail";
 
-export async function POST(req: NextRequest) {
-    try {
-        await dbConnect();
+export const dynamic = "force-dynamic";
 
-        const { name, email, phone, position, resume, coverLetter } = await req.json();
-
-        // Validation
-        if (!name || !email || !phone || !position || !resume) {
-            return NextResponse.json(
-                { error: "All required fields must be filled" },
-                { status: 400 }
-            );
+// Helper to upload buffer to Cloudinary
+const uploadToCloudinary = (buffer: Buffer, folder: string): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader
+      .upload_stream(
+        { resource_type: "auto", folder: folder },
+        (error, result) => {
+          if (error) return reject(error);
+          resolve(result);
         }
+      )
+      .end(buffer);
+  });
+};
 
-        // Create job application
-        const application = await JobApplication.create({
-            name,
-            email,
-            phone,
-            position,
-            resume,
-            coverLetter: coverLetter || ""
-        });
+export async function POST(req: Request) {
+  try {
+    await dbConnect();
 
-        // Send confirmation email to applicant
-        try {
-            await sendEmail(
-                email,
-                "Application Received - Skill Webory",
-                `
-                    <h2>Thank You for Your Application!</h2>
-                    <p>Dear ${name},</p>
-                    <p>We have received your application for the <strong>${position}</strong> position.</p>
-                    <p>Our team will review your application and get back to you within 5-7 business days.</p>
-                    <br>
-                    <p>Best regards,<br>Skill Webory Team</p>
-                `
-            );
+    const formData = await req.formData();
+    const name = formData.get("name") as string;
+    const email = formData.get("email") as string;
+    const phone = formData.get("phone") as string;
+    const position = formData.get("position") as string;
+    const coverLetter = formData.get("coverLetter") as string;
+    const resumeFile = formData.get("resume") as File;
 
-            // Send notification to admin
-            await sendEmail(
-                process.env.ADMIN_EMAIL || "admin@skillwebory.com",
-                `New Job Application: ${position}`,
-                `
+    if (!name || !email || !phone || !position || !resumeFile) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    // Upload Resume to Cloudinary
+    const arrayBuffer = await resumeFile.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const uploadResult = await uploadToCloudinary(buffer, "resumes");
+
+    // Create Job Application
+    const application = await JobApplication.create({
+      name,
+      email,
+      phone,
+      position,
+      coverLetter,
+      resume: uploadResult.secure_url,
+      status: "pending",
+    });
+
+    // Send Confirmation Email to Applicant
+    try {
+      await sendEmail(
+        email,
+        `Application Received - ${position}`,
+        emailTemplates.applicationReceived(name, position)
+      );
+    } catch (emailError) {
+      console.error("Failed to send applicant email", emailError);
+    }
+
+    // Send Notification to Admin
+    try {
+      const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
+      if (adminEmail) {
+        await sendEmail(
+          adminEmail,
+          `New Job Application - ${position}`,
+          `
+                <div style="font-family: Arial, sans-serif; padding: 20px;">
                     <h2>New Job Application Received</h2>
                     <p><strong>Position:</strong> ${position}</p>
-                    <p><strong>Applicant:</strong> ${name}</p>
+                    <p><strong>Name:</strong> ${name}</p>
                     <p><strong>Email:</strong> ${email}</p>
                     <p><strong>Phone:</strong> ${phone}</p>
-                    <p><strong>Resume:</strong> <a href="${resume}">View Resume</a></p>
-                    ${coverLetter ? `<p><strong>Cover Letter:</strong><br>${coverLetter.replace(/\n/g, '<br>')}</p>` : ''}
-                    <hr>
-                    <p><small>Applied at: ${new Date().toLocaleString()}</small></p>
+                    <p><strong>Resume:</strong> <a href="${uploadResult.secure_url}">View Resume</a></p>
+                </div>
                 `
-            );
-        } catch (emailError) {
-            console.error("Failed to send email:", emailError);
-        }
-
-        return NextResponse.json({
-            success: true,
-            message: "Application submitted successfully! We'll be in touch soon.",
-            applicationId: application._id
-        });
-
-    } catch (error) {
-        console.error("Job application error:", error);
-        return NextResponse.json(
-            { error: "Failed to submit application" },
-            { status: 500 }
         );
+      }
+    } catch (emailError) {
+      console.error("Failed to send admin email", emailError);
     }
+
+    return NextResponse.json({
+      message: "Application submitted successfully",
+      application,
+    });
+  } catch (error) {
+    console.error("Job application error:", error);
+    return NextResponse.json(
+      { error: "Failed to submit application" },
+      { status: 500 }
+    );
+  }
 }

@@ -80,9 +80,9 @@ export function Hero() {
                         className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8"
                     >
                         {[
-                            { icon: Users, label: "Active Students", value: "10,000+" },
-                            { icon: Code, label: "Projects Completed", value: "5,000+" },
-                            { icon: Rocket, label: "Internships Launched", value: "1,200+" },
+                            { icon: Users, label: "Active Students", value: "10+" },
+                            { icon: Code, label: "Projects Completed", value: "150+" },
+                            { icon: Rocket, label: "Internships Launched", value: "12+" },
                         ].map((stat, index) => (
                             <div key={index} className="glass-card p-6 rounded-2xl text-center">
                                 <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mx-auto mb-4 text-blue-400">

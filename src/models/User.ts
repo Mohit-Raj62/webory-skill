@@ -1,32 +1,44 @@
-import mongoose, { Schema, model, models } from 'mongoose';
+import mongoose, { Schema, model, models } from "mongoose";
 
 const UserSchema = new Schema({
   firstName: {
     type: String,
-    required: [true, 'First name is required'],
+    required: [true, "First name is required"],
   },
   lastName: {
     type: String,
-    required: [true, 'Last name is required'],
+    required: [true, "Last name is required"],
   },
   email: {
     type: String,
-    required: [true, 'Email is required'],
+    required: [true, "Email is required"],
     unique: true,
   },
   password: {
     type: String,
-    required: [true, 'Password is required'],
+    required: [true, "Password is required"],
     select: false, // Don't return password by default
   },
   role: {
     type: String,
-    enum: ['student', 'admin'],
-    default: 'student',
+    enum: ["student", "admin", "teacher"],
+    default: "student",
   },
   bio: {
     type: String,
-    default: '',
+    default: "",
+  },
+  expertise: {
+    type: String,
+    default: "",
+  },
+  socialLinks: {
+    type: {
+      linkedin: String,
+      twitter: String,
+      website: String,
+    },
+    default: {},
   },
   skills: {
     type: [String],
@@ -62,7 +74,7 @@ const UserSchema = new Schema({
   },
   oauthProvider: {
     type: String,
-    enum: ['google', 'apple', 'github', null],
+    enum: ["google", "apple", "github", null],
     default: null,
   },
   oauthId: {
@@ -75,6 +87,6 @@ const UserSchema = new Schema({
   },
 });
 
-const User = models.User || model('User', UserSchema);
+const User = models.User || model("User", UserSchema);
 
 export default User;

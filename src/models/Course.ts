@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, models } from 'mongoose';
+import mongoose, { Schema, model, models } from "mongoose";
 
 const CourseSchema = new Schema({
   title: {
@@ -12,6 +12,11 @@ const CourseSchema = new Schema({
   level: {
     type: String,
     required: true,
+  },
+  instructor: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: false, // Optional for now to support existing courses
   },
   studentsCount: {
     type: String,
@@ -44,11 +49,13 @@ const CourseSchema = new Schema({
     default: [],
   },
   videos: {
-    type: [{
-      title: String,
-      url: String,
-      duration: String, // e.g., "15:30"
-    }],
+    type: [
+      {
+        title: String,
+        url: String,
+        duration: String, // e.g., "15:30"
+      },
+    ],
     default: [],
   },
   thumbnail: {
@@ -65,11 +72,6 @@ const CourseSchema = new Schema({
   },
 });
 
-// Check if the model exists and delete it to prevent caching issues with schema changes in dev
-if (process.env.NODE_ENV === "development" && models.Course) {
-  delete models.Course;
-}
-
-const Course = models.Course || model('Course', CourseSchema);
+const Course = models.Course || model("Course", CourseSchema);
 
 export default Course;

@@ -13,6 +13,11 @@ import {
     MessageCircle,
     LogOut,
     X,
+    Star,
+    Tag,
+    Video,
+    Settings,
+    CreditCard,
 } from "lucide-react";
 
 const menuItems = [
@@ -23,7 +28,12 @@ const menuItems = [
     { name: "Applications", href: "/admin/applications", icon: FileText },
     { name: "Enrollments", href: "/admin/enrollments", icon: GraduationCap },
     { name: "Doubts", href: "/admin/doubts", icon: MessageCircle },
+    { name: "Feedback", href: "/admin/feedback", icon: Star },
+    { name: "Promo Codes", href: "/admin/promo-codes", icon: Tag },
+    { name: "Payments", href: "/admin/payments", icon: CreditCard },
+    { name: "Live Classes", href: "/admin/live-classes", icon: Video },
     { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+    { name: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
 interface AdminSidebarProps {

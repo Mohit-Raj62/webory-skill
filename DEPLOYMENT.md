@@ -1,156 +1,51 @@
-# Deployment Guide - Skill Webory
+# Deployment Guide (Vercel)
 
-## Environment Variables List
+Your project is already connected to GitHub: `https://github.com/Mohit-Raj62/webory-skill`
 
-Ye sab variables `.env.local` file mein ya deployment platform (Vercel) mein add karni hain:
+To deploy this application to Vercel (recommended for Next.js), follow these steps:
 
-```env
-# MongoDB Database
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/skill-webory
+## 1. Create Vercel Account
+1. Go to [vercel.com](https://vercel.com)
+2. Sign up or Log in using **GitHub**.
 
-# JWT Secret Key (minimum 32 characters)
-JWT_SECRET=your-super-secret-jwt-key-here
+## 2. Import Project
+1. On your Vercel dashboard, click **"Add New..."** -> **"Project"**.
+2. You should see your `webory-skill` repository in the list.
+3. Click **"Import"**.
 
-# Cloudinary Configuration
-CLOUDINARY_CLOUD_NAME=your-cloudinary-cloud-name
-CLOUDINARY_API_KEY=your-cloudinary-api-key
-CLOUDINARY_API_SECRET=your-cloudinary-api-secret
+## 3. Configure Environment Variables
+**CRITICAL STEP**: You must add your environment variables for the app to work.
+In the "Configure Project" screen, expand the **"Environment Variables"** section.
 
-# Email Configuration (Gmail)
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASS=your-gmail-app-password
+Add the following variables (copy values from your local `.env.local` file):
 
-# Admin Email (optional)
-ADMIN_EMAIL=admin@skillwebory.com
+| Variable Name | Description |
+|--------------|-------------|
+| `MONGODB_URI` | Your MongoDB connection string (make sure to allow access from anywhere/0.0.0.0 in MongoDB Atlas) |
+| `JWT_SECRET` | Secret key for JWT tokens |
+| `NEXTAUTH_SECRET` | Secret for NextAuth (can be same as JWT_SECRET) |
+| `NEXTAUTH_URL` | Set this to your Vercel URL (e.g., `https://your-project.vercel.app`) once deployed, or leave empty for Vercel to auto-detect |
+| `EMAIL_USER` | Email address for sending notifications |
+| `EMAIL_PASS` | App password for the email account |
+| `ADMIN_EMAIL` | Email to receive contact form/application notifications |
+| `NEXT_PUBLIC_APP_URL` | Your Vercel URL (e.g., `https://your-project.vercel.app`) |
 
-# App URL (production URL)
-NEXT_PUBLIC_APP_URL=https://your-domain.vercel.app
-```
+**OAuth Variables (if using):**
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_CLIENT_SECRET`
+- `GITHUB_ID`
+- `GITHUB_SECRET`
 
-## Quick Deploy Steps (Vercel)
+## 4. Deploy
+1. Click **"Deploy"**.
+2. Wait for the build to complete.
+3. Once finished, you will get a live URL (e.g., `https://webory-skill.vercel.app`).
 
-1. **Vercel.com** par jao aur GitHub se login karo
-2. **"Add New Project"** click karo
-3. **webory-skill** repository select karo
-4. **Environment Variables** section mein sab variables add karo (upar wali list se)
-5. **Deploy** button click karo
-
-## Detailed Setup Instructions
-
-### 1. MongoDB Atlas Setup (Free)
-
-1. [MongoDB Atlas](https://www.mongodb.com/atlas) par sign up karo
-2. Free M0 cluster create karo
-3. Database User create karo (username aur password)
-4. Network Access mein IP add karo: `0.0.0.0/0` (sab IPs allow)
-5. Cluster se "Connect" button click karo
-6. "Connect your application" select karo
-7. Connection string copy karo aur `MONGODB_URI` mein paste karo
-
-### 2. Cloudinary Setup (Free)
-
-1. [Cloudinary](https://cloudinary.com/) par sign up karo
-2. Dashboard se credentials copy karo:
-   - Cloud Name
-   - API Key  
-   - API Secret
-3. Inhe environment variables mein add karo
-
-### 3. Gmail Setup (Email ke liye)
-
-1. Gmail account mein 2-Step Verification enable karo
-2. [Google App Passwords](https://myaccount.google.com/apppasswords) par jao
-3. "Select app" = Mail, "Select device" = Other
-4. App password generate karo aur copy karo
-5. `EMAIL_PASS` mein ye password add karo
-6. `EMAIL_USER` mein apna Gmail address add karo
-
-### 4. JWT Secret Generate
-
-Terminal mein ye command run karo:
-
-```bash
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-```
-
-Output ko `JWT_SECRET` mein add karo.
-
-## Vercel Deployment
-
-### Method 1: GitHub Integration (Recommended)
-
-1. Repository already GitHub par hai ✅
-2. [Vercel Dashboard](https://vercel.com/dashboard) par jao
-3. "Add New..." → "Project" click karo
-4. GitHub repository list se `webory-skill` select karo
-5. Environment variables add karo (sab upar wali)
-6. "Deploy" click karo
-
-### Method 2: Vercel CLI
-
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Login
-vercel login
-
-# Deploy
-cd skill-webory
-vercel
-
-# Production deploy
-vercel --prod
-```
-
-## Local Build Test
-
-Deploy se pehle locally build test karo:
-
-```bash
-npm install
-npm run build
-npm run start
-```
-
-Agar build successful hai to deployment bhi theek se hoga.
+## 5. Post-Deployment Setup
+1. **MongoDB Atlas**: Go to your MongoDB Atlas dashboard -> Network Access -> Add IP Address -> Allow Access from Anywhere (`0.0.0.0/0`) so Vercel can connect.
+2. **OAuth Providers**: If using Google/GitHub login, update the "Authorized Redirect URIs" in their developer consoles to include your new Vercel domain (e.g., `https://webory-skill.vercel.app/api/auth/callback/google`).
 
 ## Troubleshooting
-
-### Build Failed
-- Environment variables check karo
-- MongoDB URI correct hai?
-- Node.js version 18+ hai?
-
-### Database Connection Error
-- MongoDB Atlas mein IP whitelist check karo
-- Connection string verify karo
-- Network Access mein `0.0.0.0/0` add karo
-
-### Email Not Working
-- Gmail App Password sahi hai?
-- 2-Step Verification enabled hai?
-- EMAIL_USER aur EMAIL_PASS correct hain?
-
-### Image Upload Failed
-- Cloudinary credentials verify karo
-- All three Cloudinary variables set hain?
-
-## Post-Deployment
-
-Deploy hone ke baad ye check karo:
-
-- [ ] Homepage load ho raha hai
-- [ ] Sign up / Login working hai
-- [ ] Database connection successful
-- [ ] Email sending working
-- [ ] File upload (images/videos) working
-- [ ] All pages accessible hain
-
-## Support
-
-Agar koi problem aaye to:
-- Check Vercel build logs
-- Check environment variables
-- Verify all service credentials
-
+- **Build Failed?** Check the "Logs" tab in Vercel to see the error.
+- **Database Error?** Ensure `MONGODB_URI` is correct and Network Access is open.
+- **Login Not Working?** Check `NEXTAUTH_SECRET` and OAuth settings.

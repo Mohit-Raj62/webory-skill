@@ -13,6 +13,7 @@ export default function EditCoursePage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [uploadingVideo, setUploadingVideo] = useState(false);
+    const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [formData, setFormData] = useState({
         title: "",
@@ -115,6 +116,33 @@ export default function EditCoursePage() {
                 videos: [...formData.videos, { ...videoInput }],
             });
             setVideoInput({ title: "", url: "", duration: "" });
+        }
+    };
+
+    const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Validate file size (5MB max for images)
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        if (file.size > maxSize) {
+            alert(`File too large! Maximum size is 5MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
+            e.target.value = "";
+            return;
+        }
+
+        setUploadingThumbnail(true);
+
+        try {
+            const data = await uploadFile(file, "/api/upload/image");
+            setFormData((prev) => ({ ...prev, thumbnail: data.url }));
+            alert("Thumbnail uploaded successfully!");
+        } catch (error: any) {
+            console.error("Upload error:", error);
+            alert(error.message || "Failed to upload thumbnail");
+        } finally {
+            setUploadingThumbnail(false);
+            e.target.value = "";
         }
     };
 
@@ -307,13 +335,47 @@ export default function EditCoursePage() {
 
                     <div>
                         <label className="text-sm text-gray-300 block mb-2">Thumbnail URL</label>
-                        <input
-                            type="url"
-                            placeholder="https://example.com/image.jpg"
-                            className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                            value={formData.thumbnail}
-                            onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
-                        />
+                        <div className="flex gap-2">
+                            <input
+                                type="url"
+                                placeholder="https://example.com/image.jpg"
+                                className="flex-1 bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                value={formData.thumbnail}
+                                onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
+                            />
+                            <div className="relative">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleThumbnailUpload}
+                                    disabled={uploadingThumbnail}
+                                    className="hidden"
+                                    id="thumbnail-upload"
+                                />
+                                <label
+                                    htmlFor="thumbnail-upload"
+                                    className={`flex items-center gap-2 px-4 py-3 rounded-xl cursor-pointer transition-all ${uploadingThumbnail
+                                        ? "bg-gray-600 cursor-not-allowed"
+                                        : "bg-blue-600 hover:bg-blue-700"
+                                        } text-white`}
+                                >
+                                    <Image size={20} />
+                                    {uploadingThumbnail ? "Uploading..." : "Upload Image"}
+                                </label>
+                            </div>
+                        </div>
+                        {formData.thumbnail && (
+                            <div className="mt-2 relative w-40 h-24 rounded-lg overflow-hidden border border-white/10 group">
+                                <img src={formData.thumbnail} alt="Thumbnail preview" className="w-full h-full object-cover" />
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData({ ...formData, thumbnail: "" })}
+                                    className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                    <X className="text-white hover:text-red-400" size={24} />
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     {/* Curriculum */}

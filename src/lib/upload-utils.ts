@@ -1,14 +1,14 @@
 export const uploadFile = (
   file: File,
   url: string,
-  onProgress: (progress: number) => void
+  onProgress?: (progress: number) => void
 ): Promise<any> => {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', url);
+    xhr.open("POST", url);
 
     xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable) {
+      if (event.lengthComputable && onProgress) {
         const percentComplete = (event.loaded / event.total) * 100;
         onProgress(percentComplete);
       }
@@ -20,24 +20,24 @@ export const uploadFile = (
           const response = JSON.parse(xhr.responseText);
           resolve(response);
         } catch (e) {
-          reject(new Error('Invalid response format'));
+          reject(new Error("Invalid response format"));
         }
       } else {
         try {
-            const error = JSON.parse(xhr.responseText);
-            reject(new Error(error.error || 'Upload failed'));
+          const error = JSON.parse(xhr.responseText);
+          reject(new Error(error.error || "Upload failed"));
         } catch (e) {
-            reject(new Error('Upload failed'));
+          reject(new Error("Upload failed"));
         }
       }
     };
 
     xhr.onerror = () => {
-      reject(new Error('Network error'));
+      reject(new Error("Network error"));
     };
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
     xhr.send(formData);
   });
 };

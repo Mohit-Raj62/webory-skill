@@ -1,11 +1,42 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
 import { Briefcase, Heart, Zap, Coffee, ArrowRight } from "lucide-react";
+import { toast } from "sonner";
+import { JobApplicationModal } from "@/components/careers/job-application-modal";
 
 export default function CareersPage() {
+    const [careerEnabled, setCareerEnabled] = useState(true);
+    const [selectedJob, setSelectedJob] = useState<string | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const res = await fetch("/api/settings");
+                if (res.ok) {
+                    const data = await res.json();
+                    setCareerEnabled(data.careerApplicationsEnabled);
+                }
+            } catch (error) {
+                console.error("Failed to fetch settings", error);
+            }
+        };
+        fetchSettings();
+    }, []);
+
+    const handleApply = (jobTitle?: string) => {
+        if (!careerEnabled) {
+            toast.info("Applications are currently closed. Please check back later!");
+            return;
+        }
+        setSelectedJob(jobTitle || "General Position");
+        setIsModalOpen(true);
+    };
+
     return (
         <main className="min-h-screen bg-background">
             <Navbar />
@@ -19,8 +50,14 @@ export default function CareersPage() {
                     <p className="text-gray-400 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-8">
                         We're looking for passionate individuals who want to shape the future of education and technology.
                     </p>
-                    <Button className="bg-white text-black hover:bg-gray-200 text-lg px-8 py-6 rounded-full">
-                        View Open Positions
+                    <Button 
+                        className={`text-lg px-8 py-6 rounded-full ${careerEnabled ? 'bg-white text-black hover:bg-gray-200' : 'bg-gray-600 text-gray-300 cursor-not-allowed'}`}
+                        onClick={() => {
+                            const positionsSection = document.getElementById('open-positions');
+                            positionsSection?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                    >
+                        {careerEnabled ? "View Open Positions" : "Coming Soon"}
                     </Button>
                 </div>
             </section>
@@ -62,7 +99,7 @@ export default function CareersPage() {
             </section>
 
             {/* Open Positions */}
-            <section className="py-20 px-4 md:px-8">
+            <section id="open-positions" className="py-20 px-4 md:px-8">
                 <div className="max-w-4xl mx-auto">
                     <h2 className="text-3xl font-bold text-white mb-8 text-center">Open Positions</h2>
 
@@ -82,8 +119,24 @@ export default function CareersPage() {
                                         <span>{job.type}</span>
                                     </div>
                                 </div>
-                                <Button variant="ghost" className="text-gray-400 group-hover:text-white group-hover:bg-white/10">
-                                    Apply Now <ArrowRight size={16} className="ml-2" />
+                                <Button 
+                                    variant="ghost" 
+                                    className={`text-gray-400 group-hover:text-white group-hover:bg-white/10 ${!careerEnabled && 'cursor-not-allowed opacity-50'}`}
+                                    disabled={!careerEnabled}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (!careerEnabled) {
+                                            toast.info("Applications are currently closed.");
+                                        } else {
+                                            handleApply(job.title);
+                                        }
+                                    }}
+                                >
+                                    {careerEnabled ? (
+                                        <>Apply Now <ArrowRight size={16} className="ml-2" /></>
+                                    ) : (
+                                        "Coming Soon"
+                                    )}
                                 </Button>
                             </div>
                         ))}
@@ -92,6 +145,13 @@ export default function CareersPage() {
             </section>
 
             <Footer />
+
+            {/* Job Application Modal */}
+            <JobApplicationModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                position={selectedJob || ""}
+            />
         </main>
     );
 }
