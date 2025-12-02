@@ -4,6 +4,7 @@ import Enrollment from "@/models/Enrollment";
 import User from "@/models/User";
 import Course from "@/models/Course";
 import PromoCode from "@/models/PromoCode";
+import Activity from "@/models/Activity";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { sendEmail, emailTemplates } from "@/lib/mail";
@@ -110,6 +111,18 @@ export async function POST(req: Request) {
       student: decoded.userId,
       course: courseId,
       // In a real app, we would save the transactionId here
+    });
+
+    // Record Activity
+    await Activity.create({
+      student: decoded.userId,
+      type: "course_enrolled",
+      category: "course",
+      relatedId: courseId,
+      metadata: {
+        courseName: course.title,
+      },
+      date: new Date(),
     });
 
     // Send enrollment confirmation email

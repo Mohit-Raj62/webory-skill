@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Trash2, Edit2 } from "lucide-react";
 
-export default function AdminDoubtsPage() {
+export default function TeacherDoubtsPage() {
     const router = useRouter();
-    const [doubts, setDoubts] = useState < any[] > ([]);
+    const [doubts, setDoubts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [filter, setFilter] = useState < 'all' | 'pending' | 'answered' > ('all');
-    const [selectedDoubt, setSelectedDoubt] = useState < any > (null);
+    const [filter, setFilter] = useState<'all' | 'pending' | 'answered'>('all');
+    const [selectedDoubt, setSelectedDoubt] = useState<any>(null);
     const [answer, setAnswer] = useState('');
     const [isEditing, setIsEditing] = useState(false);
 
@@ -22,8 +22,8 @@ export default function AdminDoubtsPage() {
     const fetchDoubts = async () => {
         try {
             const url = filter === 'all'
-                ? '/api/admin/doubts'
-                : `/api/admin/doubts?status=${filter}`;
+                ? '/api/teacher/doubts'
+                : `/api/teacher/doubts?status=${filter}`;
 
             const res = await fetch(url);
             if (res.ok) {
@@ -45,7 +45,7 @@ export default function AdminDoubtsPage() {
         }
 
         try {
-            const res = await fetch(`/api/admin/doubts/${selectedDoubt._id}`, {
+            const res = await fetch(`/api/teacher/doubts/${selectedDoubt._id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ answer })
@@ -72,7 +72,7 @@ export default function AdminDoubtsPage() {
         }
 
         try {
-            const res = await fetch(`/api/admin/doubts/${doubtId}`, {
+            const res = await fetch(`/api/teacher/doubts/${doubtId}`, {
                 method: 'DELETE',
             });
 
@@ -112,7 +112,7 @@ export default function AdminDoubtsPage() {
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
                     Student Doubts
                 </h1>
-                <p className="text-gray-400 mt-2">View and answer student questions</p>
+                <p className="text-gray-400 mt-2">View and answer student questions from your courses</p>
             </div>
 
             {/* Filter Tabs */}
@@ -159,7 +159,7 @@ export default function AdminDoubtsPage() {
                                 <div className="flex-1">
                                     <div className="flex items-center gap-3 mb-2">
                                         <span className="text-sm text-blue-400">
-                                            👤 {doubt.student ? `${doubt.student.firstName} ${doubt.student.lastName}` : 'Unknown Student'}
+                                            👤 {doubt.student?.name || 'Unknown Student'}
                                         </span>
                                         <span className="text-sm text-gray-500">•</span>
                                         <span className="text-sm text-purple-400">
@@ -217,7 +217,7 @@ export default function AdminDoubtsPage() {
                                         </span>
                                         {doubt.answeredBy && (
                                             <span className="text-xs text-gray-500">
-                                                by {doubt.answeredBy.firstName} {doubt.answeredBy.lastName}
+                                                by {doubt.answeredBy.name}
                                             </span>
                                         )}
                                     </div>

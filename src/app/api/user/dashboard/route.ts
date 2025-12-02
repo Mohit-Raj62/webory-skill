@@ -15,34 +15,45 @@ export async function GET() {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
-    
-    // Use lean() to get plain JavaScript objects instead of Mongoose documents
-    const enrollments = await Enrollment.find({ student: decoded.userId })
-      .populate('course')
-      .lean()
-      .catch(err => {
-        console.error("Enrollment query error:", err);
-        return [];
-      });
-      
-    const applications = await Application.find({ student: decoded.userId })
-      .populate('internship')
-      .populate('student')
-      .lean()
-      .catch(err => {
-        console.error("Application query error:", err);
-        return [];
-      });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+      userId: string;
+    };
 
-    return NextResponse.json({ 
-      enrollments: enrollments || [], 
-      applications: applications || [] 
-    }, { status: 200 });
+    // Use lean() to get plain JavaScript objects instead of Mongoose documents
+    // Run queries in parallel for better performance
+    const [enrollments, applications] = await Promise.all([
+      Enrollment.find({ student: decoded.userId })
+        .populate("course")
+        .lean()
+        .catch((err) => {
+          console.error("Enrollment query error:", err);
+          return [];
+        }),
+
+      Application.find({ student: decoded.userId })
+        .populate("internship")
+        .populate("student")
+        .lean()
+        .catch((err) => {
+          console.error("Application query error:", err);
+          return [];
+        }),
+    ]);
+
+    return NextResponse.json(
+      {
+        enrollments: enrollments || [],
+        applications: applications || [],
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Dashboard error:", error);
     return NextResponse.json(
-      { error: "Internal server error", details: error instanceof Error ? error.message : "Unknown error" },
+      {
+        error: "Internal server error",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 }
     );
   }

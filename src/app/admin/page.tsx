@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ClipboardList, FileText, GraduationCap, Users, BookOpen, Briefcase, Star } from "lucide-react";
+import { ClipboardList, FileText, GraduationCap, Users, BookOpen, Briefcase, Star, Award, Shield } from "lucide-react";
 import Link from "next/link";
 
 export default function AdminDashboard() {
@@ -45,6 +45,14 @@ export default function AdminDashboard() {
             description: "Manage user feedback",
             link: "/admin/feedback",
             color: "from-yellow-500 to-orange-500",
+        },
+        {
+            id: "certificates",
+            name: "Certificates",
+            icon: Award,
+            description: "Verify, generate & manage certificates",
+            link: "/admin/certificates",
+            color: "from-indigo-600 to-purple-600",
         },
     ];
 

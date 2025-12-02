@@ -18,6 +18,7 @@ import {
     Video,
     Settings,
     CreditCard,
+    Award,
 } from "lucide-react";
 
 const menuItems = [
@@ -27,6 +28,7 @@ const menuItems = [
     { name: "Internships", href: "/admin/internships", icon: Briefcase },
     { name: "Applications", href: "/admin/applications", icon: FileText },
     { name: "Enrollments", href: "/admin/enrollments", icon: GraduationCap },
+    { name: "Certificates", href: "/admin/certificates", icon: Award },
     { name: "Doubts", href: "/admin/doubts", icon: MessageCircle },
     { name: "Feedback", href: "/admin/feedback", icon: Star },
     { name: "Promo Codes", href: "/admin/promo-codes", icon: Tag },

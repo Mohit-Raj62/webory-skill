@@ -452,7 +452,7 @@ export default function CourseDetailsPage() {
                                                     <div className="flex justify-between text-xs text-gray-400 mb-1">
                                                         <span>Video Progress</span>
                                                         <span className={certificateData.videoProgress >= 100 ? "text-green-400" : ""}>
-                                                            {Math.round(certificateData.videoProgress)}% / 100%
+                                                            {Math.min(Math.round(certificateData.videoProgress), 100)}% / 100%
                                                         </span>
                                                     </div>
                                                     <div className="h-1.5 bg-gray-700 rounded-full overflow-hidden">

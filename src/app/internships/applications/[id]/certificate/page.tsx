@@ -181,6 +181,11 @@ export default function CertificatePage() {
                             </div>
                             <p className="text-xs text-gray-600 mt-2 font-semibold">Scan to Verify</p>
                             <p className="text-[10px] text-gray-400">ID: {application.certificateId || 'N/A'}</p>
+                            {application.certificateKey && (
+                                <p className="text-[8px] font-mono text-gray-400 mt-1">
+                                    Key: {application.certificateKey}
+                                </p>
+                            )}
                         </div>
 
                         <div className="text-center">

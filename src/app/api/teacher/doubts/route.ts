@@ -3,8 +3,9 @@ import jwt from "jsonwebtoken";
 import dbConnect from "@/lib/db";
 import Doubt from "@/models/Doubt";
 import User from "@/models/User";
+import Course from "@/models/Course";
 
-// Get all doubts (admin only)
+// Get all doubts for teacher's courses
 export async function GET(req: NextRequest) {
   try {
     await dbConnect();
@@ -19,28 +20,34 @@ export async function GET(req: NextRequest) {
       userId: string;
     };
 
-    // Check if user is admin
+    // Check if user is teacher
     const user = await User.findById(decoded.userId);
-    if (!user || user.role !== "admin") {
+    if (!user || user.role !== "teacher") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
+
+    // Get all courses created by this teacher
+    const teacherCourses = await Course.find({
+      instructor: decoded.userId,
+    }).select("_id");
+    const courseIds = teacherCourses.map((course) => course._id);
 
     // Get query parameters for filtering
     const { searchParams } = new URL(req.url);
     const status = searchParams.get("status");
     const courseId = searchParams.get("courseId");
 
-    // Build query
-    const query: any = {};
+    // Build query - only show doubts from teacher's courses
+    const query: any = { course: { $in: courseIds } };
     if (status) query.status = status;
     if (courseId) query.course = courseId;
 
     // Get all doubts with populated fields
     const doubts = await Doubt.find(query)
       .sort({ createdAt: -1 })
-      .populate("student", "firstName lastName email")
+      .populate("student", "name email")
       .populate("course", "title")
-      .populate("answeredBy", "firstName lastName email");
+      .populate("answeredBy", "name email");
 
     return NextResponse.json({ doubts });
   } catch (error) {

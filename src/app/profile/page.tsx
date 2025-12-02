@@ -28,18 +28,23 @@ export default function ProfilePage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const resAuth = await fetch("/api/auth/me");
+                // Fetch auth and dashboard data in parallel
+                const [resAuth, resDash] = await Promise.all([
+                    fetch("/api/auth/me"),
+                    fetch("/api/user/dashboard")
+                ]);
+
                 if (!resAuth.ok) throw new Error("Not authenticated");
                 const userData = await resAuth.json();
                 setUser(userData.user);
 
-                const resDash = await fetch("/api/user/dashboard");
                 if (resDash.ok) {
                     const dashData = await resDash.json();
                     setEnrollments(dashData.enrollments);
                     setApplications(dashData.applications);
                 }
             } catch (error) {
+                console.error("Profile fetch error:", error);
                 router.push("/login");
             } finally {
                 setLoading(false);
@@ -170,13 +175,13 @@ export default function ProfilePage() {
                                         .filter((enrollment: any) => enrollment.course)
                                         .map((enrollment, index) => (
                                             <div key={index} className="bg-white/5 p-4 rounded-xl flex items-center justify-between">
-                                                <div>
-                                                    <h3 className="text-white font-bold">{enrollment.course?.title || "Unknown Course"}</h3>
-                                                    <div className="w-full bg-gray-700 h-2 rounded-full mt-2 w-32">
-                                                        <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${enrollment.progress}%` }}></div>
+                                                    <div>
+                                                        <h3 className="text-white font-bold">{enrollment.course?.title || "Unknown Course"}</h3>
+                                                        <div className="w-full bg-gray-700 h-2 rounded-full mt-2 w-32">
+                                                            <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${Math.min(enrollment.progress || 0, 100)}%` }}></div>
+                                                        </div>
+                                                        <p className="text-xs text-gray-400 mt-1">{Math.min(enrollment.progress || 0, 100)}% Complete</p>
                                                     </div>
-                                                    <p className="text-xs text-gray-400 mt-1">{enrollment.progress}% Complete</p>
-                                                </div>
                                                 <Button
                                                     size="sm"
                                                     variant="ghost"

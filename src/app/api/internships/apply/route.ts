@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import User from "@/models/User";
 import Internship from "@/models/Internship";
+import Activity from "@/models/Activity";
 
 export async function POST(req: Request) {
   try {
@@ -17,11 +18,24 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
-    const { internshipId, resume, coverLetter, portfolio, linkedin, transactionId, amountPaid } = await req.json();
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+      userId: string;
+    };
+    const {
+      internshipId,
+      resume,
+      coverLetter,
+      portfolio,
+      linkedin,
+      transactionId,
+      amountPaid,
+    } = await req.json();
 
     if (!internshipId || !resume || !coverLetter) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
     }
 
     // Check if already applied
@@ -31,7 +45,10 @@ export async function POST(req: Request) {
     });
 
     if (existing) {
-      return NextResponse.json({ error: "Already applied to this internship" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Already applied to this internship" },
+        { status: 400 }
+      );
     }
 
     const application = await Application.create({
@@ -45,6 +62,19 @@ export async function POST(req: Request) {
       amountPaid,
     });
 
+    // Record Activity
+    await Activity.create({
+      student: decoded.userId,
+      type: "internship_applied",
+      category: "internship",
+      relatedId: internshipId,
+      metadata: {
+        internshipName:
+          (await Internship.findById(internshipId))?.title || "Internship",
+      },
+      date: new Date(),
+    });
+
     // Fetch details for email
     const student = await User.findById(decoded.userId);
     const internship = await Internship.findById(internshipId);
@@ -55,12 +85,15 @@ export async function POST(req: Request) {
         `Application Received: ${internship.title}`,
         emailTemplates.applicationReceived(student.firstName, internship.title)
       );
-      
+
       // Optional: Notify Admin
       // await sendEmail(process.env.ADMIN_EMAIL, "New Application", ...);
     }
 
-    return NextResponse.json({ message: "Application submitted successfully", application }, { status: 201 });
+    return NextResponse.json(
+      { message: "Application submitted successfully", application },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Application error:", error);
     return NextResponse.json(

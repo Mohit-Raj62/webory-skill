@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
     ArrowLeft, ChevronLeft, ChevronRight, CheckCircle,
-    MoreVertical, Settings, Maximize, Minimize,
+    MoreVertical, Settings, Maximize, Minimize, Expand,
     MessageCircle, HelpCircle, FileText
 } from "lucide-react";
 import { toast } from "sonner";
@@ -27,6 +27,8 @@ export default function VideoPlayerPage() {
     const [showDoubtModal, setShowDoubtModal] = useState(false);
     const [doubtQuestion, setDoubtQuestion] = useState('');
     const [showSettings, setShowSettings] = useState(false);
+    const [videoProgress, setVideoProgress] = useState(0);
+    const [lastValidTime, setLastValidTime] = useState(0);
 
     // Prevent screen recording and screenshots
     useEffect(() => {
@@ -88,13 +90,17 @@ export default function VideoPlayerPage() {
 
     const fetchData = async () => {
         try {
-            const resCourse = await fetch(`/api/courses/${courseId}`);
+            // Fetch course and progress in parallel
+            const [resCourse, resProgress] = await Promise.all([
+                fetch(`/api/courses/${courseId}`),
+                fetch(`/api/courses/${courseId}/progress`)
+            ]);
+
             if (resCourse.ok) {
                 const data = await resCourse.json();
                 setCourse(data.course);
             }
 
-            const resProgress = await fetch(`/api/courses/${courseId}/progress`);
             if (resProgress.ok) {
                 const progressData = await resProgress.json();
                 setProgress(progressData);
@@ -212,20 +218,42 @@ export default function VideoPlayerPage() {
         if (hasMarkedAsWatched) return;
 
         try {
+            // Get duration - for YouTube videos, parse from duration string (e.g., "10:30" -> 630 seconds)
+            let durationInSeconds = videoRef.current?.duration || 0;
+            
+            if (!durationInSeconds && currentVideo?.duration) {
+                // Parse duration string like "10:30" or "1:05:30"
+                const parts = currentVideo.duration.split(':').map(Number);
+                if (parts.length === 2) {
+                    // MM:SS format
+                    durationInSeconds = parts[0] * 60 + parts[1];
+                } else if (parts.length === 3) {
+                    // HH:MM:SS format
+                    durationInSeconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
+                }
+            }
+
             const res = await fetch(`/api/courses/${courseId}/videos/${currentIndex}/watch`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ watchedPercentage }),
+                body: JSON.stringify({ 
+                    watchedPercentage,
+                    duration: durationInSeconds
+                }),
             });
 
             if (res.ok) {
                 const data = await res.json();
                 setHasMarkedAsWatched(true);
-                toast.success(`Video marked as watched! Progress: ${data.progress}%`);
+                toast.success(`Video marked as watched! Progress: ${Math.min(data.progress, 100)}%`);
                 fetchData();
+            } else {
+                const error = await res.json();
+                toast.error(error.error || 'Failed to mark video as watched');
             }
         } catch (error) {
             console.error("Failed to mark video as watched", error);
+            toast.error('Failed to mark video as watched');
         }
     };
 
@@ -234,26 +262,50 @@ export default function VideoPlayerPage() {
         if (!video) return;
 
         const handleTimeUpdate = () => {
-            const percentage = (video.currentTime / video.duration) * 100;
-            if (percentage >= 90 && !hasMarkedAsWatched) {
+            if (hasMarkedAsWatched) return;
+            
+            // Prevent forward seeking (anti-cheat)
+            if (video.currentTime > lastValidTime + 1) {
+                console.log('Forward seek detected, reverting to:', lastValidTime);
+                video.currentTime = lastValidTime;
+                return;
+            }
+            
+            // Update last valid time
+            setLastValidTime(video.currentTime);
+            
+            // Cap progress at 100%
+            const percentage = Math.min((video.currentTime / video.duration) * 100, 100);
+            setVideoProgress(percentage);
+            console.log('Video progress:', percentage.toFixed(2) + '%');
+            
+            if (percentage >= 90) {
+                console.log('90% reached, marking as watched');
                 markAsWatched(Math.round(percentage));
             }
         };
 
         const handleEnded = () => {
             if (!hasMarkedAsWatched) {
+                console.log('Video ended, marking as watched');
                 markAsWatched(100);
             }
         };
 
+        const handleLoadedMetadata = () => {
+            console.log('Video loaded, duration:', video.duration);
+        };
+
+        video.addEventListener("loadedmetadata", handleLoadedMetadata);
         video.addEventListener("timeupdate", handleTimeUpdate);
         video.addEventListener("ended", handleEnded);
 
         return () => {
+            video.removeEventListener("loadedmetadata", handleLoadedMetadata);
             video.removeEventListener("timeupdate", handleTimeUpdate);
             video.removeEventListener("ended", handleEnded);
         };
-    }, [hasMarkedAsWatched]);
+    }, [hasMarkedAsWatched, currentIndex, loading, lastValidTime]);
 
     const toggleFullscreen = () => {
         if (!playerContainerRef.current) return;
@@ -336,7 +388,7 @@ export default function VideoPlayerPage() {
                         <div className="relative aspect-video bg-black rounded-xl overflow-hidden shadow-2xl">
                             {currentVideo.url.includes('youtube.com') || currentVideo.url.includes('youtu.be') ? (
                                 <iframe
-                                    src={`${currentVideo.url.replace('watch?v=', 'embed/')}?rel=0&modestbranding=1&controls=1`}
+                                    src={`${currentVideo.url.replace('m.youtube.com', 'www.youtube.com').replace('watch?v=', 'embed/')}?rel=0&modestbranding=1&controls=1`}
                                     className="w-full h-full"
                                     allowFullScreen
                                     title={currentVideo.title}
@@ -416,6 +468,30 @@ export default function VideoPlayerPage() {
                             </Button>
                         </div>
 
+                        {/* Manual Mark as Watched button - Anti-cheating enabled
+                            - YouTube: Shows immediately (can't track iframe)
+                            - Direct videos: NO BUTTON - must watch 90% (automatic only)
+                        */}
+                        {!isCurrentVideoWatched && (currentVideo?.url?.includes('youtube.com') || currentVideo?.url?.includes('youtu.be')) ? (
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    onClick={() => markAsWatched(100)}
+                                    className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white animate-in fade-in slide-in-from-bottom-2"
+                                >
+                                    <CheckCircle className="mr-2 h-4 w-4" />
+                                    Mark as Watched
+                                </Button>
+                            </div>
+                        ) : isCurrentVideoWatched ? (
+                            <Button
+                                disabled
+                                className="bg-gray-600 text-gray-300 cursor-not-allowed"
+                            >
+                                <CheckCircle className="mr-2 h-4 w-4" />
+                                Already Watched
+                            </Button>
+                        ) : null}
+
                         <div className="relative">
                             <Button
                                 onClick={() => setShowSettings(!showSettings)}
@@ -441,7 +517,7 @@ export default function VideoPlayerPage() {
                                             onClick={toggleFullscreen}
                                             className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-300 hover:bg-gray-700 rounded-lg transition-colors"
                                         >
-                                            {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+                                            <Expand className="h-4 w-4" />
                                             {isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
                                         </button>
                                         <div className="h-px bg-gray-700 my-1" />

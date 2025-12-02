@@ -2,13 +2,15 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Enrollment from "@/models/Enrollment";
 import Application from "@/models/Application";
+import CustomCertificate from "@/models/CustomCertificate";
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
+    const params = await props.params;
     const { id } = params;
 
     if (!id) {
@@ -30,8 +32,8 @@ export async function GET(
         data: {
           studentName: `${enrollment.student.firstName} ${enrollment.student.lastName}`,
           title: enrollment.course.title,
-          date: enrollment.updatedAt, // Or a specific completion date field if available
-          score: enrollment.progress, // Assuming 100% progress means completion, or use a specific score field
+          date: enrollment.updatedAt,
+          score: enrollment.progress,
           certificateId: enrollment.certificateId,
           certificateKey: enrollment.certificateKey,
         },
@@ -54,6 +56,24 @@ export async function GET(
           date: application.completedAt,
           certificateId: application.certificateId,
           certificateKey: application.certificateKey,
+        },
+      });
+    }
+
+    // 3. Search in Custom Certificates
+    const customCert = await CustomCertificate.findOne({ certificateId: id });
+
+    if (customCert) {
+      return NextResponse.json({
+        valid: true,
+        type: "custom",
+        data: {
+          studentName: customCert.studentName,
+          title: customCert.title,
+          description: customCert.description,
+          date: customCert.issuedAt,
+          certificateId: customCert.certificateId,
+          certificateKey: customCert.certificateKey,
         },
       });
     }

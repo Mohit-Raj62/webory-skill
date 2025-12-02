@@ -193,6 +193,11 @@ export default function CertificatePage() {
                                 </div>
                             </div>
                             <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Scan to Verify</p>
+                            {certificateData?.certificateKey && (
+                                <p className="text-[8px] font-mono text-gray-400 mt-1">
+                                    Key: {certificateData.certificateKey}
+                                </p>
+                            )}
                         </div>
 
                         {/* Signature */}

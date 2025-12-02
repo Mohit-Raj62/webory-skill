@@ -97,6 +97,7 @@ export default function AdminSettingsPage() {
   };
 
   const [careerEnabled, setCareerEnabled] = useState(true);
+  const [mentorshipEnabled, setMentorshipEnabled] = useState(true);
 
   useEffect(() => {
     fetchSettings();
@@ -108,6 +109,7 @@ export default function AdminSettingsPage() {
       if (res.ok) {
         const data = await res.json();
         setCareerEnabled(data.careerApplicationsEnabled);
+        setMentorshipEnabled(data.mentorshipEnabled);
       }
     } catch (error) {
       console.error("Failed to fetch settings", error);
@@ -134,6 +136,30 @@ export default function AdminSettingsPage() {
       }
     } catch (error) {
       setCareerEnabled(!checked);
+      toast.error("Failed to update setting");
+    }
+  };
+
+  const handleMentorshipToggle = async (checked: boolean) => {
+    try {
+      setMentorshipEnabled(checked); // Optimistic update
+      const res = await fetch("/api/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          key: "mentorshipEnabled",
+          value: checked
+        }),
+      });
+
+      if (res.ok) {
+        toast.success(`Mentorship ${checked ? "enabled" : "disabled"}`);
+      } else {
+        setMentorshipEnabled(!checked); // Revert on failure
+        toast.error("Failed to update setting");
+      }
+    } catch (error) {
+      setMentorshipEnabled(!checked);
       toast.error("Failed to update setting");
     }
   };
@@ -249,6 +275,18 @@ export default function AdminSettingsPage() {
               <Switch
                 checked={careerEnabled}
                 onCheckedChange={handleCareerToggle}
+              />
+            </div>
+            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10">
+              <div className="space-y-0.5">
+                <Label className="text-base">Enable Mentorship</Label>
+                <p className="text-sm text-gray-400">
+                  When disabled, all mentorship buttons will show "Coming Soon".
+                </p>
+              </div>
+              <Switch
+                checked={mentorshipEnabled}
+                onCheckedChange={handleMentorshipToggle}
               />
             </div>
           </CardContent>

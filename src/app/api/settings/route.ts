@@ -16,14 +16,21 @@ export async function GET() {
     const careerSetting = await Settings.findOne({
       key: "careerApplicationsEnabled",
     });
+    const mentorshipSetting = await Settings.findOne({
+      key: "mentorshipEnabled",
+    });
 
     // Default to true if not set
     const careerApplicationsEnabled = careerSetting
       ? careerSetting.value
       : true;
+    const mentorshipEnabled = mentorshipSetting
+      ? mentorshipSetting.value
+      : true;
 
     return NextResponse.json({
       careerApplicationsEnabled,
+      mentorshipEnabled,
     });
   } catch (error) {
     console.error("Fetch settings error:", error);

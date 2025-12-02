@@ -38,6 +38,11 @@ export async function GET(
     });
     const videoProgress = enrollment?.progress || 0;
 
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return NextResponse.json({ error: "Course not found" }, { status: 404 });
+    }
+
     // 2. Quizzes
     const quizzes = await Quiz.find({ courseId, isActive: true });
     let totalQuizPercentage = 0;
@@ -126,7 +131,7 @@ export async function GET(
       if (!enrollment.certificateEmailSent) {
         try {
           const user = await User.findById(userId);
-          const course = await Course.findById(courseId);
+          // Course is already fetched above
 
           if (user && course) {
             const certificateLink = `${
