@@ -125,6 +125,7 @@ export async function GET(
 
         enrollment.certificateId = certId;
         enrollment.certificateKey = certKey;
+        enrollment.completedAt = new Date(); // Set completion date
         needsSave = true;
       }
 
@@ -183,6 +184,7 @@ export async function GET(
       isEligible,
       certificateId: enrollment?.certificateId,
       certificateKey: enrollment?.certificateKey,
+      completedAt: enrollment?.completedAt,
       details: {
         quizzes: {
           total: quizzes.length,

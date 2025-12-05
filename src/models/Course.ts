@@ -66,6 +66,56 @@ const CourseSchema = new Schema({
     type: String,
     default: "0h",
   },
+  pdfResources: {
+    type: [
+      {
+        title: {
+          type: String,
+          required: true,
+        },
+        description: {
+          type: String,
+          default: "",
+        },
+        fileUrl: {
+          type: String,
+          required: true,
+        },
+        fileName: {
+          type: String,
+          required: true,
+        },
+        fileSize: {
+          type: Number,
+          required: true,
+        },
+        afterModule: {
+          type: Number,
+          required: true,
+          default: 0, // 0 means before all modules, 1 means after first module, etc.
+        },
+        order: {
+          type: Number,
+          required: true,
+          default: 0, // Order within the same position
+        },
+        uploadedBy: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+        uploadedAt: {
+          type: Date,
+          default: Date.now,
+        },
+        cloudinaryId: {
+          type: String,
+          required: true, // For deletion
+        },
+      },
+    ],
+    default: [],
+  },
   createdAt: {
     type: Date,
     default: Date.now,

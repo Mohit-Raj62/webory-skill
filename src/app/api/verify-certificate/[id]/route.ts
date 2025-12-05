@@ -3,15 +3,21 @@ import dbConnect from "@/lib/db";
 import Enrollment from "@/models/Enrollment";
 import Application from "@/models/Application";
 import CustomCertificate from "@/models/CustomCertificate";
+// Import referenced models to ensure they're registered with Mongoose
+import "@/models/Course";
+import "@/models/User";
+import "@/models/Internship";
 
 export async function GET(
   req: Request,
   props: { params: Promise<{ id: string }> }
 ) {
+  let id: string | undefined;
+
   try {
     await dbConnect();
     const params = await props.params;
-    const { id } = params;
+    id = params.id;
 
     if (!id) {
       return NextResponse.json(
@@ -26,6 +32,18 @@ export async function GET(
       .populate("course", "title");
 
     if (enrollment) {
+      // Check if student and course references exist
+      if (!enrollment.student || !enrollment.course) {
+        return NextResponse.json(
+          {
+            valid: false,
+            error:
+              "Certificate data is incomplete (missing student or course reference)",
+          },
+          { status: 404 }
+        );
+      }
+
       return NextResponse.json({
         valid: true,
         type: "course",
@@ -46,6 +64,18 @@ export async function GET(
       .populate("internship", "title company");
 
     if (application) {
+      // Check if student and internship references exist
+      if (!application.student || !application.internship) {
+        return NextResponse.json(
+          {
+            valid: false,
+            error:
+              "Certificate data is incomplete (missing student or internship reference)",
+          },
+          { status: 404 }
+        );
+      }
+
       return NextResponse.json({
         valid: true,
         type: "internship",
@@ -84,8 +114,12 @@ export async function GET(
     );
   } catch (error) {
     console.error("Error verifying certificate:", error);
+    console.error("Certificate ID attempted:", id);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      {
+        error: "Internal Server Error",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 }
     );
   }

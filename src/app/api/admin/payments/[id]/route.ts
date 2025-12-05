@@ -3,8 +3,12 @@ import dbConnect from "@/lib/db";
 import PaymentProof from "@/models/PaymentProof";
 import Enrollment from "@/models/Enrollment";
 import Application from "@/models/Application";
+import User from "@/models/User";
+import Course from "@/models/Course";
+import Internship from "@/models/Internship";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
+import { sendEmail, emailTemplates } from "@/lib/mail";
 
 export const dynamic = "force-dynamic";
 
@@ -71,6 +75,55 @@ export async function PUT(
           enrolledAt: new Date(),
         });
 
+        // Send enrollment confirmation and invoice emails
+        try {
+          const user = await User.findById(paymentProof.student);
+          const course = await Course.findById(paymentProof.course);
+
+          if (user && course) {
+            const courseLink = `${
+              process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+            }/courses/${paymentProof.course}`;
+
+            // Send enrollment confirmation email
+            await sendEmail(
+              user.email,
+              `Enrolled in ${course.title}! 📚`,
+              emailTemplates.courseEnrollment(
+                user.firstName,
+                course.title,
+                courseLink
+              )
+            );
+
+            // Send invoice email
+            // Use enrollment ID to generate consistent transaction ID
+            const invoiceTransactionId = `TXN${enrollment._id
+              .toString()
+              .substring(0, 12)}`;
+            await sendEmail(
+              user.email,
+              `Invoice - ${course.title}`,
+              emailTemplates.invoice(
+                user.firstName + " " + user.lastName,
+                course.title,
+                paymentProof.amount,
+                invoiceTransactionId,
+                enrollment.enrolledAt.toISOString(),
+                "course"
+              )
+            );
+
+            console.log(
+              "✅ Enrollment and invoice emails sent to:",
+              user.email
+            );
+          }
+        } catch (emailError) {
+          console.error("❌ Failed to send enrollment emails:", emailError);
+          // Don't fail enrollment if email fails
+        }
+
         return NextResponse.json({
           message:
             "Payment verified and student enrolled in course successfully",
@@ -98,6 +151,55 @@ export async function PUT(
             coverLetter: "Payment verified - enrollment confirmed",
             appliedAt: new Date(),
           });
+        }
+
+        // Send acceptance and invoice emails
+        try {
+          const user = await User.findById(paymentProof.student);
+          const internship = await Internship.findById(paymentProof.internship);
+
+          if (user && internship) {
+            const offerLink = `${
+              process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+            }/profile`;
+
+            // Send acceptance email
+            await sendEmail(
+              user.email,
+              `Congratulations! You're Hired! 🎉`,
+              emailTemplates.applicationAccepted(
+                user.firstName,
+                internship.title,
+                offerLink
+              )
+            );
+
+            // Send invoice email
+            // Use application ID to generate consistent transaction ID
+            const invoiceTransactionId = `TXN${application._id
+              .toString()
+              .substring(0, 12)}`;
+            await sendEmail(
+              user.email,
+              `Invoice - ${internship.title}`,
+              emailTemplates.invoice(
+                user.firstName + " " + user.lastName,
+                internship.title,
+                paymentProof.amount,
+                invoiceTransactionId,
+                application.appliedAt.toISOString(),
+                "internship"
+              )
+            );
+
+            console.log(
+              "✅ Acceptance and invoice emails sent to:",
+              user.email
+            );
+          }
+        } catch (emailError) {
+          console.error("❌ Failed to send acceptance emails:", emailError);
+          // Don't fail enrollment if email fails
         }
 
         return NextResponse.json({

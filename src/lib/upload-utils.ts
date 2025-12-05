@@ -41,3 +41,44 @@ export const uploadFile = (
     xhr.send(formData);
   });
 };
+
+// Upload PDF to Cloudinary
+export const uploadPDFToCloudinary = async (
+  file: File
+): Promise<{
+  url: string;
+  cloudinaryId: string;
+  fileName: string;
+  fileSize: number;
+}> => {
+  // Validate file type
+  if (file.type !== "application/pdf") {
+    throw new Error("Only PDF files are allowed");
+  }
+
+  // Validate file size (100MB max)
+  const maxSize = 100 * 1024 * 1024; // 100MB in bytes
+  if (file.size > maxSize) {
+    throw new Error("File size must be less than 100MB");
+  }
+
+  console.log("Uploading PDF via internal API...");
+
+  try {
+    // Use the internal API route which uses server-side Cloudinary SDK
+    // This avoids issues with unsigned presets having restricted access
+    const data = await uploadFile(file, "/api/upload/pdf");
+
+    console.log("Upload successful:", data);
+
+    return {
+      url: data.url,
+      cloudinaryId: data.cloudinaryId,
+      fileName: data.fileName,
+      fileSize: data.fileSize,
+    };
+  } catch (error: any) {
+    console.error("PDF upload error:", error);
+    throw new Error(error.message || "Failed to upload PDF");
+  }
+};

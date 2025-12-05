@@ -175,7 +175,10 @@ export default function CertificatePage() {
                         {/* Date */}
                         <div className="text-center">
                             <p className="text-lg font-serif font-bold text-[#1a237e] border-b border-gray-400 pb-2 mb-2">
-                                {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                                {certificateData?.completedAt 
+                                    ? new Date(certificateData.completedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+                                    : new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+                                }
                             </p>
                             <p className="text-xs text-gray-500 uppercase tracking-widest">Date Issued</p>
                         </div>

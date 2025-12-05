@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus, X, Upload, Image } from "lucide-react";
+import { ArrowLeft, Plus, X, Upload, Image, FileText, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { uploadFile } from "@/lib/upload-utils";
+import { uploadFile, uploadPDFToCloudinary } from "@/lib/upload-utils";
 
 export default function EditCoursePage() {
     const router = useRouter();
@@ -34,9 +34,32 @@ export default function EditCoursePage() {
     const [curriculumInput, setCurriculumInput] = useState("");
     const [videoInput, setVideoInput] = useState({ title: "", url: "", duration: "" });
 
+    // PDF Resources State
+    const [pdfs, setPdfs] = useState<any[]>([]);
+    const [uploadingPdf, setUploadingPdf] = useState(false);
+    const [pdfInput, setPdfInput] = useState({
+        title: "",
+        description: "",
+        afterModule: 0,
+        order: 0
+    });
+
     useEffect(() => {
         fetchCourse();
+        fetchPDFs();
     }, []);
+
+    const fetchPDFs = async () => {
+        try {
+            const res = await fetch(`/api/teacher/courses/${params.id}/pdfs`);
+            if (res.ok) {
+                const data = await res.json();
+                setPdfs(data.pdfs || []);
+            }
+        } catch (error) {
+            console.error("Failed to fetch PDFs", error);
+        }
+    };
 
     const fetchCourse = async () => {
         try {
@@ -201,6 +224,90 @@ export default function EditCoursePage() {
             ...formData,
             videos: formData.videos.filter((_, i) => i !== index),
         });
+    };
+
+    const handlePDFUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (!pdfInput.title) {
+            alert("Please enter PDF title first");
+            e.target.value = "";
+            return;
+        }
+
+        // Validate file size (100MB max)
+        const maxSize = 100 * 1024 * 1024; // 100MB
+        if (file.size > maxSize) {
+            alert(`File too large! Maximum size is 100MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
+            e.target.value = "";
+            return;
+        }
+
+        setUploadingPdf(true);
+        setUploadProgress(0);
+
+        try {
+            // 1. Upload to Cloudinary
+            const uploadData = await uploadPDFToCloudinary(file);
+
+            // 2. Save to database
+            const res = await fetch(`/api/teacher/courses/${params.id}/pdfs`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    title: pdfInput.title,
+                    description: pdfInput.description,
+                    fileUrl: uploadData.url,
+                    fileName: uploadData.fileName,
+                    fileSize: uploadData.fileSize,
+                    afterModule: Number(pdfInput.afterModule),
+                    order: Number(pdfInput.order),
+                    cloudinaryId: uploadData.cloudinaryId
+                }),
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                setPdfs([...pdfs, data.pdf]);
+                setPdfInput({
+                    title: "",
+                    description: "",
+                    afterModule: 0,
+                    order: 0
+                });
+                alert("PDF uploaded successfully!");
+            } else {
+                throw new Error("Failed to save PDF info");
+            }
+        } catch (error: any) {
+            console.error("Upload error:", error);
+            alert(error.message || "Failed to upload PDF");
+        } finally {
+            setUploadingPdf(false);
+            setUploadProgress(0);
+            e.target.value = "";
+        }
+    };
+
+    const handleDeletePDF = async (pdfId: string) => {
+        if (!confirm("Are you sure you want to delete this PDF?")) return;
+
+        try {
+            const res = await fetch(`/api/teacher/courses/${params.id}/pdfs/${pdfId}`, {
+                method: "DELETE",
+            });
+
+            if (res.ok) {
+                setPdfs(pdfs.filter(p => p._id !== pdfId));
+                alert("PDF deleted successfully");
+            } else {
+                alert("Failed to delete PDF");
+            }
+        } catch (error) {
+            console.error("Delete error:", error);
+            alert("Failed to delete PDF");
+        }
     };
 
     if (loading) {
@@ -504,6 +611,132 @@ export default function EditCoursePage() {
                                     >
                                         <X size={18} />
                                     </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* PDF Resources */}
+                    <div>
+                        <label className="text-sm text-gray-300 block mb-2">PDF Resources</label>
+                        <div className="space-y-3 mb-3 bg-white/5 p-4 rounded-xl border border-white/10">
+                            <h3 className="text-white font-medium mb-2 flex items-center gap-2">
+                                <FileText size={18} className="text-blue-400" />
+                                Add New PDF
+                            </h3>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <input
+                                    type="text"
+                                    placeholder="PDF Title"
+                                    className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                    value={pdfInput.title}
+                                    onChange={(e) => setPdfInput({ ...pdfInput, title: e.target.value })}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Description (optional)"
+                                    className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                    value={pdfInput.description}
+                                    onChange={(e) => setPdfInput({ ...pdfInput, description: e.target.value })}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div>
+                                    <label className="text-xs text-gray-400 block mb-1">After Module #</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        placeholder="0 = Before all modules"
+                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                        value={pdfInput.afterModule}
+                                        onChange={(e) => setPdfInput({ ...pdfInput, afterModule: Number(e.target.value) })}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-xs text-gray-400 block mb-1">Order in Position</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        placeholder="Sequence number"
+                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                        value={pdfInput.order}
+                                        onChange={(e) => setPdfInput({ ...pdfInput, order: Number(e.target.value) })}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="relative">
+                                <input
+                                    type="file"
+                                    accept="application/pdf"
+                                    onChange={handlePDFUpload}
+                                    disabled={uploadingPdf}
+                                    className="hidden"
+                                    id="pdf-file-input"
+                                />
+                                <label
+                                    htmlFor="pdf-file-input"
+                                    className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl cursor-pointer transition-all ${uploadingPdf
+                                        ? "bg-gray-600 cursor-not-allowed"
+                                        : "bg-blue-600 hover:bg-blue-700"
+                                        } text-white w-full`}
+                                >
+                                    {uploadingPdf ? (
+                                        <>
+                                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                                            Uploading PDF...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Upload size={20} />
+                                            Select PDF File (Max 100MB)
+                                        </>
+                                    )}
+                                </label>
+                            </div>
+                        </div>
+
+                        <div className="space-y-2 mt-4">
+                            {pdfs.length === 0 && (
+                                <p className="text-gray-500 text-center py-4">No PDF resources added yet</p>
+                            )}
+                            {pdfs.map((pdf) => (
+                                <div key={pdf._id} className="flex items-center justify-between bg-white/5 p-3 rounded-lg border border-white/5">
+                                    <div className="flex items-start gap-3">
+                                        <div className="bg-red-500/20 p-2 rounded-lg">
+                                            <FileText size={20} className="text-red-400" />
+                                        </div>
+                                        <div>
+                                            <p className="text-white font-medium">{pdf.title}</p>
+                                            <p className="text-gray-400 text-xs">
+                                                {pdf.fileName} • {(pdf.fileSize / (1024 * 1024)).toFixed(2)} MB
+                                            </p>
+                                            <p className="text-gray-500 text-xs mt-1">
+                                                Position: After Module {pdf.afterModule} • Order: {pdf.order}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <a 
+                                            href={pdf.fileUrl} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="p-2 text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
+                                            title="View PDF"
+                                        >
+                                            <FileText size={18} />
+                                        </a>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleDeletePDF(pdf._id)}
+                                            className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                                            title="Delete PDF"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                         </div>

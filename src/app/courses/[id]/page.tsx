@@ -24,6 +24,8 @@ export default function CourseDetailsPage() {
     const [assignments, setAssignments] = useState < any[] > ([]);
     const [liveClasses, setLiveClasses] = useState < any[] > ([]);
     const [certificateData, setCertificateData] = useState < any > (null);
+    const [pdfs, setPdfs] = useState < any[] > ([]);
+    const [enrollmentData, setEnrollmentData] = useState < any > (null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -32,6 +34,14 @@ export default function CourseDetailsPage() {
                 if (resCourse.ok) {
                     const data = await resCourse.json();
                     setCourse(data.course);
+                    // Set PDFs from course data if available (populated) or fetch separately if needed
+                    // Assuming course.pdfResources is available in the course object
+                    if (data.course.pdfResources) {
+                        setPdfs(data.course.pdfResources.sort((a: any, b: any) => {
+                            if (a.afterModule !== b.afterModule) return a.afterModule - b.afterModule;
+                            return a.order - b.order;
+                        }));
+                    }
 
                     try {
                         const resQuizzes = await fetch(`/api/admin/courses/${id}/quizzes`);
@@ -72,10 +82,12 @@ export default function CourseDetailsPage() {
                     const resEnroll = await fetch("/api/user/enrollments");
                     if (resEnroll.ok) {
                         const enrollData = await resEnroll.json();
-                        const enrolled = enrollData.enrollments.some(
+                        const currentEnrollment = enrollData.enrollments.find(
                             (e: any) => e.course?._id?.toString() === id
                         );
+                        const enrolled = !!currentEnrollment;
                         setIsEnrolled(enrolled);
+                        setEnrollmentData(currentEnrollment);
 
                         if (enrolled) {
                             // Fetch certificate eligibility
@@ -135,12 +147,33 @@ export default function CourseDetailsPage() {
         }
     };
 
+    const trackPDFAccess = async (pdfId: string, downloaded: boolean = false) => {
+        try {
+            await fetch(`/api/student/courses/${id}/pdfs/${pdfId}/access`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ downloaded }),
+            });
+        } catch (error) {
+            console.error("Failed to track PDF access", error);
+        }
+    };
+
     const handleDownloadInvoice = () => {
+        const enrollmentDate = enrollmentData?.enrolledAt 
+            ? new Date(enrollmentData.enrolledAt).toLocaleDateString()
+            : new Date().toLocaleDateString();
+        
+        // Use enrollment ID to generate consistent transaction ID
+        const transactionId = enrollmentData?._id 
+            ? `TXN${enrollmentData._id.toString().substring(0, 12)}`
+            : `TXN${Date.now()}`;
+        
         const invoiceData = {
-            transactionId: `TXN-${Date.now()}`,
+            transactionId,
             courseTitle: course.title,
             amount: course.price,
-            date: new Date().toLocaleDateString(),
+            date: enrollmentDate,
             userEmail: user?.email || 'student@example.com',
         };
         setTransactionData(invoiceData);
@@ -313,6 +346,44 @@ export default function CourseDetailsPage() {
                                 </div>
                             )}
                         </div>
+
+                        {isEnrolled && pdfs.length > 0 && (
+                            <div className="glass-card p-8 rounded-2xl mb-12">
+                                <h2 className="text-2xl font-bold text-white mb-6">Course Resources</h2>
+                                <div className="space-y-4">
+                                    {pdfs.map((pdf) => (
+                                        <div key={pdf._id} className="p-4 rounded-xl border bg-white/5 border-white/10 hover:bg-white/10 transition-all">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="bg-red-500/20 p-2 rounded-lg">
+                                                        <FileText className="text-red-400" size={24} />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-white font-medium">{pdf.title}</h3>
+                                                        <p className="text-gray-400 text-sm">
+                                                            {pdf.description || "PDF Resource"} • {(pdf.fileSize / (1024 * 1024)).toFixed(2)} MB
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            const proxyUrl = `/api/pdf-proxy?url=${encodeURIComponent(pdf.fileUrl)}`;
+                                                            window.open(proxyUrl, '_blank');
+                                                            trackPDFAccess(pdf._id, false);
+                                                        }}
+                                                        className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-blue-500/30 text-blue-400 hover:bg-blue-500/10 h-9 px-3"
+                                                    >
+                                                        View
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         {isEnrolled && quizzes.length > 0 && (
                             <div className="glass-card p-8 rounded-2xl mb-12">

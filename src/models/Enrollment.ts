@@ -53,6 +53,9 @@ const EnrollmentSchema = new Schema({
   certificateKey: {
     type: String,
   },
+  completedAt: {
+    type: Date,
+  },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

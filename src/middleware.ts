@@ -4,6 +4,11 @@ import type { NextRequest } from "next/server";
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
+  // Skip middleware for API routes - they handle their own auth
+  if (path.startsWith("/api/")) {
+    return NextResponse.next();
+  }
+
   // Define paths that are public (accessible to everyone)
   const isPublicPath = path === "/login" || path === "/signup";
 
@@ -74,9 +79,21 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/", request.nextUrl));
     }
   }
+
+  // Allow the request to continue
+  return NextResponse.next();
 }
 
-// Matching paths
+// Matching paths - match all paths except API routes and static files
 export const config = {
-  matcher: ["/login", "/signup", "/admin/:path*", "/teacher/:path*"],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+  ],
 };

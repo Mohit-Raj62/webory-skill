@@ -147,7 +147,17 @@ export async function POST(req: Request) {
 
         // Send invoice
         const invoiceTransactionId = transactionId || `TXN${Date.now()}`;
-        await sendEmail(
+        console.log("📧 Attempting to send invoice email...");
+        console.log("Invoice details:", {
+          to: user.email,
+          name: user.firstName + " " + user.lastName,
+          title: course.title,
+          amount: finalPrice,
+          transactionId: invoiceTransactionId,
+          date: enrollment.enrolledAt.toISOString(),
+        });
+
+        const invoiceEmailSent = await sendEmail(
           user.email,
           `Invoice - ${course.title}`,
           emailTemplates.invoice(
@@ -155,15 +165,26 @@ export async function POST(req: Request) {
             course.title,
             finalPrice,
             invoiceTransactionId,
-            new Date().toISOString(),
+            enrollment.enrolledAt.toISOString(),
             "course"
           )
         );
 
+        if (invoiceEmailSent) {
+          console.log("✅ Invoice email sent successfully to:", user.email);
+        } else {
+          console.error("❌ Invoice email failed to send to:", user.email);
+        }
+
         console.log("✅ Enrollment and invoice emails sent to:", user.email);
       }
     } catch (emailError) {
-      console.error("❌ Failed to send enrollment emails:", emailError);
+      console.error("❌ Failed to send enrollment emails:");
+      console.error("Error details:", emailError);
+      if (emailError instanceof Error) {
+        console.error("Error message:", emailError.message);
+        console.error("Error stack:", emailError.stack);
+      }
       // Don't fail enrollment if email fails
     }
 

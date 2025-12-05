@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import jsQR from "jsqr";
 import { Button } from "@/components/ui/button";
-import { Search, Camera, Upload, CheckCircle, XCircle, Loader2, Award, Plus, Download, Shield } from "lucide-react";
+import { Search, Camera, Upload, CheckCircle, XCircle, Loader2, Award, Plus, Download, Shield, ChevronDown } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { toast } from "sonner";
 
@@ -35,6 +35,11 @@ export default function UnifiedCertificateManagementPage() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const scannerRef = useRef<Html5QrcodeScanner | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const ocrFileInputRef = useRef<HTMLInputElement>(null);
+
+  // OCR States
+  const [ocrProcessing, setOcrProcessing] = useState(false);
+  const [ocrResult, setOcrResult] = useState<any>(null);
 
   // Generator States
   const [studentName, setStudentName] = useState("");
@@ -121,59 +126,112 @@ export default function UnifiedCertificateManagementPage() {
     setScannerActive(false);
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Check if it's an image file
-    if (!file.type.startsWith('image/')) {
-      toast.error("Please upload an image file. PDF support coming soon!");
-      return;
+    toast.info("Processing file...");
+
+    try {
+      // Handle PDF files - redirect to OCR
+      if (file.type === 'application/pdf') {
+        toast.info("📄 PDF detected! Scroll down to use '🤖 Smart OCR Verification' for PDFs.", {
+          duration: 5000,
+        });
+        return;
+      }
+
+      // Handle image files
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imageData = e.target?.result as string;
+        setUploadedImage(imageData);
+
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const context = canvas.getContext('2d');
+          if (!context) {
+            toast.error("Failed to process image");
+            return;
+          }
+
+          canvas.width = img.width;
+          canvas.height = img.height;
+          context.drawImage(img, 0, 0);
+
+          const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+          const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+          if (code) {
+            const urlMatch = code.data.match(/verify-certificate\/([A-Z0-9-]+)/);
+            const extractedId = urlMatch ? urlMatch[1] : code.data;
+            
+            toast.success("QR Code found! Verifying...");
+            setCertificateId(extractedId);
+            verifyCertificate(extractedId);
+          } else {
+            toast.error("No QR code found in the image. Try uploading a clearer image or use manual ID entry.");
+          }
+        };
+        img.onerror = () => {
+          toast.error("Failed to load image. Please try another file.");
+        };
+        img.src = imageData;
+      };
+      reader.onerror = () => {
+        toast.error("Failed to read file. Please try again.");
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('File processing error:', error);
+      toast.error("Failed to process file. Please try again.");
     }
-
-    toast.info("Processing image...");
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const imageData = e.target?.result as string;
-      setUploadedImage(imageData);
-
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-        if (!context) {
-          toast.error("Failed to process image");
-          return;
-        }
-
-        canvas.width = img.width;
-        canvas.height = img.height;
-        context.drawImage(img, 0, 0);
-
-        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-        const code = jsQR(imageData.data, imageData.width, imageData.height);
-
-        if (code) {
-          const urlMatch = code.data.match(/verify-certificate\/([A-Z0-9-]+)/);
-          const extractedId = urlMatch ? urlMatch[1] : code.data;
-          
-          toast.success("QR Code found! Verifying...");
-          setCertificateId(extractedId);
-          verifyCertificate(extractedId);
-        } else {
-          toast.error("No QR code found in the image. Try uploading a clearer image or use manual ID entry.");
-        }
-      };
-      img.onerror = () => {
-        toast.error("Failed to load image. Please try another file.");
-      };
-      img.src = imageData;
-    };
-    reader.onerror = () => {
-      toast.error("Failed to read file. Please try again.");
-    };
-    reader.readAsDataURL(file);
   };
+
+  // OCR Upload Handler
+  const handleOcrUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setOcrProcessing(true);
+    setOcrResult(null);
+    toast.info("Extracting certificate data using OCR...");
+
+    try {
+      const formData = new FormData();
+      formData.append('certificate', file);
+
+      const res = await fetch('/api/verify-certificate/ocr', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setOcrResult(data);
+        
+        if (data.verdict === 'AUTHENTIC') {
+          toast.success("Certificate is authentic!");
+        } else if (data.verdict === 'SUSPICIOUS') {
+          toast.error("Suspicious certificate detected!");
+        } else if (data.verdict === 'INVALID') {
+          toast.error("Certificate not found in database!");
+        } else {
+          toast.warning("Certificate ID could not be extracted");
+        }
+      } else {
+        toast.error(data.error || "OCR processing failed");
+      }
+    } catch (error) {
+      toast.error("Failed to process certificate");
+      console.error(error);
+    } finally {
+      setOcrProcessing(false);
+    }
+  };
+
 
   // Generator Functions
   const generateCertificate = async () => {
@@ -495,6 +553,115 @@ export default function UnifiedCertificateManagementPage() {
                 </div>
               </div>
             )}
+
+            {/* OCR Verification Section */}
+            <div className="mt-8 pt-8 border-t border-white/10" data-ocr-section>
+              <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <span>🤖</span> Smart OCR Verification
+              </h3>
+              <p className="text-gray-400 mb-4 text-sm">
+                Upload a certificate <strong>image</strong> (PNG, JPG) to verify using AI text extraction and tampering detection.
+                <br />
+                <span className="text-yellow-400">📄 For PDF certificates, please use QR Code verification instead.</span>
+              </p>
+              
+              <div className="bg-purple-500/10 border border-purple-500/30 rounded-xl p-6">
+                <input
+                  ref={ocrFileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleOcrUpload}
+                  className="hidden"
+                />
+                <Button
+                  onClick={() => ocrFileInputRef.current?.click()}
+                  disabled={ocrProcessing}
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 py-6 mb-6"
+                >
+                  {ocrProcessing ? (
+                    <>
+                      <Loader2 className="mr-2 animate-spin" />
+                      Processing Certificate...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="mr-2" />
+                      Upload for Smart Verification
+                    </>
+                  )}
+                </Button>
+
+                {ocrResult && (
+                  <div className={`p-4 rounded-lg border-2 ${
+                    ocrResult.verdict === 'AUTHENTIC' ? 'bg-green-500/10 border-green-500/50' :
+                    ocrResult.verdict === 'SUSPICIOUS' ? 'bg-yellow-500/10 border-yellow-500/50' :
+                    'bg-red-500/10 border-red-500/50'
+                  }`}>
+                    <h4 className={`text-lg font-bold mb-3 ${
+                      ocrResult.verdict === 'AUTHENTIC' ? 'text-green-400' :
+                      ocrResult.verdict === 'SUSPICIOUS' ? 'text-yellow-400' :
+                      'text-red-400'
+                    }`}>
+                      {ocrResult.verdict === 'AUTHENTIC' && '✅ Certificate is AUTHENTIC'}
+                      {ocrResult.verdict === 'SUSPICIOUS' && '⚠️ Certificate is SUSPICIOUS'}
+                      {ocrResult.verdict === 'INVALID' && '❌ Certificate is INVALID'}
+                      {ocrResult.verdict === 'UNKNOWN' && '❓ Could not verify'}
+                    </h4>
+                    
+                    <p className="text-white/80 mb-4">{ocrResult.message}</p>
+
+                    {/* Manipulation Check Results */}
+                    {ocrResult.manipulationCheck && (
+                      <div className="mb-4 bg-black/20 p-3 rounded border border-white/10">
+                        <h5 className="font-semibold text-white mb-2 text-sm">Tampering Analysis</h5>
+                        {ocrResult.manipulationCheck.isManipulated ? (
+                          <div className="text-red-300 text-sm">
+                            <p className="font-bold">⚠️ Potential Manipulation Detected:</p>
+                            <ul className="list-disc pl-4 mt-1">
+                              {ocrResult.manipulationCheck.issues.map((issue: string, i: number) => (
+                                <li key={i}>{issue}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        ) : (
+                          <p className="text-green-300 text-sm">✓ No photo manipulation detected</p>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Extracted Data */}
+                    {ocrResult.extractedData && (
+                      <div className="bg-black/20 p-3 rounded border border-white/10 text-sm">
+                        <h5 className="font-semibold text-white mb-2">Extracted Data</h5>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="text-gray-400">Name:</div>
+                          <div className="text-white">{ocrResult.extractedData.studentName || 'N/A'}</div>
+                          <div className="text-gray-400">ID:</div>
+                          <div className="text-white">{ocrResult.extractedData.certificateId || 'N/A'}</div>
+                          <div className="text-gray-400">Course:</div>
+                          <div className="text-white">{ocrResult.extractedData.courseName || 'N/A'}</div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Raw Text Debugging (Visible when ID not found or suspicious) */}
+                    {(ocrResult.verdict === "UNKNOWN" || ocrResult.verdict === "SUSPICIOUS") && ocrResult.extractedData?.rawText && (
+                      <div className="mt-4">
+                        <details className="group">
+                          <summary className="flex items-center justify-between cursor-pointer p-2 bg-gray-100 rounded-md text-xs font-medium text-gray-600 hover:bg-gray-200 transition-colors">
+                            <span>Show Raw Extracted Text (Debug)</span>
+                            <ChevronDown className="w-4 h-4 transition-transform group-open:rotate-180" />
+                          </summary>
+                          <div className="mt-2 p-3 bg-gray-900 text-gray-100 rounded-md text-xs font-mono whitespace-pre-wrap max-h-60 overflow-y-auto border border-gray-700">
+                            {ocrResult.extractedData.rawText}
+                          </div>
+                        </details>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         )}
 

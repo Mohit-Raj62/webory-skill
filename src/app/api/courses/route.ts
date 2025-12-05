@@ -5,7 +5,29 @@ import Course from "@/models/Course";
 export async function GET() {
   try {
     await dbConnect();
-    const courses = await Course.find({});
+
+    // Use aggregation to calculate student count from enrollments
+    const courses = await Course.aggregate([
+      {
+        $lookup: {
+          from: "enrollments",
+          localField: "_id",
+          foreignField: "course",
+          as: "enrollments",
+        },
+      },
+      {
+        $addFields: {
+          studentsCount: { $size: "$enrollments" },
+        },
+      },
+      {
+        $project: {
+          enrollments: 0, // Remove enrollments array from response
+        },
+      },
+    ]);
+
     return NextResponse.json({ courses }, { status: 200 });
   } catch (error) {
     console.error("Fetch courses error:", error);
