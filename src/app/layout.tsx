@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Outfit, Great_Vibes } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ProgressBar } from "@/components/ui/progress-bar";
@@ -33,7 +34,9 @@ export default function RootLayout({
                 outfit.variable,
                 greatVibes.variable
             )}>
-                <ProgressBar />
+                <Suspense fallback={null}>
+                    <ProgressBar />
+                </Suspense>
                 <SessionProvider>
                     <InactivityLogout />
                     {children}
