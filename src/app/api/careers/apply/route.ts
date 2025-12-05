@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   try {
     await dbConnect();
 
-    const formData = await req.formData();
+    const formData: any = await req.formData();
     const name = formData.get("name") as string;
     const email = formData.get("email") as string;
     const phone = formData.get("phone") as string;

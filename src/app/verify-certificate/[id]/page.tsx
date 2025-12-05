@@ -88,7 +88,7 @@ export default function VerifyCertificatePage() {
                 <dl className="space-y-4">
                   <div>
                     <dt className="text-sm font-medium text-gray-500">Issued To</dt>
-                    <dd className="mt-1 text-lg font-semibold text-gray-900">{verificationResult.data.studentName}</dd>
+                    <dd className="mt-1 text-lg font-semibold text-gray-900">{verificationResult.data?.studentName}</dd>
                   </div>
                   
                   <div>
@@ -96,17 +96,17 @@ export default function VerifyCertificatePage() {
                       {verificationResult.type === 'course' ? 'Course' : 'Internship'}
                     </dt>
                     <dd className="mt-1 text-lg font-semibold text-gray-900">
-                      {verificationResult.data.title}
+                      {verificationResult.data?.title}
                     </dd>
                     {verificationResult.type === 'internship' && (
-                       <dd className="text-sm text-gray-600">{verificationResult.data.company}</dd>
+                       <dd className="text-sm text-gray-600">{verificationResult.data?.company}</dd>
                     )}
                   </div>
 
                   <div>
                     <dt className="text-sm font-medium text-gray-500">Date Issued</dt>
                     <dd className="mt-1 text-gray-900">
-                      {new Date(verificationResult.data.date).toLocaleDateString('en-IN', {
+                      {verificationResult.data?.date && new Date(verificationResult.data.date).toLocaleDateString('en-IN', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric'
@@ -117,13 +117,13 @@ export default function VerifyCertificatePage() {
                   <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
                      <dt className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Security Key</dt>
                      <dd className="font-mono text-sm text-gray-800 break-all">
-                        {verificationResult.data.certificateKey || 'N/A'}
+                        {verificationResult.data?.certificateKey || 'N/A'}
                      </dd>
                   </div>
                    
                    <div>
                     <dt className="text-sm font-medium text-gray-500">Certificate ID</dt>
-                    <dd className="mt-1 font-mono text-gray-600 text-sm">{verificationResult.data.certificateId}</dd>
+                    <dd className="mt-1 font-mono text-gray-600 text-sm">{verificationResult.data?.certificateId}</dd>
                   </div>
                 </dl>
               </div>

@@ -1,0 +1,14 @@
+src/app/api/careers/apply/route.ts(29,27): error TS2339: Property 'get' does not exist on type 'FormData'.
+src/app/api/careers/apply/route.ts(30,28): error TS2339: Property 'get' does not exist on type 'FormData'.
+src/app/api/careers/apply/route.ts(31,28): error TS2339: Property 'get' does not exist on type 'FormData'.
+src/app/api/careers/apply/route.ts(32,31): error TS2339: Property 'get' does not exist on type 'FormData'.
+src/app/api/careers/apply/route.ts(33,34): error TS2339: Property 'get' does not exist on type 'FormData'.
+src/app/api/careers/apply/route.ts(34,33): error TS2339: Property 'get' does not exist on type 'FormData'.
+src/app/api/upload/file/route.ts(13,27): error TS2339: Property 'get' does not exist on type 'FormData'.
+src/app/api/upload/image/route.ts(16,27): error TS2339: Property 'get' does not exist on type 'FormData'.
+src/app/api/upload/pdf/route.ts(23,27): error TS2339: Property 'get' does not exist on type 'FormData'.
+src/app/api/upload/video/route.ts(23,27): error TS2339: Property 'get' does not exist on type 'FormData'.
+src/app/api/verify-certificate/ocr/route.ts(17,27): error TS2339: Property 'get' does not exist on type 'FormData'.
+src/components/auth/inactivity-logout.tsx(28,9): error TS2322: Type 'number' is not assignable to type 'Timeout'.
+src/lib/image-comparison.ts(3,21): error TS7016: Could not find a declaration file for module 'pngjs'. 'C:/Users/91620/Desktop/skill-webory/node_modules/pngjs/lib/png.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/pngjs` if it exists or add a new declaration (.d.ts) file containing `declare module 'pngjs';`

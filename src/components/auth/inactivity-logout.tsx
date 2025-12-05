@@ -27,7 +27,7 @@ export function InactivityLogout() {
         // Set new timeout
         timeoutRef.current = setTimeout(() => {
             logout();
-        }, INACTIVITY_TIMEOUT);
+        }, INACTIVITY_TIMEOUT) as unknown as NodeJS.Timeout;
     };
 
     useEffect(() => {

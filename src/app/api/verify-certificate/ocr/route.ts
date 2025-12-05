@@ -13,7 +13,7 @@ export async function POST(req: Request) {
   try {
     console.log("[OCR API] Starting certificate verification...");
 
-    const formData = await req.formData();
+    const formData: any = await req.formData();
     const file = formData.get("certificate") as File;
 
     if (!file) {
