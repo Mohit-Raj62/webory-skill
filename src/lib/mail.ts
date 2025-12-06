@@ -124,7 +124,7 @@ export const emailTemplates = {
       </ul>
       <div style="text-align: center; margin: 30px 0;">
         <a href="${
-          process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+          process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
         }/courses" style="background-color: #2563eb; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">Explore Courses</a>
       </div>
       <p>If you have any questions, feel free to reach out to us.</p>
@@ -251,7 +251,7 @@ export const emailTemplates = {
 
       <div style="text-align: center; margin: 30px 0;">
         <a href="${
-          process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+          process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
         }/admin/payments" style="background-color: #ea580c; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">Verify Payment</a>
       </div>
       

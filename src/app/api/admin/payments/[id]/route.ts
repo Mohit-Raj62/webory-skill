@@ -82,7 +82,8 @@ export async function PUT(
 
           if (user && course) {
             const courseLink = `${
-              process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+              process.env.NEXT_PUBLIC_APP_URL ||
+              "https://webory-skill.vercel.app"
             }/courses/${paymentProof.course}`;
 
             // Send enrollment confirmation email
@@ -160,7 +161,8 @@ export async function PUT(
 
           if (user && internship) {
             const offerLink = `${
-              process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+              process.env.NEXT_PUBLIC_APP_URL ||
+              "https://webory-skill.vercel.app"
             }/profile`;
 
             // Send acceptance email

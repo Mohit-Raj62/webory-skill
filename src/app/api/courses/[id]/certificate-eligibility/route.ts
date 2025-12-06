@@ -136,7 +136,8 @@ export async function GET(
 
           if (user && course) {
             const certificateLink = `${
-              process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+              process.env.NEXT_PUBLIC_APP_URL ||
+              "https://webory-skill.vercel.app"
             }/courses/${courseId}/certificate`;
             await sendEmail(
               user.email,

@@ -10,10 +10,7 @@ export async function POST(req: Request) {
     const { email } = await req.json();
 
     if (!email) {
-      return NextResponse.json(
-        { error: "Email is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
     const user = await User.findOne({ email: email.toLowerCase() });
@@ -23,13 +20,17 @@ export async function POST(req: Request) {
     if (!user) {
       return NextResponse.json({
         success: true,
-        message: "If an account with that email exists, a password reset link has been sent.",
+        message:
+          "If an account with that email exists, a password reset link has been sent.",
       });
     }
 
     // Generate reset token
     const resetToken = crypto.randomBytes(32).toString("hex");
-    const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
 
     // Set token and expiration (1 hour)
     user.resetPasswordToken = hashedToken;
@@ -37,12 +38,14 @@ export async function POST(req: Request) {
     await user.save();
 
     // Create reset URL
-    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/reset-password/${resetToken}`;
+    const resetUrl = `${
+      process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
+    }/reset-password/${resetToken}`;
 
-    console.log('📧 Attempting to send password reset email...');
-    console.log('To:', user.email);
-    console.log('From:', process.env.EMAIL_USER);
-    console.log('Reset URL:', resetUrl);
+    console.log("📧 Attempting to send password reset email...");
+    console.log("To:", user.email);
+    console.log("From:", process.env.EMAIL_USER);
+    console.log("Reset URL:", resetUrl);
 
     // Send email
     const emailSent = await sendEmail(
@@ -52,14 +55,15 @@ export async function POST(req: Request) {
     );
 
     if (!emailSent) {
-      console.error('❌ Failed to send password reset email');
+      console.error("❌ Failed to send password reset email");
     } else {
-      console.log('✅ Password reset email sent successfully!');
+      console.log("✅ Password reset email sent successfully!");
     }
 
     return NextResponse.json({
       success: true,
-      message: "If an account with that email exists, a password reset link has been sent.",
+      message:
+        "If an account with that email exists, a password reset link has been sent.",
     });
   } catch (error) {
     console.error("Forgot password error:", error);

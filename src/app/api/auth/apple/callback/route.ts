@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     if (!code) {
       return NextResponse.redirect(
         `${
-          process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+          process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
         }/login?error=oauth_failed`
       );
     }
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     if (!APPLE_CLIENT_ID || !APPLE_CLIENT_SECRET) {
       return NextResponse.redirect(
         `${
-          process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+          process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
         }/login?error=oauth_not_configured`
       );
     }
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
     if (!tokens.id_token) {
       return NextResponse.redirect(
         `${
-          process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+          process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
         }/login?error=oauth_token_failed`
       );
     }
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
     if (!email) {
       return NextResponse.redirect(
         `${
-          process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+          process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
         }/login?error=no_email`
       );
     }
@@ -125,9 +125,11 @@ export async function POST(req: Request) {
     // Redirect to profile with token
     const redirectUrl =
       user.role === "admin"
-        ? `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/admin`
+        ? `${
+            process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
+          }/admin`
         : `${
-            process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+            process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
           }/profile`;
 
     const response = NextResponse.redirect(redirectUrl);
@@ -145,7 +147,7 @@ export async function POST(req: Request) {
     console.error("Apple OAuth callback error:", error);
     return NextResponse.redirect(
       `${
-        process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+        process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
       }/login?error=oauth_callback_failed`
     );
   }

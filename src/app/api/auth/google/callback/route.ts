@@ -7,69 +7,95 @@ import crypto from "crypto";
 export async function GET(req: Request) {
   try {
     await dbConnect();
-    
+
     const { searchParams } = new URL(req.url);
-    const code = searchParams.get('code');
-    
+    const code = searchParams.get("code");
+
     if (!code) {
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/login?error=oauth_failed`);
+      return NextResponse.redirect(
+        `${
+          process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
+        }/login?error=oauth_failed`
+      );
     }
 
     const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
     const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-    const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/auth/google/callback`;
+    const GOOGLE_REDIRECT_URI =
+      process.env.GOOGLE_REDIRECT_URI ||
+      `${
+        process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
+      }/api/auth/google/callback`;
 
     if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/login?error=oauth_not_configured`);
+      return NextResponse.redirect(
+        `${
+          process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
+        }/login?error=oauth_not_configured`
+      );
     }
 
     // Exchange code for tokens
-    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
         code,
         client_id: GOOGLE_CLIENT_ID,
         client_secret: GOOGLE_CLIENT_SECRET,
         redirect_uri: GOOGLE_REDIRECT_URI,
-        grant_type: 'authorization_code',
+        grant_type: "authorization_code",
       }),
     });
 
     const tokens = await tokenResponse.json();
 
     if (!tokens.access_token) {
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/login?error=oauth_token_failed`);
+      return NextResponse.redirect(
+        `${
+          process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
+        }/login?error=oauth_token_failed`
+      );
     }
 
     // Get user info from Google
-    const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-      headers: { Authorization: `Bearer ${tokens.access_token}` },
-    });
+    const userInfoResponse = await fetch(
+      "https://www.googleapis.com/oauth2/v2/userinfo",
+      {
+        headers: { Authorization: `Bearer ${tokens.access_token}` },
+      }
+    );
 
     const googleUser = await userInfoResponse.json();
 
     // Find or create user
-    let user = await User.findOne({ oauthProvider: 'google', oauthId: googleUser.id });
+    let user = await User.findOne({
+      oauthProvider: "google",
+      oauthId: googleUser.id,
+    });
 
     if (!user) {
       // Check if user exists with same email
       user = await User.findOne({ email: googleUser.email });
-      
+
       if (user) {
         // Link OAuth to existing account
-        user.oauthProvider = 'google';
+        user.oauthProvider = "google";
         user.oauthId = googleUser.id;
         user.avatar = googleUser.picture;
         await user.save();
       } else {
         // Create new user
         user = await User.create({
-          firstName: googleUser.given_name || googleUser.name?.split(' ')[0] || 'User',
-          lastName: googleUser.family_name || googleUser.name?.split(' ').slice(1).join(' ') || '',
+          firstName:
+            googleUser.given_name || googleUser.name?.split(" ")[0] || "User",
+          lastName:
+            googleUser.family_name ||
+            googleUser.name?.split(" ").slice(1).join(" ") ||
+            "",
           email: googleUser.email,
-          password: crypto.randomBytes(32).toString('hex'), // Random password for OAuth users
-          oauthProvider: 'google',
+          password: crypto.randomBytes(32).toString("hex"), // Random password for OAuth users
+          oauthProvider: "google",
           oauthId: googleUser.id,
           avatar: googleUser.picture,
         });
@@ -89,12 +115,17 @@ export async function GET(req: Request) {
     );
 
     // Redirect to profile with token
-    const redirectUrl = user.role === 'admin' 
-      ? `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin`
-      : `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/profile`;
+    const redirectUrl =
+      user.role === "admin"
+        ? `${
+            process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
+          }/admin`
+        : `${
+            process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
+          }/profile`;
 
     const response = NextResponse.redirect(redirectUrl);
-    
+
     response.cookies.set("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -106,6 +137,10 @@ export async function GET(req: Request) {
     return response;
   } catch (error) {
     console.error("Google OAuth callback error:", error);
-    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/login?error=oauth_callback_failed`);
+    return NextResponse.redirect(
+      `${
+        process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
+      }/login?error=oauth_callback_failed`
+    );
   }
 }

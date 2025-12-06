@@ -84,7 +84,7 @@ export default function CertificatePage() {
 
     if (!application) return null;
 
-    const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-certificate/${application.certificateId}`;
+    const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://webory-skill.vercel.app'}/verify-certificate/${application.certificateId}`;
 
     return (
         <div className="min-h-screen bg-gray-900 py-10 px-4">
