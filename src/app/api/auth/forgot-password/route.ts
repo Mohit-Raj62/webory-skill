@@ -39,7 +39,7 @@ export async function POST(req: Request) {
 
     // Create reset URL
     const resetUrl = `${
-      process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
+      process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in"
     }/reset-password/${resetToken}`;
 
     console.log("📧 Attempting to send password reset email...");

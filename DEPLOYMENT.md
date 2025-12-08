@@ -44,12 +44,12 @@ Add the following variables (copy values from your local `.env.local` file):
 
 1. Click **"Deploy"**.
 2. Wait for the build to complete.
-3. Once finished, you will get a live URL (e.g., `https://webory-skill.vercel.app`).
+3. Once finished, you will get a live URL (e.g., `https://weboryskills.in`).
 
 ## 5. Post-Deployment Setup
 
 1. **MongoDB Atlas**: Go to your MongoDB Atlas dashboard -> Network Access -> Add IP Address -> Allow Access from Anywhere (`0.0.0.0/0`) so Vercel can connect.
-2. **OAuth Providers**: If using Google/GitHub login, update the "Authorized Redirect URIs" in their developer consoles to include your new Vercel domain (e.g., `https://webory-skill.vercel.app/api/auth/callback/google`).
+2. **OAuth Providers**: If using Google/GitHub login, update the "Authorized Redirect URIs" in their developer consoles to include your new Vercel domain (e.g., `https://weboryskills.in/api/auth/callback/google`).
 
 ## Troubleshooting
 
@@ -58,5 +58,3 @@ Add the following variables (copy values from your local `.env.local` file):
 - **Login Not Working?** Check `NEXTAUTH_SECRET` and OAuth settings.
 
 ---
-
-

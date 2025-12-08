@@ -7,7 +7,7 @@ export async function GET(req: Request) {
     const APPLE_REDIRECT_URI =
       process.env.APPLE_REDIRECT_URI ||
       `${
-        process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
+        process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in"
       }/api/auth/apple/callback`;
 
     if (!APPLE_CLIENT_ID) {

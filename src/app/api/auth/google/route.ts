@@ -7,7 +7,7 @@ export async function GET(req: Request) {
     const GOOGLE_REDIRECT_URI =
       process.env.GOOGLE_REDIRECT_URI ||
       `${
-        process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
+        process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in"
       }/api/auth/google/callback`;
 
     if (!GOOGLE_CLIENT_ID) {

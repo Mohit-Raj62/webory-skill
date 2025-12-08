@@ -189,7 +189,7 @@ export default function CertificatePage() {
                                 <div className="absolute inset-0 border-4 border-[#c5a059] border-dashed rounded-full animate-[spin_10s_linear_infinite] opacity-20"></div>
                                 <div className="bg-white p-1 rounded-lg shadow-sm">
                                      <QRCodeSVG 
-                                        value={`${process.env.NEXT_PUBLIC_APP_URL || 'https://webory-skill.vercel.app'}/verify-certificate/${certificateId}`}
+                                        value={`${process.env.NEXT_PUBLIC_APP_URL || 'https://weboryskills.in'}/verify-certificate/${certificateId}`}
                                         size={100}
                                         level="H"
                                      />

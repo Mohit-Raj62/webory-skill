@@ -33,7 +33,7 @@ const EMAIL_TEMPLATES = [
         </div>
         
         <div style="text-align: center; margin: 30px 0;">
-            <a href="https://webory-skill.vercel.app/courses" style="background-color: #2563eb; color: white; padding: 15px 40px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; font-size: 16px;">
+            <a href="https://weboryskills.in/courses" style="background-color: #2563eb; color: white; padding: 15px 40px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; font-size: 16px;">
                 Browse Courses
             </a>
         </div>
@@ -82,7 +82,7 @@ const EMAIL_TEMPLATES = [
         </div>
         
         <div style="text-align: center; margin: 30px 0;">
-            <a href="https://webory-skill.vercel.app/courses" style="background-color: #16a34a; color: white; padding: 15px 40px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; font-size: 16px;">
+            <a href="https://weboryskills.in/courses" style="background-color: #16a34a; color: white; padding: 15px 40px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; font-size: 16px;">
                 Enroll Now
             </a>
         </div>
@@ -130,7 +130,7 @@ const EMAIL_TEMPLATES = [
         </ul>
         
         <div style="text-align: center; margin: 30px 0;">
-            <a href="https://webory-skill.vercel.app/live-classes" style="background-color: #9333ea; color: white; padding: 15px 40px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; font-size: 16px;">
+            <a href="https://weboryskills.in/live-classes" style="background-color: #9333ea; color: white; padding: 15px 40px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; font-size: 16px;">
                 Register Now
             </a>
         </div>

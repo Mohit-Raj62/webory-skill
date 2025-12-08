@@ -131,7 +131,7 @@ export async function POST(req: Request) {
 
       if (user && course) {
         const courseLink = `${
-          process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
+          process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in"
         }/courses/${courseId}`;
 
         // Send enrollment confirmation

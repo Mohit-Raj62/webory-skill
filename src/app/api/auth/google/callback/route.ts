@@ -14,7 +14,7 @@ export async function GET(req: Request) {
     if (!code) {
       return NextResponse.redirect(
         `${
-          process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
+          process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in"
         }/login?error=oauth_failed`
       );
     }
@@ -24,13 +24,13 @@ export async function GET(req: Request) {
     const GOOGLE_REDIRECT_URI =
       process.env.GOOGLE_REDIRECT_URI ||
       `${
-        process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
+        process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in"
       }/api/auth/google/callback`;
 
     if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
       return NextResponse.redirect(
         `${
-          process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
+          process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in"
         }/login?error=oauth_not_configured`
       );
     }
@@ -53,7 +53,7 @@ export async function GET(req: Request) {
     if (!tokens.access_token) {
       return NextResponse.redirect(
         `${
-          process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
+          process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in"
         }/login?error=oauth_token_failed`
       );
     }
@@ -118,10 +118,10 @@ export async function GET(req: Request) {
     const redirectUrl =
       user.role === "admin"
         ? `${
-            process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
+            process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in"
           }/admin`
         : `${
-            process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
+            process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in"
           }/profile`;
 
     const response = NextResponse.redirect(redirectUrl);
@@ -139,7 +139,7 @@ export async function GET(req: Request) {
     console.error("Google OAuth callback error:", error);
     return NextResponse.redirect(
       `${
-        process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
+        process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in"
       }/login?error=oauth_callback_failed`
     );
   }

@@ -204,7 +204,7 @@ export default function CustomCertificateGeneratorPage() {
                   <div className="flex flex-col items-center">
                     <div className="bg-white p-2 rounded border border-purple-300">
                       <QRCodeSVG
-                        value={`${process.env.NEXT_PUBLIC_APP_URL || 'https://webory-skill.vercel.app'}/verify-certificate/${certificate.id}`}
+                        value={`${process.env.NEXT_PUBLIC_APP_URL || 'https://weboryskills.in'}/verify-certificate/${certificate.id}`}
                         size={80}
                         level="H"
                       />

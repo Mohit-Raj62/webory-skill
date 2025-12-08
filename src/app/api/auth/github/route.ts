@@ -7,7 +7,7 @@ export async function GET(req: Request) {
     const GITHUB_REDIRECT_URI =
       process.env.GITHUB_REDIRECT_URI ||
       `${
-        process.env.NEXT_PUBLIC_APP_URL || "https://webory-skill.vercel.app"
+        process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in"
       }/api/auth/github/callback`;
 
     if (!GITHUB_CLIENT_ID) {
