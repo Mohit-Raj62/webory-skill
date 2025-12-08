@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 
 export function Hero() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [activeStudents, setActiveStudents] = useState("10+");
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -20,6 +21,24 @@ export function Hero() {
             }
         };
         checkAuth();
+    }, []);
+
+    useEffect(() => {
+        const fetchUserStats = async () => {
+            try {
+                const res = await fetch("/api/stats/users");
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.totalUsers) {
+                        setActiveStudents(data.totalUsers > 0 ? `${data.totalUsers}+` : "10+");
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch user stats:", error);
+                // Keep default "10+" on error
+            }
+        };
+        fetchUserStats();
     }, []);
 
     return (
@@ -79,7 +98,7 @@ export function Hero() {
                         className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8"
                     >
                         {[
-                            { icon: Users, label: "Active Students", value: "10+" },
+                            { icon: Users, label: "Active Students", value: activeStudents },
                             { icon: Code, label: "Projects Completed", value: "150+" },
                             { icon: Rocket, label: "Internships Launched", value: "12+" },
                         ].map((stat, index) => (
