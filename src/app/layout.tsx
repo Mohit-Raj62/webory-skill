@@ -18,10 +18,55 @@ const greatVibes = Great_Vibes({
 });
 
 export const metadata: Metadata = {
-    title: "WEBORY - Skill Custom Startup Platform",
-    description: "Master skills, build projects, and launch your career with Webory.",
+    metadataBase: new URL("https://www.weboryskills.in"),
+    title: {
+        default: "WEBORY - Skill Custom Startup Platform | Learn, Build, Grow",
+        template: "%s | WEBORY"
+    },
+    description: "Master industry-relevant skills, build real-world projects, and launch your career with Webory. Join thousands of students learning and growing together.",
+    keywords: ["online courses", "internships", "skill development", "web development", "coding", "career growth", "webory", "webory skills", "startup"],
+    authors: [{ name: "Webory Team" }],
+    creator: "Webory",
+    publisher: "Webory",
+    openGraph: {
+        type: "website",
+        locale: "en_IN",
+        url: "https://www.weboryskills.in",
+        title: "WEBORY - Skill Custom Startup Platform",
+        description: "Master skills, build projects, and launch your career with Webory.",
+        siteName: "Webory Skills",
+        images: [{
+            url: "/og-image.png",
+            width: 1200,
+            height: 630,
+            alt: "Webory - Skill Custom Startup Platform",
+        }],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "WEBORY - Skill Custom Startup Platform",
+        description: "Master skills, build projects, and launch your career with Webory.",
+        images: ["/og-image.png"],
+    },
     icons: {
         icon: "/favicon.svg",
+    },
+    alternates: {
+        canonical: "/",
+    },
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            'max-video-preview': -1,
+            'max-image-preview': 'large',
+            'max-snippet': -1,
+        },
+    },
+    verification: {
+        google: "7M8LteKBcSZdSqwJCwSCL3y34uSUp4jNpUgWfTJqOCw",
     },
 };
 
