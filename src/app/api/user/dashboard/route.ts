@@ -3,7 +3,6 @@ import dbConnect from "@/lib/db";
 import Enrollment from "@/models/Enrollment";
 import Application from "@/models/Application";
 import "@/models/Course"; // Ensure Course model is registered for populate
-import "@/models/Internship"; // Ensure Internship model is registered for populate
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 

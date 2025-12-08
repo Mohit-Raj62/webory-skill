@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 
 export function Hero() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [activeUsers, setActiveUsers] = useState("10+");
+    const [activeStudents, setActiveStudents] = useState("10+");
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -24,22 +24,18 @@ export function Hero() {
     }, []);
 
     useEffect(() => {
-        const fetchActiveUsers = async () => {
+        const fetchUserStats = async () => {
             try {
-                const res = await fetch("/api/stats/active-users");
+                const res = await fetch("/api/stats/users");
                 if (res.ok) {
                     const data = await res.json();
-                    setActiveUsers(data.displayText);
+                    setActiveStudents(data.totalUsers > 0 ? `${data.totalUsers}+` : "10+");
                 }
-            } catch (e) {
-                console.error("Failed to fetch active users", e);
+            } catch (error) {
+                console.error("Failed to fetch user stats:", error);
             }
         };
-        fetchActiveUsers();
-        
-        // Refresh every 30 seconds
-        const interval = setInterval(fetchActiveUsers, 30000);
-        return () => clearInterval(interval);
+        fetchUserStats();
     }, []);
 
     return (
@@ -100,7 +96,7 @@ export function Hero() {
                         className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8"
                     >
                         {[
-                            { icon: Users, label: "Active Students", value: activeUsers },
+                            { icon: Users, label: "Active Students", value: "10+" },
                             { icon: Code, label: "Projects Completed", value: "150+" },
                             { icon: Rocket, label: "Internships Launched", value: "12+" },
                         ].map((stat, index) => (

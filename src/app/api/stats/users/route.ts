@@ -6,17 +6,17 @@ export async function GET() {
   try {
     await dbConnect();
 
-    // Count all registered users (you can modify this to count only recently active users)
+    // Count total registered users
     const totalUsers = await User.countDocuments();
 
     return NextResponse.json({
-      activeUsers: totalUsers,
-      displayText: totalUsers > 0 ? `${totalUsers}+` : "0",
+      totalUsers,
+      activeUsers: totalUsers, // For now, all registered users are considered "active"
     });
   } catch (error) {
-    console.error("Error fetching active users:", error);
+    console.error("Error fetching user stats:", error);
     return NextResponse.json(
-      { error: "Failed to fetch active users" },
+      { error: "Failed to fetch user statistics" },
       { status: 500 }
     );
   }
