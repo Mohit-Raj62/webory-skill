@@ -9,7 +9,6 @@ import { useEffect, useState } from "react";
 
 export function Hero() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [activeStudents, setActiveStudents] = useState("10+");
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -21,21 +20,6 @@ export function Hero() {
             }
         };
         checkAuth();
-    }, []);
-
-    useEffect(() => {
-        const fetchUserStats = async () => {
-            try {
-                const res = await fetch("/api/stats/users");
-                if (res.ok) {
-                    const data = await res.json();
-                    setActiveStudents(data.totalUsers > 0 ? `${data.totalUsers}+` : "10+");
-                }
-            } catch (error) {
-                console.error("Failed to fetch user stats:", error);
-            }
-        };
-        fetchUserStats();
     }, []);
 
     return (
