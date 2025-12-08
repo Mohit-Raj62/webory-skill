@@ -79,7 +79,7 @@ export function Hero() {
                         className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8"
                     >
                         {[
-                            { icon: Users, label: "Active Students", value: activeStudents },
+                            { icon: Users, label: "Active Students", value: "10+" },
                             { icon: Code, label: "Projects Completed", value: "150+" },
                             { icon: Rocket, label: "Internships Launched", value: "12+" },
                         ].map((stat, index) => (
