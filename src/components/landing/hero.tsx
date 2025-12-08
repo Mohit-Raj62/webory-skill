@@ -88,7 +88,6 @@ export function Hero() {
                         </div>
                     </motion.div>
 
-                    {/* Stats */}
                     <motion.div
                         initial={{ opacity: 0, y: 40 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -96,7 +95,7 @@ export function Hero() {
                         className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8"
                     >
                         {[
-                            { icon: Users, label: "Active Students", value: "10+" },
+                            { icon: Users, label: "Active Students", value: activeStudents },
                             { icon: Code, label: "Projects Completed", value: "150+" },
                             { icon: Rocket, label: "Internships Launched", value: "12+" },
                         ].map((stat, index) => (
