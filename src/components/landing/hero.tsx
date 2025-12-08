@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 
 export function Hero() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [activeUsers, setActiveUsers] = useState("10+");
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -20,6 +21,25 @@ export function Hero() {
             }
         };
         checkAuth();
+    }, []);
+
+    useEffect(() => {
+        const fetchActiveUsers = async () => {
+            try {
+                const res = await fetch("/api/stats/active-users");
+                if (res.ok) {
+                    const data = await res.json();
+                    setActiveUsers(data.displayText);
+                }
+            } catch (e) {
+                console.error("Failed to fetch active users", e);
+            }
+        };
+        fetchActiveUsers();
+        
+        // Refresh every 30 seconds
+        const interval = setInterval(fetchActiveUsers, 30000);
+        return () => clearInterval(interval);
     }, []);
 
     return (
@@ -80,7 +100,7 @@ export function Hero() {
                         className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8"
                     >
                         {[
-                            { icon: Users, label: "Active Students", value: "10+" },
+                            { icon: Users, label: "Active Students", value: activeUsers },
                             { icon: Code, label: "Projects Completed", value: "150+" },
                             { icon: Rocket, label: "Internships Launched", value: "12+" },
                         ].map((stat, index) => (

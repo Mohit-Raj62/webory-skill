@@ -21,7 +21,7 @@ export default function VideoPlayerPage() {
     const [isTheaterMode, setIsTheaterMode] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const playerContainerRef = useRef < HTMLDivElement > (null);
-    const [notes, setNotes] = useState < any[] > ([]);
+    const [notes, setNotes] = useState<any[]>([]);
     const [newNote, setNewNote] = useState('');
     const [showNotes, setShowNotes] = useState(false);
     const [showDoubtModal, setShowDoubtModal] = useState(false);
@@ -29,108 +29,40 @@ export default function VideoPlayerPage() {
     const [showSettings, setShowSettings] = useState(false);
     const [videoProgress, setVideoProgress] = useState(0);
     const [lastValidTime, setLastValidTime] = useState(0);
+    const [userEmail, setUserEmail] = useState('');
+    const [watermarkPosition, setWatermarkPosition] = useState({ x: 10, y: 10 });
 
-    // Enhanced screen recording and screenshot prevention
+    // Fetch user email for watermark
     useEffect(() => {
-        const handleContextMenu = (e: MouseEvent) => {
-            e.preventDefault();
-            toast.error('Right-click is disabled for content protection');
-            return false;
-        };
-
-        const handleKeyDown = (e: KeyboardEvent) => {
-            // Prevent PrintScreen
-            if (e.key === 'PrintScreen') {
-                e.preventDefault();
-                navigator.clipboard.writeText(''); // Clear clipboard
-                toast.error('Screenshots are disabled for this content');
-            }
-            // Prevent Ctrl+Shift+S (Windows screenshot tool)
-            if (e.ctrlKey && e.shiftKey && e.key === 'S') {
-                e.preventDefault();
-                toast.error('Screenshots are disabled for this content');
-            }
-            // Prevent Cmd+Shift+3/4/5 (Mac screenshots)
-            if (e.metaKey && e.shiftKey && ['3', '4', '5'].includes(e.key)) {
-                e.preventDefault();
-                toast.error('Screenshots are disabled for this content');
-            }
-            // Prevent F12, Ctrl+Shift+I, Ctrl+Shift+J (DevTools)
-            if (
-                e.key === 'F12' ||
-                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
-                (e.metaKey && e.altKey && (e.key === 'I' || e.key === 'J' || e.key === 'C'))
-            ) {
-                e.preventDefault();
-                toast.error('Developer tools are disabled');
-            }
-        };
-
-        const handleVisibilityChange = () => {
-            if (document.hidden) {
-                const video = videoRef.current;
-                if (video && !video.paused) {
-                    video.pause();
-                    toast.warning('Video paused - tab switched');
+        const fetchUserEmail = async () => {
+            try {
+                const res = await fetch('/api/auth/me');
+                if (res.ok) {
+                    const data = await res.json();
+                    setUserEmail(data.user.email);
                 }
+            } catch (error) {
+                console.error('Failed to fetch user email', error);
             }
         };
+        fetchUserEmail();
+    }, []);
 
-        // Detect screen recording (experimental)
-        const detectScreenRecording = () => {
-            if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
-                const originalGetDisplayMedia = navigator.mediaDevices.getDisplayMedia;
-                navigator.mediaDevices.getDisplayMedia = function(...args) {
-                    toast.error('Screen recording detected and blocked!');
-                    return Promise.reject(new Error('Screen recording is not allowed'));
-                };
-            }
+    // Moving watermark animation
+    useEffect(() => {
+        const moveWatermark = () => {
+            setWatermarkPosition(prev => {
+                const maxX = 80; // percentage
+                const maxY = 80; // percentage
+                const newX = Math.random() * maxX;
+                const newY = Math.random() * maxY;
+                return { x: newX, y: newY };
+            });
         };
 
-        // Blur video on window blur (anti-recording)
-        const handleBlur = () => {
-            const video = videoRef.current;
-            if (video) {
-                video.style.filter = 'blur(20px)';
-                toast.warning('Video blurred - window not focused');
-            }
-        };
-
-        const handleFocus = () => {
-            const video = videoRef.current;
-            if (video) {
-                video.style.filter = 'none';
-            }
-        };
-
-        // Prevent copy
-        const handleCopy = (e: ClipboardEvent) => {
-            e.preventDefault();
-            toast.error('Copying is disabled');
-        };
-
-        document.addEventListener('contextmenu', handleContextMenu);
-        document.addEventListener('keydown', handleKeyDown);
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-        document.addEventListener('copy', handleCopy);
-        window.addEventListener('blur', handleBlur);
-        window.addEventListener('focus', handleFocus);
-        
-        document.body.style.userSelect = 'none';
-        document.body.style.webkitUserSelect = 'none';
-        
-        detectScreenRecording();
-
-        return () => {
-            document.removeEventListener('contextmenu', handleContextMenu);
-            document.removeEventListener('keydown', handleKeyDown);
-            document.removeEventListener('visibilitychange', handleVisibilityChange);
-            document.removeEventListener('copy', handleCopy);
-            window.removeEventListener('blur', handleBlur);
-            window.removeEventListener('focus', handleFocus);
-            document.body.style.userSelect = '';
-            document.body.style.webkitUserSelect = '';
-        };
+        // Move watermark every 5 seconds
+        const interval = setInterval(moveWatermark, 5000);
+        return () => clearInterval(interval);
     }, []);
 
     const currentIndex = parseInt(videoIndex as string);
@@ -456,12 +388,20 @@ export default function VideoPlayerPage() {
                                         title={currentVideo.title}
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                     />
-                                    {/* Watermark Overlay for YouTube */}
-                                    <div className="absolute inset-0 pointer-events-none select-none">
-                                        <div className="absolute top-4 right-4 text-white/30 text-xs font-mono bg-black/20 px-2 py-1 rounded backdrop-blur-sm">
-                                            Protected Content
+                                    {/* Moving Watermark for YouTube */}
+                                    {userEmail && (
+                                        <div 
+                                            className="absolute pointer-events-none select-none transition-all duration-1000 ease-in-out"
+                                            style={{
+                                                left: `${watermarkPosition.x}%`,
+                                                top: `${watermarkPosition.y}%`,
+                                            }}
+                                        >
+                                            <div className="text-white/20 text-xs font-mono bg-black/30 px-3 py-1.5 rounded backdrop-blur-sm transform -rotate-12">
+                                                {userEmail}
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
                                 </>
                             ) : (
                                 <>
@@ -471,18 +411,22 @@ export default function VideoPlayerPage() {
                                         controls
                                         controlsList="nodownload noremoteplayback"
                                         disablePictureInPicture
-                                        onContextMenu={(e) => e.preventDefault()}
                                         className="w-full h-full"
                                     />
-                                    {/* Watermark Overlay for Direct Videos */}
-                                    <div className="absolute inset-0 pointer-events-none select-none">
-                                        <div className="absolute top-4 right-4 text-white/30 text-xs font-mono bg-black/20 px-2 py-1 rounded backdrop-blur-sm">
-                                            Protected Content
+                                    {/* Moving Watermark for Direct Videos */}
+                                    {userEmail && (
+                                        <div 
+                                            className="absolute pointer-events-none select-none transition-all duration-1000 ease-in-out z-10"
+                                            style={{
+                                                left: `${watermarkPosition.x}%`,
+                                                top: `${watermarkPosition.y}%`,
+                                            }}
+                                        >
+                                            <div className="text-white/40 text-xs font-mono bg-black/30 px-3 py-1.5 rounded backdrop-blur-sm transform -rotate-12">
+                                                {userEmail}
+                                            </div>
                                         </div>
-                                        <div className="absolute bottom-4 left-4 text-white/20 text-xs font-mono">
-                                            © Webory Skills - Unauthorized distribution prohibited
-                                        </div>
-                                    </div>
+                                    )}
                                 </>
                             )}
 
