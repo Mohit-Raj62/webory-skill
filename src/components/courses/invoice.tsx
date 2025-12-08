@@ -44,7 +44,7 @@ export function Invoice({ transactionId, courseTitle, amount, date, userEmail, o
                         <div>
                             <h2 className="text-xl sm:text-2xl font-bold mb-1 print:text-lg">Webory Skill</h2>
                             <p className="text-blue-100 text-xs sm:text-sm print:text-xs">Excellence in Education</p>
-                            <p className="text-blue-100 text-xs sm:text-sm print:text-xs">www.weboryskill.com</p>
+                            <p className="text-blue-100 text-xs sm:text-sm print:text-xs">www.weboryskills.in</p>
                         </div>
                         <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/30 print:w-10 print:h-10">
                             <CheckCircle size={24} className="text-white sm:w-8 sm:h-8 print:w-5 print:h-5" />
@@ -168,7 +168,7 @@ export function Invoice({ transactionId, courseTitle, amount, date, userEmail, o
                         </p>
                         <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200 print:mt-2 print:pt-2">
                             <p className="text-xs text-gray-500 print:text-[10px]">
-                                For any queries, please contact us at <strong>support@weboryskill.com</strong>
+                                For any queries, please contact us at <strong>support@weboryskills.in</strong>
                             </p>
                         </div>
                     </div>
