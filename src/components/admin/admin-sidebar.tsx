@@ -32,6 +32,7 @@ const menuItems = [
     { name: "Doubts", href: "/admin/doubts", icon: MessageCircle },
     { name: "Feedback", href: "/admin/feedback", icon: Star },
     { name: "Promo Codes", href: "/admin/promo-codes", icon: Tag },
+    { name: "Broadcast Emails", href: "/admin/broadcast", icon: MessageCircle },
     { name: "Payments", href: "/admin/payments", icon: CreditCard },
     { name: "Live Classes", href: "/admin/live-classes", icon: Video },
     { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
