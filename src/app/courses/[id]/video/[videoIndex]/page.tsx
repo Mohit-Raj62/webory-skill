@@ -30,21 +30,39 @@ export default function VideoPlayerPage() {
     const [videoProgress, setVideoProgress] = useState(0);
     const [lastValidTime, setLastValidTime] = useState(0);
 
-    // Prevent screen recording and screenshots
+    // Enhanced screen recording and screenshot prevention
     useEffect(() => {
         const handleContextMenu = (e: MouseEvent) => {
             e.preventDefault();
+            toast.error('Right-click is disabled for content protection');
             return false;
         };
 
         const handleKeyDown = (e: KeyboardEvent) => {
+            // Prevent PrintScreen
             if (e.key === 'PrintScreen') {
                 e.preventDefault();
+                navigator.clipboard.writeText(''); // Clear clipboard
                 toast.error('Screenshots are disabled for this content');
             }
+            // Prevent Ctrl+Shift+S (Windows screenshot tool)
             if (e.ctrlKey && e.shiftKey && e.key === 'S') {
                 e.preventDefault();
                 toast.error('Screenshots are disabled for this content');
+            }
+            // Prevent Cmd+Shift+3/4/5 (Mac screenshots)
+            if (e.metaKey && e.shiftKey && ['3', '4', '5'].includes(e.key)) {
+                e.preventDefault();
+                toast.error('Screenshots are disabled for this content');
+            }
+            // Prevent F12, Ctrl+Shift+I, Ctrl+Shift+J (DevTools)
+            if (
+                e.key === 'F12' ||
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+                (e.metaKey && e.altKey && (e.key === 'I' || e.key === 'J' || e.key === 'C'))
+            ) {
+                e.preventDefault();
+                toast.error('Developer tools are disabled');
             }
         };
 
@@ -52,21 +70,64 @@ export default function VideoPlayerPage() {
             if (document.hidden) {
                 const video = videoRef.current;
                 if (video && !video.paused) {
-                    // video.pause();
+                    video.pause();
+                    toast.warning('Video paused - tab switched');
                 }
             }
+        };
+
+        // Detect screen recording (experimental)
+        const detectScreenRecording = () => {
+            if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+                const originalGetDisplayMedia = navigator.mediaDevices.getDisplayMedia;
+                navigator.mediaDevices.getDisplayMedia = function(...args) {
+                    toast.error('Screen recording detected and blocked!');
+                    return Promise.reject(new Error('Screen recording is not allowed'));
+                };
+            }
+        };
+
+        // Blur video on window blur (anti-recording)
+        const handleBlur = () => {
+            const video = videoRef.current;
+            if (video) {
+                video.style.filter = 'blur(20px)';
+                toast.warning('Video blurred - window not focused');
+            }
+        };
+
+        const handleFocus = () => {
+            const video = videoRef.current;
+            if (video) {
+                video.style.filter = 'none';
+            }
+        };
+
+        // Prevent copy
+        const handleCopy = (e: ClipboardEvent) => {
+            e.preventDefault();
+            toast.error('Copying is disabled');
         };
 
         document.addEventListener('contextmenu', handleContextMenu);
         document.addEventListener('keydown', handleKeyDown);
         document.addEventListener('visibilitychange', handleVisibilityChange);
+        document.addEventListener('copy', handleCopy);
+        window.addEventListener('blur', handleBlur);
+        window.addEventListener('focus', handleFocus);
+        
         document.body.style.userSelect = 'none';
         document.body.style.webkitUserSelect = 'none';
+        
+        detectScreenRecording();
 
         return () => {
             document.removeEventListener('contextmenu', handleContextMenu);
             document.removeEventListener('keydown', handleKeyDown);
             document.removeEventListener('visibilitychange', handleVisibilityChange);
+            document.removeEventListener('copy', handleCopy);
+            window.removeEventListener('blur', handleBlur);
+            window.removeEventListener('focus', handleFocus);
             document.body.style.userSelect = '';
             document.body.style.webkitUserSelect = '';
         };
@@ -387,23 +448,42 @@ export default function VideoPlayerPage() {
                         <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-300"></div>
                         <div className="relative aspect-video bg-black rounded-xl overflow-hidden shadow-2xl">
                             {currentVideo.url.includes('youtube.com') || currentVideo.url.includes('youtu.be') ? (
-                                <iframe
-                                    src={`${currentVideo.url.replace('m.youtube.com', 'www.youtube.com').replace('watch?v=', 'embed/')}?rel=0&modestbranding=1&controls=1`}
-                                    className="w-full h-full"
-                                    allowFullScreen
-                                    title={currentVideo.title}
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                />
+                                <>
+                                    <iframe
+                                        src={`${currentVideo.url.replace('m.youtube.com', 'www.youtube.com').replace('watch?v=', 'embed/')}?rel=0&modestbranding=1&controls=1`}
+                                        className="w-full h-full"
+                                        allowFullScreen
+                                        title={currentVideo.title}
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    />
+                                    {/* Watermark Overlay for YouTube */}
+                                    <div className="absolute inset-0 pointer-events-none select-none">
+                                        <div className="absolute top-4 right-4 text-white/30 text-xs font-mono bg-black/20 px-2 py-1 rounded backdrop-blur-sm">
+                                            Protected Content
+                                        </div>
+                                    </div>
+                                </>
                             ) : (
-                                <video
-                                    ref={videoRef}
-                                    src={currentVideo.url}
-                                    controls
-                                    controlsList="nodownload noremoteplayback"
-                                    disablePictureInPicture
-                                    onContextMenu={(e) => e.preventDefault()}
-                                    className="w-full h-full"
-                                />
+                                <>
+                                    <video
+                                        ref={videoRef}
+                                        src={currentVideo.url}
+                                        controls
+                                        controlsList="nodownload noremoteplayback"
+                                        disablePictureInPicture
+                                        onContextMenu={(e) => e.preventDefault()}
+                                        className="w-full h-full"
+                                    />
+                                    {/* Watermark Overlay for Direct Videos */}
+                                    <div className="absolute inset-0 pointer-events-none select-none">
+                                        <div className="absolute top-4 right-4 text-white/30 text-xs font-mono bg-black/20 px-2 py-1 rounded backdrop-blur-sm">
+                                            Protected Content
+                                        </div>
+                                        <div className="absolute bottom-4 left-4 text-white/20 text-xs font-mono">
+                                            © Webory Skills - Unauthorized distribution prohibited
+                                        </div>
+                                    </div>
+                                </>
                             )}
 
                             {/* Video Completed Overlay */}
