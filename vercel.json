@@ -1,0 +1,15 @@
+{
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "(?!weboryskills\\.in).*"
+        }
+      ],
+      "destination": "https://weboryskills.in/:path*",
+      "permanent": true
+    }
+  ]
+}
