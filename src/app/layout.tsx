@@ -20,6 +20,9 @@ const greatVibes = Great_Vibes({
 export const metadata: Metadata = {
     title: "WEBORY - Skill Custom Startup Platform",
     description: "Master skills, build projects, and launch your career with Webory.",
+    icons: {
+        icon: "/favicon.svg",
+    },
 };
 
 export default function RootLayout({
