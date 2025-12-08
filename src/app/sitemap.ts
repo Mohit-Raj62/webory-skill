@@ -10,10 +10,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   await dbConnect();
 
   // Fetch all courses
-  const courses = await Course.find({}).select("_id updatedAt").lean();
+  // Fetch all courses
+  const courses = await Course.find({}).select("_id title updatedAt").lean();
 
   // Fetch all internships
-  const internships = await Internship.find({}).select("_id updatedAt").lean();
+  const internships = await Internship.find({})
+    .select("_id title updatedAt")
+    .lean();
 
   const courseUrls = courses.map((course) => ({
     url: `${baseUrl}/courses/${course.title.toLowerCase().replace(/ /g, "-")}-${
