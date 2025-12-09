@@ -21,11 +21,14 @@ export async function GET(req: Request) {
 
     const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
     const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
-    const baseUrl =
-      process.env.NEXT_PUBLIC_APP_URL ||
-      (process.env.NODE_ENV === "development"
-        ? "http://localhost:3000"
-        : "https://weboryskills.in");
+
+    // Dynamically determine baseUrl
+    let baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+    if (!baseUrl) {
+      const { protocol, host } = new URL(req.url);
+      baseUrl = `${protocol}//${host}`;
+    }
+
     const GITHUB_REDIRECT_URI =
       process.env.GITHUB_REDIRECT_URI || `${baseUrl}/api/auth/github/callback`;
 
