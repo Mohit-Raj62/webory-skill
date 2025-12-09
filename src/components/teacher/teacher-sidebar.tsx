@@ -16,7 +16,6 @@ const menuItems = [
     { name: "Dashboard", href: "/teacher", icon: LayoutDashboard },
     { name: "My Courses", href: "/teacher/courses", icon: BookOpen },
     { name: "Live Classes", href: "/teacher/live-classes", icon: Video },
-    { name: "Student Doubts", href: "/teacher/doubts", icon: HelpCircle },
     { name: "Create Course", href: "/teacher/courses/create", icon: PlusCircle },
 ];
 

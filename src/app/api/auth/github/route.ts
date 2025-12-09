@@ -4,11 +4,13 @@ export async function GET(req: Request) {
   try {
     // GitHub OAuth configuration
     const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
+    const baseUrl =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      (process.env.NODE_ENV === "development"
+        ? "http://localhost:3000"
+        : "https://weboryskills.in");
     const GITHUB_REDIRECT_URI =
-      process.env.GITHUB_REDIRECT_URI ||
-      `${
-        process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in"
-      }/api/auth/github/callback`;
+      process.env.GITHUB_REDIRECT_URI || `${baseUrl}/api/auth/github/callback`;
 
     if (!GITHUB_CLIENT_ID) {
       return NextResponse.json(

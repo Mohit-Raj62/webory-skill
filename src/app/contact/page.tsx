@@ -73,18 +73,18 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <h3 className="text-white font-medium mb-1">Email Us</h3>
-                                        <p className="text-gray-400">support@skillwebory.com</p>
-                                        <p className="text-gray-400">info@skillwebory.com</p>
+                                        <p className="text-gray-400">supportskillwebory@gmail.com</p>
+                                        <p className="text-gray-400">infoskillwebory@gmail.com</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-4">
                                     <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center text-green-400 shrink-0">
-                                        <Phone size={20} />
+                                          <Phone size={20} />
                                     </div>
                                     <div>
                                         <h3 className="text-white font-medium mb-1">Call Us</h3>
-                                        <p className="text-gray-400">+91 98765 43210</p>
-                                        <p className="text-gray-400">Mon - Fri, 9am - 6pm</p>
+                                        <p className="text-gray-400">+91 62059 47359</p>
+                                        <p className="text-gray-400">Mon - Fri, 8am - 10pm</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-4">
@@ -94,9 +94,9 @@ export default function ContactPage() {
                                     <div>
                                         <h3 className="text-white font-medium mb-1">Visit Us</h3>
                                         <p className="text-gray-400">
-                                            123 Tech Park, Innovation Street<br />
-                                            Bangalore, Karnataka 560001<br />
-                                            India
+                                            JBIT College, 23 Milestone<br />
+                                            NH-07, Chakrata Road<br />
+                                            Shankarpur, Dehradun 248197
                                         </p>
                                     </div>
                                 </div>
@@ -104,10 +104,17 @@ export default function ContactPage() {
                         </div>
 
                         {/* Map Placeholder */}
+                        {/* Map Integration */}
                         <div className="glass-card p-2 rounded-2xl h-64 bg-white/5 flex items-center justify-center relative overflow-hidden">
-                            <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
-                                <span className="text-gray-500 font-medium">Map Integration Placeholder</span>
-                            </div>
+                            <iframe 
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3442.274293529344!2d77.92578507548268!3d30.37126137476056!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3908d5786311693d%3A0xe7a5651a5116790a!2sJBIT%20College!5e0!3m2!1sen!2sin!4v1717900000000!5m2!1sen!2sin" 
+                                width="100%" 
+                                height="100%" 
+                                style={{ border: 0, filter: "invert(90%) hue-rotate(180deg)" }} 
+                                allowFullScreen 
+                                loading="lazy" 
+                                referrerPolicy="no-referrer-when-downgrade"
+                            ></iframe>
                         </div>
                     </div>
 

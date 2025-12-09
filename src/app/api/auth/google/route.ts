@@ -4,11 +4,13 @@ export async function GET(req: Request) {
   try {
     // Google OAuth configuration
     const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+    const baseUrl =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      (process.env.NODE_ENV === "development"
+        ? "http://localhost:3000"
+        : "https://weboryskills.in");
     const GOOGLE_REDIRECT_URI =
-      process.env.GOOGLE_REDIRECT_URI ||
-      `${
-        process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in"
-      }/api/auth/google/callback`;
+      process.env.GOOGLE_REDIRECT_URI || `${baseUrl}/api/auth/google/callback`;
 
     if (!GOOGLE_CLIENT_ID) {
       return NextResponse.json(

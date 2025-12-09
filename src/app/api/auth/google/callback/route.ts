@@ -21,11 +21,13 @@ export async function GET(req: Request) {
 
     const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
     const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+    const baseUrl =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      (process.env.NODE_ENV === "development"
+        ? "http://localhost:3000"
+        : "https://weboryskills.in");
     const GOOGLE_REDIRECT_URI =
-      process.env.GOOGLE_REDIRECT_URI ||
-      `${
-        process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in"
-      }/api/auth/google/callback`;
+      process.env.GOOGLE_REDIRECT_URI || `${baseUrl}/api/auth/google/callback`;
 
     if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
       return NextResponse.redirect(

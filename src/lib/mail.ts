@@ -2,7 +2,9 @@ import nodemailer from "nodemailer";
 import { createInvoiceHTML } from "./invoiceTemplate";
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // true for 465, false for other ports
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -257,6 +259,24 @@ export const emailTemplates = {
       
       <p>Please verify the screenshot and approve/reject the payment.</p>
       <p>Best Regards,<br/>Webory Skills System</p>
+    </div>
+  `,
+  contactFormSubmission: (
+    name: string,
+    email: string,
+    subject: string,
+    message: string
+  ) => `
+    <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #2563eb;">New Contact Form Submission 📬</h2>
+      <div style="background: #f8fafc; border-left: 4px solid #2563eb; padding: 20px; margin: 20px 0;">
+        <p style="margin: 5px 0;"><strong>From:</strong> ${name} (<a href="mailto:${email}">${email}</a>)</p>
+        <p style="margin: 5px 0;"><strong>Subject:</strong> ${subject}</p>
+        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 15px 0;">
+        <p style="margin: 5px 0;"><strong>Message:</strong></p>
+        <p style="white-space: pre-wrap; color: #475569;">${message}</p>
+      </div>
+      <p style="color: #64748b; font-size: 12px; text-align: center;">Received via Webory Skills Contact Form<br>${new Date().toLocaleString()}</p>
     </div>
   `,
 };

@@ -109,7 +109,7 @@ export default function BlogPage() {
                                             <User size={14} className="mr-2" />
                                             {post.author}
                                         </div>
-                                        <Link href="#" className="text-blue-400 hover:text-blue-300 text-sm font-medium flex items-center">
+                                        <Link href={`/blog/${post.title.toLowerCase().replace(/ /g, '-')}`} className="text-blue-400 hover:text-blue-300 text-sm font-medium flex items-center">
                                             Read More <ArrowRight size={14} className="ml-1" />
                                         </Link>
                                     </div>
