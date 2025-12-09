@@ -30,6 +30,7 @@ export async function GET(req: Request) {
       process.env.GOOGLE_REDIRECT_URI || `${baseUrl}/api/auth/google/callback`;
 
     if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
+      console.error("Google OAuth configuration missing");
       return NextResponse.redirect(
         `${
           process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in"
@@ -53,6 +54,7 @@ export async function GET(req: Request) {
     const tokens = await tokenResponse.json();
 
     if (!tokens.access_token) {
+      console.error("Failed to retrieve Google access token:", tokens);
       return NextResponse.redirect(
         `${
           process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in"
@@ -88,13 +90,21 @@ export async function GET(req: Request) {
         await user.save();
       } else {
         // Create new user
+        // Ensure lastName is not empty to satisfy Mongoose validation
+        const firstName =
+          googleUser.given_name || googleUser.name?.split(" ")[0] || "User";
+        let lastName =
+          googleUser.family_name ||
+          googleUser.name?.split(" ").slice(1).join(" ") ||
+          "";
+
+        if (!lastName || lastName.trim() === "") {
+          lastName = "."; // Fallback for mononyms
+        }
+
         user = await User.create({
-          firstName:
-            googleUser.given_name || googleUser.name?.split(" ")[0] || "User",
-          lastName:
-            googleUser.family_name ||
-            googleUser.name?.split(" ").slice(1).join(" ") ||
-            "",
+          firstName,
+          lastName,
           email: googleUser.email,
           password: crypto.randomBytes(32).toString("hex"), // Random password for OAuth users
           oauthProvider: "google",

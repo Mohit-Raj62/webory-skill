@@ -30,6 +30,7 @@ export async function GET(req: Request) {
       process.env.GITHUB_REDIRECT_URI || `${baseUrl}/api/auth/github/callback`;
 
     if (!GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET) {
+      console.error("GitHub OAuth configuration missing");
       return NextResponse.redirect(
         `${
           process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in"
@@ -58,6 +59,7 @@ export async function GET(req: Request) {
     const tokens = await tokenResponse.json();
 
     if (!tokens.access_token) {
+      console.error("Failed to retrieve GitHub access token:", tokens);
       return NextResponse.redirect(
         `${
           process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in"
@@ -88,6 +90,7 @@ export async function GET(req: Request) {
       emails.find((e: any) => e.primary)?.email || emails[0]?.email;
 
     if (!primaryEmail) {
+      console.error("No email found for GitHub user");
       return NextResponse.redirect(
         `${
           process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in"
@@ -114,9 +117,16 @@ export async function GET(req: Request) {
       } else {
         // Create new user
         const nameParts = (githubUser.name || githubUser.login).split(" ");
+        const firstName = nameParts[0] || "User";
+        let lastName = nameParts.slice(1).join(" ") || "";
+
+        if (!lastName || lastName.trim() === "") {
+          lastName = "."; // Fallback for mononyms
+        }
+
         user = await User.create({
-          firstName: nameParts[0] || "User",
-          lastName: nameParts.slice(1).join(" ") || "",
+          firstName,
+          lastName,
           email: primaryEmail,
           password: crypto.randomBytes(32).toString("hex"), // Random password for OAuth users
           oauthProvider: "github",
