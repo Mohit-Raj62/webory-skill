@@ -4,11 +4,11 @@ import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, Lock, Mail, Shield, ArrowRight } from "lucide-react";
 
-export default function LoginPage() {
+function LoginContent() {
     const [loginMethod, setLoginMethod] = useState < "password" | "otp" > ("password");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -439,5 +439,13 @@ export default function LoginPage() {
 
             <Footer />
         </main>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center text-white">Loading...</div>}>
+            <LoginContent />
+        </Suspense>
     );
 }
