@@ -4,8 +4,8 @@ import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, Lock, Mail, Shield, ArrowRight } from "lucide-react";
 
 export default function LoginPage() {
@@ -19,6 +19,21 @@ export default function LoginPage() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const router = useRouter();
+    const searchParams = useSearchParams();
+
+    useEffect(() => {
+        const errorParam = searchParams.get("error");
+        if (errorParam) {
+            const errorMap: { [key: string]: string } = {
+                oauth_failed: "Authentication failed. Please try again.",
+                oauth_not_configured: "Server configuration error. Please contact support.",
+                oauth_token_failed: "Failed to verify account with provider.",
+                no_email: "Your account has no email address associated.",
+                oauth_callback_failed: "Login failed during callback. Please try again.",
+            };
+            setError(errorMap[errorParam] || "An error occurred during login.");
+        }
+    }, [searchParams]);
 
     const handlePasswordLogin = async (e: React.FormEvent) => {
         e.preventDefault();

@@ -127,14 +127,8 @@ export async function GET(req: Request) {
     );
 
     // Redirect to profile with token
-    const redirectUrl =
-      user.role === "admin"
-        ? `${
-            process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in"
-          }/admin`
-        : `${
-            process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in"
-          }/profile`;
+    const redirectPath = user.role === "admin" ? "/admin" : "/profile";
+    const redirectUrl = new URL(redirectPath, req.url);
 
     const response = NextResponse.redirect(redirectUrl);
 
