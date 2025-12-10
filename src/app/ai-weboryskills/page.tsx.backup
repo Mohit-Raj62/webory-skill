@@ -1,0 +1,348 @@
+"use client";
+
+import { useState, useRef, useEffect } from "react";
+import { Navbar } from "@/components/ui/navbar";
+import { Footer } from "@/components/ui/footer";
+import { Button } from "@/components/ui/button";
+import { Send, Sparkles, BookOpen, Loader2, CheckCircle, Clock, Target, Zap, Award, TrendingUp, Rocket, MessageCircle, Map, User, Bot } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+
+interface RoadmapPhase {
+  phase: string;
+  duration: string;
+  topics: string[];
+  projects: string[];
+  color: string;
+}
+
+interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export default function AIWeboryskillsPage() {
+    const [mode, setMode] = useState<"roadmap" | "chat">("roadmap");
+    const [topic, setTopic] = useState("");
+    const [roadmapData, setRoadmapData] = useState<RoadmapPhase[]>([]);
+    const [overview, setOverview] = useState("");
+    const [prerequisites, setPrerequisites] = useState<string[]>([]);
+    const [careerPaths, setCareerPaths] = useState<string[]>([]);
+    const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const chatEndRef = useRef<HTMLDivElement>(null);
+
+    // Auto-scroll to bottom when new message arrives
+    useEffect(() => {
+        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [chatHistory]);
+
+    const parseRoadmap = (text: string) => {
+        const phases: RoadmapPhase[] = [];
+        const colors = [
+            "from-blue-500 via-cyan-500 to-teal-500", 
+            "from-purple-500 via-pink-500 to-rose-500", 
+            "from-orange-500 via-amber-500 to-yellow-500"
+        ];
+        
+        const overviewMatch = text.match(/## 📚 Overview\n(.*?)(?=##|$)/s);
+        if (overviewMatch) setOverview(overviewMatch[1].trim());
+
+        const prereqMatch = text.match(/## ✅ Prerequisites\n(.*?)(?=##|$)/s);
+        if (prereqMatch) {
+            const prereqs = prereqMatch[1].match(/- (.*)/g)?.map(p => p.replace('- ', '')) || [];
+            setPrerequisites(prereqs);
+        }
+
+        const careerMatch = text.match(/## 💼 Career Paths\n(.*?)(?=##|$)/s);
+        if (careerMatch) {
+            const careers = careerMatch[1].match(/- (.*)/g)?.map(c => c.replace('- ', '')) || [];
+            setCareerPaths(careers);
+        }
+
+        const phaseMatches = text.matchAll(/### Phase \d+: (.*?) \(Estimated: (.*?)\)(.*?)(?=###|##|$)/gs);
+        let colorIndex = 0;
+        
+        for (const match of phaseMatches) {
+            const topicsMatch = match[3].match(/\*\*Topics to Learn:\*\*(.*?)(?=\*\*|$)/s);
+            const projectsMatch = match[3].match(/\*\*Practice Projects:\*\*(.*?)(?=\*\*|$)/s);
+            
+            const topics = topicsMatch?.[1].match(/- (.*?):/g)?.map(t => t.replace('- ', '').replace(':', '')) || [];
+            const projects = projectsMatch?.[1].match(/\d+\. (.*)/g)?.map(p => p.replace(/\d+\. /, '')) || [];
+
+            phases.push({
+                phase: match[1],
+                duration: match[2],
+                topics: topics.slice(0, 6),
+                projects: projects.slice(0, 3),
+                color: colors[colorIndex % colors.length]
+            });
+            colorIndex++;
+        }
+
+        setRoadmapData(phases);
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        if (!topic.trim()) {
+            setError(mode === "chat" ? "Please enter a question" : "Please enter a topic");
+            return;
+        }
+
+        setLoading(true);
+        setError("");
+
+        if (mode === "roadmap") {
+            setRoadmapData([]);
+            setOverview("");
+            setPrerequisites([]);
+            setCareerPaths([]);
+        }
+
+        try {
+            const res = await fetch("/api/ai/roadmap", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    topic: topic.trim(),
+                    mode: mode,
+                    conversationHistory: mode === "chat" ? chatHistory : undefined
+                }),
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                
+                if (mode === "chat") {
+                    const newMessages: ChatMessage[] = [
+                        ...chatHistory,
+                        { role: "user", content: topic },
+                        { role: "assistant", content: data.answer }
+                    ];
+                    setChatHistory(newMessages);
+                    setTopic("");
+                } else {
+                    parseRoadmap(data.roadmap);
+                }
+            } else {
+                const errorData = await res.json();
+                setError(errorData.error || "Failed to generate response");
+            }
+        } catch (err) {
+            setError("Something went wrong. Please try again.");
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const exampleTopics = [
+        "React.js",
+        "Python",
+        "Machine Learning",
+        "Full Stack",
+        "DevOps",
+        "Blockchain"
+    ];
+
+    const exampleQuestions = [
+        "What is React?",
+        "How to learn Python?",
+        "Explain AI vs ML",
+        "Best coding practices?",
+    ];
+
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
+            <Navbar />
+            
+            {/* Animated Background */}
+            <div className="fixed inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-1/4 -left-48 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+                <div className="absolute bottom-1/4 -right-48 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+            </div>
+
+            <div className="container mx-auto px-4 pt-20 sm:pt-24 pb-8 sm:pb-12 max-w-7xl relative z-10">
+                {/* Header */}
+                <div className="text-center mb-8 sm:mb-12">
+                    <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 px-4 py-2 rounded-full mb-4 border border-white/10 backdrop-blur-sm">
+                        <Sparkles className="text-blue-400 animate-pulse" size={18} />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 font-semibold text-sm">AI-Powered Learning</span>
+                    </div>
+                    <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-5 px-2">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 animate-gradient">
+                            AI Mentor
+                        </span>
+                    </h1>
+                    <p className="text-gray-400 text-sm sm:text-base md:text-lg max-w-2xl mx-auto px-4 leading-relaxed mb-6">
+                        Transform your learning journey with AI-powered personalized roadmaps and instant answers.
+                    </p>
+
+                    {/* Mode Toggle */}
+                    <div className="inline-flex items-center gap-2 bg-black/30 p-1.5 rounded-2xl border border-white/10">
+                        <button
+                            onClick={() => setMode("roadmap")}
+                            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+                                mode === "roadmap"
+                                    ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
+                                    : "text-gray-400 hover:text-white"
+                            }`}
+                        >
+                            <Map size={18} />
+                            <span className="text-sm sm:text-base">Roadmap</span>
+                        </button>
+                        <button
+                            onClick={() => setMode("chat")}
+                            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+                                mode === "chat"
+                                    ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
+                                    : "text-gray-400 hover:text-white"
+                            }`}
+                        >
+                            <MessageCircle size={18} />
+                            <span className="text-sm sm:text-base">Q&A Chat</span>
+                        </button>
+                    </div>
+                </div>
+
+                {/* Chat Mode - ChatGPT Style */}
+                {mode === "chat" && (
+                    <div className="max-w-4xl mx-auto">
+                        {/* Chat Container */}
+                        <div className="bg-gray-900/50 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
+                            {/* Chat Messages Area */}
+                            <div className="h-[500px] overflow-y-auto p-6 space-y-6">
+                                {chatHistory.length > 0 ? (
+                                    <>
+                                        {chatHistory.map((msg, idx) => (
+                                            <div key={idx} className={`flex gap-4 animate-fadeIn ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                                                {/* AI Avatar (left side) */}
+                                                {msg.role === "assistant" && (
+                                                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+                                                        <Bot className="text-white" size={20} />
+                                                    </div>
+                                                )}
+
+                                                {/* Message Content */}
+                                                <div className={`max-w-[75%] ${msg.role === "user" ? "text-right" : "text-left"}`}>
+                                                    <div className={`inline-block p-4 rounded-2xl shadow-lg ${
+                                                        msg.role === "user"
+                                                            ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-tr-sm"
+                                                            : "bg-gray-800/80 text-gray-100 border border-white/10 rounded-tl-sm"
+                                                    }`}>
+                                                        {msg.role === "assistant" ? (
+                                                            <div className="prose prose-invert prose-sm max-w-none">
+                                                                <ReactMarkdown>{msg.content}</ReactMarkdown>
+                                                            </div>
+                                                        ) : (
+                                                            <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                                                        )}
+                                                    </div>
+                                                    <div className={`text-xs text-gray-500 mt-1 px-2 ${msg.role === "user" ? "text-right" : "text-left"}`}>
+                                                        {msg.role === "user" ? "You" : "AI Mentor"}
+                                                    </div>
+                                                </div>
+
+                                                {/* User Avatar (right side) */}
+                                                {msg.role === "user" && (
+                                                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center border-2 border-white/20 shadow-lg">
+                                                        <User className="text-gray-300" size={20} />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                        <div ref={chatEndRef} />
+                                    </>
+                                ) : (
+                                    <div className="flex items-center justify-center h-full">
+                                        <div className="text-center">
+                                            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full mb-4 border border-white/10">
+                                                <MessageCircle className="text-blue-400" size={32} />
+                                            </div>
+                                            <h3 className="text-xl font-bold text-white mb-2">
+                                                Start a conversation
+                                            </h3>
+                                            <p className="text-gray-400 text-sm">
+                                                Ask me anything about tech, programming, or learning
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Input Area - Fixed at Bottom */}
+                            <div className="border-t border-white/10 bg-gray-900/80 backdrop-blur-xl p-6">
+                                <form onSubmit={handleSubmit} className="space-y-4">
+                                    <div className="flex gap-3">
+                                        <input
+                                            type="text"
+                                            value={topic}
+                                            onChange={(e) => setTopic(e.target.value)}
+                                            placeholder="Message AI Mentor..."
+                                            className="flex-1 bg-gray-800/50 border border-white/10 focus:border-blue-500/50 rounded-xl px-4 py-3 text-white text-sm placeholder-gray-500 outline-none transition-all"
+                                            disabled={loading}
+                                        />
+                                        <Button
+                                            type="submit"
+                                            disabled={loading || !topic.trim()}
+                                            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-6 rounded-xl transition-all hover:scale-105"
+                                        >
+                                            {loading ? <Loader2 className="animate-spin" size={20} /> : <Send size={20} />}
+                                        </Button>
+                                    </div>
+
+                                    {/* Example Questions */}
+                                    {chatHistory.length === 0 && (
+                                        <div className="flex flex-wrap gap-2">
+                                            {exampleQuestions.map((q) => (
+                                                <button
+                                                    key={q}
+                                                    type="button"
+                                                    onClick={() => setTopic(q)}
+                                                    className="px-3 py-1.5 bg-gray-800/50 hover:bg-gray-700/50 border border-white/10 rounded-lg text-xs text-gray-300 transition-all"
+                                                    disabled={loading}
+                                                >
+                                                    {q}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {chatHistory.length > 0 && (
+                                        <div className="flex justify-between items-center text-xs text-gray-500">
+                                            <span>{chatHistory.length} messages</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => setChatHistory([])}
+                                                className="text-red-400 hover:text-red-300 transition-colors"
+                                            >
+                                                Clear chat
+                                            </button>
+                                        </div>
+                                    )}
+                                </form>
+
+                                {error && (
+                                    <div className="mt-3 p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
+                                        {error}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Roadmap Mode - Keeping existing UI */}
+                {mode === "roadmap" && (
+                    <div className="text-center py-12">
+                        <p className="text-gray-400">Roadmap mode (existing UI preserved)</p>
+                    </div>
+                )}
+            </div>
+
+            <Footer />
+        </div>
+    );
+}

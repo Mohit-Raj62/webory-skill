@@ -56,6 +56,12 @@ export function Navbar() {
                         </Link>
 
                         {user && (
+                            <Link href="/ai-weboryskills" className="text-sm text-gray-300 hover:text-white transition-colors">
+                                AI Weboryskills
+                            </Link>
+                        )}
+
+                        {user && (
                             <button
                                 onClick={() => setIsFeedbackOpen(true)}
                                 className="text-sm text-gray-300 hover:text-white transition-colors"
@@ -116,6 +122,12 @@ export function Navbar() {
                             <Link href="/internships" className="text-sm text-gray-300 hover:text-white" onClick={() => setIsOpen(false)}>
                                 Internships
                             </Link>
+
+                            {user && (
+                                <Link href="/ai-weboryskills" className="text-sm text-gray-300 hover:text-white" onClick={() => setIsOpen(false)}>
+                                    AI Weboryskills
+                                </Link>
+                            )}
 
                             {user && (
                                 <button

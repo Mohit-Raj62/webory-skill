@@ -40,6 +40,8 @@ export default function EditCoursePage() {
     const [moduleInput, setModuleInput] = useState({ title: "", description: "" });
     const [selectedModuleIndex, setSelectedModuleIndex] = useState<number>(0);
     const [videoInput, setVideoInput] = useState({ title: "", url: "", duration: "" });
+    const [editingVideo, setEditingVideo] = useState<{moduleIndex: number, videoIndex: number} | null>(null);
+    const [editingModule, setEditingModule] = useState<number | null>(null);
     
     // PDF Resources State
     const [pdfs, setPdfs] = useState<any[]>([]);
@@ -635,17 +637,58 @@ export default function EditCoursePage() {
                                     <div key={moduleIndex} className="bg-white/5 p-4 rounded-xl border border-white/10">
                                         <div className="flex items-center justify-between mb-3">
                                             <div className="flex-1">
-                                                <h3 className="text-white font-bold text-lg">
-                                                    Module {moduleIndex + 1}: {module.title}
-                                                </h3>
-                                                {module.description && (
-                                                    <p className="text-gray-400 text-sm">{module.description}</p>
+                                                {editingModule === moduleIndex ? (
+                                                    // Edit Mode
+                                                    <div className="space-y-2">
+                                                        <input
+                                                            type="text"
+                                                            value={module.title}
+                                                            onChange={(e) => {
+                                                                const newModules = [...formData.modules];
+                                                                newModules[moduleIndex].title = e.target.value;
+                                                                setFormData({ ...formData, modules: newModules });
+                                                            }}
+                                                            className="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-white font-bold text-lg"
+                                                            placeholder="Module title"
+                                                        />
+                                                        <input
+                                                            type="text"
+                                                            value={module.description || ""}
+                                                            onChange={(e) => {
+                                                                const newModules = [...formData.modules];
+                                                                newModules[moduleIndex].description = e.target.value;
+                                                                setFormData({ ...formData, modules: newModules });
+                                                            }}
+                                                            className="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-gray-300 text-sm"
+                                                            placeholder="Module description (optional)"
+                                                        />
+                                                        <p className="text-gray-500 text-xs mt-1">
+                                                            {module.videos?.length || 0} video{(module.videos?.length || 0) !== 1 ? 's' : ''}
+                                                        </p>
+                                                    </div>
+                                                ) : (
+                                                    // View Mode
+                                                    <>
+                                                        <h3 className="text-white font-bold text-lg">
+                                                            Module {moduleIndex + 1}: {module.title}
+                                                        </h3>
+                                                        {module.description && (
+                                                            <p className="text-gray-400 text-sm">{module.description}</p>
+                                                        )}
+                                                        <p className="text-gray-500 text-xs mt-1">
+                                                            {module.videos?.length || 0} video{(module.videos?.length || 0) !== 1 ? 's' : ''}
+                                                        </p>
+                                                    </>
                                                 )}
-                                                <p className="text-gray-500 text-xs mt-1">
-                                                    {module.videos?.length || 0} video{(module.videos?.length || 0) !== 1 ? 's' : ''}
-                                                </p>
                                             </div>
                                             <div className="flex items-center gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setEditingModule(editingModule === moduleIndex ? null : moduleIndex)}
+                                                    className="px-3 py-1 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded text-sm"
+                                                >
+                                                    {editingModule === moduleIndex ? "Save" : "Edit"}
+                                                </button>
                                                 <Button
                                                     type="button"
                                                     size="sm"
@@ -669,17 +712,78 @@ export default function EditCoursePage() {
                                             <div className="space-y-2 mt-3">
                                                 {module.videos.map((video: any, videoIndex: number) => (
                                                     <div key={videoIndex} className="flex items-center justify-between bg-black/20 p-3 rounded-lg">
-                                                        <div>
-                                                            <p className="text-white font-medium">{video.title}</p>
-                                                            <p className="text-gray-400 text-sm">{video.duration}</p>
+                                                        {editingVideo?.moduleIndex === moduleIndex && editingVideo?.videoIndex === videoIndex ? (
+                                                            // Edit Mode
+                                                            <div className="flex-1 space-y-2">
+                                                                <input
+                                                                    type="text"
+                                                                    value={formData.modules[moduleIndex].videos[videoIndex].title}
+                                                                    onChange={(e) => {
+                                                                        const newModules = [...formData.modules];
+                                                                        newModules[moduleIndex].videos[videoIndex].title = e.target.value;
+                                                                        setFormData({ ...formData, modules: newModules });
+                                                                    }}
+                                                                    className="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-white text-sm"
+                                                                    placeholder="Video title"
+                                                                />
+                                                                <div className="flex gap-2">
+                                                                    <input
+                                                                        type="text"
+                                                                        value={formData.modules[moduleIndex].videos[videoIndex].url}
+                                                                        onChange={(e) => {
+                                                                            const newModules = [...formData.modules];
+                                                                            newModules[moduleIndex].videos[videoIndex].url = e.target.value;
+                                                                            setFormData({ ...formData, modules: newModules });
+                                                                        }}
+                                                                        className="flex-1 bg-black/40 border border-white/10 rounded px-3 py-2 text-white text-sm"
+                                                                        placeholder="Video URL"
+                                                                    />
+                                                                    <input
+                                                                        type="text"
+                                                                        value={formData.modules[moduleIndex].videos[videoIndex].duration}
+                                                                        onChange={(e) => {
+                                                                            const newModules = [...formData.modules];
+                                                                            newModules[moduleIndex].videos[videoIndex].duration = e.target.value;
+                                                                            setFormData({ ...formData, modules: newModules });
+                                                                        }}
+                                                                        className="w-24 bg-black/40 border border-white/10 rounded px-3 py-2 text-white text-sm"
+                                                                        placeholder="Duration"
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            // View Mode
+                                                            <div>
+                                                                <p className="text-white font-medium">{video.title}</p>
+                                                                <p className="text-gray-400 text-sm">{video.duration}</p>
+                                                            </div>
+                                                        )}
+                                                        <div className="flex gap-2">
+                                                            {editingVideo?.moduleIndex === moduleIndex && editingVideo?.videoIndex === videoIndex ? (
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => setEditingVideo(null)}
+                                                                    className="px-3 py-1 bg-green-500/20 text-green-400 hover:bg-green-500/30 rounded text-sm"
+                                                                >
+                                                                    Save
+                                                                </button>
+                                                            ) : (
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => setEditingVideo({moduleIndex, videoIndex})}
+                                                                    className="px-3 py-1 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded text-sm"
+                                                                >
+                                                                    Edit
+                                                                </button>
+                                                            )}
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeVideoFromModule(moduleIndex, videoIndex)}
+                                                                className="text-red-400 hover:text-red-300"
+                                                            >
+                                                                <X size={18} />
+                                                            </button>
                                                         </div>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => removeVideoFromModule(moduleIndex, videoIndex)}
-                                                            className="text-red-400 hover:text-red-300"
-                                                        >
-                                                            <X size={18} />
-                                                        </button>
                                                     </div>
                                                 ))}
                                             </div>
