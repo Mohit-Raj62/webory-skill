@@ -45,27 +45,27 @@ export default function AIWeboryskillsPage() {
             "from-orange-500 via-amber-500 to-yellow-500"
         ];
         
-        const overviewMatch = text.match(/## 📚 Overview\n(.*?)(?=##|$)/s);
+        const overviewMatch = text.match(/## 📚 Overview\n([\s\S]*?)(?=##|$)/);
         if (overviewMatch) setOverview(overviewMatch[1].trim());
 
-        const prereqMatch = text.match(/## ✅ Prerequisites\n(.*?)(?=##|$)/s);
+        const prereqMatch = text.match(/## ✅ Prerequisites\n([\s\S]*?)(?=##|$)/);
         if (prereqMatch) {
             const prereqs = prereqMatch[1].match(/- (.*)/g)?.map(p => p.replace('- ', '')) || [];
             setPrerequisites(prereqs);
         }
 
-        const careerMatch = text.match(/## 💼 Career Paths\n(.*?)(?=##|$)/s);
+        const careerMatch = text.match(/## 💼 Career Paths\n([\s\S]*?)(?=##|$)/);
         if (careerMatch) {
             const careers = careerMatch[1].match(/- (.*)/g)?.map(c => c.replace('- ', '')) || [];
             setCareerPaths(careers);
         }
 
-        const phaseMatches = text.matchAll(/### Phase \d+: (.*?) \(Estimated: (.*?)\)(.*?)(?=###|##|$)/gs);
+        const phaseMatches = text.matchAll(/### Phase \d+: (.*?) \(Estimated: (.*?)\)([\s\S]*?)(?=###|##|$)/g);
         let colorIndex = 0;
         
         for (const match of phaseMatches) {
-            const topicsMatch = match[3].match(/\*\*Topics to Learn:\*\*(.*?)(?=\*\*|$)/s);
-            const projectsMatch = match[3].match(/\*\*Practice Projects:\*\*(.*?)(?=\*\*|$)/s);
+            const topicsMatch = match[3].match(/\*\*Topics to Learn:\*\*([\s\S]*?)(?=\*\*|$)/);
+            const projectsMatch = match[3].match(/\*\*Practice Projects:\*\*([\s\S]*?)(?=\*\*|$)/);
             
             const topics = topicsMatch?.[1].match(/- (.*?):/g)?.map(t => t.replace('- ', '').replace(':', '')) || [];
             const projects = projectsMatch?.[1].match(/\d+\. (.*)/g)?.map(p => p.replace(/\d+\. /, '')) || [];
