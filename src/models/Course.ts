@@ -58,6 +58,36 @@ const CourseSchema = new Schema({
     ],
     default: [],
   },
+  modules: {
+    type: [
+      {
+        title: {
+          type: String,
+          required: true,
+        },
+        description: {
+          type: String,
+          default: "",
+        },
+        order: {
+          type: Number,
+          required: true,
+          default: 0,
+        },
+        videos: {
+          type: [
+            {
+              title: String,
+              url: String,
+              duration: String,
+            },
+          ],
+          default: [],
+        },
+      },
+    ],
+    default: [],
+  },
   thumbnail: {
     type: String,
     default: "",

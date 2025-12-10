@@ -94,6 +94,15 @@ export async function PUT(
       );
     }
 
+    // Handle module-based updates
+    if (data.modules && data.modules.length > 0) {
+      // Flatten modules to videos array for backward compatibility
+      const flattenedVideos = data.modules
+        .sort((a: any, b: any) => a.order - b.order)
+        .flatMap((module: any) => module.videos || []);
+      data.videos = flattenedVideos;
+    }
+
     const course = await Course.findByIdAndUpdate(id, data, { new: true });
 
     return NextResponse.json({ course });

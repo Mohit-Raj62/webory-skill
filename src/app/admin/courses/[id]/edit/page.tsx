@@ -28,10 +28,17 @@ export default function EditCoursePage() {
         duration: "0h",
         thumbnail: "",
         curriculum: [] as string[],
-        videos: [] as { title: string; url: string; duration: string }[],
+        modules: [] as {
+            title: string;
+            description: string;
+            order: number;
+            videos: { title: string; url: string; duration: string }[];
+        }[],
     });
 
     const [curriculumInput, setCurriculumInput] = useState("");
+    const [moduleInput, setModuleInput] = useState({ title: "", description: "" });
+    const [selectedModuleIndex, setSelectedModuleIndex] = useState<number>(0);
     const [videoInput, setVideoInput] = useState({ title: "", url: "", duration: "" });
     
     // PDF Resources State
@@ -66,6 +73,18 @@ export default function EditCoursePage() {
             const res = await fetch(`/api/courses/${params.id}`);
             if (res.ok) {
                 const data = await res.json();
+                
+                // Handle modules - create default if not exists
+                let modules = data.course.modules || [];
+                if (modules.length === 0 && data.course.videos && data.course.videos.length > 0) {
+                    modules = [{
+                        title: "Course Content",
+                        description: "All course videos",
+                        order: 0,
+                        videos: data.course.videos
+                    }];
+                }
+                
                 setFormData({
                     title: data.course.title || "",
                     description: data.course.description || "",
@@ -79,7 +98,7 @@ export default function EditCoursePage() {
                     duration: data.course.duration || "0h",
                     thumbnail: data.course.thumbnail || "",
                     curriculum: data.course.curriculum || [],
-                    videos: data.course.videos || [],
+                    modules: modules,
                 });
             }
         } catch (error) {
@@ -102,7 +121,8 @@ export default function EditCoursePage() {
 
             if (res.ok) {
                 alert("Course updated successfully!");
-                router.push("/admin/courses");
+                // Refetch course data to sync state with database
+                await fetchCourse();
             } else {
                 alert("Failed to update course");
             }
@@ -131,12 +151,51 @@ export default function EditCoursePage() {
         });
     };
 
-    const addVideo = (e?: React.MouseEvent) => {
-        e?.preventDefault();
-        if (videoInput.title && videoInput.url) {
+    const addModule = () => {
+        if (moduleInput.title.trim()) {
+            const newModule = {
+                title: moduleInput.title,
+                description: moduleInput.description,
+                order: formData.modules.length,
+                videos: []
+            };
             setFormData({
                 ...formData,
-                videos: [...formData.videos, { ...videoInput }],
+                modules: [...formData.modules, newModule]
+            });
+            setModuleInput({ title: "", description: "" });
+            setSelectedModuleIndex(formData.modules.length);
+        }
+    };
+
+    const removeModule = (index: number) => {
+        if (confirm("Are you sure you want to delete this module and all its videos?")) {
+            const newModules = formData.modules.filter((_, i) => i !== index);
+            newModules.forEach((module, i) => {
+                module.order = i;
+            });
+            setFormData({
+                ...formData,
+                modules: newModules
+            });
+            if (selectedModuleIndex >= newModules.length) {
+                setSelectedModuleIndex(Math.max(0, newModules.length - 1));
+            }
+        }
+    };
+
+    const addVideoToModule = (e?: React.MouseEvent) => {
+        e?.preventDefault();
+        if (videoInput.title && videoInput.url && formData.modules.length > 0) {
+            const newModules = [...formData.modules];
+            // Ensure videos array exists
+            if (!newModules[selectedModuleIndex].videos) {
+                newModules[selectedModuleIndex].videos = [];
+            }
+            newModules[selectedModuleIndex].videos.push({ ...videoInput });
+            setFormData({
+                ...formData,
+                modules: newModules
             });
             setVideoInput({ title: "", url: "", duration: "" });
         }
@@ -195,16 +254,31 @@ export default function EditCoursePage() {
                 setUploadProgress(progress);
             });
 
+            const newModules = [...formData.modules];
+            if (newModules.length === 0) {
+                newModules.push({
+                    title: "Course Content",
+                    description: "All course videos",
+                    order: 0,
+                    videos: []
+                });
+                setSelectedModuleIndex(0);
+            }
+            
+            // Ensure videos array exists
+            if (!newModules[selectedModuleIndex].videos) {
+                newModules[selectedModuleIndex].videos = [];
+            }
+            
+            newModules[selectedModuleIndex].videos.push({
+                title: videoInput.title,
+                url: data.url,
+                duration: videoInput.duration || Math.floor(data.duration || 0).toString() + "s",
+            });
+
             setFormData((prev) => ({
                 ...prev,
-                videos: [
-                    ...prev.videos,
-                    {
-                        title: videoInput.title,
-                        url: data.url,
-                        duration: videoInput.duration || Math.floor(data.duration || 0).toString() + "s",
-                    },
-                ],
+                modules: newModules
             }));
             setVideoInput({ title: "", url: "", duration: "" });
             alert("Video uploaded successfully!");
@@ -218,10 +292,12 @@ export default function EditCoursePage() {
         }
     };
 
-    const removeVideo = (index: number) => {
+    const removeVideoFromModule = (moduleIndex: number, videoIndex: number) => {
+        const newModules = [...formData.modules];
+        newModules[moduleIndex].videos = newModules[moduleIndex].videos.filter((_, i) => i !== videoIndex);
         setFormData({
             ...formData,
-            videos: formData.videos.filter((_, i) => i !== index),
+            modules: newModules
         });
     };
 
@@ -520,102 +596,188 @@ export default function EditCoursePage() {
                         </div>
                     </div>
 
-                    {/* Videos */}
+                    {/* Modules and Videos */}
                     <div>
-                        <label className="text-sm text-gray-300 block mb-2">Course Videos</label>
-                        <div className="space-y-3 mb-3">
-                            <input
-                                type="text"
-                                placeholder="Video title"
-                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                value={videoInput.title}
-                                onChange={(e) => setVideoInput({ ...videoInput, title: e.target.value })}
-                            />
-                            <div className="flex gap-2">
-                                <div className="flex-1">
-                                    <input
-                                        type="url"
-                                        placeholder="Video URL (YouTube, Vimeo, etc.)"
-                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                        value={videoInput.url}
-                                        onChange={(e) => setVideoInput({ ...videoInput, url: e.target.value })}
-                                    />
-                                </div>
-                                <span className="text-gray-400 flex items-center px-3">OR</span>
-                                <div className="relative">
-                                    <input
-                                        type="file"
-                                        accept="video/*"
-                                        onChange={handleVideoFileUpload}
-                                        disabled={uploadingVideo}
-                                        className="hidden"
-                                        id="video-file-input"
-                                    />
-                                    <label
-                                        htmlFor="video-file-input"
-                                        className={`flex items-center gap-2 px-4 py-3 rounded-xl cursor-pointer transition-all ${uploadingVideo
-                                            ? "bg-gray-600 cursor-not-allowed"
-                                            : "bg-green-600 hover:bg-green-700"
-                                            } text-white`}
-                                    >
-                                        <Upload size={20} />
-                                        {uploadingVideo ? "Uploading..." : "Upload File"}
-                                    </label>
-                                </div>
-                            </div>
-
-                            {/* Upload Progress Bar */}
-                            {uploadingVideo && uploadProgress > 0 && (
-                                <div className="space-y-2">
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-gray-300">Uploading video...</span>
-                                        <span className="text-blue-400">{Math.round(uploadProgress)}%</span>
-                                    </div>
-                                    <div className="w-full bg-black/30 rounded-full h-2 overflow-hidden">
-                                        <div
-                                            className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 ease-out"
-                                            style={{ width: `${uploadProgress}%` }}
-                                        />
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* File Size Info */}
-                            <p className="text-xs text-gray-400">
-                                Maximum file size: 500MB. Supported formats: MP4, MOV, AVI, etc.
-                            </p>
-
-                            <div className="flex gap-2">
+                        <label className="text-sm text-gray-300 block mb-4">Course Modules & Videos</label>
+                        
+                        {/* Add New Module */}
+                        <div className="bg-white/5 p-4 rounded-xl border border-white/10 mb-4">
+                            <h3 className="text-white font-medium mb-3 flex items-center gap-2">
+                                <Plus size={18} className="text-blue-400" />
+                                Add New Module
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                                 <input
                                     type="text"
-                                    placeholder="Duration (e.g., 15:30)"
-                                    className="flex-1 bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                    value={videoInput.duration}
-                                    onChange={(e) => setVideoInput({ ...videoInput, duration: e.target.value })}
+                                    placeholder="Module Title (e.g., Introduction to React)"
+                                    className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                    value={moduleInput.title}
+                                    onChange={(e) => setModuleInput({ ...moduleInput, title: e.target.value })}
                                 />
-                                <Button type="button" onClick={addVideo}>
-                                    <Plus size={20} className="mr-2" />
-                                    Add by URL
-                                </Button>
+                                <input
+                                    type="text"
+                                    placeholder="Module Description (optional)"
+                                    className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                    value={moduleInput.description}
+                                    onChange={(e) => setModuleInput({ ...moduleInput, description: e.target.value })}
+                                />
                             </div>
+                            <Button type="button" onClick={addModule} className="w-full">
+                                <Plus size={20} className="mr-2" />
+                                Create Module
+                            </Button>
                         </div>
-                        <div className="space-y-2">
-                            {(formData.videos || []).map((video, index) => (
-                                <div key={index} className="flex items-center justify-between bg-white/5 p-3 rounded-lg">
-                                    <div>
-                                        <p className="text-white font-medium">{video.title}</p>
-                                        <p className="text-gray-400 text-sm">{video.duration}</p>
+
+                        {/* Module List */}
+                        {formData.modules.length > 0 && (
+                            <div className="space-y-4">
+                                {formData.modules.map((module, moduleIndex) => (
+                                    <div key={moduleIndex} className="bg-white/5 p-4 rounded-xl border border-white/10">
+                                        <div className="flex items-center justify-between mb-3">
+                                            <div className="flex-1">
+                                                <h3 className="text-white font-bold text-lg">
+                                                    Module {moduleIndex + 1}: {module.title}
+                                                </h3>
+                                                {module.description && (
+                                                    <p className="text-gray-400 text-sm">{module.description}</p>
+                                                )}
+                                                <p className="text-gray-500 text-xs mt-1">
+                                                    {module.videos?.length || 0} video{(module.videos?.length || 0) !== 1 ? 's' : ''}
+                                                </p>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Button
+                                                    type="button"
+                                                    size="sm"
+                                                    variant={selectedModuleIndex === moduleIndex ? "default" : "outline"}
+                                                    onClick={() => setSelectedModuleIndex(moduleIndex)}
+                                                >
+                                                    {selectedModuleIndex === moduleIndex ? "Selected" : "Select"}
+                                                </Button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeModule(moduleIndex)}
+                                                    className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                                                >
+                                                    <X size={18} />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* Videos in this module */}
+                                        {module.videos && module.videos.length > 0 && (
+                                            <div className="space-y-2 mt-3">
+                                                {module.videos.map((video: any, videoIndex: number) => (
+                                                    <div key={videoIndex} className="flex items-center justify-between bg-black/20 p-3 rounded-lg">
+                                                        <div>
+                                                            <p className="text-white font-medium">{video.title}</p>
+                                                            <p className="text-gray-400 text-sm">{video.duration}</p>
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => removeVideoFromModule(moduleIndex, videoIndex)}
+                                                            className="text-red-400 hover:text-red-300"
+                                                        >
+                                                            <X size={18} />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => removeVideo(index)}
-                                        className="text-red-400 hover:text-red-300"
-                                    >
-                                        <X size={18} />
-                                    </button>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Add Video to Selected Module */}
+                        {formData.modules.length > 0 && (
+                            <div className="bg-blue-500/10 p-4 rounded-xl border border-blue-500/30 mt-4">
+                                <h3 className="text-white font-medium mb-3">
+                                    Add Video to: {formData.modules[selectedModuleIndex]?.title || "Module"}
+                                </h3>
+                                <div className="space-y-3">
+                                    <input
+                                        type="text"
+                                        placeholder="Video title"
+                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                        value={videoInput.title}
+                                        onChange={(e) => setVideoInput({ ...videoInput, title: e.target.value })}
+                                    />
+                                    <div className="flex gap-2">
+                                        <div className="flex-1">
+                                            <input
+                                                type="url"
+                                                placeholder="Video URL (YouTube, Vimeo, etc.)"
+                                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                                value={videoInput.url}
+                                                onChange={(e) => setVideoInput({ ...videoInput, url: e.target.value })}
+                                            />
+                                        </div>
+                                        <span className="text-gray-400 flex items-center px-3">OR</span>
+                                        <div className="relative">
+                                            <input
+                                                type="file"
+                                                accept="video/*"
+                                                onChange={handleVideoFileUpload}
+                                                disabled={uploadingVideo}
+                                                className="hidden"
+                                                id="video-file-input"
+                                            />
+                                            <label
+                                                htmlFor="video-file-input"
+                                                className={`flex items-center gap-2 px-4 py-3 rounded-xl cursor-pointer transition-all ${uploadingVideo
+                                                    ? "bg-gray-600 cursor-not-allowed"
+                                                    : "bg-green-600 hover:bg-green-700"
+                                                    } text-white`}
+                                            >
+                                                <Upload size={20} />
+                                                {uploadingVideo ? "Uploading..." : "Upload File"}
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    {/* Upload Progress Bar */}
+                                    {uploadingVideo && uploadProgress > 0 && (
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-gray-300">Uploading video...</span>
+                                                <span className="text-blue-400">{Math.round(uploadProgress)}%</span>
+                                            </div>
+                                            <div className="w-full bg-black/30 rounded-full h-2 overflow-hidden">
+                                                <div
+                                                    className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 ease-out"
+                                                    style={{ width: `${uploadProgress}%` }}
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <p className="text-xs text-gray-400">
+                                        Maximum file size: 500MB. Supported formats: MP4, MOV, AVI, etc.
+                                    </p>
+
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            placeholder="Duration (e.g., 15:30)"
+                                            className="flex-1 bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                            value={videoInput.duration}
+                                            onChange={(e) => setVideoInput({ ...videoInput, duration: e.target.value })}
+                                        />
+                                        <Button type="button" onClick={addVideoToModule}>
+                                            <Plus size={20} className="mr-2" />
+                                            Add by URL
+                                        </Button>
+                                    </div>
                                 </div>
-                            ))}
-                        </div>
+                            </div>
+                        )}
+
+                        {formData.modules.length === 0 && (
+                            <div className="text-center py-10 text-gray-500 bg-white/5 rounded-xl border border-white/10">
+                                <p>No modules created yet. Create your first module to add videos!</p>
+                            </div>
+                        )}
                     </div>
 
                     {/* PDF Resources */}

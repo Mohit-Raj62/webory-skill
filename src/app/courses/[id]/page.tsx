@@ -317,7 +317,59 @@ export default function CourseDetailsPage() {
 
                         <div className="glass-card p-8 rounded-2xl mb-12">
                             <h2 className="text-2xl font-bold text-white mb-6">Course Content</h2>
-                            {course.videos && course.videos.length > 0 ? (
+                            {course.modules && course.modules.length > 0 && course.modules.some((m: any) => m.videos && m.videos.length > 0) ? (
+                                <div className="space-y-4">
+                                    {course.modules
+                                        .sort((a: any, b: any) => a.order - b.order)
+                                        .map((module: any, moduleIndex: number) => {
+                                            // Calculate starting video index for this module
+                                            const startIndex = course.modules
+                                                .slice(0, moduleIndex)
+                                                .reduce((acc: number, m: any) => acc + (m.videos?.length || 0), 0);
+                                            
+                                            return (
+                                                <div key={moduleIndex} className="border border-white/10 rounded-xl overflow-hidden">
+                                                    <div className="bg-white/5 p-4 border-b border-white/10">
+                                                        <h3 className="text-white font-bold text-lg">
+                                                            Module {moduleIndex + 1}: {module.title}
+                                                        </h3>
+                                                        {module.description && (
+                                                            <p className="text-gray-400 text-sm mt-1">{module.description}</p>
+                                                        )}
+                                                        <p className="text-gray-500 text-xs mt-2">
+                                                            {module.videos?.length || 0} video{(module.videos?.length || 0) !== 1 ? 's' : ''}
+                                                        </p>
+                                                    </div>
+                                                    <div className="space-y-2 p-2">
+                                                        {(module.videos || []).map((video: any, videoIndex: number) => {
+                                                            const globalIndex = startIndex + videoIndex;
+                                                            return (
+                                                                <div key={videoIndex} className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:bg-white/10 transition-colors">
+                                                                    <div className="flex items-center text-gray-300 flex-1">
+                                                                        <PlayCircle className="mr-3 text-gray-500" size={20} />
+                                                                        <div>
+                                                                            <span className="text-white font-medium">{video.title}</span>
+                                                                            <p className="text-xs text-gray-500">{video.duration}</p>
+                                                                        </div>
+                                                                    </div>
+                                                                    {isEnrolled ? (
+                                                                        <Link href={`/courses/${id}/video/${globalIndex}`}>
+                                                                            <Button size="sm" variant="ghost" className="text-blue-400 hover:text-blue-300">
+                                                                                Play
+                                                                            </Button>
+                                                                        </Link>
+                                                                    ) : (
+                                                                        <Lock size={16} className="text-gray-600" />
+                                                                    )}
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                </div>
+                            ) : course.videos && course.videos.length > 0 ? (
                                 <div className="space-y-4">
                                     {course.videos.map((video: any, index: number) => (
                                         <div key={index} className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:bg-white/10 transition-colors">

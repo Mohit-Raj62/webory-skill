@@ -123,9 +123,16 @@ export async function POST(
       });
     }
 
+    console.log("=== VIDEO WATCH DEBUG ===");
+    console.log(`Course ID: ${courseId}`);
+    console.log(`Video Index: ${videoIdx}`);
+    console.log(`Total Videos in course.videos: ${totalVideos}`);
+    console.log(`Watched Count (>=90%): ${watchedCount}`);
+    console.log(`Calculated Progress: ${newProgress}%`);
     console.log(
       `Video ${videoIdx} marked as watched. Progress: ${newProgress}%`
     );
+    console.log("========================");
 
     return NextResponse.json({
       success: true,

@@ -707,59 +707,144 @@ export default function VideoPlayerPage() {
                                 </span>
                             </div>
 
-                            <div className="space-y-2 overflow-y-auto pr-2" style={{ maxHeight: 'calc(100vh - 240px)' }}>
-                                {course?.videos?.map((video: any, index: number) => {
-                                    const watched = isWatched(index);
-
-                                    return (
-                                        <button
-                                            key={index}
-                                            onClick={() => {
-                                                router.push(`/courses/${courseId}/video/${index}`);
-                                                setHasMarkedAsWatched(false);
-                                            }}
-                                            className={`w-full text-left p-3 rounded-lg border transition-all duration-300 ${index === currentIndex
-                                                ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-blue-500 shadow-lg shadow-blue-500/20'
-                                                : watched
-                                                    ? 'bg-green-500/20 border-green-500/50 hover:bg-green-500/30'
-                                                    : 'bg-gray-800/50 border-gray-700 hover:bg-gray-700/50'
-                                                }`}
-                                        >
-                                            <div className="flex items-start gap-3">
-                                                <div className="flex-shrink-0 mt-0.5">
-                                                    {watched ? (
-                                                        <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center shadow-lg shadow-green-500/20">
-                                                            <CheckCircle size={14} className="text-white" />
-                                                        </div>
-                                                    ) : (
-                                                        <div className="w-5 h-5 rounded-full border-2 border-gray-600"></div>
-                                                    )}
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <p className={`text-sm font-medium ${index === currentIndex
-                                                        ? 'text-blue-400'
-                                                        : watched
-                                                            ? 'text-green-400'
-                                                            : 'text-white'
-                                                        }`}>
-                                                        {index + 1}. {video.title}
-                                                    </p>
-                                                    <div className="flex items-center gap-2 mt-1">
-                                                        <p className="text-xs text-gray-400">{video.duration}</p>
-                                                        {index === currentIndex && (
-                                                            <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full">
-                                                                Playing
-                                                            </span>
+                            <div className="space-y-3 overflow-y-auto pr-2" style={{ maxHeight: 'calc(100vh - 240px)' }}>
+                                {course?.modules && course.modules.length > 0 ? (
+                                    course.modules
+                                        .sort((a: any, b: any) => a.order - b.order)
+                                        .map((module: any, moduleIndex: number) => {
+                                            // Calculate starting video index for this module
+                                            const startIndex = course.modules
+                                                .slice(0, moduleIndex)
+                                                .reduce((acc: number, m: any) => acc + (m.videos?.length || 0), 0);
+                                            
+                                            return (
+                                                <div key={moduleIndex} className="mb-4">
+                                                    {/* Module Header */}
+                                                    <div className="bg-gradient-to-r from-gray-800 to-gray-700 p-3 rounded-lg mb-2 border border-gray-600">
+                                                        <h3 className="text-sm font-bold text-white">
+                                                            Module {moduleIndex + 1}: {module.title}
+                                                        </h3>
+                                                        {module.description && (
+                                                            <p className="text-xs text-gray-400 mt-1">{module.description}</p>
                                                         )}
-                                                        {watched && index !== currentIndex && (
-                                                            <span className="text-xs text-green-500">✓ Done</span>
-                                                        )}
+                                                        <p className="text-xs text-gray-500 mt-1">
+                                                            {module.videos?.length || 0} video{(module.videos?.length || 0) !== 1 ? 's' : ''}
+                                                        </p>
+                                                    </div>
+                                                    
+                                                    {/* Videos in this module */}
+                                                    <div className="space-y-2 pl-2">
+                                                        {(module.videos || []).map((video: any, videoIndex: number) => {
+                                                            const globalIndex = startIndex + videoIndex;
+                                                            const watched = isWatched(globalIndex);
+                                                            
+                                                            return (
+                                                                <button
+                                                                    key={videoIndex}
+                                                                    onClick={() => {
+                                                                        router.push(`/courses/${courseId}/video/${globalIndex}`);
+                                                                        setHasMarkedAsWatched(false);
+                                                                    }}
+                                                                    className={`w-full text-left p-3 rounded-lg border transition-all duration-300 ${globalIndex === currentIndex
+                                                                        ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-blue-500 shadow-lg shadow-blue-500/20'
+                                                                        : watched
+                                                                            ? 'bg-green-500/20 border-green-500/50 hover:bg-green-500/30'
+                                                                            : 'bg-gray-800/50 border-gray-700 hover:bg-gray-700/50'
+                                                                        }`}
+                                                                >
+                                                                    <div className="flex items-start gap-3">
+                                                                        <div className="flex-shrink-0 mt-0.5">
+                                                                            {watched ? (
+                                                                                <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center shadow-lg shadow-green-500/20">
+                                                                                    <CheckCircle size={14} className="text-white" />
+                                                                                </div>
+                                                                            ) : (
+                                                                                <div className="w-5 h-5 rounded-full border-2 border-gray-600"></div>
+                                                                            )}
+                                                                        </div>
+                                                                        <div className="flex-1 min-w-0">
+                                                                            <p className={`text-sm font-medium ${globalIndex === currentIndex
+                                                                                ? 'text-blue-400'
+                                                                                : watched
+                                                                                    ? 'text-green-400'
+                                                                                    : 'text-white'
+                                                                                }`}>
+                                                                                {globalIndex + 1}. {video.title}
+                                                                            </p>
+                                                                            <div className="flex items-center gap-2 mt-1">
+                                                                                <p className="text-xs text-gray-400">{video.duration}</p>
+                                                                                {globalIndex === currentIndex && (
+                                                                                    <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full">
+                                                                                        Playing
+                                                                                    </span>
+                                                                                )}
+                                                                                {watched && globalIndex !== currentIndex && (
+                                                                                    <span className="text-xs text-green-500">✓ Done</span>
+                                                                                )}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </button>
+                                                            );
+                                                        })}
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </button>
-                                    );
-                                })}
+                                            );
+                                        })
+                                ) : (
+                                    course?.videos?.map((video: any, index: number) => {
+                                        const watched = isWatched(index);
+
+                                        return (
+                                            <button
+                                                key={index}
+                                                onClick={() => {
+                                                    router.push(`/courses/${courseId}/video/${index}`);
+                                                    setHasMarkedAsWatched(false);
+                                                }}
+                                                className={`w-full text-left p-3 rounded-lg border transition-all duration-300 ${index === currentIndex
+                                                    ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-blue-500 shadow-lg shadow-blue-500/20'
+                                                    : watched
+                                                        ? 'bg-green-500/20 border-green-500/50 hover:bg-green-500/30'
+                                                        : 'bg-gray-800/50 border-gray-700 hover:bg-gray-700/50'
+                                                    }`}
+                                            >
+                                                <div className="flex items-start gap-3">
+                                                    <div className="flex-shrink-0 mt-0.5">
+                                                        {watched ? (
+                                                            <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center shadow-lg shadow-green-500/20">
+                                                                <CheckCircle size={14} className="text-white" />
+                                                            </div>
+                                                        ) : (
+                                                            <div className="w-5 h-5 rounded-full border-2 border-gray-600"></div>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className={`text-sm font-medium ${index === currentIndex
+                                                            ? 'text-blue-400'
+                                                            : watched
+                                                                ? 'text-green-400'
+                                                                : 'text-white'
+                                                            }`}>
+                                                            {index + 1}. {video.title}
+                                                        </p>
+                                                        <div className="flex items-center gap-2 mt-1">
+                                                            <p className="text-xs text-gray-400">{video.duration}</p>
+                                                            {index === currentIndex && (
+                                                                <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full">
+                                                                    Playing
+                                                                </span>
+                                                            )}
+                                                            {watched && index !== currentIndex && (
+                                                                <span className="text-xs text-green-500">✓ Done</span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </button>
+                                        );
+                                    })
+                                )}
                             </div>
                         </div>
                     </div>

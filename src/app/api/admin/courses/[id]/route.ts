@@ -69,6 +69,15 @@ export async function PUT(
     const data = await req.json();
     console.log("PUT /api/admin/courses/[id] - Incoming data:", data);
 
+    // Handle module-based updates
+    if (data.modules && data.modules.length > 0) {
+      // Flatten modules to videos array for backward compatibility
+      const flattenedVideos = data.modules
+        .sort((a: any, b: any) => a.order - b.order)
+        .flatMap((module: any) => module.videos || []);
+      data.videos = flattenedVideos;
+    }
+
     const course = await Course.findByIdAndUpdate(id, data, { new: true });
     console.log("PUT /api/admin/courses/[id] - Updated course:", course);
 

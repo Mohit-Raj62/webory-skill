@@ -15,6 +15,43 @@ export async function GET(
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 
+    // Migration logic: Convert old courses with flat videos to module structure
+    if (
+      course.videos &&
+      course.videos.length > 0 &&
+      (!course.modules || course.modules.length === 0)
+    ) {
+      course.modules = [
+        {
+          title: "Course Content",
+          description: "All course videos",
+          order: 0,
+          videos: course.videos,
+        },
+      ];
+      await course.save();
+    }
+
+    // Flatten modules to videos array for backward compatibility
+    if (course.modules && course.modules.length > 0) {
+      const flattenedVideos = course.modules
+        .sort((a: any, b: any) => a.order - b.order)
+        .flatMap((module: any) => module.videos || []);
+
+      console.log(
+        `[GET Course] Modules: ${course.modules.length}, Flattened: ${
+          flattenedVideos.length
+        }, Current: ${course.videos?.length || 0}`
+      );
+
+      // Update videos array if it's different
+      if (JSON.stringify(course.videos) !== JSON.stringify(flattenedVideos)) {
+        course.videos = flattenedVideos;
+        await course.save();
+        console.log(`[GET Course] ✅ Synced ${flattenedVideos.length} videos`);
+      }
+    }
+
     return NextResponse.json({ course }, { status: 200 });
   } catch (error) {
     console.error("Fetch course error:", error);
