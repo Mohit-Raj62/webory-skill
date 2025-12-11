@@ -64,11 +64,57 @@ export default function AIWeboryskillsPage() {
         let colorIndex = 0;
         
         for (const match of phaseMatches) {
-            const topicsMatch = match[3].match(/\*\*Topics to Learn:\*\*([\s\S]*?)(?=\*\*|$)/);
-            const projectsMatch = match[3].match(/\*\*Practice Projects:\*\*([\s\S]*?)(?=\*\*|$)/);
+            const topicsMatch = match[3].match(/\*\*Topics to Learn:\*\*([\s\S]*?)(?=\*\*Practice Projects:|\*\*Resources:|$)/);
+            const projectsMatch = match[3].match(/\*\*Practice Projects:\*\*([\s\S]*?)(?=\*\*Resources:|$)/);
             
-            const topics = topicsMatch?.[1].match(/- (.*?):/g)?.map(t => t.replace('- ', '').replace(':', '')) || [];
-            const projects = projectsMatch?.[1].match(/\d+\. (.*)/g)?.map(p => p.replace(/\d+\. /, '')) || [];
+            console.log('Phase content:', match[3]);
+            console.log('Topics match:', topicsMatch?.[1]);
+            console.log('Projects match:', projectsMatch?.[1]);
+            
+            
+            // Extract topics - handle bold markdown format: - **Topic**: Description
+            let topics: string[] = [];
+            if (topicsMatch?.[1]) {
+                // Primary format: "- **Topic Name**: Full description..."
+                // Capture full line including description (until next - or end)
+                const topicLines = topicsMatch[1].match(/- \*\*[^*]+\*\*:[^\n-]+(?:\n(?!-)[^\n-]+)*/g);
+                if (topicLines && topicLines.length > 0) {
+                    topics = topicLines.map(t => t.replace(/^- /, '').replace(/\n/g, ' ').trim());
+                } else {
+                    // Fallback: "- Topic: Description" (without bold)
+                    const topicsWithColon = topicsMatch[1].match(/- ([^:\n]+):/g);
+                    if (topicsWithColon && topicsWithColon.length > 0) {
+                        topics = topicsWithColon.map(t => t.replace('- ', '').replace(':', '').trim());
+                    } else {
+                        // Fallback: "- Topic Description" (plain text)
+                        const topicsPlain = topicsMatch[1].match(/- ([^\n]+)/g);
+                        if (topicsPlain) {
+                            topics = topicsPlain.map(t => t.replace('- ', '').trim());
+                        }
+                    }
+                }
+            }
+            
+            
+            // Extract projects - handle bold markdown format: 1. **Project**: Description
+            let projects: string[] = [];
+            if (projectsMatch?.[1]) {
+                // Primary format: "1. **Project Name**: Full description..."
+                // Capture full paragraph including description
+                const projectLines = projectsMatch[1].match(/\d+\. \*\*[^*]+\*\*:[^\n]+(?:\n(?!\d)[^\n]+)*/g);
+                if (projectLines && projectLines.length > 0) {
+                    projects = projectLines.map(p => p.replace(/^\d+\. /, '').replace(/\n/g, ' ').trim());
+                } else {
+                    // Fallback: "1. Project description" (plain text)
+                    const projectsPlain = projectsMatch[1].match(/\d+\. (.*)/g);
+                    if (projectsPlain) {
+                        projects = projectsPlain.map(p => p.replace(/\d+\. /, '').trim());
+                    }
+                }
+            }
+            
+            console.log('Extracted topics:', topics);
+            console.log('Extracted projects:', projects);
 
             phases.push({
                 phase: match[1],
@@ -184,7 +230,7 @@ export default function AIWeboryskillsPage() {
                             }`}
                         >
                             <MessageCircle size={18} />
-                            <span className="text-sm sm:text-base">Q&A Chat</span>
+                            <span className="text-sm sm:text-base">Webory Chat AI</span>
                         </button>
                     </div>
                 </div>
@@ -236,8 +282,15 @@ export default function AIWeboryskillsPage() {
                                             <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full mb-4 border border-white/10">
                                                 <MessageCircle className="text-blue-400" size={32} />
                                             </div>
-                                            <h3 className="text-xl font-bold text-white mb-2">Start a conversation</h3>
-                                            <p className="text-gray-400 text-sm">Ask me anything about tech, programming, or learning</p>
+                                            <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">Welcome, Innovator of the Future! 🌟</h3>
+                                            <p className="text-gray-300 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+                                                "The only way to do great work is to love what you do." <br/>
+                                                Every line of code is a brushstroke in the masterpiece of your career. <br/>
+                                                Whether you're debugging, designing, or dreaming, I'm here to help you rise. <br/>
+                                            </p>
+                                            <p className="text-blue-400 text-lg sm:text-xl mt-4 font-semibold block animate-pulse">
+                                                Ask me anything, and let's build something legendary.
+                                            </p>
                                         </div>
                                     </div>
                                 )}
@@ -380,9 +433,29 @@ export default function AIWeboryskillsPage() {
                                                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                                                 {phase.topics.map((topic, topicIdx) => (
                                                                     <div key={topicIdx} className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 hover:border-white/20 transition-all hover:scale-105">
-                                                                        <div className="flex items-start gap-2">
-                                                                            <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
-                                                                            <span className="text-gray-300 text-sm font-medium">{topic}</span>
+                                                                        <div className="space-y-2">
+                                                                            {(() => {
+                                                                                // Parse topic: "**Name**: Description" or "Name: Description"
+                                                                                const match = topic.match(/\*\*(.+?)\*\*:(.+)/);
+                                                                                if (match) {
+                                                                                    return (
+                                                                                        <>
+                                                                                            <h5 className="text-white font-bold text-base flex items-start gap-2">
+                                                                                                <div className="w-2 h-2 bg-blue-400 rounded-full mt-1.5 flex-shrink-0"></div>
+                                                                                                {match[1].trim()}
+                                                                                            </h5>
+                                                                                            <p className="text-gray-300 text-sm leading-relaxed pl-4">{match[2].trim()}</p>
+                                                                                        </>
+                                                                                    );
+                                                                                }
+                                                                                // Fallback: show as-is
+                                                                                return (
+                                                                                    <div className="flex items-start gap-2">
+                                                                                        <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
+                                                                                        <span className="text-gray-300 text-sm font-medium">{topic}</span>
+                                                                                    </div>
+                                                                                );
+                                                                            })()}
                                                                         </div>
                                                                     </div>
                                                                 ))}
@@ -490,3 +563,4 @@ export default function AIWeboryskillsPage() {
         </div>
     );
 }
+

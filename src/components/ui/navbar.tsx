@@ -57,7 +57,7 @@ export function Navbar() {
 
                         {user && (
                             <Link href="/ai-weboryskills" className="text-sm text-gray-300 hover:text-white transition-colors">
-                                AI Weboryskills
+                                Weboryskills AI
                             </Link>
                         )}
 
@@ -125,7 +125,7 @@ export function Navbar() {
 
                             {user && (
                                 <Link href="/ai-weboryskills" className="text-sm text-gray-300 hover:text-white" onClick={() => setIsOpen(false)}>
-                                    AI Weboryskills
+                                    Weboryskills AI
                                 </Link>
                             )}
 

@@ -118,21 +118,28 @@ What foundational knowledge is needed before starting (if any).
 
 ## 🗺️ Learning Roadmap
 
+
 ### Phase 1: Beginner (Estimated: X weeks/months)
-**Goal:** [What you'll achieve]
+**Goal:** [What you'll achieve in this phase]
 
 **Topics to Learn:**
-- Topic 1: Brief description
-- Topic 2: Brief description
-- Topic 3: Brief description
+- **Topic Name 1**: Brief, concise description focusing on key concepts and why it matters (1 sentence)
+- **Topic Name 2**: Brief, concise description focusing on key concepts and why it matters (1 sentence)
+- **Topic Name 3**: Brief, concise description focusing on key concepts and why it matters (1 sentence)
+- **Topic Name 4**: Brief, concise description focusing on key concepts and why it matters (1 sentence)
+- **Topic Name 5**: Brief, concise description focusing on key concepts and why it matters (1 sentence)
+- **Topic Name 6**: Brief, concise description focusing on key concepts and why it matters (1 sentence)
+
+NOTE: Keep descriptions concise and to-the-point. Include 5-6 topics per phase.
 
 **Practice Projects:**
-1. Project idea 1
-2. Project idea 2
+1. Detailed project description with specific features and learning outcomes
+2. Detailed project description with specific features and learning outcomes
 
 **Resources:**
-- Resource type 1
-- Resource type 2
+- Specific resource recommendations (courses, documentation, tutorials)
+- Community resources and practice platforms
+
 
 ### Phase 2: Intermediate (Estimated: X weeks/months)
 [Same structure as Phase 1]

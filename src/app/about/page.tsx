@@ -26,15 +26,15 @@ export default function AboutPage() {
                 <div className="max-w-7xl mx-auto px-4 md:px-8">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
                         <div>
-                            <div className="text-3xl md:text-4xl font-bold text-white mb-2">10k+</div>
+                            <div className="text-3xl md:text-4xl font-bold text-white mb-2">100+</div>
                             <div className="text-gray-400">Students</div>
                         </div>
                         <div>
-                            <div className="text-3xl md:text-4xl font-bold text-white mb-2">500+</div>
+                            <div className="text-3xl md:text-4xl font-bold text-white mb-2">50+</div>
                             <div className="text-gray-400">Mentors</div>
                         </div>
                         <div>
-                            <div className="text-3xl md:text-4xl font-bold text-white mb-2">100+</div>
+                            <div className="text-3xl md:text-4xl font-bold text-white mb-2">10+</div>
                             <div className="text-gray-400">Partners</div>
                         </div>
                         <div>
@@ -70,17 +70,17 @@ export default function AboutPage() {
             </section>
 
             {/* Team Section (Placeholder) */}
-            <section className="py-20 px-4 md:px-8 bg-white/5">
-                <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-16">
+            {/* <section className="py-20 px-4 md:px-8 bg-white/5"> */}
+                {/* <div className="max-w-7xl mx-auto"> */}
+                    {/* <div className="text-center mb-16">
                         <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Meet Our Team</h2>
                         <p className="text-gray-400 max-w-2xl mx-auto">
                             The passionate individuals driving our mission forward.
                         </p>
-                    </div>
+                    </div> */}
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {[1, 2, 3].map((i) => (
+                    {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {[1].map((i) => (
                             <div key={i} className="glass-card p-6 rounded-2xl text-center">
                                 <div className="w-24 h-24 bg-gray-700 rounded-full mx-auto mb-4"></div>
                                 <h3 className="text-xl font-bold text-white mb-1">Team Member {i}</h3>
@@ -90,9 +90,9 @@ export default function AboutPage() {
                                 </p>
                             </div>
                         ))}
-                    </div>
-                </div>
-            </section>
+                    </div> */}
+                {/* </div> */}
+            {/* </section> */}
 
             <Footer />
         </main>
