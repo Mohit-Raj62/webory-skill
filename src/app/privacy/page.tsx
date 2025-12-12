@@ -16,7 +16,7 @@ export default function PrivacyPolicyPage() {
                     <section>
                         <h2 className="text-2xl font-bold text-white mb-4">1. Introduction</h2>
                         <p>
-                            Welcome to Skill Webory ("we," "our," or "us"). We are committed to protecting your personal information and your right to privacy. If you have any questions or concerns about this privacy notice or our practices with regard to your personal information, please contact us at privacy@skillwebory.com.
+                            Welcome to Webory Skills ("we," "our," or "us"). We are committed to protecting your personal information and your right to privacy. If you have any questions or concerns about this privacy notice or our practices with regard to your personal information, please contact us at privacyskillwebory@gmail.com .
                         </p>
                     </section>
 
@@ -55,12 +55,12 @@ export default function PrivacyPolicyPage() {
                     <section>
                         <h2 className="text-2xl font-bold text-white mb-4">6. Contact Us</h2>
                         <p>
-                            If you have questions or comments about this policy, you may email us at privacy@skillwebory.com or by post to:
+                            If you have questions or comments about this policy, you may email us at privacyskillwebory@gmail.com or by post to:
                         </p>
                         <address className="mt-4 not-italic text-gray-400">
-                            Skill Webory Inc.<br />
-                            123 Tech Park, Innovation Street<br />
-                            Bangalore, Karnataka 560001<br />
+                            Webory Skills Inc.<br />
+                           Near by jbit college Dehradun<br />
+                            Dehradun, Uttarakhand 248197<br />
                             India
                         </address>
                     </section>

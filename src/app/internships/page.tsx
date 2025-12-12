@@ -3,7 +3,7 @@
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, DollarSign, CheckCircle2, X } from "lucide-react";
+import { MapPin, Clock, DollarSign, IndianRupee, CheckCircle2, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -172,8 +172,8 @@ export default function InternshipsPage() {
                                     <div className="flex flex-wrap gap-4 text-sm text-gray-400 mb-4">
                                         <span className="flex items-center"><MapPin size={16} className="mr-1" /> {job.location}</span>
                                         <span className="flex items-center"><Clock size={16} className="mr-1" /> {job.type}</span>
-                                        <span className="flex items-center"><DollarSign size={16} className="mr-1" /> {job.stipend}</span>
-                                        <span className="flex items-center text-purple-400 font-semibold"><DollarSign size={16} className="mr-1" /> Fee: ₹{job.price || 0}</span>
+                                        <span className="flex items-center"><IndianRupee size={16} className="mr-1" /> {job.stipend}</span>
+                                        <span className="flex items-center text-purple-400 font-semibold"><IndianRupee size={16} className="mr-1" /> Fee: ₹{job.price || 0}</span>
                                     </div>
 
                                     <div className="flex flex-wrap gap-2">

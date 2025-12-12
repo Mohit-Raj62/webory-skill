@@ -10,13 +10,13 @@ export default function TermsPage() {
 
             <div className="max-w-4xl mx-auto px-4 md:px-8 pt-32 pb-20">
                 <h1 className="text-4xl font-bold text-white mb-8">Terms of Service</h1>
-                <p className="text-gray-400 mb-8">Last updated: November 27, 2024</p>
-
+                <p className="text-gray-400 mb-8">Last updated: November 27, 2025</p>
+``
                 <div className="space-y-8 text-gray-300 leading-relaxed">
                     <section>
                         <h2 className="text-2xl font-bold text-white mb-4">1. Agreement to Terms</h2>
                         <p>
-                            These Terms of Service constitute a legally binding agreement made between you, whether personally or on behalf of an entity ("you") and Skill Webory ("we," "us," or "our"), concerning your access to and use of the Skill Webory website as well as any other media form, media channel, mobile website or mobile application related, linked, or otherwise connected thereto (collectively, the "Site").
+                            These Terms of Service constitute a legally binding agreement made between you, whether personally or on behalf of an entity ("you") and Webory Skills Inc. ("we," "us," or "our"), concerning your access to and use of the Webory Skills website as well as any other media form, media channel, mobile website or mobile application related, linked, or otherwise connected thereto (collectively, the "Site").
                         </p>
                     </section>
 
@@ -57,7 +57,7 @@ export default function TermsPage() {
                     <section>
                         <h2 className="text-2xl font-bold text-white mb-4">6. Limitation of Liability</h2>
                         <p>
-                            In no event shall Skill Webory, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the Service.
+                            In no event shall Webory Skills Inc., nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the Service.
                         </p>
                     </section>
 
@@ -67,11 +67,11 @@ export default function TermsPage() {
                             In order to resolve a complaint regarding the Site or to receive further information regarding use of the Site, please contact us at:
                         </p>
                         <address className="mt-4 not-italic text-gray-400">
-                            Skill Webory Inc.<br />
-                            123 Tech Park, Innovation Street<br />
-                            Bangalore, Karnataka 560001<br />
+                            Webory Skills Inc.<br />
+                            Near by jbit college Dehradun<br />
+                            Dehradun, Uttarakhand 248197<br />
                             India<br />
-                            legal@skillwebory.com
+                            legalwebory@gmail.com   
                         </address>
                     </section>
                 </div>
