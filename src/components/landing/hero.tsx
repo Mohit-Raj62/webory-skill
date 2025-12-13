@@ -99,7 +99,7 @@ export function Hero() {
                     >
                         {[
                             { icon: Users, label: "Active Students", value: activeStudents },
-                            { icon: Code, label: "Projects Completed", value: "150+" },
+                            { icon: Code, label: "Projects Completed", value: "50+" },
                             { icon: Rocket, label: "Internships Launched", value: "12+" },
                         ].map((stat, index) => (
                             <div key={index} className="glass-card p-6 rounded-2xl text-center">
