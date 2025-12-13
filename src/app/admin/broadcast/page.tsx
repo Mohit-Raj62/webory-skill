@@ -41,7 +41,6 @@ const EMAIL_TEMPLATES = [
         <p style="font-size: 14px; color: #666; margin-top: 30px;">
             Hurry! This offer expires in 48 hours.
         </p>
-        
         <p style="font-size: 16px; color: #333; margin-top: 20px;">
             Best Regards,<br/>
             <strong>Webory Skills Team</strong>
@@ -62,7 +61,7 @@ const EMAIL_TEMPLATES = [
     </div>
     
     <div style="background: white; padding: 30px; border-radius: 10px; margin-top: 20px;">
-        <p style="font-size: 16px; color: #333; line-height: 1.6;">Hi there,</p>
+        <p style="font-size: 16px; color: #333; line-height: 1.6;">Hi {{name}},</p>
         
         <p style="font-size: 16px; color: #333; line-height: 1.6;">
             We're thrilled to announce our latest course that will help you master new skills!
@@ -106,7 +105,7 @@ const EMAIL_TEMPLATES = [
     </div>
 
     <div style="background:white; padding:30px; border-radius:10px; margin-top:20px;">
-        <p style="font-size:16px; color:#333;">Hi,</p>
+        <p style="font-size:16px; color:#333;">Hi {{name}},</p>
 
         <p style="font-size:16px; color:#333; line-height:1.6;">
             Welcome to Webory Skills. Your learning journey starts here.
@@ -119,7 +118,7 @@ const EMAIL_TEMPLATES = [
         </ul>
 
         <div style="text-align:center; margin:30px 0;">
-            <a href="https://weboryskills.in/dashboard" style="background:#0284c7; color:#fff; padding:14px 36px; text-decoration:none; border-radius:5px; font-weight:bold;">
+            <a href="https://weboryskills.in/" style="background:#0284c7; color:#fff; padding:14px 36px; text-decoration:none; border-radius:5px; font-weight:bold;">
                 Go to Dashboard
             </a>
         </div>
@@ -164,7 +163,7 @@ const EMAIL_TEMPLATES = [
         </ul>
         
         <div style="text-align: center; margin: 30px 0;">
-            <a href="https://weboryskills.in/live-classes" style="background-color: #9333ea; color: white; padding: 15px 40px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; font-size: 16px;">
+            <a href="https://weboryskills.in/" style="background-color: #9333ea; color: white; padding: 15px 40px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; font-size: 16px;">
                 Register Now
             </a>
         </div>
@@ -209,7 +208,7 @@ const EMAIL_TEMPLATES = [
         </ul>
 
         <div style="text-align: center; margin: 30px 0;">
-            <a href="https://weboryskills.in/internships" style="background-color: #16a34a; color: white; padding: 15px 40px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+            <a href="https://weboryskills.in/" style="background-color: #16a34a; color: white; padding: 15px 40px; text-decoration: none; border-radius: 5px; font-weight: bold;">
                 Apply Now
             </a>
         </div>
@@ -234,7 +233,7 @@ const EMAIL_TEMPLATES = [
     </div>
 
     <div style="background:#fff; padding:30px; border-radius:10px; margin-top:20px;">
-        <p style="font-size:16px; color:#333;">Hi there,</p>
+        <p style="font-size:16px; color:#333;">Hi {{name}},</p>
 
         <p style="font-size:16px; color:#333; line-height:1.6;">
             This is a quick reminder for the hands-on workshop you registered for.
@@ -248,7 +247,7 @@ const EMAIL_TEMPLATES = [
         </div>
 
         <div style="text-align:center; margin:30px 0;">
-            <a href="https://weboryskills.in/workshops" style="background:#0f766e; color:#fff; padding:14px 36px; text-decoration:none; border-radius:5px; font-weight:bold;">
+            <a href="https://weboryskills.in/" style="background:#0f766e; color:#fff; padding:14px 36px; text-decoration:none; border-radius:5px; font-weight:bold;">
                 Join Workshop
             </a>
         </div>
@@ -270,7 +269,7 @@ const EMAIL_TEMPLATES = [
     </div>
 
     <div style="background:#fff; padding:30px; border-radius:10px; margin-top:20px;">
-        <p style="font-size:16px; color:#333;">Hi there,</p>
+        <p style="font-size:16px; color:#333;">Hi {{name}},</p>
         <p style="font-size:16px; color:#333; line-height:1.6;">
             We’re excited to announce an upcoming placement drive exclusively for Webory learners.
         </p>
@@ -282,7 +281,7 @@ const EMAIL_TEMPLATES = [
         </div>
 
         <div style="text-align:center; margin:30px 0;">
-            <a href="https://weboryskills.in/placements" style="background:#0f766e; color:#fff; padding:15px 40px; text-decoration:none; border-radius:5px; font-weight:bold;">
+            <a href="https://weboryskills.in/" style="background:#0f766e; color:#fff; padding:15px 40px; text-decoration:none; border-radius:5px; font-weight:bold;">
                 Register Now
             </a>
         </div>
@@ -298,7 +297,7 @@ const EMAIL_TEMPLATES = [
     
     <div style="background-color: #1f2933; padding: 25px; border-radius: 8px;">
         <h1 style="color: #ffffff; margin: 0;">Webory Update</h1>
-        <p style="color: #d1d5db; margin-top: 8px;">What’s new this week</p>
+        <p style="color: #d1d5db; margin-top: 8px;">What's new this week</p>
     </div>
 
     <div style="background-color: #ffffff; padding: 30px; margin-top: 20px; border-radius: 8px;">
@@ -320,7 +319,7 @@ const EMAIL_TEMPLATES = [
         </p>
 
         <div style="text-align: center; margin: 30px 0;">
-            <a href="https://weboryskills.in/live-classes" style="background-color: #7c3aed; color: #ffffff; padding: 14px 36px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+            <a href="https://weboryskills.in/" style="background-color: #7c3aed; color: #ffffff; padding: 14px 36px; text-decoration: none; border-radius: 5px; font-weight: bold;">
                 Join Live Session
             </a>
         </div>
@@ -345,7 +344,7 @@ const EMAIL_TEMPLATES = [
     </div>
 
     <div style="background: white; padding: 30px; border-radius: 10px; margin-top: 20px;">
-        <p style="font-size: 16px; color: #333;">Hi there,</p>
+        <p style="font-size: 16px; color: #333;">Hi {{name}},</p>
 
         <p style="font-size: 16px; color: #333; line-height: 1.6;">
             A quick reminder about our free live workshop happening tomorrow.
@@ -365,7 +364,7 @@ const EMAIL_TEMPLATES = [
         </ul>
 
         <div style="text-align: center; margin: 30px 0;">
-            <a href="https://weboryskills.in/workshops" style="background-color: #0f766e; color: white; padding: 15px 40px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+            <a href="https://weboryskills.in/" style="background-color: #0f766e; color: white; padding: 15px 40px; text-decoration: none; border-radius: 5px; font-weight: bold;">
                 Join Workshop
             </a>
         </div>
@@ -375,7 +374,6 @@ const EMAIL_TEMPLATES = [
             <strong>Webory Skills Team</strong>
         </p>
     </div>
-
     <div style="text-align: center; padding: 20px; color: #999; font-size: 12px;">
         <p>© 2025 Webory Skills. All rights reserved.</p>
     </div>
