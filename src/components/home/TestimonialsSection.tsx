@@ -22,24 +22,30 @@ export function TestimonialsSection() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        let isMounted = true;
+
         const fetchFeedbacks = async () => {
             try {
                 const res = await fetch("/api/feedback");
                 const data = await res.json();
-                if (data.feedbacks) {
+                if (isMounted && data.feedbacks) {
                     setFeedbacks(data.feedbacks);
                 }
             } catch (error) {
                 console.error("Failed to fetch feedbacks", error);
             } finally {
-                setLoading(false);
+                if (isMounted) setLoading(false);
             }
         };
 
         fetchFeedbacks();
         // Poll for new feedback every 30 seconds for "real-time" feel
         const interval = setInterval(fetchFeedbacks, 30000);
-        return () => clearInterval(interval);
+        
+        return () => {
+            isMounted = false;
+            clearInterval(interval);
+        };
     }, []);
 
     if (loading) return null;
@@ -66,15 +72,15 @@ export function TestimonialsSection() {
                             <div className="flex justify-between items-start mb-4">
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
-                                        {feedback.user.avatar ? (
+                                        {feedback.user?.avatar ? (
                                             <img src={feedback.user.avatar} alt={feedback.user.firstName} className="w-full h-full rounded-full object-cover" />
                                         ) : (
-                                            feedback.user.firstName[0]
+                                            feedback.user?.firstName?.[0] || '?'
                                         )}
                                     </div>
                                     <div>
                                         <h4 className="text-white font-semibold">
-                                            {feedback.user.firstName} {feedback.user.lastName}
+                                            {feedback.user?.firstName || 'Unknown'} {feedback.user?.lastName || 'User'}
                                         </h4>
                                         <span className="text-xs text-blue-400 uppercase tracking-wider font-medium">
                                             {feedback.category}
