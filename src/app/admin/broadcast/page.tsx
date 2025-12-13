@@ -49,7 +49,7 @@ const EMAIL_TEMPLATES = [
     </div>
     
     <div style="text-align: center; padding: 20px; color: #999; font-size: 12px;">
-        <p>© 2024 Webory Skills. All rights reserved.</p>
+        <p>© 2025 Webory Skills. All rights reserved.</p>
     </div>
 </div>`
     },
@@ -85,20 +85,54 @@ const EMAIL_TEMPLATES = [
             <a href="https://weboryskills.in/courses" style="background-color: #16a34a; color: white; padding: 15px 40px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; font-size: 16px;">
                 Enroll Now
             </a>
-        </div>
-        
-        <p style="font-size: 16px; color: #333; margin-top: 20px;">
+         </div>
+         <p style="font-size: 16px; color: #333; margin-top: 20px;">
             Best Regards,<br/>
             <strong>Webory Skills Team</strong>
-        </p>
-    </div>
-    
-    <div style="text-align: center; padding: 20px; color: #999; font-size: 12px;">
-        <p>© 2024 Webory Skills. All rights reserved.</p>
-    </div>
-</div>`
+         </p>
+         </div>
+        
+         <div style="text-align: center; padding: 20px; color: #999; font-size: 12px;">
+         <p>© 2025 Webory Skills. All rights reserved.</p>
+         </div>
+    </div>`
     },
     {
+    name: "Account Welcome",
+    subject: "👋 Welcome to Webory Skills",
+    message: `<div style="font-family:Arial,sans-serif; max-width:600px; margin:0 auto; padding:20px; background:#f9fafb;">
+    <div style="background:linear-gradient(135deg,#0284c7 0%,#0369a1 100%); padding:30px; border-radius:10px; text-align:center;">
+        <h1 style="color:white; margin:0; font-size:26px;">👋 Welcome Webory Skills</h1>
+    </div>
+
+    <div style="background:white; padding:30px; border-radius:10px; margin-top:20px;">
+        <p style="font-size:16px; color:#333;">Hi,</p>
+
+        <p style="font-size:16px; color:#333; line-height:1.6;">
+            Welcome to Webory Skills. Your learning journey starts here.
+        </p>
+
+        <ul style="color:#333; line-height:1.8;">
+            <li>Access skill-based courses</li>
+            <li>Join internships and live sessions</li>
+            <li>Earn verifiable certificates</li>
+        </ul>
+
+        <div style="text-align:center; margin:30px 0;">
+            <a href="https://weboryskills.in/dashboard" style="background:#0284c7; color:#fff; padding:14px 36px; text-decoration:none; border-radius:5px; font-weight:bold;">
+                Go to Dashboard
+            </a>
+        </div>
+
+        <p style="color:#333;">Let’s get started,<br/><strong>Webory Skills Team</strong></p>
+    </div>
+
+    <div style="text-align:center; padding:20px; color:#999; font-size:12px;">
+        © 2025 Webory Skills. All rights reserved.
+    </div>
+</div>`
+},
+{
         name: "Event Invitation",
         subject: "🎯 You're Invited - Live Webinar This Weekend!",
         message: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb;">
@@ -142,10 +176,212 @@ const EMAIL_TEMPLATES = [
     </div>
     
     <div style="text-align: center; padding: 20px; color: #999; font-size: 12px;">
-        <p>© 2024 Webory Skills. All rights reserved.</p>
+        <p>© 2025 Webory Skills. All rights reserved.</p>
     </div>
 </div>`
-    }
+    },
+    {
+    name: "Internship Opportunity",
+    subject: "💼 Apply Now – Internship Opportunities at Webory",
+    message: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb;">
+    <div style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); padding: 30px; border-radius: 10px; text-align: center;">
+        <h1 style="color: white; margin: 0; font-size: 28px;">💼 Internship Openings</h1>
+    </div>
+
+    <div style="background: white; padding: 30px; border-radius: 10px; margin-top: 20px;">
+        <p style="font-size: 16px; color: #333;">Hello,</p>
+
+        <p style="font-size: 16px; color: #333; line-height: 1.6;">
+            Kickstart your career with real-world internship experience at Webory.
+        </p>
+
+        <div style="background: #f0fdf4; border-left: 4px solid #16a34a; padding: 20px; margin: 20px 0; border-radius: 5px;">
+            <h2 style="color: #16a34a; margin-bottom: 10px;">Available Roles</h2>
+            <p style="margin: 5px 0;">• Web Development</p>
+            <p style="margin: 5px 0;">• UI/UX Design</p>
+            <p style="margin: 5px 0;">• Digital Marketing</p>
+        </div>
+
+        <ul style="color: #333; line-height: 1.8;">
+            <li>Live projects</li>
+            <li>Mentorship from experts</li>
+            <li>Internship certificate</li>
+        </ul>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="https://weboryskills.in/internships" style="background-color: #16a34a; color: white; padding: 15px 40px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                Apply Now
+            </a>
+        </div>
+
+        <p style="font-size: 16px; color: #333;">
+            Warm regards,<br/>
+            <strong>Webory Skills Team</strong>
+        </p>
+    </div>
+
+    <div style="text-align: center; padding: 20px; color: #999; font-size: 12px;">
+        <p>© 2025 Webory Skills. All rights reserved.</p>
+    </div>
+</div>`
+},
+{
+    name: "Workshop Reminder",
+    subject: "⏰ Reminder – Hands-on Workshop Starts Tomorrow",
+    message: `<div style="font-family: Arial, sans-serif; max-width:600px; margin:0 auto; padding:20px; background:#f9fafb;">
+    <div style="background:linear-gradient(135deg,#0f766e 0%,#115e59 100%); padding:30px; border-radius:10px; text-align:center;">
+        <h1 style="color:#fff; margin:0; font-size:26px;">⏰ Workshop Reminder</h1>
+    </div>
+
+    <div style="background:#fff; padding:30px; border-radius:10px; margin-top:20px;">
+        <p style="font-size:16px; color:#333;">Hi there,</p>
+
+        <p style="font-size:16px; color:#333; line-height:1.6;">
+            This is a quick reminder for the hands-on workshop you registered for.
+        </p>
+
+        <div style="background:#f0fdfa; border-left:4px solid #0f766e; padding:20px; margin:20px 0; border-radius:5px;">
+            <h2 style="color:#0f766e; margin-bottom:10px;">Build Your First Web App</h2>
+            <p><strong>📅 Date:</strong> Tomorrow</p>
+            <p><strong>⏰ Time:</strong> 7:00 PM IST</p>
+            <p><strong>💻 Mode:</strong> Live Online</p>
+        </div>
+
+        <div style="text-align:center; margin:30px 0;">
+            <a href="https://weboryskills.in/workshops" style="background:#0f766e; color:#fff; padding:14px 36px; text-decoration:none; border-radius:5px; font-weight:bold;">
+                Join Workshop
+            </a>
+        </div>
+
+        <p style="color:#333;">See you live,<br/><strong>Webory Skills Team</strong></p>
+    </div>
+
+    <div style="text-align:center; padding:20px; color:#999; font-size:12px;">
+        © 2025 Webory Skills. All rights reserved.
+    </div>
+</div>`
+},
+{
+    name: "Placement Drive",
+    subject: "🎓 Placement Drive Alert – Get Job Ready with Webory",
+    message: `<div style="font-family: Arial, sans-serif; max-width:600px; margin:0 auto; padding:20px; background:#f9fafb;">
+    <div style="background:linear-gradient(135deg,#0f766e,#115e59); padding:30px; border-radius:10px; text-align:center;">
+        <h1 style="color:#fff; margin:0;">🎓 Placement Drive</h1>
+    </div>
+
+    <div style="background:#fff; padding:30px; border-radius:10px; margin-top:20px;">
+        <p style="font-size:16px; color:#333;">Hi there,</p>
+        <p style="font-size:16px; color:#333; line-height:1.6;">
+            We’re excited to announce an upcoming placement drive exclusively for Webory learners.
+        </p>
+
+        <div style="background:#ecfeff; border-left:4px solid #0f766e; padding:20px; margin:20px 0; border-radius:5px;">
+            <p><strong>📍 Mode:</strong> Online</p>
+            <p><strong>🏢 Companies:</strong> Startups & Tech Firms</p>
+            <p><strong>📄 Eligibility:</strong> Skill Course Completed</p>
+        </div>
+
+        <div style="text-align:center; margin:30px 0;">
+            <a href="https://weboryskills.in/placements" style="background:#0f766e; color:#fff; padding:15px 40px; text-decoration:none; border-radius:5px; font-weight:bold;">
+                Register Now
+            </a>
+        </div>
+
+        <p>Regards,<br/><strong>Webory Skills Team</strong></p>
+    </div>
+    </div>`
+},
+{
+    name: "Product + Content Newsletter",
+    subject: "✨ New Skills, New Internships, New You",
+    message: `<div style="font-family: Arial, sans-serif; max-width: 620px; margin: 0 auto; background-color: #f3f4f6; padding: 20px;">
+    
+    <div style="background-color: #1f2933; padding: 25px; border-radius: 8px;">
+        <h1 style="color: #ffffff; margin: 0;">Webory Update</h1>
+        <p style="color: #d1d5db; margin-top: 8px;">What’s new this week</p>
+    </div>
+
+    <div style="background-color: #ffffff; padding: 30px; margin-top: 20px; border-radius: 8px;">
+        <h2 style="color: #111827;">📌 Top Stories</h2>
+
+        <p style="color: #374151;">
+            <strong>New Internship Tracks</strong><br/>
+            Apply for Web Dev, AI Tools, and Digital Marketing internships.
+        </p>
+
+        <p style="color: #374151;">
+            <strong>Skill Tip of the Week</strong><br/>
+            Build small projects regularly. Consistency beats intensity.
+        </p>
+
+        <p style="color: #374151;">
+            <strong>Upcoming Live Class</strong><br/>
+            Resume + Portfolio Review with mentors this Saturday.
+        </p>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="https://weboryskills.in/live-classes" style="background-color: #7c3aed; color: #ffffff; padding: 14px 36px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                Join Live Session
+            </a>
+        </div>
+
+        <p style="color: #374151;">
+            Learn something new today,<br/>
+            <strong>Webory Skills Team</strong>
+        </p>
+    </div>
+
+    <div style="text-align: center; padding: 15px; font-size: 12px; color: #9ca3af;">
+        © 2025 Webory Skills · Manage preferences
+    </div>
+</div>`
+},
+{
+    name: "Free Workshop Reminder",
+    subject: "🎓 Don’t Miss It – Free Skill Workshop Tomorrow",
+    message: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb;">
+    <div style="background: linear-gradient(135deg, #0f766e 0%, #115e59 100%); padding: 30px; border-radius: 10px; text-align: center;">
+        <h1 style="color: white; margin: 0; font-size: 28px;">🎓 Free Workshop</h1>
+    </div>
+
+    <div style="background: white; padding: 30px; border-radius: 10px; margin-top: 20px;">
+        <p style="font-size: 16px; color: #333;">Hi there,</p>
+
+        <p style="font-size: 16px; color: #333; line-height: 1.6;">
+            A quick reminder about our free live workshop happening tomorrow.
+        </p>
+
+        <div style="background: #f0fdfa; border-left: 4px solid #0f766e; padding: 20px; margin: 20px 0; border-radius: 5px;">
+            <h2 style="color: #0f766e; margin-bottom: 10px;">Build Your First Web App</h2>
+            <p style="margin: 5px 0;"><strong>📅 Date:</strong> Tomorrow</p>
+            <p style="margin: 5px 0;"><strong>⏰ Time:</strong> 7:00 PM IST</p>
+            <p style="margin: 5px 0;"><strong>💻 Mode:</strong> Live Online</p>
+        </div>
+
+        <ul style="color: #333; line-height: 1.8;">
+            <li>No prior experience needed</li>
+            <li>Live coding session</li>
+            <li>Free participation certificate</li>
+        </ul>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="https://weboryskills.in/workshops" style="background-color: #0f766e; color: white; padding: 15px 40px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                Join Workshop
+            </a>
+        </div>
+
+        <p style="font-size: 16px; color: #333;">
+            See you live,<br/>
+            <strong>Webory Skills Team</strong>
+        </p>
+    </div>
+
+    <div style="text-align: center; padding: 20px; color: #999; font-size: 12px;">
+        <p>© 2025 Webory Skills. All rights reserved.</p>
+    </div>
+</div>`
+}
+
 ];
 
 export default function BroadcastPage() {
