@@ -562,13 +562,13 @@ export default function CodeEditor() {
                             </div>
 
                             <Select value={language} onValueChange={onSelect}>
-                                <SelectTrigger className="h-7 w-[140px] bg-[#21262d] border-[#30363d] text-gray-300 text-xs focus:ring-0 focus:ring-offset-0">
+                                <SelectTrigger className="h-7 w-[110px] sm:w-[140px] bg-[#21262d] border-[#30363d] text-gray-300 text-xs focus:ring-0 focus:ring-offset-0">
                                     <SelectValue placeholder="Language" />
                                 </SelectTrigger>
                                 <SelectContent className="bg-[#161b22] border-[#30363d] text-gray-300">
                                     {Object.entries(LANGUAGE_VERSIONS).map(([lang, version]) => (
                                         <SelectItem key={lang} value={lang} className="text-xs hover:bg-blue-600 focus:bg-blue-600 cursor-pointer">
-                                            {lang} <span className="text-gray-500 ml-2">{version}</span>
+                                            {lang} <span className="text-gray-500 ml-2 hidden sm:inline">{version}</span>
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -606,14 +606,14 @@ export default function CodeEditor() {
                 <div className="flex flex-col h-[35%] lg:h-full bg-[#010409] border-t border-[#30363d] lg:border-t-0">
                     {/* Terminal Header */}
                      <div className="flex items-center justify-between h-10 px-4 bg-[#161b22] border-b border-[#30363d] shrink-0">
-                        <div className="flex items-center gap-6">
-                            <div className="text-xs font-medium text-gray-300 border-b-2 border-orange-500 h-10 flex items-center px-1">
+                        <div className="flex items-center gap-2 sm:gap-6 overflow-x-auto no-scrollbar">
+                            <div className="text-xs font-medium text-gray-300 border-b-2 border-orange-500 h-10 flex items-center px-1 whitespace-nowrap">
                                 TERMINAL
                             </div>
-                            <div className="text-xs font-medium text-gray-500 h-10 flex items-center px-1 hover:text-gray-300 cursor-not-allowed">
+                            <div className="text-xs font-medium text-gray-500 h-10 items-center px-1 hover:text-gray-300 cursor-not-allowed hidden sm:flex">
                                 OUTPUT
                             </div>
-                            <div className="text-xs font-medium text-gray-500 h-10 flex items-center px-1 hover:text-gray-300 cursor-not-allowed">
+                            <div className="text-xs font-medium text-gray-500 h-10 items-center px-1 hover:text-gray-300 cursor-not-allowed hidden sm:flex">
                                 DEBUG CONSOLE
                             </div>
                         </div>
@@ -646,7 +646,7 @@ export default function CodeEditor() {
                                 ) : (
                                     <div className="flex items-center gap-2">
                                         <Play className="h-3 w-3 fill-current" />
-                                        <span>Run Code</span>
+                                        <span className="hidden sm:inline">Run Code</span>
                                     </div>
                                 )}
                             </Button>
