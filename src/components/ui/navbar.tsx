@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Menu, X, User } from "lucide-react";
+import { Menu, X, User, Code2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { FeedbackForm } from "@/components/feedback/FeedbackForm";
 import { usePathname, useRouter } from "next/navigation";
@@ -54,6 +54,12 @@ export function Navbar() {
                         <Link href="/internships" className="text-sm text-gray-300 hover:text-white transition-colors">
                             Internships
                         </Link>
+                        {user && (
+                            <Link href="/playground" className="text-sm text-gray-300 hover:text-white transition-colors flex items-center gap-1">
+                                <Code2 size={16} />
+                                <span>Webory DevLab</span>
+                            </Link>
+                        )}
 
                         {user && (
                             <Link href="/ai-weboryskills" className="text-sm text-gray-300 hover:text-white transition-colors">
@@ -122,6 +128,12 @@ export function Navbar() {
                             <Link href="/internships" className="text-sm text-gray-300 hover:text-white" onClick={() => setIsOpen(false)}>
                                 Internships
                             </Link>
+                            {user && (
+                                <Link href="/playground" className="text-sm text-gray-300 hover:text-white flex items-center gap-2" onClick={() => setIsOpen(false)}>
+                                    <Code2 size={16} />
+                                    Webory DevLab
+                                </Link>
+                            )}
 
                             {user && (
                                 <Link href="/ai-weboryskills" className="text-sm text-gray-300 hover:text-white" onClick={() => setIsOpen(false)}>

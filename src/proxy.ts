@@ -81,7 +81,20 @@ export function proxy(request: NextRequest) {
   }
 
   // Allow the request to continue
-  return NextResponse.next();
+  // Allow the request to continue with security headers
+  const response = NextResponse.next();
+
+  // Add security headers
+  response.headers.set("X-DNS-Prefetch-Control", "on");
+  response.headers.set(
+    "Strict-Transport-Security",
+    "max-age=63072000; includeSubDomains; preload"
+  );
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("X-Frame-Options", "SAMEORIGIN");
+  // response.headers.set("X-XSS-Protection", "1; mode=block"); // Optional, modern browsers handle this
+
+  return response;
 }
 
 // Matching paths - match all paths except API routes and static files
