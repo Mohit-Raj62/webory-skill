@@ -4,31 +4,16 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Code, Rocket, Users } from "lucide-react";
-import { useEffect, useState } from "react";
 import { useAuth } from "@/components/auth/session-provider";
 
-export function Hero() {
+interface HeroProps {
+    initialUserCount?: number;
+}
+
+export function Hero({ initialUserCount = 10 }: HeroProps) {
     const { user } = useAuth();
     const isLoggedIn = !!user;
-    const [activeStudents, setActiveStudents] = useState("10+");
-
-    useEffect(() => {
-        const fetchUserStats = async () => {
-            try {
-                const res = await fetch("/api/stats/users");
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.totalUsers) {
-                        setActiveStudents(data.totalUsers > 0 ? `${data.totalUsers}+` : "10+");
-                    }
-                }
-            } catch (error) {
-                console.error("Failed to fetch user stats:", error);
-                // Keep default "10+" on error
-            }
-        };
-        fetchUserStats();
-    }, []);
+    const activeStudents = initialUserCount > 0 ? `${initialUserCount}+` : "10+";
 
     return (
         <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
