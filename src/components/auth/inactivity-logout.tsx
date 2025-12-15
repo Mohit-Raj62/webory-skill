@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 
 export function InactivityLogout() {
     const router = useRouter();
-    const timeoutRef = useRef < NodeJS.Timeout | null > (null);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const lastActivityRef = useRef<number>(Date.now());
     const INACTIVITY_TIMEOUT = 20 * 60 * 1000; // 20 minutes in milliseconds
+    const THROTTLE_LIMIT = 1000; // 1 second throttle
 
     const logout = async () => {
         try {
@@ -19,6 +21,14 @@ export function InactivityLogout() {
     };
 
     const resetTimer = () => {
+        const now = Date.now();
+        // Throttle: only reset if more than 1 second has passed since last reset
+        if (now - lastActivityRef.current < THROTTLE_LIMIT) {
+            return;
+        }
+        
+        lastActivityRef.current = now;
+
         // Clear existing timeout
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
@@ -43,7 +53,7 @@ export function InactivityLogout() {
 
         // Reset timer on any activity
         events.forEach((event) => {
-            document.addEventListener(event, resetTimer);
+            window.addEventListener(event, resetTimer);
         });
 
         // Start initial timer
@@ -55,7 +65,7 @@ export function InactivityLogout() {
                 clearTimeout(timeoutRef.current);
             }
             events.forEach((event) => {
-                document.removeEventListener(event, resetTimer);
+                window.removeEventListener(event, resetTimer);
             });
         };
     }, []);

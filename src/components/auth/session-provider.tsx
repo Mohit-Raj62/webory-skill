@@ -1,55 +1,67 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import { toast } from "sonner";
+import { createContext, useContext, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+
+interface User {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: string;
+    avatar?: string;
+}
+
+interface AuthContextType {
+    user: User | null;
+    loading: boolean;
+    refreshAuth: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextType>({
+    user: null,
+    loading: true,
+    refreshAuth: async () => {},
+});
+
+export const useAuth = () => useContext(AuthContext);
 
 export function SessionProvider({ children }: { children: React.ReactNode }) {
-    // TEMPORARILY DISABLED - Causing redirect loop
-    // Single device login feature will be re-enabled after fixing the session persistence issue
+    const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState(true);
+    const pathname = usePathname();
 
-    // const router = useRouter();
-    // const pathname = usePathname();
+    const fetchUser = async () => {
+        try {
+            // Skip auth check on public routes to speed up initial load, 
+            // but we might need it for "Login" vs "Dashboard" buttons.
+            // So we'll fetch, but maybe lazily or we accept it might fail.
+            const res = await fetch("/api/auth/me");
+            if (res.ok) {
+                const data = await res.json();
+                setUser(data.user);
+            } else {
+                setUser(null);
+            }
+        } catch (error) {
+            console.error("Auth check failed", error);
+            setUser(null);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    // useEffect(() => {
-    //     // Don't check session on public pages
-    //     if (pathname === '/login' || pathname === '/signup' || pathname === '/') return;
+    useEffect(() => {
+        fetchUser();
+    }, []);
 
-    //     const checkSession = async () => {
-    //         try {
-    //             const res = await fetch('/api/auth/session');
-    //             if (res.status === 401) {
-    //                 const data = await res.json();
+    // Re-fetch on login/signup success is handled by manual refreshAuth calls usually,
+    // or we can listen to pathname changes if we expect auth state to change on navigation
+    // (unlikely unless logging out).
 
-    //                 // Clear cookie via API call to logout
-    //                 await fetch('/api/auth/logout', { method: 'POST' });
-
-    //                 if (data.reason === 'session_mismatch') {
-    //                     toast.error("You have been logged out because your account was logged in on another device.");
-    //                 }
-
-    //                 router.push('/login');
-    //             }
-    //         } catch (error) {
-    //             console.error("Session check failed", error);
-    //         }
-    //     };
-
-    //     // Check immediately on mount
-    //     checkSession();
-
-    //     // Check periodically (every 30 seconds)
-    //     const interval = setInterval(checkSession, 30000);
-
-    //     // Check on window focus
-    //     const handleFocus = () => checkSession();
-    //     window.addEventListener('focus', handleFocus);
-
-    //     return () => {
-    //         clearInterval(interval);
-    //         window.removeEventListener('focus', handleFocus);
-    //     };
-    // }, [pathname, router]);
-
-    return <>{children}</>;
+    return (
+        <AuthContext.Provider value={{ user, loading, refreshAuth: fetchUser }}>
+            {children}
+        </AuthContext.Provider>
+    );
 }

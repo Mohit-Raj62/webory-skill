@@ -4,31 +4,14 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Menu, X, User, Code2 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FeedbackForm } from "@/components/feedback/FeedbackForm";
-import { usePathname, useRouter } from "next/navigation";
+import { useAuth } from "@/components/auth/session-provider";
 
 export function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
-    const [user, setUser] = useState < { firstName: string; role: string } | null > (null);
-    const pathname = usePathname();
-    const router = useRouter();
-
-    useEffect(() => {
-        const checkAuth = async () => {
-            try {
-                const res = await fetch("/api/auth/me");
-                if (res.ok) {
-                    const data = await res.json();
-                    setUser(data.user);
-                }
-            } catch (error) {
-                // Not logged in
-            }
-        };
-        checkAuth();
-    }, []);
+    const { user } = useAuth();
 
     return (
         <>

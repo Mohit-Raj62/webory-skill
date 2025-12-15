@@ -4,24 +4,13 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Code, Rocket, Users } from "lucide-react";
-
 import { useEffect, useState } from "react";
+import { useAuth } from "@/components/auth/session-provider";
 
 export function Hero() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const { user } = useAuth();
+    const isLoggedIn = !!user;
     const [activeStudents, setActiveStudents] = useState("10+");
-
-    useEffect(() => {
-        const checkAuth = async () => {
-            try {
-                const res = await fetch("/api/auth/me");
-                if (res.ok) setIsLoggedIn(true);
-            } catch (e) {
-                setIsLoggedIn(false);
-            }
-        };
-        checkAuth();
-    }, []);
 
     useEffect(() => {
         const fetchUserStats = async () => {
