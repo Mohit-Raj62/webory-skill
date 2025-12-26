@@ -18,12 +18,15 @@ export async function POST(req: Request) {
     // Always return success to prevent email enumeration
     // Even if user doesn't exist, we return success
     if (!user) {
+      console.log(`⚠️ User not found for email: ${email}`);
       return NextResponse.json({
         success: true,
         message:
           "If an account with that email exists, a password reset link has been sent.",
       });
     }
+
+    console.log(`✅ User found: ${user.email} (${user._id})`);
 
     // Generate reset token
     const resetToken = crypto.randomBytes(32).toString("hex");

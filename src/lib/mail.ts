@@ -2,6 +2,8 @@ import nodemailer from "nodemailer";
 import { createInvoiceHTML } from "./invoiceTemplate";
 
 const transporter = nodemailer.createTransport({
+  pool: true,
+  maxConnections: 5,
   host: "smtp.gmail.com",
   port: 587,
   secure: false, // true for 465, false for other ports
