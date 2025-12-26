@@ -6,10 +6,17 @@ export async function GET(req: Request) {
     const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 
     // Dynamically determine baseUrl
-    let baseUrl = process.env.NEXT_PUBLIC_APP_URL;
-    if (!baseUrl) {
+    let baseUrl =
+      process.env.NEXT_PUBLIC_APP_URL || "https://www.weboryskills.in";
+    if (baseUrl.endsWith("/")) {
+      baseUrl = baseUrl.slice(0, -1);
+    }
+
+    if (!process.env.NEXT_PUBLIC_APP_URL) {
       const { protocol, host } = new URL(req.url);
-      baseUrl = `${protocol}//${host}`;
+      // If not localhost, force https
+      const proto = host.includes("localhost") ? protocol : "https:";
+      baseUrl = `${proto}//${host}`;
     }
 
     const GOOGLE_REDIRECT_URI = `${baseUrl}/api/auth/google/callback`;
