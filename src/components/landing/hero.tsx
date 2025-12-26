@@ -1,12 +1,20 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { ArrowRight, Code, Rocket, Users } from "lucide-react";
 import { useAuth } from "@/components/auth/session-provider";
-import { ParticleNetwork } from "@/components/ui/particle-network";
-import { BackgroundCodeAnimation } from "@/components/ui/background-code-animation";
+import dynamic from "next/dynamic";
+
+const ParticleNetwork = dynamic(() => import("@/components/ui/particle-network").then(mod => mod.ParticleNetwork), { 
+    ssr: false,
+    loading: () => <div className="absolute inset-0 bg-black/20" /> 
+});
+const BackgroundCodeAnimation = dynamic(() => import("@/components/ui/background-code-animation").then(mod => mod.BackgroundCodeAnimation), { 
+    ssr: false 
+});
 
 interface HeroProps {
     initialUserCount?: number;
@@ -15,31 +23,34 @@ interface HeroProps {
 // Shatter/Explosion Effect Component
 function ShatterCard({ icon: Icon, label, value, index }: { icon: any, label: string, value: string, index: number }) {
     // Generate random shards with more variety
-    const shards = Array.from({ length: 42 }).map((_, i) => {
-         // Random irregular polygon shapes
-        const shapes = [
-            "polygon(50% 0%, 0% 100%, 100% 100%)", // Triangle
-            "polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%)", // Trapezoid
-            "polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)", // Pentagon ish
-            "polygon(0 0, 100% 0, 100% 100%)", // Corner Triangle
-            "polygon(0 0, 100% 100%, 0 100%)", // Corner Triangle 2
-             "polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%)" // Parallelogram
-        ];
-        
-        return {
-            id: i,
-            x: (Math.random() - 0.5) * 400, // Explode wider
-            y: (Math.random() * 300) + 50,  // Fall further
-            rotate: (Math.random() - 0.5) * 1080, // Spin crazy fast
-            scale: Math.random() * 0.8 + 0.2,
-            duration: Math.random() * 1.5 + 1.2, // Slower: 1.2s - 2.7s
-            shape: shapes[Math.floor(Math.random() * shapes.length)],
-            // Random start positions to break the grid
-            left: Math.random() * 100,
-            top: Math.random() * 100,
-            size: Math.random() * 20 + 10,
-        };
-    });
+    const [shards, setShards] = useState<any[]>([]);
+
+    useEffect(() => {
+        const generatedShards = Array.from({ length: 42 }).map((_, i) => {
+            const shapes = [
+                "polygon(50% 0%, 0% 100%, 100% 100%)",
+                "polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%)",
+                "polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)",
+                "polygon(0 0, 100% 0, 100% 100%)",
+                "polygon(0 0, 100% 100%, 0 100%)",
+                "polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%)"
+            ];
+            
+            return {
+                id: i,
+                x: (Math.random() - 0.5) * 400,
+                y: (Math.random() * 300) + 50,
+                rotate: (Math.random() - 0.5) * 1080,
+                scale: Math.random() * 0.8 + 0.2,
+                duration: Math.random() * 1.5 + 1.2,
+                shape: shapes[Math.floor(Math.random() * shapes.length)],
+                left: Math.random() * 100,
+                top: Math.random() * 100,
+                size: Math.random() * 20 + 10,
+            };
+        });
+        setShards(generatedShards);
+    }, []);
 
     return (
         <motion.div

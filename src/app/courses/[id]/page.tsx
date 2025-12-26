@@ -3,8 +3,10 @@
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
-import { PaymentModal } from "@/components/courses/payment-modal";
-import { Invoice } from "@/components/courses/invoice";
+import dynamic from "next/dynamic";
+
+const PaymentModal = dynamic(() => import("@/components/courses/payment-modal").then(mod => mod.PaymentModal), { ssr: false });
+const Invoice = dynamic(() => import("@/components/courses/invoice").then(mod => mod.Invoice), { ssr: false });
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { CheckCircle, Clock, BarChart, Users, Globe, PlayCircle, Lock, ClipboardList, FileText, Calendar, Video } from "lucide-react";
