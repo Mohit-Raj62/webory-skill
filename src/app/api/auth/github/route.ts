@@ -12,8 +12,7 @@ export async function GET(req: Request) {
       baseUrl = `${protocol}//${host}`;
     }
 
-    const GITHUB_REDIRECT_URI =
-      "http://localhost:3000/api/auth/github/callback";
+    const GITHUB_REDIRECT_URI = `${baseUrl}/api/auth/github/callback`;
 
     if (!GITHUB_CLIENT_ID) {
       return NextResponse.json(

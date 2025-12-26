@@ -12,8 +12,7 @@ export async function GET(req: Request) {
       baseUrl = `${protocol}//${host}`;
     }
 
-    const GOOGLE_REDIRECT_URI =
-      "http://localhost:3000/api/auth/google/callback";
+    const GOOGLE_REDIRECT_URI = `${baseUrl}/api/auth/google/callback`;
 
     if (!GOOGLE_CLIENT_ID) {
       return NextResponse.json(
