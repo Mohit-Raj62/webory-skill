@@ -2,38 +2,38 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, CreditCard, Lock, Calendar, Tag, Check } from "lucide-react";
+import { X, CreditCard, Lock, Tag, Check, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 interface PaymentModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSuccess: (transactionId: string, promoCode?: string) => void;
     courseTitle: string;
     price: number;
     originalPrice?: number;
     discountPercentage?: number;
+    courseId: string;
+    userId: string;
+    mobileNumber?: string;
 }
 
 export function PaymentModal({
     isOpen,
     onClose,
-    onSuccess,
     courseTitle,
     price,
     originalPrice,
-    discountPercentage
+    discountPercentage,
+    courseId,
+    userId,
+    mobileNumber
 }: PaymentModalProps) {
     const [loading, setLoading] = useState(false);
-    const [cardNumber, setCardNumber] = useState("");
-    const [expiry, setExpiry] = useState("");
-    const [cvc, setCvc] = useState("");
     const [promoCode, setPromoCode] = useState("");
     const [validatingPromo, setValidatingPromo] = useState(false);
-    const [appliedPromo, setAppliedPromo] = useState < any > (null);
+    const [appliedPromo, setAppliedPromo] = useState<any>(null);
     const [finalPrice, setFinalPrice] = useState(price);
-
     const [errorMessage, setErrorMessage] = useState("");
 
     const handleValidatePromo = async () => {
@@ -80,7 +80,6 @@ export function PaymentModal({
         } catch (error) {
             console.error("Error validating promo code:", error);
             setErrorMessage("Failed to validate promo code");
-            toast.error("Failed to validate promo code");
             setAppliedPromo(null);
             setFinalPrice(price);
         } finally {
@@ -99,12 +98,36 @@ export function PaymentModal({
         e.preventDefault();
         setLoading(true);
 
-        // Simulate payment processing
-        setTimeout(() => {
+        try {
+            const res = await fetch("/api/payment/initiate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    amount: finalPrice,
+                    courseId: courseId,
+                    userId: userId,
+                    mobileNumber: mobileNumber
+                }),
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.url) {
+                // Redirect user to PhonePe
+                window.location.href = data.url;
+            } else {
+                console.error("Payment initiation failed:", data);
+                toast.error(data.error || "Payment initiation failed");
+                setLoading(false);
+            }
+
+        } catch (error) {
+            console.error("Payment Error:", error);
+            toast.error("Something went wrong. Please try again.");
             setLoading(false);
-            const transactionId = "TXN-" + Math.random().toString(36).substr(2, 9).toUpperCase();
-            onSuccess(transactionId, appliedPromo?.code);
-        }, 2000);
+        }
     };
 
     if (!isOpen) return null;
@@ -134,7 +157,7 @@ export function PaymentModal({
                         <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-400">
                             <CreditCard size={32} />
                         </div>
-                        <h2 className="text-2xl font-bold text-white">Secure Checkout</h2>
+                        <h2 className="text-2xl font-bold text-white">Secure Payment</h2>
                         <p className="text-gray-400 mt-2">
                             Purchasing <span className="text-white font-semibold">{courseTitle}</span>
                         </p>
@@ -224,52 +247,10 @@ export function PaymentModal({
                             )}
                         </div>
 
-                        <div>
-                            <label className="text-sm text-gray-300 block mb-2">Card Number</label>
-                            <div className="relative">
-                                <input
-                                    type="text"
-                                    required
-                                    maxLength={19}
-                                    placeholder="0000 0000 0000 0000"
-                                    className="w-full bg-black/20 border border-white/10 rounded-xl p-3 pl-10 text-white focus:border-blue-500/50 outline-none font-mono"
-                                    value={cardNumber}
-                                    onChange={(e) => setCardNumber(e.target.value)}
-                                />
-                                <CreditCard className="absolute left-3 top-3.5 text-gray-500" size={18} />
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="text-sm text-gray-300 block mb-2">Expiry Date</label>
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        required
-                                        placeholder="MM/YY"
-                                        maxLength={5}
-                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 pl-10 text-white focus:border-blue-500/50 outline-none font-mono"
-                                        value={expiry}
-                                        onChange={(e) => setExpiry(e.target.value)}
-                                    />
-                                    <Calendar className="absolute left-3 top-3.5 text-gray-500" size={18} />
-                                </div>
-                            </div>
-                            <div>
-                                <label className="text-sm text-gray-300 block mb-2">CVC</label>
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        required
-                                        maxLength={3}
-                                        placeholder="123"
-                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 pl-10 text-white focus:border-blue-500/50 outline-none font-mono"
-                                        value={cvc}
-                                        onChange={(e) => setCvc(e.target.value)}
-                                    />
-                                    <Lock className="absolute left-3 top-3.5 text-gray-500" size={18} />
-                                </div>
+                        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 mb-4">
+                             <div className="flex items-start gap-2 text-yellow-400 text-sm">
+                                <AlertCircle size={16} className="mt-0.5 flex-shrink-0" />
+                                <p>You will be redirected to PhonePe Gateway to complete the payment safely.</p>
                             </div>
                         </div>
 
@@ -278,11 +259,11 @@ export function PaymentModal({
                             disabled={loading}
                             className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 py-6 text-lg font-bold mt-6"
                         >
-                            {loading ? "Processing..." : `Pay ₹${finalPrice}`}
+                            {loading ? "Redirecting..." : `Pay ₹${finalPrice} with PhonePe`}
                         </Button>
 
                         <p className="text-xs text-gray-500 text-center flex items-center justify-center gap-1">
-                            <Lock size={12} /> Payments are secure and encrypted.
+                            <Lock size={12} /> Payments are 100% secure.
                         </p>
                     </form>
                 </motion.div>

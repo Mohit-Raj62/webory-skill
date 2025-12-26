@@ -73,6 +73,7 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <h3 className="text-white font-medium mb-1">Email Us</h3>
+                                        <p className="text-gray-400"> weboryinfo@gmail.com </p>
                                         <p className="text-gray-400">supportskillwebory@gmail.com</p>
                                         <p className="text-gray-400">infoskillwebory@gmail.com</p>
                                     </div>
@@ -83,6 +84,8 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <h3 className="text-white font-medium mb-1">Call Us</h3>
+                                        <p>For any inquiries or support, please contact us at:</p>
+                                        <p className="text-gray-400">Mohit Raj</p>
                                         <p className="text-gray-400">+91 62059 47359</p>
                                         <p className="text-gray-400">Mon - Fri, 8am - 10pm</p>
                                     </div>
@@ -94,9 +97,8 @@ export default function ContactPage() {
                                     <div>
                                         <h3 className="text-white font-medium mb-1">Visit Us</h3>
                                         <p className="text-gray-400">
-                                            JBIT College, 23 Milestone<br />
-                                            NH-07, Chakrata Road<br />
-                                            Shankarpur, Dehradun 248197
+                                            Janpara, Bihar patna<br />
+                                            Janpara, Bihar patna 801112
                                         </p>
                                     </div>
                                 </div>
