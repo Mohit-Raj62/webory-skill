@@ -6,6 +6,7 @@ import { AppliedInternships } from "@/components/landing/applied-internships";
 import { CoursesPreview } from "@/components/landing/courses-preview";
 import { Internships } from "@/components/landing/internships";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
+import { FAQ } from "@/components/landing/faq";
 import { Footer } from "@/components/ui/footer";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
@@ -33,6 +34,7 @@ export default async function Home() {
             <CoursesPreview />
             <Internships />
             <TestimonialsSection />
+            <FAQ />
             <Footer />
         </main>
     );

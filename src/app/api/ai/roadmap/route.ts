@@ -37,7 +37,15 @@ export async function POST(req: Request) {
         {
           role: "system" as const,
           content:
-            "You are a helpful AI learning assistant for WeborySkills platform. Answer questions clearly, provide examples, and help users learn effectively. Keep responses concise but informative.",
+            "You are a Senior Technical Mentor and Industry Expert at WeborySkills. Your goal is to help students become top-tier developers.\n\n" +
+            "GUIDELINES:\n" +
+            "1. Give detailed, in-depth technical explanations. Do not be superficial.\n" +
+            "2. Always provide code examples where relevant.\n" +
+            "3. Explain 'WHY' something is done, not just 'HOW'.\n" +
+            "4. Mention industry best practices and potential pitfalls.\n" +
+            "5. If a roadmap is asked, provide a high-level summary but suggest using the Roadmap feature for a full path.\n" +
+            "6. Be encouraging but realistic about the effort required.\n" +
+            "7. Format your response with clear Markdown headers, bold text for emphasis, and code blocks.",
         },
         ...(conversationHistory || []),
         {
@@ -98,73 +106,104 @@ export async function POST(req: Request) {
           }) to explore all our courses and start your learning journey!`
         : "";
 
-    const prompt = `You are an expert learning advisor creating educational roadmaps.
+    const prompt = `You are a World-Class Technical Curriculum Designer and Senior Developer Mentor.
+    
+TASK: Create an extremely detailed, step-by-step mastery roadmap for: "${topic}".
 
-TASK: Create a comprehensive learning roadmap for: "${topic}"
+Your goal is to take a complete beginner and turn them into a job-ready professional.
 
-IMPORTANT GUIDELINES:
-- Focus on "${topic}" as a technical skill, programming language, or technology
-- Provide step-by-step learning path from beginner to advanced
-- Include practical projects and resources
-- Be specific and actionable
+STRICT FORMATTING RULES:
+1. You MUST explicitly use the markdown headers exactly as shown below (e.g., "## 📚 Overview", "### Phase 1:", "**Topics to Learn:**", "**Practice Projects:**").
+2. The frontend parser depends on these exact strings. Do not change them.
+3. Do not use JSON. Use the Markdown format below.
 
-Please provide a detailed response in the following format:
+CONTENT GUIDELINES:
+- **Depth**: Do not just list topics. Explain them.
+- **Topics**: For every topic, provide a 2-3 sentence deep-dive on what it is and why it's critical.
+- **Projects**: Suggest complex, portfolio-worthy projects (e.g., "Build a full E-commerce API" instead of "To-do list").
+- **Step-by-Step**: Ensure a logical progression.
+
+REQUIRED OUTPUT FORMAT:
 
 ## 📚 Overview
-Brief introduction to ${topic} and why it's valuable to learn.
+[Provide a comprehensive, inspiring introduction to ${topic}. Explain its industry relevance, salary potential, and what kind of problems it solves. Min 100 words.]
 
 ## ✅ Prerequisites
-What foundational knowledge is needed before starting (if any).
+[Bulleted list of exactly what is needed before starting. Be honest. e.g., "Basic JavaScript knowledge", "Understanding of HTTP".]
 
 ## 🗺️ Learning Roadmap
 
-
-### Phase 1: Beginner (Estimated: X weeks/months)
-**Goal:** [What you'll achieve in this phase]
+### Phase 1: Foundation & Basics (Estimated: [Time])
+**Goal:** [Clear, ambitious goal for this phase]
 
 **Topics to Learn:**
-- **Topic Name 1**: Brief, concise description focusing on key concepts and why it matters (1 sentence)
-- **Topic Name 2**: Brief, concise description focusing on key concepts and why it matters (1 sentence)
-- **Topic Name 3**: Brief, concise description focusing on key concepts and why it matters (1 sentence)
-- **Topic Name 4**: Brief, concise description focusing on key concepts and why it matters (1 sentence)
-- **Topic Name 5**: Brief, concise description focusing on key concepts and why it matters (1 sentence)
-- **Topic Name 6**: Brief, concise description focusing on key concepts and why it matters (1 sentence)
-
-NOTE: Keep descriptions concise and to-the-point. Include 5-6 topics per phase.
+- **[Topic Name]**: [Deep explanation. detailed description of the concept, its syntax/usage, and why professionals use it.]
+- **[Topic Name]**: [Deep explanation. detailed description of the concept, its syntax/usage, and why professionals use it.]
+- **[Topic Name]**: [Deep explanation. detailed description of the concept, its syntax/usage, and why professionals use it.]
+- **[Topic Name]**: [Deep explanation. detailed description of the concept, its syntax/usage, and why professionals use it.]
+- **[Topic Name]**: [Deep explanation. detailed description of the concept, its syntax/usage, and why professionals use it.]
+- **[Topic Name]**: [Deep explanation. detailed description of the concept, its syntax/usage, and why professionals use it.]
+[Include at least 6-8 core topics]
 
 **Practice Projects:**
-1. Detailed project description with specific features and learning outcomes
-2. Detailed project description with specific features and learning outcomes
+1. **[Project Name]**: [Detailed spec: "Build X using Y. It must have features A, B, and C. Focus on implementing Z pattern."]
+2. **[Project Name]**: [Detailed spec: "Build X using Y. It must have features A, B, and C. Focus on implementing Z pattern."]
 
 **Resources:**
-- Specific resource recommendations (courses, documentation, tutorials)
-- Community resources and practice platforms
+- [Official Documentation link]
+- [Specific high-quality tutorial search term]
+- [Practice platform recommendation]
 
 
-### Phase 2: Intermediate (Estimated: X weeks/months)
-[Same structure as Phase 1]
+### Phase 2: Intermediate Mastery (Estimated: [Time])
+**Goal:** [Goal for this phase]
 
-### Phase 3: Advanced (Estimated: X weeks/months)
-[Same structure as Phase 1]
+**Topics to Learn:**
+- **[Topic Name]**: [Deep explanation. detailed description.]
+- **[Topic Name]**: [Deep explanation. detailed description.]
+- **[Topic Name]**: [Deep explanation. detailed description.]
+[Include 6-8 intermediate topics]
+
+**Practice Projects:**
+1. **[Project Name]**: [Detailed spec. Make it challenging.]
+2. **[Project Name]**: [Detailed spec. Make it challenging.]
+
+**Resources:**
+- [Resource 1]
+- [Resource 2]
+
+
+### Phase 3: Advanced & Professional (Estimated: [Time])
+**Goal:** [Goal for this phase]
+
+**Topics to Learn:**
+- **[Topic Name]**: [Deep explanation. detailed description.]
+- **[Topic Name]**: [Deep explanation. detailed description.]
+- **[Topic Name]**: [Deep explanation. detailed description.]
+[Include 6-8 advanced topics]
+
+**Practice Projects:**
+1. **[Project Name]**: [Professional-grade project spec. Something they can put on a resume.]
+2. **[Project Name]**: [Professional-grade project spec.]
+
+**Resources:**
+- [Resource 1]
+- [Resource 2]
 
 ## 🎯 Key Concepts to Master
-- Concept 1
-- Concept 2
-- Concept 3
+- [Concept 1]: [Brief explanation]
+- [Concept 2]: [Brief explanation]
+- [Concept 3]: [Brief explanation]
+- [Concept 4]: [Brief explanation]
 
 ## 💼 Career Paths
-Where this skill can lead you professionally.
-
-## 🔗 Recommended Resources
-- Online courses
-- Documentation
-- Books
-- Communities
+- [Job Title 1]
+- [Job Title 2]
+- [Job Title 3]
 
 ## 💡 Pro Tips
-Practical advice for learning ${topic} effectively.
-
-Keep the response well-structured, actionable, and motivating. Use emojis sparingly for visual appeal.`;
+[3-4 Expert tips from a senior developer's perspective on how to succeed in this field]
+`;
 
     console.log("Roadmap mode - Generating roadmap for topic:", topic);
 

@@ -1,11 +1,13 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from "react";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
-import { Send, Sparkles, BookOpen, Loader2, CheckCircle, Clock, Target, Zap, Award, TrendingUp, Rocket, MessageCircle, Map, User, Bot } from "lucide-react";
+import { Send, Sparkles, BookOpen, Loader2, CheckCircle, Clock, Target, Zap, Award, TrendingUp, Rocket, MessageCircle, Map, User, Bot, Star, Code, Terminal } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import { BackgroundCodeAnimation } from "@/components/ui/background-code-animation";
 
 interface RoadmapPhase {
   phase: string;
@@ -198,6 +200,8 @@ export default function AIWeboryskillsPage() {
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-1/4 -left-48 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
                 <div className="absolute bottom-1/4 -right-48 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+                {/* 3D Code Animation Layer */}
+                <BackgroundCodeAnimation />
             </div>
 
             <div className="container mx-auto px-4 pt-20 sm:pt-24 pb-8 sm:pb-12 max-w-7xl relative z-10">
@@ -235,104 +239,145 @@ export default function AIWeboryskillsPage() {
                     </div>
                 </div>
 
-                {/* Chat Mode */}
+                {/* Chat Mode Overlay */}
                 {mode === "chat" && (
-                    <div className="max-w-4xl mx-auto">
-                        <div className="bg-gray-900/50 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
-                            <div className="h-[500px] overflow-y-auto p-6 space-y-6">
+                    <div className="fixed inset-0 z-40 bg-gray-900/95 backdrop-blur-md pt-20 pb-4 px-4 sm:px-6 flex flex-col animate-fadeIn">
+                        <div className="max-w-5xl mx-auto w-full flex-1 flex flex-col min-h-0 relative z-50">
+                        {/* Header for Chat Mode Back Button */}
+                        <div className="flex items-center justify-between mb-4 flex-shrink-0">
+                             <div className="flex items-center gap-2">
+                                <span className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">AI Mentor Chat</span>
+                             </div>
+                             <button onClick={() => setMode("roadmap")} className="text-green-400 hover:text-white transition-colors bg-green-500/10 hover:bg-green-500/20 p-2 rounded-lg border border-green-500/20">
+                                <span className="text-sm font-semibold">Exit Chat</span>
+                             </button>
+                        </div>
+
+                        <div className="flex-1 bg-gray-900/50 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl relative flex flex-col min-h-0">
+                            
+                            {/* Messages Area - Grow to fill space */}
+                            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-transparent">
                                 {chatHistory.length > 0 ? (
                                     <>
                                         {chatHistory.map((msg, idx) => (
                                             <div key={idx} className={`flex gap-4 animate-fadeIn ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                                                 {msg.role === "assistant" && (
-                                                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+                                                    <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg ring-2 ring-white/10">
                                                         <Bot className="text-white" size={20} />
                                                     </div>
                                                 )}
-                                                <div className={`max-w-[75%] ${msg.role === "user" ? "text-right" : "text-left"}`}>
-                                                    <div className={`inline-block p-4 rounded-2xl shadow-lg ${
+                                                <div className={`max-w-[85%] sm:max-w-[75%] ${msg.role === "user" ? "text-right" : "text-left"}`}>
+                                                    <div className={`inline-block p-4 sm:p-5 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl ${
                                                         msg.role === "user"
-                                                            ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-tr-sm"
-                                                            : "bg-gray-800/80 text-gray-100 border border-white/10 rounded-tl-sm"
+                                                            ? "bg-gradient-to-br from-blue-600 to-purple-600 text-white rounded-2xl rounded-tr-sm border border-white/10"
+                                                            : "bg-white/5 text-gray-100 border border-white/10 rounded-2xl rounded-tl-sm hover:bg-white/10"
                                                     }`}>
                                                         {msg.role === "assistant" ? (
-                                                            <div className="prose prose-invert prose-sm max-w-none">
+                                                            <div className="prose prose-invert prose-sm sm:prose-base max-w-none">
                                                                 <ReactMarkdown>{msg.content}</ReactMarkdown>
                                                             </div>
                                                         ) : (
-                                                            <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                                                            <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap font-medium">{msg.content}</p>
                                                         )}
                                                     </div>
-                                                    <div className={`text-xs text-gray-500 mt-1 px-2 ${msg.role === "user" ? "text-right" : "text-left"}`}>
-                                                        {msg.role === "user" ? "You" : "AI Mentor"}
+                                                    <div className={`text-xs text-gray-400 mt-2 px-1 flex items-center gap-1 ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                                                        {msg.role === "user" ? (
+                                                            <>You <User size={10} /></>
+                                                        ) : (
+                                                            <><Bot size={10} /> AI Mentor</>
+                                                        )}
                                                     </div>
                                                 </div>
                                                 {msg.role === "user" && (
-                                                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center border-2 border-white/20 shadow-lg">
+                                                    <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center border border-white/10 shadow-lg">
                                                         <User className="text-gray-300" size={20} />
                                                     </div>
                                                 )}
                                             </div>
                                         ))}
+                                        
+                                        {loading && (
+                                            <div className="flex gap-4 animate-pulse">
+                                                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg opacity-70">
+                                                    <Bot className="text-white" size={20} />
+                                                </div>
+                                                <div className="bg-white/5 border border-white/10 rounded-2xl rounded-tl-sm p-4 flex items-center gap-2">
+                                                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                                                    <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                                                    <div className="w-2 h-2 bg-pink-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                                                    <span className="text-xs text-gray-400 ml-2 font-medium">Thinking...</span>
+                                                </div>
+                                            </div>
+                                        )}
+
                                         <div ref={chatEndRef} />
                                     </>
                                 ) : (
                                     <div className="flex items-center justify-center h-full">
-                                        <div className="text-center">
-                                            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full mb-4 border border-white/10">
-                                                <MessageCircle className="text-blue-400" size={32} />
+                                        <div className="text-center p-8 glass-card rounded-3xl border border-white/10 max-w-lg mx-auto transform hover:scale-105 transition-all duration-500">
+                                            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full mb-6 border border-white/10 shadow-[0_0_30px_rgba(59,130,246,0.2)]">
+                                                <MessageCircle className="text-blue-400" size={36} />
                                             </div>
-                                            <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">Welcome, Innovator of the Future! 🌟</h3>
-                                            <p className="text-gray-300 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-                                                "The only way to do great work is to love what you do." <br/>
-                                                Every line of code is a brushstroke in the masterpiece of your career. <br/>
-                                                Whether you're debugging, designing, or dreaming, I'm here to help you rise. <br/>
+                                            <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                                                Senior Mentor AI
+                                            </h3>
+                                            <p className="text-gray-400 text-sm sm:text-base leading-relaxed mb-6">
+                                                Ask complex technical questions, request code reviews, or get architecture advice. I'm here to help you master the craft.
                                             </p>
-                                            <p className="text-blue-400 text-lg sm:text-xl mt-4 font-semibold block animate-pulse">
-                                                Ask me anything, and let's build something legendary.
-                                            </p>
+                                            <div className="flex flex-wrap gap-2 justify-center">
+                                                {exampleQuestions.slice(0, 3).map((q) => (
+                                                    <button key={q} type="button" onClick={() => setTopic(q)} className="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs text-gray-300 transition-all hover:border-blue-500/50">
+                                                        {q}
+                                                    </button>
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
                                 )}
                             </div>
 
-                            <div className="border-t border-white/10 bg-gray-900/80 backdrop-blur-xl p-6">
-                                <form onSubmit={handleSubmit} className="space-y-4">
-                                    <div className="flex gap-3">
-                                        <input
-                                            type="text"
-                                            value={topic}
-                                            onChange={(e) => setTopic(e.target.value)}
-                                            placeholder="Message AI Mentor..."
-                                            className="flex-1 bg-gray-800/50 border border-white/10 focus:border-blue-500/50 rounded-xl px-4 py-3 text-white text-sm placeholder-gray-500 outline-none transition-all"
-                                            disabled={loading}
-                                        />
-                                        <Button type="submit" disabled={loading || !topic.trim()} className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-6 rounded-xl transition-all hover:scale-105">
-                                            {loading ? <Loader2 className="animate-spin" size={20} /> : <Send size={20} />}
-                                        </Button>
+                            {/* Input Area - Sticky at Bottom */}
+                            <div className="border-t border-white/10 bg-black/60 backdrop-blur-xl p-4 sm:p-6 rounded-b-3xl relative z-20">
+                                <form onSubmit={handleSubmit} className="relative">
+                                    <div className="relative group">
+                                        <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl opacity-20 group-hover:opacity-40 transition duration-500 blur"></div>
+                                        <div className="relative flex gap-3 bg-gray-900 rounded-2xl p-2 border border-white/10">
+                                            <input
+                                                type="text"
+                                                value={topic}
+                                                onChange={(e) => setTopic(e.target.value)}
+                                                placeholder="Ask your mentor anything..."
+                                                className="flex-1 bg-transparent border-none focus:ring-0 px-4 py-3 text-white text-base placeholder-gray-500 outline-none"
+                                                disabled={loading}
+                                            />
+                                            <Button 
+                                                type="submit" 
+                                                disabled={loading || !topic.trim()} 
+                                                className={`h-auto px-6 rounded-xl transition-all duration-300 ${
+                                                    topic.trim() ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:shadow-lg hover:shadow-blue-500/20" : "bg-gray-800 text-gray-500"
+                                                }`}
+                                            >
+                                                {loading ? <Loader2 className="animate-spin" size={24} /> : <Send size={24} />}
+                                            </Button>
+                                        </div>
                                     </div>
 
-                                    {chatHistory.length === 0 && (
-                                        <div className="flex flex-wrap gap-2">
-                                            {exampleQuestions.map((q) => (
-                                                <button key={q} type="button" onClick={() => setTopic(q)} className="px-3 py-1.5 bg-gray-800/50 hover:bg-gray-700/50 border border-white/10 rounded-lg text-xs text-gray-300 transition-all" disabled={loading}>
-                                                    {q}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    )}
-
                                     {chatHistory.length > 0 && (
-                                        <div className="flex justify-between items-center text-xs text-gray-500">
-                                            <span>{chatHistory.length} messages</span>
-                                            <button type="button" onClick={() => setChatHistory([])} className="text-red-400 hover:text-red-300 transition-colors">Clear chat</button>
+                                        <div className="absolute -top-10 right-0">
+                                            <button 
+                                                type="button" 
+                                                onClick={() => setChatHistory([])} 
+                                                className="text-xs text-gray-500 hover:text-red-400 transition-colors flex items-center gap-1 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/5"
+                                            >
+                                                <Sparkles size={10} /> Clear Chat
+                                            </button>
                                         </div>
                                     )}
                                 </form>
-
-                                {error && <div className="mt-3 p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">{error}</div>}
+                                {error && <div className="absolute -top-16 left-0 right-0 mx-4 p-3 bg-red-900/80 backdrop-blur-md border border-red-500/50 rounded-xl text-red-200 text-sm text-center animate-shake z-10">{error}</div>}
                             </div>
                         </div>
+                    </div>
                     </div>
                 )}
 

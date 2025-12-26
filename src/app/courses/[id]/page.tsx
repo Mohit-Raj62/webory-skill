@@ -3,7 +3,7 @@
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
-import { UPIPaymentModal } from "@/components/courses/upi-payment-modal";
+import { PaymentModal } from "@/components/courses/payment-modal";
 import { Invoice } from "@/components/courses/invoice";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -672,10 +672,9 @@ export default function CourseDetailsPage() {
                 </div>
             </div>
 
-            <UPIPaymentModal
+            <PaymentModal
                 isOpen={showPayment}
                 onClose={() => setShowPayment(false)}
-                onSuccess={handlePaymentSuccess}
                 courseTitle={course.title}
                 price={course.discountPercentage > 0 && course.originalPrice > 0
                     ? Math.round(course.originalPrice * (1 - course.discountPercentage / 100))
@@ -683,6 +682,8 @@ export default function CourseDetailsPage() {
                 originalPrice={course.originalPrice}
                 discountPercentage={course.discountPercentage}
                 courseId={id as string}
+                userId={user?._id || ""}
+                mobileNumber={user?.mobileNumber}
             />
 
             {showInvoice && transactionData && (

@@ -109,7 +109,7 @@ export default function ContactPage() {
                         {/* Map Integration */}
                         <div className="glass-card p-2 rounded-2xl h-64 bg-white/5 flex items-center justify-center relative overflow-hidden">
                             <iframe 
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3442.274293529344!2d77.92578507548268!3d30.37126137476056!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3908d5786311693d%3A0xe7a5651a5116790a!2sJBIT%20College!5e0!3m2!1sen!2sin!4v1717900000000!5m2!1sen!2sin" 
+                                src="https://maps.google.com/maps?q=Janpara%20Bihar%20patna%20801112&t=&z=13&ie=UTF8&iwloc=&output=embed" 
                                 width="100%" 
                                 height="100%" 
                                 style={{ border: 0, filter: "invert(90%) hue-rotate(180deg)" }} 
@@ -133,7 +133,7 @@ export default function ContactPage() {
                                         value={form.name}
                                         onChange={(e) => setForm({ ...form, name: e.target.value })}
                                         className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-colors"
-                                        placeholder="John Doe"
+                                        placeholder="Mohit Sinha"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -144,7 +144,7 @@ export default function ContactPage() {
                                         value={form.email}
                                         onChange={(e) => setForm({ ...form, email: e.target.value })}
                                         className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-colors"
-                                        placeholder="john@example.com"
+                                        placeholder="   mohitsinha@example.com"
                                     />
                                 </div>
                             </div>

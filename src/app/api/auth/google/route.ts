@@ -13,7 +13,7 @@ export async function GET(req: Request) {
     }
 
     const GOOGLE_REDIRECT_URI =
-      process.env.GOOGLE_REDIRECT_URI || `${baseUrl}/api/auth/google/callback`;
+      "http://localhost:3000/api/auth/google/callback";
 
     if (!GOOGLE_CLIENT_ID) {
       return NextResponse.json(
@@ -35,6 +35,13 @@ export async function GET(req: Request) {
     googleAuthUrl.searchParams.append("scope", "openid email profile");
     googleAuthUrl.searchParams.append("access_type", "offline");
     googleAuthUrl.searchParams.append("prompt", "consent");
+
+    // Debug logging
+    console.log("----------------GOOGLE AUTH DEBUG----------------");
+    console.log("Client ID used:", GOOGLE_CLIENT_ID);
+    console.log("Redirect URI used:", GOOGLE_REDIRECT_URI);
+    console.log("Generated Auth URL:", googleAuthUrl.toString());
+    console.log("-------------------------------------------------");
 
     // Redirect to Google OAuth
     return NextResponse.redirect(googleAuthUrl.toString());

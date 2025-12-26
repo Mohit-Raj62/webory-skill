@@ -13,7 +13,7 @@ export async function GET(req: Request) {
     }
 
     const GITHUB_REDIRECT_URI =
-      process.env.GITHUB_REDIRECT_URI || `${baseUrl}/api/auth/github/callback`;
+      "http://localhost:3000/api/auth/github/callback";
 
     if (!GITHUB_CLIENT_ID) {
       return NextResponse.json(
@@ -30,6 +30,13 @@ export async function GET(req: Request) {
     githubAuthUrl.searchParams.append("client_id", GITHUB_CLIENT_ID);
     githubAuthUrl.searchParams.append("redirect_uri", GITHUB_REDIRECT_URI);
     githubAuthUrl.searchParams.append("scope", "read:user user:email");
+
+    // Debug logging
+    console.log("----------------GITHUB AUTH DEBUG----------------");
+    console.log("Client ID used:", GITHUB_CLIENT_ID);
+    console.log("Redirect URI used:", GITHUB_REDIRECT_URI);
+    console.log("Generated Auth URL:", githubAuthUrl.toString());
+    console.log("-------------------------------------------------");
 
     // Redirect to GitHub OAuth
     return NextResponse.redirect(githubAuthUrl.toString());

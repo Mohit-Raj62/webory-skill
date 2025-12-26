@@ -30,7 +30,7 @@ export async function GET(req: Request) {
     }
 
     const GOOGLE_REDIRECT_URI =
-      process.env.GOOGLE_REDIRECT_URI || `${baseUrl}/api/auth/google/callback`;
+      "http://localhost:3000/api/auth/google/callback";
 
     if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
       console.error("Google OAuth configuration missing");

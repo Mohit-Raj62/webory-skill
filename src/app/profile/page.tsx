@@ -5,6 +5,7 @@ import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/components/auth/session-provider";
 import { User, Mail, Award, Briefcase, LogOut, ExternalLink, Trophy, Calendar, Video, FileText } from "lucide-react";
 import { ActivityDashboard } from "@/components/dashboard/activity-dashboard";
 import { GradesDashboard } from "@/components/dashboard/grades-dashboard";
@@ -24,6 +25,7 @@ export default function ProfilePage() {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState < 'courses' | 'internships' | 'grades' > ('courses');
     const router = useRouter();
+    const { refreshAuth } = useAuth();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -57,6 +59,7 @@ export default function ProfilePage() {
     const handleLogout = async () => {
         try {
             await fetch("/api/auth/logout", { method: "POST" });
+            await refreshAuth();
             router.push("/login");
             router.refresh();
         } catch (error) {
