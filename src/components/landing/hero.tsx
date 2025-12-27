@@ -81,12 +81,11 @@ function ShatterCard({ icon: Icon, label, value, index }: { icon: any, label: st
                                 y: shard.y, 
                                 rotate: shard.rotate, 
                                 scale: 0, 
-                                opacity: 0, 
+                                opacity: [1, 1, 0], // Flash visible then fade
                                 transition: { 
-                                    type: "spring",
-                                    stiffness: 200,
-                                    damping: 20,
-                                    mass: 1
+                                    duration: shard.duration, 
+                                    ease: "easeOut",
+                                    times: [0, 0.5, 1]
                                 } 
                             }
                         }}
