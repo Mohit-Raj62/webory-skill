@@ -281,4 +281,79 @@ export const emailTemplates = {
       <p style="color: #64748b; font-size: 12px; text-align: center;">Received via Webory Skills Contact Form<br>${new Date().toLocaleString()}</p>
     </div>
   `,
+  jobApplicationReceived: (name: string, jobTitle: string) => `
+    <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+      <h2 style="color: #2563eb;">Application Received! 🚀</h2>
+      <p>Hi ${name},</p>
+      <p>We have received your application for the <strong>${jobTitle}</strong> position.</p>
+      <p>Our team will review your profile and get back to you shortly.</p>
+      <p>Best Regards,<br/>Webory Skills Team</p>
+    </div>
+  `,
+  jobInterviewScheduled: (
+    name: string,
+    jobTitle: string,
+    date: string,
+    link?: string
+  ) => `
+    <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+      <h2 style="color: #9333ea;">Interview Scheduled! 📅</h2>
+      <p>Hi ${name},</p>
+      <p>Great news! We have scheduled an interview for your <strong>${jobTitle}</strong> application.</p>
+      <p><strong>Date & Time:</strong> ${new Date(date).toLocaleString()}</p>
+      ${
+        link
+          ? `<p><strong>Meeting Link:</strong> <a href="${link}">${link}</a></p>`
+          : ""
+      }
+      <p>Please be ready 5 minutes before the scheduled time.</p>
+      <p>Good Luck!<br/>Webory Skills Team</p>
+    </div>
+  `,
+  jobOffer: (name: string, jobTitle: string, offerLink: string) => `
+    <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+      <h2 style="color: #16a34a;">Congratulations! You're Hired! 🎉</h2>
+      <p>Hi ${name},</p>
+      <p>We are thrilled to offer you the position of <strong>${jobTitle}</strong> at Webory Skills.</p>
+      <p>You can view and download your Offer Letter from the link below:</p>
+      <p><a href="${offerLink}" style="background-color: #16a34a; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View Offer Letter</a></p>
+      <p>Welcome aboard!<br/>Webory Skills Team</p>
+    </div>
+  `,
+  jobRejection: (name: string, jobTitle: string) => `
+    <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+      <h2 style="color: #dc2626;">Application Update</h2>
+      <p>Hi ${name},</p>
+      <p>Thank you for your interest in the <strong>${jobTitle}</strong> position.</p>
+      <p>After careful review, we have decided not to proceed with your application at this time. We encourage you to apply for future openings.</p>
+      <p>Best Wishes,<br/>Webory Skills Team</p>
+    </div>
+  `,
+  adminJobApplicationNotification: (
+    applicantName: string,
+    jobTitle: string,
+    email: string,
+    phone: string,
+    resumeLink: string
+  ) => `
+    <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #ea580c;">New Job Application Received! 📄</h2>
+      <p>Hi Admin,</p>
+      <p>A new candidate has applied for the <strong>${jobTitle}</strong> position.</p>
+      
+      <div style="background: #fff7ed; border-left: 4px solid #ea580c; padding: 15px; margin: 20px 0;">
+        <p style="margin: 5px 0;"><strong>Name:</strong> ${applicantName}</p>
+        <p style="margin: 5px 0;"><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
+        <p style="margin: 5px 0;"><strong>Phone:</strong> ${phone}</p>
+        <p style="margin: 5px 0;"><strong>Position:</strong> ${jobTitle}</p>
+      </div>
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${resumeLink}" style="background-color: #ea580c; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">View Resume</a>
+      </div>
+      
+      <p>Please review the application in the Admin Dashboard.</p>
+      <p>Best Regards,<br/>Webory Skills System</p>
+    </div>
+  `,
 };

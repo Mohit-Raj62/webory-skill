@@ -37,6 +37,8 @@ const menuItems = [
     { name: "Live Classes", href: "/admin/live-classes", icon: Video },
     { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
     { name: "Settings", href: "/admin/settings", icon: Settings },
+    { name: "Careers (Jobs)", href: "/admin/careers/jobs", icon: Briefcase },
+    { name: "Job Applications", href: "/admin/careers/applications", icon: FileText },
 ];
 
 interface AdminSidebarProps {

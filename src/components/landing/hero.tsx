@@ -57,6 +57,7 @@ function ShatterCard({ icon: Icon, label, value, index }: { icon: any, label: st
             className="relative w-full h-full min-h-[160px] perspective-1000 group cursor-pointer"
             initial="initial"
             whileHover="hover"
+            whileTap="hover"
             animate="initial"
         >
             {/* The Shards (Hidden initially, visible on hover) */}
@@ -80,11 +81,12 @@ function ShatterCard({ icon: Icon, label, value, index }: { icon: any, label: st
                                 y: shard.y, 
                                 rotate: shard.rotate, 
                                 scale: 0, 
-                                opacity: [1, 1, 0], // Flash visible then fade
+                                opacity: 0, 
                                 transition: { 
-                                    duration: shard.duration, 
-                                    ease: "easeOut",
-                                    times: [0, 0.5, 1]
+                                    type: "spring",
+                                    stiffness: 200,
+                                    damping: 20,
+                                    mass: 1
                                 } 
                             }
                         }}
