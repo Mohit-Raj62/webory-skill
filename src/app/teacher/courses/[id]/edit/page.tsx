@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Plus, X, Upload, Image, FileText, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { uploadFile, uploadPDFToCloudinary } from "@/lib/upload-utils";
+import { toast } from "sonner";
 
 export default function EditCoursePage() {
     const router = useRouter();
@@ -13,7 +14,9 @@ export default function EditCoursePage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [uploadingVideo, setUploadingVideo] = useState(false);
+
     const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
+    const [uploadingCertificate, setUploadingCertificate] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [formData, setFormData] = useState({
         title: "",
@@ -27,7 +30,9 @@ export default function EditCoursePage() {
         icon: "Globe",
         duration: "0h",
         thumbnail: "",
+        certificateImage: "",
         curriculum: [] as string[],
+        benefits: [] as string[],
         modules: [] as {
             title: string;
             description: string;
@@ -37,6 +42,7 @@ export default function EditCoursePage() {
     });
 
     const [curriculumInput, setCurriculumInput] = useState("");
+    const [benefitsInput, setBenefitsInput] = useState("");
     const [moduleInput, setModuleInput] = useState({ title: "", description: "" });
     const [selectedModuleIndex, setSelectedModuleIndex] = useState<number>(0);
     const [videoInput, setVideoInput] = useState({ title: "", url: "", duration: "" });
@@ -97,7 +103,9 @@ export default function EditCoursePage() {
                     icon: data.course.icon || "Globe",
                     duration: data.course.duration || "0h",
                     thumbnail: data.course.thumbnail || "",
+                    certificateImage: data.course.certificateImage || "",
                     curriculum: data.course.curriculum || [],
+                    benefits: data.course.benefits || [],
                     modules: modules,
                 });
             }
@@ -120,15 +128,15 @@ export default function EditCoursePage() {
             });
 
             if (res.ok) {
-                alert("Course updated successfully!");
+                toast.success("Course updated successfully!");
                 router.push("/teacher/courses");
             } else {
                 const data = await res.json();
-                alert(data.error || "Failed to update course");
+                toast.error(data.error || "Failed to update course");
             }
         } catch (error) {
             console.error("Update course error:", error);
-            alert("Failed to update course");
+            toast.error("Failed to update course");
         } finally {
             setSaving(false);
         }
@@ -144,10 +152,28 @@ export default function EditCoursePage() {
         }
     };
 
+
     const removeCurriculumItem = (index: number) => {
         setFormData({
             ...formData,
             curriculum: formData.curriculum.filter((_, i) => i !== index),
+        });
+    };
+
+    const addBenefitsItem = () => {
+        if (benefitsInput.trim()) {
+            setFormData({
+                ...formData,
+                benefits: [...formData.benefits, benefitsInput.trim()],
+            });
+            setBenefitsInput("");
+        }
+    };
+
+    const removeBenefitsItem = (index: number) => {
+        setFormData({
+            ...formData,
+            benefits: formData.benefits.filter((_, i) => i !== index),
         });
     };
 
@@ -205,7 +231,8 @@ export default function EditCoursePage() {
         // Validate file size (5MB max for images)
         const maxSize = 5 * 1024 * 1024; // 5MB
         if (file.size > maxSize) {
-            alert(`File too large! Maximum size is 5MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
+
+            toast.error(`File too large! Maximum size is 5MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
             e.target.value = "";
             return;
         }
@@ -215,12 +242,30 @@ export default function EditCoursePage() {
         try {
             const data = await uploadFile(file, "/api/upload/image");
             setFormData((prev) => ({ ...prev, thumbnail: data.url }));
-            alert("Thumbnail uploaded successfully!");
+            toast.success("Thumbnail uploaded successfully!");
         } catch (error: any) {
             console.error("Upload error:", error);
-            alert(error.message || "Failed to upload thumbnail");
+            toast.error(error.message || "Failed to upload thumbnail");
         } finally {
             setUploadingThumbnail(false);
+            e.target.value = "";
+        }
+    };
+
+    const handleCertificateUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploadingCertificate(true);
+        try {
+            const data = await uploadFile(file, "/api/upload/image");
+            setFormData((prev) => ({ ...prev, certificateImage: data.url }));
+            toast.success("Certificate image uploaded successfully!");
+        } catch (error: any) {
+            console.error("Upload error:", error);
+            toast.error(error.message || "Failed to upload certificate image");
+        } finally {
+            setUploadingCertificate(false);
             e.target.value = "";
         }
     };
@@ -230,15 +275,16 @@ export default function EditCoursePage() {
         if (!file) return;
 
         if (!videoInput.title) {
-            alert("Please enter video title first");
+            toast.error("Please enter video title first");
             e.target.value = "";
             return;
         }
 
         // Validate file size (500MB max)
         const maxSize = 500 * 1024 * 1024; // 500MB
+
         if (file.size > maxSize) {
-            alert(`File too large! Maximum size is 500MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
+            toast.error(`File too large! Maximum size is 500MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
             e.target.value = "";
             return;
         }
@@ -274,10 +320,10 @@ export default function EditCoursePage() {
                 modules: newModules
             }));
             setVideoInput({ title: "", url: "", duration: "" });
-            alert("Video uploaded successfully!");
+            toast.success("Video uploaded successfully!");
         } catch (error: any) {
             console.error("Upload error:", error);
-            alert(error.message || "Failed to upload video. Please check your internet connection and try again.");
+            toast.error(error.message || "Failed to upload video. Please check your internet connection and try again.");
         } finally {
             setUploadingVideo(false);
             setUploadProgress(0);
@@ -299,15 +345,16 @@ export default function EditCoursePage() {
         if (!file) return;
 
         if (!pdfInput.title) {
-            alert("Please enter PDF title first");
+            toast.error("Please enter PDF title first");
             e.target.value = "";
             return;
         }
 
         // Validate file size (100MB max)
         const maxSize = 100 * 1024 * 1024; // 100MB
+
         if (file.size > maxSize) {
-            alert(`File too large! Maximum size is 100MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
+            toast.error(`File too large! Maximum size is 100MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
             e.target.value = "";
             return;
         }
@@ -337,6 +384,7 @@ export default function EditCoursePage() {
 
             if (res.ok) {
                 const data = await res.json();
+
                 setPdfs([...pdfs, data.pdf]);
                 setPdfInput({
                     title: "",
@@ -344,13 +392,13 @@ export default function EditCoursePage() {
                     afterModule: 0,
                     order: 0
                 });
-                alert("PDF uploaded successfully!");
+                toast.success("PDF uploaded successfully!");
             } else {
                 throw new Error("Failed to save PDF info");
             }
         } catch (error: any) {
             console.error("Upload error:", error);
-            alert(error.message || "Failed to upload PDF");
+            toast.error(error.message || "Failed to upload PDF");
         } finally {
             setUploadingPdf(false);
             setUploadProgress(0);
@@ -368,13 +416,13 @@ export default function EditCoursePage() {
 
             if (res.ok) {
                 setPdfs(pdfs.filter(p => p._id !== pdfId));
-                alert("PDF deleted successfully");
+                toast.success("PDF deleted successfully");
             } else {
-                alert("Failed to delete PDF");
+                toast.error("Failed to delete PDF");
             }
         } catch (error) {
             console.error("Delete error:", error);
-            alert("Failed to delete PDF");
+            toast.error("Failed to delete PDF");
         }
     };
 
@@ -554,6 +602,52 @@ export default function EditCoursePage() {
                         )}
                     </div>
 
+                    {/* Certificate Preview Image */}
+                    <div>
+                        <label className="text-sm text-gray-300 block mb-2">Sample Certificate Image</label>
+                        <div className="flex gap-2">
+                            <input
+                                type="url"
+                                placeholder="Certificate Image URL or upload file"
+                                className="flex-1 bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                value={formData.certificateImage}
+                                onChange={(e) => setFormData({ ...formData, certificateImage: e.target.value })}
+                            />
+                            <div className="relative">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleCertificateUpload}
+                                    disabled={uploadingCertificate}
+                                    className="hidden"
+                                    id="certificate-upload"
+                                />
+                                <label
+                                    htmlFor="certificate-upload"
+                                    className={`flex items-center gap-2 px-4 py-3 rounded-xl cursor-pointer transition-all ${uploadingCertificate
+                                        ? "bg-gray-600 cursor-not-allowed"
+                                        : "bg-blue-600 hover:bg-blue-700"
+                                        } text-white`}
+                                >
+                                    <Image size={20} />
+                                    {uploadingCertificate ? "Uploading..." : "Upload Image"}
+                                </label>
+                            </div>
+                        </div>
+                        {formData.certificateImage && (
+                            <div className="mt-2 relative w-full max-w-md h-auto rounded-lg overflow-hidden border border-white/10 group">
+                                <img src={formData.certificateImage} alt="Certificate preview" className="w-full h-auto object-contain" />
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData({ ...formData, certificateImage: "" })}
+                                    className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                    <X className="text-white hover:text-red-400" size={24} />
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
                     {/* Curriculum */}
                     <div>
                         <label className="text-sm text-gray-300 block mb-2">Curriculum Topics</label>
@@ -577,6 +671,38 @@ export default function EditCoursePage() {
                                     <button
                                         type="button"
                                         onClick={() => removeCurriculumItem(index)}
+                                        className="text-red-400 hover:text-red-300"
+                                    >
+                                        <X size={18} />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Benefits */}
+                    <div>
+                        <label className="text-sm text-gray-300 block mb-2">Key Benefits (What they'll get)</label>
+                        <div className="flex gap-2 mb-3">
+                            <input
+                                type="text"
+                                placeholder="Add benefit (e.g. Certificate, Lifetime Access)"
+                                className="flex-1 bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                value={benefitsInput}
+                                onChange={(e) => setBenefitsInput(e.target.value)}
+                                onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addBenefitsItem())}
+                            />
+                            <Button type="button" onClick={addBenefitsItem}>
+                                <Plus size={20} />
+                            </Button>
+                        </div>
+                        <div className="space-y-2">
+                            {(formData.benefits || []).map((item, index) => (
+                                <div key={index} className="flex items-center justify-between bg-white/5 p-3 rounded-lg">
+                                    <span className="text-white">{item}</span>
+                                    <button
+                                        type="button"
+                                        onClick={() => removeBenefitsItem(index)}
                                         className="text-red-400 hover:text-red-300"
                                     >
                                         <X size={18} />

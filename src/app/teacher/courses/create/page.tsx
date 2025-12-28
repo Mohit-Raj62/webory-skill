@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Save, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 export default function CreateCourse() {
     const router = useRouter();
@@ -35,14 +36,15 @@ export default function CreateCourse() {
             });
 
             if (res.ok) {
+                toast.success("Course created successfully!");
                 router.push("/teacher/courses");
             } else {
                 const data = await res.json();
-                alert(data.error || "Failed to create course");
+                toast.error(data.error || "Failed to create course");
             }
         } catch (error) {
             console.error("Failed to create course", error);
-            alert("Something went wrong");
+            toast.error("Something went wrong");
         } finally {
             setLoading(false);
         }
