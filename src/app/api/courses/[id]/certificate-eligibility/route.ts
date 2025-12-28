@@ -182,6 +182,7 @@ export async function GET(
       videoProgress,
       overallScore: Math.round(overallScore),
       isEligible,
+      certificateId: enrollment?.certificateId,
       certificateKey: enrollment?.certificateKey,
       completedAt: enrollment?.completedAt,
       enrolledAt: enrollment?.enrolledAt || enrollment?.createdAt,

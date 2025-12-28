@@ -43,13 +43,8 @@ export default function CertificatePage() {
                     setCertificateData(data);
 
                     // Use backend generated ID if available, otherwise fallback (though backend should generate it now)
-                    // Use backend generated ID if available, otherwise fallback
-                    const courseTitleSlug = data.course?.title
-                        ? data.course.title.split(" ").map((w: string) => w[0]).join("").toUpperCase().substring(0, 4)
-                        : "WS";
-                    
-                    const certId = data.certificateId || `${courseTitleSlug}-${userData.user._id.substring(0, 6).toUpperCase()}-${Date.now().toString().substring(8)}`;
-                    setCertificateId(certId);
+                    const certId = data.certificateId;
+                    setCertificateId(certId || "");
 
                     if (!data.isEligible) {
                         // If not eligible, redirect back to course page after a delay or show message
@@ -233,14 +228,22 @@ export default function CertificatePage() {
                             <div className="relative w-24 h-24 md:w-28 md:h-28 flex items-center justify-center mb-1">
                                 <div className="absolute inset-0 border-4 border-[#c5a059] border-dashed rounded-full animate-[spin_10s_linear_infinite] opacity-20"></div>
                                 <div className="bg-white p-1 rounded-lg shadow-sm">
-                                     <QRCodeSVG 
+                                {certificateId ? (
+                                    <QRCodeSVG 
                                         value={`${process.env.NEXT_PUBLIC_APP_URL || 'https://weboryskills.in'}/verify-certificate/${certificateId}`}
                                         size={100}
                                         level="H"
-                                     />
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center bg-gray-50 text-[10px] text-gray-400 text-center leading-tight p-2">
+                                        Verifying...
+                                    </div>
+                                )}
                                 </div>
                             </div>
-                            <p className="text-[8px] md:text-[10px] text-gray-500 uppercase tracking-widest font-bold">Scan to Verify</p>
+                            <p className="text-[8px] md:text-[10px] text-gray-500 uppercase tracking-widest font-bold">
+                                {certificateId ? "Scan to Verify" : "Generating ID..."}
+                            </p>
                             <p className="text-[6px] md:text-[8px] text-[#2e7d32] font-bold uppercase tracking-widest mt-0.5">Govt. Recognized</p>
                         </div>
 
