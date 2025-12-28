@@ -38,6 +38,11 @@ const features = [
     {
         title: "Benefits for Students ",
         items: [
+             {
+                icon: ShieldCheck,
+                title: "Government Recognized",
+                description: "Trust in a platform that is officially registered and recognized by the Ministry of MSME, Govt. of India.",
+            },
             // {
             //     icon: LayoutDashboard,
             //     title: "Comprehensive Dashboard",

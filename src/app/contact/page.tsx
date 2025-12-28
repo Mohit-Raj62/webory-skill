@@ -102,6 +102,13 @@ export default function ContactPage() {
                                         </p>
                                     </div>
                                 </div>
+                                <div className="pt-6 border-t border-white/10">
+                                    <div className="inline-flex items-center space-x-2 bg-orange-500/10 border border-orange-500/20 rounded-lg px-3 py-2 w-full justify-center">
+                                        <span className="text-orange-400 font-medium">
+                                            MSME Registered: UDYAM-BR-26-0208472
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

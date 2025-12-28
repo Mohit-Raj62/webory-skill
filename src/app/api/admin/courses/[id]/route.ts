@@ -68,6 +68,10 @@ export async function PUT(
     const { id } = await params;
     const data = await req.json();
     console.log("PUT /api/admin/courses/[id] - Incoming data:", data);
+    console.log(
+      "PUT /api/admin/courses/[id] - Collaboration info:",
+      data.collaboration
+    );
 
     // Handle module-based updates
     if (data.modules && data.modules.length > 0) {
@@ -78,7 +82,10 @@ export async function PUT(
       data.videos = flattenedVideos;
     }
 
-    const course = await Course.findByIdAndUpdate(id, data, { new: true });
+    const course = await Course.findByIdAndUpdate(id, data, {
+      new: true,
+      strict: false,
+    });
     console.log("PUT /api/admin/courses/[id] - Updated course:", course);
 
     return NextResponse.json({ course });

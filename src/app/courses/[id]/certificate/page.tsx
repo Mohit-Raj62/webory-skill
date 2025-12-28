@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
-import { ArrowLeft, Printer, Award } from "lucide-react";
+import { ArrowLeft, Printer, Award, Clock, CalendarDays } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 
 export default function CertificatePage() {
@@ -132,60 +132,105 @@ export default function CertificatePage() {
                 </div>
 
                 {/* Content */}
-                <div className="relative z-10 h-full flex flex-col items-center justify-between py-16 px-20">
+                <div className="relative z-10 h-full flex flex-col items-center justify-between pt-12 pb-10 px-24">
 
                     {/* Header */}
                     <div className="text-center w-full">
-                        <div className="flex items-center justify-center gap-4 mb-6">
-                            <Award className="text-[#c5a059]" size={56} />
+                        <div className="flex items-start justify-center gap-4 mb-1">
+                            <Award className="text-[#c5a059] mt-1" size={48} />
                             <div className="text-left">
-                                <h2 className="text-3xl font-bold text-[#1a237e] tracking-wide uppercase font-serif">Webory Skill</h2>
+                                <h2 className="text-3xl font-bold text-[#1a237e] tracking-wide uppercase font-serif">Webory Skill&apos;s </h2>
                                 <p className="text-sm text-[#c5a059] tracking-[0.2em] uppercase">Excellence in Education</p>
+                                <div className="flex gap-4 mt-1">
+                                    <div className="flex flex-col items-start border-l-2 border-[#c5a059] pl-2">
+                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wide">Govt. of India Recognized Startup</p>
+                                        <p className="text-[9px] text-[#c5a056] font-bold font-mono tracking-wider">MSME Reg: UDYAM-BR-26-0208472</p>
+                                    </div>
+                                    {course?.collaboration && (
+                                        <div className="flex flex-col items-start border-l-2 border-[#c5a059] pl-2">
+                                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wide">In Association With</p>
+                                            <p className="text-sm text-[#c5a059] font-bold font-serif tracking-wider uppercase">{course.collaboration}</p>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
-                        <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-[#1a237e] to-transparent mb-8 opacity-30"></div>
+                        <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-[#1a237e] to-transparent mb-4 opacity-30"></div>
 
-                        <h1 className="text-6xl font-serif font-bold text-[#1a237e] mb-4 tracking-tight certificate-title">
+                        <h1 className="text-3xl md:text-5xl font-serif font-bold text-[#1a237e] mb-1 tracking-tight certificate-title">
                             Certificate of Completion
                         </h1>
-                        <p className="text-xl text-gray-500 italic font-serif">This is to certify that</p>
+                        <p className="text-sm md:text-lg text-gray-500 italic font-serif">This is to certify that</p>
                     </div>
 
                     {/* Recipient */}
-                    <div className="text-center w-full my-4">
-                        <h2 className="text-5xl font-serif font-bold text-[#1a237e] mb-2 px-8 py-2 inline-block border-b-2 border-[#c5a059] min-w-[400px]">
+                    <div className="text-center w-full my-2">
+                        <h2 className="text-3xl md:text-5xl font-serif font-bold text-[#1a237e] mb-2 px-8 py-2 inline-block border-b-2 border-[#c5a059] min-w-[300px] md:min-w-[400px] capitalize">
                             {user?.firstName} {user?.lastName}
                         </h2>
                     </div>
 
                     {/* Course Details */}
-                    <div className="text-center w-full space-y-4">
-                        <p className="text-xl text-gray-600 font-serif">has successfully completed the course</p>
-                        <h3 className="text-4xl font-bold text-black font-serif tracking-wide">
+                    <div className="text-center w-full space-y-1">
+                        <p className="text-sm md:text-lg text-gray-600 font-serif">has successfully completed the course</p>
+                        <h3 className="text-2xl md:text-4xl font-bold text-black font-serif tracking-wide mb-2">
                             {course?.title}
                         </h3>
+
+
+
+                        <div className="flex flex-wrap justify-center gap-4 md:gap-12 mb-4 border-y border-gray-200 py-2 mx-10">
+                            {/* Duration */}
+                            <div className="flex flex-col items-center px-2">
+                                <div className="flex items-center gap-1.5 text-gray-500 mb-1">
+                                    <Clock size={14} />
+                                    <span className="text-[10px] uppercase tracking-widest font-semibold">Duration</span>
+                                </div>
+                                <span className="font-sans text-base font-bold text-[#1a237e] tracking-wide">{course?.duration || "N/A"}</span>
+                            </div>
+
+                            {/* Joining Date */}
+                            <div className="flex flex-col items-center px-2 border-l border-gray-200 pl-6 md:pl-12">
+                                <div className="flex items-center gap-1.5 text-gray-500 mb-1">
+                                    <CalendarDays size={14} />
+                                    <span className="text-[10px] uppercase tracking-widest font-semibold">Enrolled</span>
+                                </div>
+                                <span className="font-sans text-base font-bold text-[#1a237e] tracking-wide">
+                                    {certificateData?.enrolledAt 
+                                        ? new Date(certificateData.enrolledAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+                                        : "N/A"
+                                    }
+                                </span>
+                            </div>
+
+                            {/* Date Issued */}
+                            <div className="flex flex-col items-center px-2 border-l border-gray-200 pl-6 md:pl-12">
+                                <div className="flex items-center gap-1.5 text-gray-500 mb-1">
+                                    <Award size={14} />
+                                    <span className="text-[10px] uppercase tracking-widest font-semibold">Completed</span>
+                                </div>
+                                <span className="font-sans text-base font-bold text-[#1a237e] tracking-wide">
+                                    {certificateData?.completedAt 
+                                        ? new Date(certificateData.completedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+                                        : new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+                                    }
+                                </span>
+                            </div>
+                        </div>
+                       
                         <p className="text-lg text-gray-600 font-serif max-w-2xl mx-auto">
                             demonstrating proficiency and dedication, achieving an overall grade of <span className="font-bold text-[#1a237e]">{certificateData.overallScore}%</span>.
                         </p>
                     </div>
 
                     {/* Footer / Signatures */}
-                    <div className="w-full grid grid-cols-3 gap-8 items-end mt-8">
-                        {/* Date */}
-                        <div className="text-center">
-                            <p className="text-lg font-serif font-bold text-[#1a237e] border-b border-gray-400 pb-2 mb-2">
-                                {certificateData?.completedAt 
-                                    ? new Date(certificateData.completedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-                                    : new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-                                }
-                            </p>
-                            <p className="text-xs text-gray-500 uppercase tracking-widest">Date Issued</p>
-                        </div>
-
-                        {/* Seal with QR Code */}
-                        <div className="flex flex-col items-center justify-center">
-                            <div className="relative w-32 h-32 flex items-center justify-center mb-2">
+                    {/* Footer / Signatures */}
+                    {/* Footer / Signatures */}
+                    <div className="w-full flex flex-col items-center mt-1">
+                        {/* Seal with QR Code - Centered Top */}
+                        <div className="flex flex-col items-center justify-center mb-1">
+                            <div className="relative w-24 h-24 md:w-28 md:h-28 flex items-center justify-center mb-1">
                                 <div className="absolute inset-0 border-4 border-[#c5a059] border-dashed rounded-full animate-[spin_10s_linear_infinite] opacity-20"></div>
                                 <div className="bg-white p-1 rounded-lg shadow-sm">
                                      <QRCodeSVG 
@@ -195,21 +240,49 @@ export default function CertificatePage() {
                                      />
                                 </div>
                             </div>
-                            <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Scan to Verify</p>
-                            {certificateData?.certificateKey && (
-                                <p className="text-[8px] font-mono text-gray-400 mt-1">
-                                    Key: {certificateData.certificateKey}
-                                </p>
-                            )}
+                            <p className="text-[8px] md:text-[10px] text-gray-500 uppercase tracking-widest font-bold">Scan to Verify</p>
+                            <p className="text-[6px] md:text-[8px] text-[#2e7d32] font-bold uppercase tracking-widest mt-0.5">Govt. Recognized</p>
                         </div>
 
-                        {/* Signature */}
-                        <div className="text-center">
-                            <div className="h-12 flex items-end justify-center mb-2">
-                                <span className="font-signature text-3xl text-[#1a237e]">Webory Team</span>
+                        {/* Signatures Grid */}
+                        <div className={`w-full grid ${course?.collaboration ? 'grid-cols-3' : 'grid-cols-2'} gap-8 items-end px-12`}>
+                            {/* Signature 1 (Left) - Founder */}
+                            <div className="text-center">
+                                <div className="h-12 flex items-end justify-center mb-1">
+                                    <span className="font-signature text-3xl md:text-4xl text-[#1a237e] whitespace-nowrap px-2">
+                                        {course?.signatures?.founder?.name || "Mohit Raj"}
+                                    </span>
+                                </div>
+                                <div className="border-b border-gray-400 w-full mb-1"></div>
+                                <p className="text-[10px] md:text-xs text-gray-600 font-bold uppercase tracking-widest">{course?.signatures?.founder?.title || "Founder & CEO"}</p>
                             </div>
-                            <div className="border-b border-gray-400 w-full mb-2"></div>
-                            <p className="text-xs text-gray-500 uppercase tracking-widest">Director of Education</p>
+
+                            {/* Signature 2 (Webory Team) - Center if 3 cols, Right if 2 cols ?? 
+                               Wait, if 2 cols: Founder (Left), Webory (Right).
+                               If 3 cols: Founder (Left), Webory (Center), Partner (Right).
+                            */}
+                            <div className="text-center">
+                                <div className="h-12 flex items-end justify-center mb-1">
+                                    <span className="font-signature text-3xl md:text-4xl text-[#1a237e] whitespace-nowrap px-2">
+                                        {course?.signatures?.director?.name || "Webory Team"}
+                                    </span>
+                                </div>
+                                <div className="border-b border-gray-400 w-full mb-1"></div>
+                                <p className="text-[10px] md:text-xs text-gray-600 font-bold uppercase tracking-widest">{course?.signatures?.director?.title || "Director of Education"}</p>
+                            </div>
+
+                            {/* Signature 3 (Partner) - Only if collaboration */}
+                            {course?.collaboration && (
+                                <div className="text-center">
+                                    <div className="h-12 flex items-end justify-center mb-1">
+                                        <span className="font-signature text-3xl md:text-4xl text-[#c5a059] whitespace-nowrap px-2">
+                                            {course?.signatures?.partner?.name || "Partner Rep."}
+                                        </span>
+                                    </div>
+                                    <div className="border-b border-gray-400 w-full mb-1"></div>
+                                    <p className="text-[10px] md:text-xs text-gray-600 font-bold uppercase tracking-widest">{course?.signatures?.partner?.title || "Authorized Signatory"}</p>
+                                </div>
+                            )}
                         </div>
                     </div>
 

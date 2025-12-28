@@ -18,6 +18,25 @@ const CourseSchema = new Schema({
     ref: "User",
     required: false, // Optional for now to support existing courses
   },
+  collaboration: {
+    // e.g. "JIBT College"
+    type: String,
+    default: "",
+  },
+  signatures: {
+    founder: {
+      name: { type: String, default: "Mohit Raj" },
+      title: { type: String, default: "Founder & CEO" },
+    },
+    director: {
+      name: { type: String, default: "Webory Team" },
+      title: { type: String, default: "Director of Education" },
+    },
+    partner: {
+      name: { type: String, default: "Partner Rep." },
+      title: { type: String, default: "Authorized Signatory" },
+    },
+  },
   studentsCount: {
     type: String,
     default: "0",
@@ -47,6 +66,14 @@ const CourseSchema = new Schema({
   curriculum: {
     type: [String], // Array of topic titles
     default: [],
+  },
+  benefits: {
+    type: [String], // Array of course benefits
+    default: [],
+  },
+  certificateImage: {
+    type: String, // URL to sample certificate image
+    default: "",
   },
   videos: {
     type: [
@@ -152,6 +179,7 @@ const CourseSchema = new Schema({
   },
 });
 
+// Force Schema Recompile
 const Course = models.Course || model("Course", CourseSchema);
 
 export default Course;

@@ -146,9 +146,21 @@ export function Hero({ initialUserCount = 10 }: HeroProps) {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                     >
-                        <span className="inline-block py-1 px-3 rounded-full bg-white/5 border border-white/10 text-sm text-blue-300 mb-6 backdrop-blur-sm">
-                            🚀 Launching the Future of EdTech
-                        </span>
+                        <div className="flex flex-col items-center gap-2 mb-6">
+                            <span className="inline-block py-1 px-3 rounded-full bg-white/5 border border-white/10 text-sm text-blue-300 backdrop-blur-sm">
+                                🚀 Launching the Future of EdTech
+                            </span>
+                            <div className="flex items-center gap-2 bg-green-500/10 border border-green-500/20 px-4 py-1.5 rounded-full backdrop-blur-sm shadow-[0_0_15px_rgba(34,197,94,0.2)] animate-fade-in-up delay-100">
+                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_10px_#22c55e]" />
+                                <span className="text-green-400 text-xs font-semibold tracking-wide uppercase">
+                                    Govt. of India Recognized Startup
+                                </span>
+                                <span className="hidden sm:inline w-px h-3 bg-green-500/30 mx-1" />
+                                <span className="text-green-300 text-xs font-mono hidden sm:inline">
+                                    MSME: UDYAM-BR-26-0208472
+                                </span>
+                            </div>
+                        </div>
                         <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
                             Master Skills. <br />
                             <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">

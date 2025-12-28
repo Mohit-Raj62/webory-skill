@@ -234,6 +234,67 @@ export default function CourseDetailsPage() {
                             </div>
                         </div>
 
+                        {course.benefits && course.benefits.length > 0 && (
+                            <div className="glass-card p-8 rounded-2xl mb-12 border border-[#c5a059]/30 bg-[#c5a059]/5">
+                                <h2 className="text-2xl font-bold text-white mb-6">Key Benefits</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {course.benefits.map((benefit: string, index: number) => (
+                                        <div key={index} className="flex items-start text-gray-300">
+                                            <div className="mr-3 text-[#c5a059] flex-shrink-0 mt-1">
+                                                <CheckCircle size={18} />
+                                            </div>
+                                            {benefit}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Certificate Preview Section */}
+                        {course.certificateImage && (
+                            <div className="glass-card p-8 rounded-2xl mb-12 border border-[#c5a059]/30 bg-[#c5a059]/5">
+                                <h2 className="text-2xl font-bold text-white mb-6">Earn Your Certificate</h2>
+                                <div className="flex flex-col md:flex-row gap-8 items-center">
+                                    <div className="flex-1">
+                                        <div className="relative rounded-xl overflow-hidden shadow-2xl border-4 border-[#c5a059]/30">
+                                            <img
+                                                src={course.certificateImage}
+                                                alt="Course Certificate Sample"
+                                                className="w-full h-auto object-cover"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"></div>
+                                            <div className="absolute bottom-4 left-4 right-4 text-center">
+                                                <span className="bg-[#c5a059] text-black px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                                                    Official Certification
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex-1 space-y-4">
+                                        <h3 className="text-xl font-bold text-[#c5a059]">Industry Recognized</h3>
+                                        <p className="text-gray-300 leading-relaxed">
+                                            Upon successful completion of this course, you will receive a verified certificate from Webory Skills.
+                                            This certificate validates your expertise and can be shared on LinkedIn and your resume.
+                                        </p>
+                                        <ul className="space-y-2">
+                                            <li className="flex items-center text-gray-300">
+                                                <CheckCircle className="mr-2 text-[#c5a059]" size={16} />
+                                                Shareable on LinkedIn
+                                            </li>
+                                            <li className="flex items-center text-gray-300">
+                                                <CheckCircle className="mr-2 text-[#c5a059]" size={16} />
+                                                Downloadable High-Res PDF
+                                            </li>
+                                            <li className="flex items-center text-gray-300">
+                                                <CheckCircle className="mr-2 text-[#c5a059]" size={16} />
+                                                Unique Verification ID
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         <div className="glass-card p-8 rounded-2xl mb-12">
                             <h2 className="text-2xl font-bold text-white mb-6">What you'll learn</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

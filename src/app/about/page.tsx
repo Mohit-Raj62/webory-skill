@@ -18,6 +18,17 @@ export default function AboutPage() {
                     <p className="text-gray-400 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
                         We are on a mission to bridge the gap between education and industry by providing real-world skills, mentorship, and opportunities.
                     </p>
+                    <div className="mt-8 flex justify-center">
+                        <div className="inline-flex items-center space-x-2 bg-green-500/5 border border-green-500/20 rounded-full px-5 py-2.5 shadow-[0_0_20px_rgba(34,197,94,0.15)] hover:bg-green-500/10 transition-all cursor-default group">
+                            <span className="relative flex h-2.5 w-2.5 mr-1">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                            </span>
+                            <span className="text-gray-200 text-sm font-medium tracking-wide">
+                                Recognized by <span className="text-white font-bold">Govt. of India</span> (MSME)
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </section>
 

@@ -18,6 +18,23 @@ export function Footer() {
                         <p className="text-gray-400 text-sm leading-relaxed">
                             Empowering the next generation of tech leaders through real-world skills and internships.
                         </p>
+                        <div className="mt-4 flex items-center space-x-2">
+                            <div className="bg-orange-500/10 border border-orange-500/20 rounded-full px-3 py-1">
+                                <span className="text-orange-400 text-xs font-medium">
+                                    MSME Registered: UDYAM-BR-26-0208472
+                                </span>
+                            </div>
+                        </div>
+                        <div className="mt-4 inline-flex items-center gap-2 bg-white px-3 py-2 rounded-lg">
+                            <div className="text-orange-600 font-bold text-lg leading-none tracking-tighter">
+                                MSME
+                            </div>
+                            <div className="w-px h-6 bg-gray-300"></div>
+                            <div className="flex flex-col">
+                                <span className="text-[10px] text-gray-800 font-bold uppercase leading-none">Micro, Small & Medium</span>
+                                <span className="text-[10px] text-gray-800 font-bold uppercase leading-none">Enterprises</span>
+                            </div>
+                        </div>
                     </div>
 
                     <div>

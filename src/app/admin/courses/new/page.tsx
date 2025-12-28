@@ -12,6 +12,7 @@ export default function NewCoursePage() {
     const [loading, setLoading] = useState(false);
     const [uploadingVideo, setUploadingVideo] = useState(false);
     const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
+    const [uploadingCertificate, setUploadingCertificate] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [formData, setFormData] = useState({
         title: "",
@@ -25,11 +26,20 @@ export default function NewCoursePage() {
         icon: "Globe",
         duration: "0h",
         thumbnail: "",
+        certificateImage: "",
         curriculum: [] as string[],
+        benefits: [] as string[],
         videos: [] as { title: string; url: string; duration: string }[],
+        collaboration: "",
+        signatures: {
+            founder: { name: "Mohit Raj", title: "Founder & CEO" },
+            director: { name: "Webory Team", title: "Director of Education" },
+            partner: { name: "Partner Rep.", title: "Authorized Signatory" }
+        }
     });
 
     const [curriculumInput, setCurriculumInput] = useState("");
+    const [benefitsInput, setBenefitsInput] = useState("");
     const [videoInput, setVideoInput] = useState({ title: "", url: "", duration: "" });
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -74,6 +84,23 @@ export default function NewCoursePage() {
         });
     };
 
+    const addBenefitsItem = () => {
+        if (benefitsInput.trim()) {
+            setFormData({
+                ...formData,
+                benefits: [...formData.benefits, benefitsInput.trim()],
+            });
+            setBenefitsInput("");
+        }
+    };
+
+    const removeBenefitsItem = (index: number) => {
+        setFormData({
+            ...formData,
+            benefits: formData.benefits.filter((_, i) => i !== index),
+        });
+    };
+
     const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -100,6 +127,36 @@ export default function NewCoursePage() {
             alert("Failed to upload thumbnail");
         } finally {
             setUploadingThumbnail(false);
+            e.target.value = "";
+        }
+    };
+
+    const handleCertificateUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploadingCertificate(true);
+        try {
+            const uploadFormData = new FormData();
+            uploadFormData.append("file", file);
+
+            const res = await fetch("/api/upload/image", {
+                method: "POST",
+                body: uploadFormData,
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                setFormData((prev) => ({ ...prev, certificateImage: data.url }));
+                alert("Certificate image uploaded successfully!");
+            } else {
+                alert("Failed to upload certificate image");
+            }
+        } catch (error) {
+            console.error("Certificate upload failed", error);
+            alert("Certificate upload failed");
+        } finally {
+            setUploadingCertificate(false);
             e.target.value = "";
         }
     };
@@ -218,6 +275,107 @@ export default function NewCoursePage() {
                                 <option value="Intermediate">Intermediate</option>
                                 <option value="Advanced">Advanced</option>
                             </select>
+                        </div>
+
+                        <div className="md:col-span-2">
+                             <label className="text-sm text-gray-300 block mb-2">Collaboration (Optional)</label>
+                             <input
+                                type="text"
+                                placeholder="e.g. In Partnership with College"
+                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                value={formData.collaboration}
+                                onChange={(e) => setFormData({ ...formData, collaboration: e.target.value })}
+                            />
+                            <p className="text-xs text-gray-400 mt-1">This text will appear on the student certificate.</p>
+                        </div>
+                    </div>
+
+                    {/* Certificate Signatures Section */}
+                    <div className="border-t border-white/10 pt-6 mt-6">
+                        <h3 className="text-lg font-semibold text-white mb-4">Certificate Signatures</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Founder */}
+                            <div>
+                                <label className="text-sm text-gray-300 block mb-2">Signature 1 (Left)</label>
+                                <div className="space-y-2">
+                                    <input
+                                        type="text"
+                                        placeholder="Name (e.g. Mohit Raj)"
+                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white text-sm"
+                                        value={formData.signatures.founder.name}
+                                        onChange={(e) => setFormData({ 
+                                            ...formData, 
+                                            signatures: { ...formData.signatures, founder: { ...formData.signatures.founder, name: e.target.value } } 
+                                        })}
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Title (e.g. Founder & CEO)"
+                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white text-sm"
+                                        value={formData.signatures.founder.title}
+                                        onChange={(e) => setFormData({ 
+                                            ...formData, 
+                                            signatures: { ...formData.signatures, founder: { ...formData.signatures.founder, title: e.target.value } } 
+                                        })}
+                                    />
+                                </div>
+                            </div>
+                            
+                            {/* Director */}
+                            <div>
+                                <label className="text-sm text-gray-300 block mb-2">Signature 2 (Right/Center)</label>
+                                <div className="space-y-2">
+                                    <input
+                                        type="text"
+                                        placeholder="Name (e.g. Webory Team)"
+                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white text-sm"
+                                        value={formData.signatures.director.name}
+                                        onChange={(e) => setFormData({ 
+                                            ...formData, 
+                                            signatures: { ...formData.signatures, director: { ...formData.signatures.director, name: e.target.value } } 
+                                        })}
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Title (e.g. Director of Education)"
+                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white text-sm"
+                                        value={formData.signatures.director.title}
+                                        onChange={(e) => setFormData({ 
+                                            ...formData, 
+                                            signatures: { ...formData.signatures, director: { ...formData.signatures.director, title: e.target.value } } 
+                                        })}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Partner (Only if collaboration) */}
+                            {formData.collaboration && (
+                                <div className="md:col-span-2">
+                                    <label className="text-sm text-[#c5a059] block mb-2">Signature 3 (Partner Rep)</label>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <input
+                                            type="text"
+                                            placeholder="Name (e.g. Partner Rep.)"
+                                            className="w-full bg-black/20 border border-[#c5a059]/30 rounded-xl p-3 text-white text-sm"
+                                            value={formData.signatures.partner.name}
+                                            onChange={(e) => setFormData({ 
+                                                ...formData, 
+                                                signatures: { ...formData.signatures, partner: { ...formData.signatures.partner, name: e.target.value } } 
+                                            })}
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Title (e.g. Authorized Signatory)"
+                                            className="w-full bg-black/20 border border-[#c5a059]/30 rounded-xl p-3 text-white text-sm"
+                                            value={formData.signatures.partner.title}
+                                            onChange={(e) => setFormData({ 
+                                                ...formData, 
+                                                signatures: { ...formData.signatures, partner: { ...formData.signatures.partner, title: e.target.value } } 
+                                            })}
+                                        />
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -338,6 +496,46 @@ export default function NewCoursePage() {
                         )}
                     </div>
 
+                    {/* Certificate Preview Image */}
+                    <div>
+                        <label className="text-sm text-gray-300 block mb-2">Sample Certificate Image</label>
+                        <div className="flex gap-2">
+                            <input
+                                type="url"
+                                placeholder="Certificate Image URL or upload file"
+                                className="flex-1 bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                value={formData.certificateImage}
+                                onChange={(e) => setFormData({ ...formData, certificateImage: e.target.value })}
+                            />
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleCertificateUpload}
+                                disabled={uploadingCertificate}
+                                className="hidden"
+                                id="certificate-upload"
+                            />
+                            <label
+                                htmlFor="certificate-upload"
+                                className={`flex items-center gap-2 px-4 py-3 rounded-xl cursor-pointer transition-all ${uploadingCertificate
+                                    ? "bg-gray-600 cursor-not-allowed"
+                                    : "bg-blue-600 hover:bg-blue-700"
+                                    } text-white`}
+                            >
+                                <Image size={20} />
+                                {uploadingCertificate ? "Uploading..." : "Upload"}
+                            </label>
+                        </div>
+                        {formData.certificateImage && (
+                            <img
+                                src={formData.certificateImage}
+                                alt="Certificate preview"
+                                className="mt-3 w-full max-w-md h-auto object-contain rounded-xl border border-white/10"
+                            />
+                        )}
+                    </div>
+
+
                     {/* Curriculum */}
                     <div>
                         <label className="text-sm text-gray-300 block mb-2">Curriculum Topics</label>
@@ -361,6 +559,38 @@ export default function NewCoursePage() {
                                     <button
                                         type="button"
                                         onClick={() => removeCurriculumItem(index)}
+                                        className="text-red-400 hover:text-red-300"
+                                    >
+                                        <X size={18} />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Benefits */}
+                    <div>
+                        <label className="text-sm text-gray-300 block mb-2">Key Benefits (What you'll get)</label>
+                        <div className="flex gap-2 mb-3">
+                            <input
+                                type="text"
+                                placeholder="Add benefit (e.g. Certificate, Lifetime Access)"
+                                className="flex-1 bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                value={benefitsInput}
+                                onChange={(e) => setBenefitsInput(e.target.value)}
+                                onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addBenefitsItem())}
+                            />
+                            <Button type="button" onClick={addBenefitsItem}>
+                                <Plus size={20} />
+                            </Button>
+                        </div>
+                        <div className="space-y-2">
+                            {formData.benefits.map((item, index) => (
+                                <div key={index} className="flex items-center justify-between bg-white/5 p-3 rounded-lg">
+                                    <span className="text-white">{item}</span>
+                                    <button
+                                        type="button"
+                                        onClick={() => removeBenefitsItem(index)}
                                         className="text-red-400 hover:text-red-300"
                                     >
                                         <X size={18} />
