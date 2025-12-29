@@ -140,6 +140,13 @@ export function PaymentModal({
             const firstname = userName || "User"; 
             const email = userEmail || "user@example.com";
             
+            console.log("Payment Debug:", {
+                mode: process.env.NEXT_PUBLIC_PAYU_TEST_MODE,
+                txnid,
+                firstname,
+                amount: finalPrice
+            });
+            
             // 1. Get Hash from Backend
             const res = await fetch("/api/payment/payu/hash", {
                 method: "POST",
