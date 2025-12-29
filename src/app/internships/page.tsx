@@ -126,6 +126,11 @@ export default function InternshipsPage() {
                     screenshot: "pending", // This will be set by the UPI modal
                     promoCode,
                     type: "internship", // Mark as internship payment
+                    // Include application details
+                    resume: formData.resume,
+                    coverLetter: formData.coverLetter,
+                    portfolio: formData.portfolio,
+                    linkedin: formData.linkedin,
                 }),
             });
 

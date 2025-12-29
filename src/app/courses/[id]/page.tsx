@@ -746,6 +746,8 @@ export default function CourseDetailsPage() {
                 discountPercentage={course.discountPercentage}
                 courseId={id as string}
                 userId={user?._id || ""}
+                userName={user ? `${user.firstName} ${user.lastName}` : ""}
+                userEmail={user?.email || ""}
                 mobileNumber={user?.mobileNumber}
             />
 

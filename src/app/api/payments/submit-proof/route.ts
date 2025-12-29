@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import PaymentProof from "@/models/PaymentProof";
+import Application from "@/models/Application";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import User from "@/models/User";
@@ -32,6 +33,10 @@ export async function POST(req: Request) {
       screenshot,
       promoCode,
       paymentType,
+      resume,
+      coverLetter,
+      portfolio,
+      linkedin,
     } = await req.json();
 
     console.log("Received payment proof data:", {
@@ -86,6 +91,38 @@ export async function POST(req: Request) {
       promoCode,
       status: "pending",
     });
+
+    // If this is an internship, ALSO create an Application
+    if (internshipId) {
+      // Check if application already exists
+      const existingApp = await Application.findOne({
+        student: userId,
+        internship: internshipId,
+      });
+
+      if (!existingApp) {
+        await Application.create({
+          student: userId,
+          internship: internshipId,
+          resume: resume || "Pending",
+          coverLetter: coverLetter || "Pending",
+          portfolio: portfolio || "",
+          linkedin: linkedin || "",
+          status: "pending", // Waiting for admin to approve payment
+          transactionId,
+          amountPaid: amount,
+          appliedAt: new Date(),
+        });
+        console.log("✅ Application created for internship");
+      } else {
+        // Update existing application with transaction info if needed
+        existingApp.transactionId = transactionId;
+        existingApp.amountPaid = amount;
+        existingApp.status = "pending"; // Reset to pending if it was rejected or something?
+        await existingApp.save();
+        console.log("✅ Existing application updated");
+      }
+    }
 
     // Send Admin Notification Email
     try {

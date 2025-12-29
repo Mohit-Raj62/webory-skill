@@ -15,6 +15,8 @@ interface PaymentModalProps {
     discountPercentage?: number;
     courseId: string;
     userId: string;
+    userName: string;
+    userEmail: string;
     mobileNumber?: string;
 }
 
@@ -27,6 +29,8 @@ export function PaymentModal({
     discountPercentage,
     courseId,
     userId,
+    userName,
+    userEmail,
     mobileNumber
 }: PaymentModalProps) {
     const [loading, setLoading] = useState(false);
@@ -133,8 +137,8 @@ export function PaymentModal({
 
             const txnid = "Txn" + new Date().getTime() + Math.floor(Math.random() * 10000);
             const productinfo = courseTitle;
-            const firstname = "User"; // You might want to get this from props or user object
-            const email = "user@example.com"; // Get from props
+            const firstname = userName || "User"; 
+            const email = userEmail || "user@example.com";
             
             // 1. Get Hash from Backend
             const res = await fetch("/api/payment/payu/hash", {

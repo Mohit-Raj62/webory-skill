@@ -21,12 +21,18 @@ export async function GET() {
       userId: string;
     };
 
+    console.log("Dashboard - Fetching data for user:", decoded.userId);
+
     // Use lean() to get plain JavaScript objects instead of Mongoose documents
     // Run queries in parallel for better performance
     const [enrollments, applications] = await Promise.all([
       Enrollment.find({ student: decoded.userId })
         .populate("course")
         .lean()
+        .then((res) => {
+          console.log("Enrollments found:", res.length);
+          return res;
+        })
         .catch((err) => {
           console.error("Enrollment query error:", err);
           return [];
@@ -36,6 +42,17 @@ export async function GET() {
         .populate("internship")
         .populate("student")
         .lean()
+        .then((res) => {
+          console.log("Applications found:", res.length);
+          if (res.length > 0) {
+            console.log(
+              "First application sample:",
+              JSON.stringify(res[0], null, 2)
+            );
+            console.log("Is internship populated?", !!res[0].internship);
+          }
+          return res;
+        })
         .catch((err) => {
           console.error("Application query error:", err);
           return [];
