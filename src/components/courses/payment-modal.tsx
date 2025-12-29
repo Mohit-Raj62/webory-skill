@@ -131,7 +131,7 @@ export function PaymentModal({
                 return;
             }
 
-            const txnid = "Txn" + new Date().getTime();
+            const txnid = "Txn" + new Date().getTime() + Math.floor(Math.random() * 10000);
             const productinfo = courseTitle;
             const firstname = "User"; // You might want to get this from props or user object
             const email = "user@example.com"; // Get from props
