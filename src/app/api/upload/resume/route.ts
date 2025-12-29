@@ -48,7 +48,9 @@ export async function POST(req: Request) {
         {
           resource_type: "auto", // Auto detect image or raw (pdf)
           folder: "resumes",
-          public_id: `${Date.now()}-${file.name}`, // Keep extension for proper handling
+          public_id: `${Date.now()}-${file.name
+            .replace(/\.[^/.]+$/, "")
+            .replace(/\s+/g, "_")}`, // Remove ext & spaces
           use_filename: true,
           unique_filename: false,
         },

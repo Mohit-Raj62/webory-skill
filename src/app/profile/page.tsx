@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/session-provider";
-import { User, Mail, Award, Briefcase, LogOut, ExternalLink, Trophy, Calendar, Video, FileText } from "lucide-react";
+import { User, Mail, Award, Briefcase, LogOut, ExternalLink, Trophy, Calendar, Video, FileText, Clock, Upload } from "lucide-react";
 import { ActivityDashboard } from "@/components/dashboard/activity-dashboard";
 import { GradesDashboard } from "@/components/dashboard/grades-dashboard";
 
@@ -24,8 +24,49 @@ export default function ProfilePage() {
     const [applications, setApplications] = useState < any[] > ([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState < 'courses' | 'internships' | 'grades' > ('courses');
+    const [uploadingAppId, setUploadingAppId] = useState<string | null>(null);
     const router = useRouter();
     const { refreshAuth } = useAuth();
+
+    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, appId: string) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        setUploadingAppId(appId);
+
+        try {
+            // 1. Upload to Cloudinary
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const uploadRes = await fetch("/api/upload/resume", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!uploadRes.ok) throw new Error("Upload failed");
+            const uploadData = await uploadRes.json();
+
+            // 2. Update Application with Resume URL
+            const updateRes = await fetch(`/api/student/applications/${appId}/resume`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ resume: uploadData.url }),
+            });
+
+            if (updateRes.ok) {
+                // Update local state
+                setApplications(apps => apps.map(app => 
+                    app._id === appId ? { ...app, resume: uploadData.url } : app
+                ));
+            }
+        } catch (error) {
+            console.error("Resume upload error:", error);
+            alert("Failed to upload resume");
+        } finally {
+            setUploadingAppId(null);
+        }
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -255,10 +296,34 @@ export default function ProfilePage() {
                                                 )}
 
                                                 <div className="flex gap-3 flex-wrap">
-                                                    {app.resume && (
+                                                    {app.resume && app.resume !== "Pending Upload" ? (
                                                         <a href={app.resume} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-400 flex items-center gap-1 hover:underline">
                                                             View Resume <ExternalLink size={10} />
                                                         </a>
+                                                    ) : (
+                                                        <div>
+                                                            <input
+                                                                type="file"
+                                                                id={`resume-upload-${app._id}`}
+                                                                className="hidden"
+                                                                accept=".pdf,.jpg,.jpeg,.png"
+                                                                onChange={(e) => handleFileUpload(e, app._id)}
+                                                            />
+                                                            <label
+                                                                htmlFor={`resume-upload-${app._id}`}
+                                                                className={`text-xs flex items-center gap-1 cursor-pointer transition-colors ${
+                                                                    uploadingAppId === app._id 
+                                                                    ? "text-gray-400" 
+                                                                    : "text-blue-400 hover:text-blue-300"
+                                                                }`}
+                                                            >
+                                                                {uploadingAppId === app._id ? (
+                                                                    <>Uploading... <Clock size={10} className="animate-spin" /></>
+                                                                ) : (
+                                                                    <>Upload Resume <Upload size={10} /></>
+                                                                )}
+                                                            </label>
+                                                        </div>
                                                     )}
                                                     {(app.status === 'accepted' || app.status === 'completed') && (
                                                         <>
@@ -268,12 +333,12 @@ export default function ProfilePage() {
                                                             >
                                                                 <FileText size={12} /> View Tasks
                                                             </button>
-                                                            {app.status === 'accepted' && (
+                                                            {(app.status === 'accepted' || app.status === 'completed') && (
                                                                 <button
                                                                     onClick={() => router.push(`/internships/applications/${app._id}/offer-letter`)}
                                                                     className="text-xs text-green-400 flex items-center gap-1 hover:underline font-semibold"
                                                                 >
-                                                                    📄 View Offer Letter
+                                                                    📄 Download Joining Letter
                                                                 </button>
                                                             )}
                                                             {app.status === 'completed' && (

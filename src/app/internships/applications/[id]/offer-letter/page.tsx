@@ -105,38 +105,42 @@ export default function OfferLetterPage() {
             </div>
 
             {/* Offer Letter - A4 Size */}
-            <div className="max-w-4xl mx-auto p-8 print:p-12 bg-white text-black min-h-screen">
-                {/* Company Header */}
-                <div className="text-center mb-8 border-b-2 border-blue-600 pb-4">
-                    <h1 className="text-3xl font-bold text-blue-600 mb-2">
+            <div className="max-w-4xl mx-auto p-4 md:p-8 print:p-8 bg-white text-black min-h-screen print:min-h-0 print:text-sm leading-relaxed shadow-lg print:shadow-none my-4 md:my-8 print:my-0">
+                {/* Company Header with MSME */}
+                <div className="text-center mb-8 print:mb-4 border-b-2 border-[#1a237e] pb-4 print:pb-2">
+                    <h1 className="text-3xl print:text-2xl font-bold text-[#1a237e] mb-1 print:mb-1">
                         {data.internship.company}
                     </h1>
-                    <p className="text-sm text-gray-600">WEBORY SKILL's Platform</p>
-                    <p className="text-xs text-gray-500">{data.internship.location}</p>
+                     <div className="flex flex-col items-center justify-center mb-2">
+                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wide">Govt. of India Recognized Startup</p>
+                        <p className="text-[10px] text-[#c5a056] font-bold font-mono tracking-wider">MSME Reg: UDYAM-BR-26-0208472</p>
+                    </div>
+                    <p className="text-sm text-gray-600 print:text-xs">WEBORY SKILL's Platform</p>
+                    <p className="text-xs text-gray-500 print:text-[10px]">{data.internship.location}</p>
                 </div>
 
                 {/* Date */}
-                <div className="text-right mb-6">
-                    <p className="text-sm">Date: {todayDate}</p>
+                <div className="text-right mb-6 print:mb-4">
+                    <p className="text-sm print:text-xs">Date: {todayDate}</p>
                 </div>
 
                 {/* Student Address */}
-                <div className="mb-6">
-                    <p className="font-semibold">
+                <div className="mb-6 print:mb-4">
+                    <p className="font-semibold print:text-sm">
                         {data.student.firstName} {data.student.lastName}
                     </p>
-                    <p className="text-sm text-gray-600">{data.student.email}</p>
+                    <p className="text-sm text-gray-600 print:text-xs">{data.student.email}</p>
                 </div>
 
                 {/* Subject */}
-                <div className="mb-6">
-                    <p className="font-bold">
+                <div className="mb-6 print:mb-4">
+                    <p className="font-bold print:text-sm">
                         Subject: Offer Letter for {data.internship.title}
                     </p>
                 </div>
 
                 {/* Body */}
-                <div className="space-y-4 mb-8">
+                <div className="space-y-4 print:space-y-2 mb-8 print:mb-4 text-justify">
                     <p>Dear {data.student.firstName},</p>
 
                     <p>
@@ -151,36 +155,36 @@ export default function OfferLetterPage() {
                     </p>
 
                     {/* Internship Details Table */}
-                    <div className="my-6 border border-gray-300 rounded-lg overflow-hidden">
-                        <table className="w-full">
+                    <div className="my-6 print:my-4 border border-gray-300 rounded-lg overflow-hidden">
+                        <table className="w-full text-sm print:text-xs">
                             <tbody>
                                 <tr className="border-b border-gray-300">
-                                    <td className="p-3 bg-gray-50 font-semibold w-1/3">Position</td>
-                                    <td className="p-3">{data.internship.title}</td>
+                                    <td className="p-3 print:p-1.5 bg-gray-50 font-semibold w-1/3">Position</td>
+                                    <td className="p-3 print:p-1.5">{data.internship.title}</td>
                                 </tr>
                                 <tr className="border-b border-gray-300">
-                                    <td className="p-3 bg-gray-50 font-semibold">Company</td>
-                                    <td className="p-3">{data.internship.company}</td>
+                                    <td className="p-3 print:p-1.5 bg-gray-50 font-semibold">Company</td>
+                                    <td className="p-3 print:p-1.5">{data.internship.company}</td>
                                 </tr>
                                 <tr className="border-b border-gray-300">
-                                    <td className="p-3 bg-gray-50 font-semibold">Location</td>
-                                    <td className="p-3">{data.internship.location}</td>
+                                    <td className="p-3 print:p-1.5 bg-gray-50 font-semibold">Location</td>
+                                    <td className="p-3 print:p-1.5">{data.internship.location}</td>
                                 </tr>
                                 <tr className="border-b border-gray-300">
-                                    <td className="p-3 bg-gray-50 font-semibold">Type</td>
-                                    <td className="p-3">{data.internship.type}</td>
+                                    <td className="p-3 print:p-1.5 bg-gray-50 font-semibold">Type</td>
+                                    <td className="p-3 print:p-1.5">{data.internship.type}</td>
                                 </tr>
                                 <tr className="border-b border-gray-300">
-                                    <td className="p-3 bg-gray-50 font-semibold">Duration</td>
-                                    <td className="p-3">{data.duration}</td>
+                                    <td className="p-3 print:p-1.5 bg-gray-50 font-semibold">Duration</td>
+                                    <td className="p-3 print:p-1.5">{data.duration}</td>
                                 </tr>
                                 <tr className="border-b border-gray-300">
-                                    <td className="p-3 bg-gray-50 font-semibold">Start Date</td>
-                                    <td className="p-3">{formattedDate}</td>
+                                    <td className="p-3 print:p-1.5 bg-gray-50 font-semibold">Start Date</td>
+                                    <td className="p-3 print:p-1.5">{formattedDate}</td>
                                 </tr>
                                 <tr>
-                                    <td className="p-3 bg-gray-50 font-semibold">Stipend</td>
-                                    <td className="p-3">{data.internship.stipend}</td>
+                                    <td className="p-3 print:p-1.5 bg-gray-50 font-semibold">Stipend</td>
+                                    <td className="p-3 print:p-1.5">{data.internship.stipend}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -190,33 +194,28 @@ export default function OfferLetterPage() {
                         Please confirm your acceptance of this offer by replying to this letter at your
                         earliest convenience.
                     </p>
-
-                    <p>
-                        We look forward to working with you and wish you all the best for your
-                        internship journey!
-                    </p>
                 </div>
 
                 {/* Signature */}
-                <div className="mt-12 flex justify-between items-end">
+                <div className="mt-12 print:mt-12 flex justify-between items-end avoid-break-inside">
                     <div>
-                        <p className="mb-4">Sincerely,</p>
+                        <p className="mb-4 print:mb-2 print:text-sm">Sincerely,</p>
                         <div className="mb-2">
                             {/* Digital Signature */}
-                            <p className="text-2xl text-blue-800 font-cursive transform -rotate-2" style={{ fontFamily: '"Great Vibes", "Brush Script MT", cursive' }}>
+                            <p className="text-2xl print:text-xl text-[#1a237e] font-cursive transform -rotate-2" style={{ fontFamily: '"Great Vibes", "Brush Script MT", cursive' }}>
                                 Mohit Sinha
                             </p>
                         </div>
                         <div className="border-t border-gray-400 w-48 pt-2">
-                            <p className="font-bold text-gray-800">Authorized Signatory</p>
-                            <p className="text-sm text-gray-600">HR Department</p>
-                            <p className="text-sm text-gray-600">{data.internship.company}</p>
+                            <p className="font-bold text-gray-800 print:text-sm">Authorized Signatory</p>
+                            <p className="text-sm text-gray-600 print:text-xs">HR Department</p>
+                            <p className="text-sm text-gray-600 print:text-xs">{data.internship.company}</p>
                         </div>
                     </div>
 
-                    {/* Optional: Company Stamp/Seal placeholder */}
-                    <div className="opacity-80 transform rotate-12 border-4 border-blue-800 rounded-full w-32 h-32 flex items-center justify-center p-2 text-center text-blue-800 font-bold text-xs uppercase tracking-widest hidden print:flex">
-                        <div className="border border-blue-800 rounded-full w-full h-full flex items-center justify-center">
+                    {/* Company Stamp/Seal */}
+                    <div className="opacity-90 transform rotate-12 border-4 border-[#1a237e] rounded-full w-32 h-32 flex items-center justify-center p-2 text-center text-[#1a237e] font-bold text-xs uppercase tracking-widest hidden print:flex">
+                        <div className="border border-[#1a237e] rounded-full w-full h-full flex items-center justify-center">
                             {data.internship.company}
                             <br />
                             Official Seal
@@ -225,10 +224,27 @@ export default function OfferLetterPage() {
                 </div>
 
                 {/* Footer */}
-                <div className="mt-12 pt-4 border-t border-gray-300 text-center text-xs text-gray-500">
+                <div className="mt-12 print:mt-6 pt-4 border-t border-gray-300 text-center text-xs text-gray-500">
                     <p>This is a system-generated offer letter from WEBORY SKILL's Platform</p>
                 </div>
             </div>
+
+            <style jsx global>{`
+                @media print {
+                    @page {
+                        size: A4 portrait;
+                        margin: 10mm;
+                    }
+                    body {
+                        background: white;
+                        -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
+                    }
+                    .avoid-break-inside {
+                         break-inside: avoid;
+                    }
+                }
+            `}</style>
         </div>
     );
 }

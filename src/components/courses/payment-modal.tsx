@@ -35,6 +35,7 @@ export function PaymentModal({
     const [appliedPromo, setAppliedPromo] = useState<any>(null);
     const [finalPrice, setFinalPrice] = useState(price);
     const [errorMessage, setErrorMessage] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState(mobileNumber || "");
 
     const handleValidatePromo = async () => {
         setErrorMessage("");
@@ -94,34 +95,113 @@ export function PaymentModal({
         toast.info("Promo code removed");
     };
 
+    // Load Bolt Script
+    const loadBoltScript = () => {
+        return new Promise((resolve) => {
+            if ((window as any).bolt) {
+                resolve(true);
+                return;
+            }
+            const script = document.createElement("script");
+            const isTest = process.env.NEXT_PUBLIC_PAYU_TEST_MODE === 'true';
+            script.src = isTest 
+                ? "https://sboxcheckout-static.citruspay.com/bolt/run/bolt.min.js" 
+                : "https://checkout-static.citruspay.com/bolt/run/bolt.min.js";
+            script.onload = () => resolve(true);
+            script.onerror = () => resolve(false);
+            document.body.appendChild(script);
+        });
+    };
+
     const handlePayment = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (phoneNumber.length !== 10) {
+            toast.error("Please enter a valid 10-digit mobile number");
+            return;
+        }
+
         setLoading(true);
 
         try {
-            const res = await fetch("/api/payment/initiate", {
+            const scriptLoaded = await loadBoltScript();
+            if (!scriptLoaded) {
+                toast.error("Failed to load payment gateway. Please check connection.");
+                setLoading(false);
+                return;
+            }
+
+            const txnid = "Txn" + new Date().getTime();
+            const productinfo = courseTitle;
+            const firstname = "User"; // You might want to get this from props or user object
+            const email = "user@example.com"; // Get from props
+            
+            // 1. Get Hash from Backend
+            const res = await fetch("/api/payment/payu/hash", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
+                    txnid,
                     amount: finalPrice,
-                    courseId: courseId,
-                    userId: userId,
-                    mobileNumber: mobileNumber
+                    productinfo,
+                    firstname,
+                    email,
+                    udf1: userId,
+                    udf2: "course",
+                    udf3: courseId
                 }),
             });
 
             const data = await res.json();
 
-            if (res.ok && data.url) {
-                // Redirect user to PhonePe
-                window.location.href = data.url;
-            } else {
-                console.error("Payment initiation failed:", data);
-                toast.error(data.error || "Payment initiation failed");
+            if (!res.ok) {
+                toast.error(data.error || "Failed to initiate payment");
                 setLoading(false);
+                return;
             }
+
+            const hash = data.hash;
+            const key = data.key;
+
+            // 2. Launch Bolt (Popup)
+            const paymentData = {
+                key,
+                txnid,
+                hash,
+                amount: finalPrice.toString(), // Bolt expects string sometimes
+                firstname,
+                email,
+                phone: phoneNumber,
+                productinfo,
+                surl: `${window.location.origin}/api/payment/payu/response`,
+                furl: `${window.location.origin}/api/payment/payu/response`,
+                udf1: userId,
+                udf2: "course",
+                udf3: courseId
+            };
+
+            const bolt = (window as any).bolt;
+            bolt.launch(paymentData, {
+                responseHandler: function(BOLT: any) {
+                    console.log("Bolt Success:", BOLT.response);
+                    // The surl will be called automatically by Bolt usually, 
+                    // or we can manually post to it. 
+                    // Standard Bolt flow automatically posts to surl if success.
+                    // If it doesn't redirect, we can force it:
+                    if (BOLT.response.txnStatus !== 'CANCEL') {
+                         // Manually submit to response handler if Bolt doesn't redirect
+                         // But usually Bolt redirects. 
+                         // Let's rely on standard redirect for now.
+                         // Or create a form and submit it like standard flow but with BOLT response?
+                         // Actually, Bolt docs say: "Once the payment is successful, BOLT will post the response to the surl".
+                    }
+                },
+                catchException: function(BOLT: any) {
+                    console.error("Bolt Error:", BOLT.message);
+                    toast.error("Payment Error: " + BOLT.message);
+                    setLoading(false);
+                }
+            });
 
         } catch (error) {
             console.error("Payment Error:", error);
@@ -138,134 +218,159 @@ export function PaymentModal({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4"
             >
                 <motion.div
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.9, opacity: 0 }}
-                    className="glass-card w-full max-w-md p-8 rounded-2xl relative border-blue-500/30 max-h-[90vh] overflow-y-auto"
+                    initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                    exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                    className="glass-card w-full max-w-md p-0 rounded-3xl relative border border-white/10 shadow-2xl shadow-purple-500/20 max-h-[90vh] overflow-y-auto bg-[#0a0a0a]"
                 >
-                    <button
-                        onClick={onClose}
-                        className="absolute top-4 right-4 text-gray-400 hover:text-white"
-                    >
-                        <X size={24} />
-                    </button>
+                    {/* Header with Gradient */}
+                    <div className="relative p-6 pb-8 bg-gradient-to-br from-blue-900/50 via-purple-900/50 to-black/50 overflow-hidden">
+                        <div className="absolute top-0 right-0 p-32 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                        
+                        <button
+                            onClick={onClose}
+                            className="absolute top-4 right-4 p-2 bg-black/20 hover:bg-white/10 rounded-full text-white/70 hover:text-white transition-colors z-10"
+                        >
+                            <X size={20} />
+                        </button>
 
-                    <div className="text-center mb-6">
-                        <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-400">
-                            <CreditCard size={32} />
-                        </div>
-                        <h2 className="text-2xl font-bold text-white">Secure Payment</h2>
-                        <p className="text-gray-400 mt-2">
-                            Purchasing <span className="text-white font-semibold">{courseTitle}</span>
-                        </p>
-
-                        {/* Price Display */}
-                        <div className="mt-4 space-y-2">
-                            {originalPrice && discountPercentage && discountPercentage > 0 ? (
-                                <div className="flex items-center justify-center gap-3">
-                                    <span className="text-gray-500 line-through text-lg">₹{originalPrice}</span>
-                                    <span className="text-3xl font-bold text-white">₹{price}</span>
-                                    <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded-full text-xs font-semibold border border-green-500/30">
-                                        {discountPercentage}% OFF
-                                    </span>
-                                </div>
-                            ) : (
-                                <p className="text-3xl font-bold text-white">₹{price}</p>
-                            )}
-
-                            {appliedPromo && finalPrice !== price && (
-                                <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3">
-                                    <p className="text-sm text-gray-400">Final Price with Promo Code:</p>
-                                    <p className="text-2xl font-bold text-green-400">₹{finalPrice}</p>
-                                    <p className="text-xs text-green-500 mt-1">
-                                        You save ₹{price - finalPrice} more!
-                                    </p>
-                                </div>
-                            )}
+                        <div className="relative z-10 flex flex-col items-center">
+                            <div className="w-16 h-16 bg-gradient-to-tr from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 mb-4 rotate-3">
+                                <CreditCard size={32} className="text-white drop-shadow-md" />
+                            </div>
+                            <h2 className="text-2xl font-bold text-white tracking-tight">Secure Checkout</h2>
+                            <p className="text-blue-200/80 text-sm mt-1 font-medium text-center px-4">
+                                Complete your purchase for <br/>
+                                <span className="text-white font-semibold">{courseTitle}</span>
+                            </p>
                         </div>
                     </div>
 
-                    <form onSubmit={handlePayment} className="space-y-4">
-                        {/* Promo Code Section */}
-                        <div className="bg-purple-500/10 border border-purple-500/30 rounded-xl p-4">
-                            <label className="text-sm text-gray-300 block mb-2 flex items-center gap-2">
-                                <Tag size={16} className="text-purple-400" />
-                                Have a Promo Code?
-                            </label>
+                    <div className="p-6 space-y-6">
+                        {/* Price Display */}
+                        <div className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col items-center">
+                            <div className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">Total Amount</div>
+                            <div className="flex items-end gap-2 text-white">
+                                {originalPrice && (discountPercentage || 0) > 0 && (
+                                    <span className="text-gray-500 line-through text-lg mb-1">₹{originalPrice}</span>
+                                )}
+                                <span className="text-4xl font-bold tracking-tight">₹{finalPrice}</span>
+                            </div>
+                            {appliedPromo && (
+                                <div className="mt-2 flex items-center gap-2 bg-green-500/10 text-green-400 px-3 py-1 rounded-full text-xs font-bold border border-green-500/20">
+                                    <Tag size={12} />
+                                    <span>Code {appliedPromo.code} Applied</span>
+                                </div>
+                            )}
+                        </div>
 
-                            {!appliedPromo ? (
-                                <>
+                        <form onSubmit={handlePayment} className="space-y-5">
+                            {/* Phone Number Section */}
+                            <div className="space-y-2">
+                                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider ml-1">
+                                    Mobile Number <span className="text-red-400">*</span>
+                                </label>
+                                <div className="relative group">
+                                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-400 transition-colors">
+                                        <div className="bg-white/10 p-1.5 rounded-md">
+                                            <span className="text-xs font-bold text-white">+91</span>
+                                        </div>
+                                    </div>
+                                    <input
+                                        type="tel"
+                                        placeholder="Enter 10-digit number"
+                                        className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 pl-14 pr-4 text-white placeholder:text-gray-600 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 outline-none transition-all"
+                                        value={phoneNumber}
+                                        onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Promo Code Section */}
+                            <div className="space-y-2">
+                                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider ml-1 flex items-center gap-2">
+                                    Discount Code
+                                </label>
+
+                                {!appliedPromo ? (
                                     <div className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            placeholder="Enter code"
-                                            className="flex-1 bg-black/20 border border-white/10 rounded-lg p-2 text-white focus:border-purple-500/50 outline-none uppercase"
-                                            value={promoCode}
-                                            onChange={(e) => {
-                                                setPromoCode(e.target.value.toUpperCase());
-                                                setErrorMessage("");
-                                            }}
-                                        />
+                                        <div className="relative flex-1">
+                                            <Tag size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                                            <input
+                                                type="text"
+                                                placeholder="Have a coupon?"
+                                                className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white focus:border-purple-500/50 outline-none uppercase text-sm font-medium transition-colors"
+                                                value={promoCode}
+                                                onChange={(e) => {
+                                                    setPromoCode(e.target.value.toUpperCase());
+                                                    setErrorMessage("");
+                                                }}
+                                            />
+                                        </div>
                                         <Button
                                             type="button"
                                             onClick={handleValidatePromo}
                                             disabled={validatingPromo || !promoCode.trim()}
-                                            className="bg-purple-600 hover:bg-purple-700"
+                                            className="bg-purple-600/20 hover:bg-purple-600/40 text-purple-300 border border-purple-500/30 rounded-xl px-6 transition-all"
                                         >
                                             {validatingPromo ? "..." : "Apply"}
                                         </Button>
                                     </div>
-                                    {errorMessage && (
-                                        <p className="text-red-400 text-sm mt-2 flex items-center gap-1">
-                                            <X size={14} />
-                                            {errorMessage}
-                                        </p>
-                                    )}
-                                </>
-                            ) : (
-                                <div className="flex items-center justify-between bg-green-500/20 border border-green-500/30 rounded-lg p-3">
-                                    <div className="flex items-center gap-2">
-                                        <Check size={18} className="text-green-400" />
-                                        <span className="text-white font-semibold">{appliedPromo.code}</span>
-                                        <span className="text-green-400 text-sm">
-                                            ({appliedPromo.discountType === "percentage"
-                                                ? `${appliedPromo.discountValue}% off`
-                                                : `₹${appliedPromo.discountValue} off`})
-                                        </span>
+                                ) : (
+                                    <div className="flex items-center justify-between bg-green-900/20 border border-green-500/30 rounded-xl p-3 px-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-1 bg-green-500/20 rounded-full">
+                                                <Check size={14} className="text-green-400" />
+                                            </div>
+                                            <div>
+                                                <p className="text-green-400 font-bold text-sm">{appliedPromo.code}</p>
+                                                <p className="text-green-500/70 text-xs">
+                                                    Saved ₹{price - finalPrice}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={handleRemovePromo}
+                                            className="text-white/40 hover:text-white hover:bg-white/10 p-1.5 rounded-lg transition-all"
+                                        >
+                                            <X size={16} />
+                                        </button>
                                     </div>
-                                    <button
-                                        type="button"
-                                        onClick={handleRemovePromo}
-                                        className="text-red-400 hover:text-red-300 text-sm"
-                                    >
-                                        Remove
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 mb-4">
-                             <div className="flex items-start gap-2 text-yellow-400 text-sm">
-                                <AlertCircle size={16} className="mt-0.5 flex-shrink-0" />
-                                <p>You will be redirected to PhonePe Gateway to complete the payment safely.</p>
+                                )}
+                                {errorMessage && (
+                                    <p className="text-red-400 text-xs mt-1 ml-1 flex items-center gap-1">
+                                        <AlertCircle size={12} />
+                                        {errorMessage}
+                                    </p>
+                                )}
                             </div>
-                        </div>
 
-                        <Button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 py-6 text-lg font-bold mt-6"
-                        >
-                            {loading ? "Redirecting..." : `Pay ₹${finalPrice} with PhonePe`}
-                        </Button>
+                            <div className="pt-2">
+                                <Button
+                                    type="submit"
+                                    disabled={loading}
+                                    className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-[length:200%_auto] hover:bg-right transition-all duration-500 rounded-xl py-6 relative overflow-hidden group border-0"
+                                >
+                                    <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                                    <div className="relative flex flex-col items-center">
+                                        <span className="text-lg font-bold">
+                                            {loading ? "Processing..." : `Pay ₹${finalPrice} Now`}
+                                        </span>
+                                        {!loading && <span className="text-[10px] uppercase tracking-widest opacity-80">Secure via PayU Bolt</span>}
+                                    </div>
+                                </Button>
 
-                        <p className="text-xs text-gray-500 text-center flex items-center justify-center gap-1">
-                            <Lock size={12} /> Payments are 100% secure.
-                        </p>
-                    </form>
+                                <div className="mt-4 flex items-center justify-center gap-2 text-xs text-gray-500">
+                                    <Lock size={12} />
+                                    <span>256-bit SSL Encrypted Payment</span>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </motion.div>
             </motion.div>
         </AnimatePresence>

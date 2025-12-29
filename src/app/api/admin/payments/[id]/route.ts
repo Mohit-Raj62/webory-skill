@@ -6,6 +6,7 @@ import Application from "@/models/Application";
 import User from "@/models/User";
 import Course from "@/models/Course";
 import Internship from "@/models/Internship";
+import Activity from "@/models/Activity";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { sendEmail, emailTemplates } from "@/lib/mail";
@@ -68,12 +69,39 @@ export async function PUT(
 
       // Create enrollment based on payment type
       if (paymentProof.paymentType === "course") {
-        const enrollment = await Enrollment.create({
+        // Check if already enrolled to prevent duplicate key error
+        let enrollment = await Enrollment.findOne({
           student: paymentProof.student,
           course: paymentProof.course,
-          status: "active",
-          enrolledAt: new Date(),
         });
+
+        if (!enrollment) {
+          enrollment = await Enrollment.create({
+            student: paymentProof.student,
+            course: paymentProof.course,
+            status: "active",
+            enrolledAt: new Date(),
+          });
+
+          // Record Activity for Course Enrollment
+          await Activity.create({
+            student: paymentProof.student,
+            type: "course_enrolled",
+            category: "course",
+            relatedId: paymentProof.course,
+            metadata: {
+              courseName:
+                (await Course.findById(paymentProof.course))?.title || "Course",
+            },
+            date: new Date(),
+          });
+        } else {
+          // If already enrolled, ensure active status
+          if (enrollment.status !== "active") {
+            enrollment.status = "active";
+            await enrollment.save();
+          }
+        }
 
         // Send enrollment confirmation and invoice emails
         try {
@@ -97,7 +125,6 @@ export async function PUT(
             );
 
             // Send invoice email
-            // Use enrollment ID to generate consistent transaction ID
             const invoiceTransactionId = `TXN${enrollment._id
               .toString()
               .substring(0, 12)}`;
@@ -121,7 +148,6 @@ export async function PUT(
           }
         } catch (emailError) {
           console.error("❌ Failed to send enrollment emails:", emailError);
-          // Don't fail enrollment if email fails
         }
 
         return NextResponse.json({
@@ -147,9 +173,23 @@ export async function PUT(
             student: paymentProof.student,
             internship: paymentProof.internship,
             status: "accepted",
-            resume: "", // Will be filled later by student
+            resume: "Pending Upload",
             coverLetter: "Payment verified - enrollment confirmed",
             appliedAt: new Date(),
+          });
+
+          // Record Activity for Internship Application
+          await Activity.create({
+            student: paymentProof.student,
+            type: "internship_applied",
+            category: "internship",
+            relatedId: paymentProof.internship,
+            metadata: {
+              internshipName:
+                (await Internship.findById(paymentProof.internship))?.title ||
+                "Internship",
+            },
+            date: new Date(),
           });
         }
 
@@ -175,7 +215,6 @@ export async function PUT(
             );
 
             // Send invoice email
-            // Use application ID to generate consistent transaction ID
             const invoiceTransactionId = `TXN${application._id
               .toString()
               .substring(0, 12)}`;
@@ -199,7 +238,6 @@ export async function PUT(
           }
         } catch (emailError) {
           console.error("❌ Failed to send acceptance emails:", emailError);
-          // Don't fail enrollment if email fails
         }
 
         return NextResponse.json({
@@ -227,10 +265,10 @@ export async function PUT(
         paymentProof,
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Verify payment proof error:", error);
     return NextResponse.json(
-      { error: "Failed to process payment proof" },
+      { error: "Failed to process payment proof", details: error.message },
       { status: 500 }
     );
   }

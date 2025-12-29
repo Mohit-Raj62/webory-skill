@@ -82,7 +82,7 @@ export default function StudentInternshipTasksPage({ params }: { params: Promise
         <div className="min-h-screen bg-black text-white p-8 pt-24">
             <div className="max-w-4xl mx-auto">
                 <div className="flex items-center gap-4 mb-8">
-                    <Link href="/dashboard" className="text-gray-400 hover:text-white">
+                    <Link href="/profile" className="text-gray-400 hover:text-white">
                         <ArrowLeft size={24} />
                     </Link>
                     <div>

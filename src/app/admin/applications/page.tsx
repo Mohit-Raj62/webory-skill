@@ -36,7 +36,8 @@ export default function ApplicationsPage() {
     const [editForm, setEditForm] = useState({
         startDate: "",
         duration: "",
-        status: ""
+        status: "",
+        resume: ""
     });
 
     // Interview Modal State
@@ -53,7 +54,7 @@ export default function ApplicationsPage() {
 
     const fetchApplications = async () => {
         try {
-            const res = await fetch("/api/admin/applications");
+            const res = await fetch("/api/admin/internship-applications");
             if (res.ok) {
                 const data = await res.json();
                 setApplications(data.applications || []);
@@ -70,7 +71,8 @@ export default function ApplicationsPage() {
         setEditForm({
             startDate: app.startDate ? new Date(app.startDate).toISOString().split('T')[0] : "",
             duration: app.duration || "",
-            status: app.status
+            status: app.status,
+            resume: app.resume || ""
         });
     };
 
@@ -86,18 +88,29 @@ export default function ApplicationsPage() {
     const handleUpdateApplication = async () => {
         if (!editingApp) return;
 
+        // Ensure resume link is absolute
+        let resumeLink = editForm.resume;
+        if (resumeLink && !resumeLink.startsWith('http://') && !resumeLink.startsWith('https://') && resumeLink !== "Pending Upload") {
+            resumeLink = `https://${resumeLink}`;
+        }
+
+        const payload = {
+            ...editForm,
+            resume: resumeLink
+        };
+
         try {
             const res = await fetch(`/api/admin/applications/${editingApp._id}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(editForm),
+                body: JSON.stringify(payload),
             });
 
             if (res.ok) {
-                const updatedApp = await res.json();
+                const data = await res.json();
                 setApplications(
                     applications.map((app) =>
-                        app._id === editingApp._id ? { ...app, ...editForm } : app
+                        app._id === editingApp._id ? data.application : app
                     )
                 );
                 setEditingApp(null);
@@ -314,7 +327,7 @@ export default function ApplicationsPage() {
                                         Start Date: {new Date(app.startDate).toLocaleDateString()} | Duration: {app.duration}
                                     </p>
                                 )}
-                                {app.resume && (
+                                {app.resume && app.resume !== "Pending Upload" ? (
                                     <a
                                         href={app.resume}
                                         target="_blank"
@@ -323,6 +336,10 @@ export default function ApplicationsPage() {
                                     >
                                         View Resume <ExternalLink size={12} />
                                     </a>
+                                ) : (
+                                    <span className="text-yellow-500/70 text-sm flex items-center gap-1 mt-2 cursor-not-allowed">
+                                        Resume Pending <Clock size={12} />
+                                    </span>
                                 )}
                             </div>
 
@@ -427,6 +444,17 @@ export default function ApplicationsPage() {
                                     value={editForm.duration}
                                     onChange={(e) => setEditForm({ ...editForm, duration: e.target.value })}
                                     placeholder="e.g., 3 months"
+                                    className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-blue-500 outline-none"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm text-gray-400 mb-1">Resume Link ({`<a href="...">`})</label>
+                                <input
+                                    type="url"
+                                    value={editForm.resume}
+                                    onChange={(e) => setEditForm({ ...editForm, resume: e.target.value })}
+                                    placeholder="https://drive.google.com/..."
                                     className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-blue-500 outline-none"
                                 />
                             </div>

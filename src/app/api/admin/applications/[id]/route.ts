@@ -27,7 +27,14 @@ export async function PATCH(
     }
 
     const { id } = await params;
-    const { status, startDate, duration, interviewDate, interviewLink } = await req.json();
+    const {
+      status,
+      startDate,
+      duration,
+      interviewDate,
+      interviewLink,
+      resume,
+    } = await req.json();
 
     const updateData: any = {};
     if (status) updateData.status = status;
@@ -35,44 +42,68 @@ export async function PATCH(
     if (duration) updateData.duration = duration;
     if (interviewDate) updateData.interviewDate = interviewDate;
     if (interviewLink) updateData.interviewLink = interviewLink;
+    if (resume) updateData.resume = resume;
 
-    if (status && !["pending", "accepted", "rejected", "interview_scheduled", "completed"].includes(status)) {
+    if (
+      status &&
+      ![
+        "pending",
+        "accepted",
+        "rejected",
+        "interview_scheduled",
+        "completed",
+      ].includes(status)
+    ) {
       return NextResponse.json({ error: "Invalid status" }, { status: 400 });
     }
 
     // Generate Certificate ID if completing
-    if (status === 'completed') {
+    if (status === "completed") {
       updateData.completedAt = new Date();
-      updateData.certificateId = `CERT-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      updateData.certificateId = `CERT-${Date.now()}-${Math.floor(
+        Math.random() * 1000
+      )}`;
     }
 
-    const application = await Application.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true }
-    ).populate('student').populate('internship');
+    const application = await Application.findByIdAndUpdate(id, updateData, {
+      new: true,
+    })
+      .populate("student")
+      .populate("internship");
 
     if (application && status) {
       const { student, internship } = application;
-      
-      if (status === 'interview_scheduled' && interviewDate) {
+
+      if (status === "interview_scheduled" && interviewDate) {
         await sendEmail(
           student.email,
           `Interview Scheduled: ${internship.title}`,
-          emailTemplates.interviewScheduled(student.firstName, internship.title, interviewDate, interviewLink)
+          emailTemplates.interviewScheduled(
+            student.firstName,
+            internship.title,
+            interviewDate,
+            interviewLink
+          )
         );
-      } else if (status === 'accepted') {
+      } else if (status === "accepted") {
         const offerLink = `${process.env.NEXT_PUBLIC_APP_URL}/internships/applications/${application._id}/offer-letter`;
         await sendEmail(
           student.email,
           `Congratulations! Offer for ${internship.title}`,
-          emailTemplates.applicationAccepted(student.firstName, internship.title, offerLink)
+          emailTemplates.applicationAccepted(
+            student.firstName,
+            internship.title,
+            offerLink
+          )
         );
-      } else if (status === 'rejected') {
+      } else if (status === "rejected") {
         await sendEmail(
           student.email,
           `Application Update: ${internship.title}`,
-          emailTemplates.applicationRejected(student.firstName, internship.title)
+          emailTemplates.applicationRejected(
+            student.firstName,
+            internship.title
+          )
         );
       }
     }
