@@ -47,6 +47,16 @@ export async function POST(req: Request) {
     const resourceId = params.udf3;
     const amount = params.amount;
     const txnid = params.txnid;
+    const phone = params.phone || params.mobile;
+
+    // Update user phone if provided
+    if (userId && phone) {
+      try {
+        await User.findByIdAndUpdate(userId, { phone: phone });
+      } catch (err) {
+        console.error("Failed to update user phone:", err);
+      }
+    }
 
     if (type === "course") {
       await handleCourseEnrollment(userId, resourceId, txnid, amount);

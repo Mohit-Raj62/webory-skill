@@ -9,6 +9,7 @@ interface User {
     firstName: string;
     lastName: string;
     email: string;
+    phone?: string;
     role: string;
     createdAt: string;
 }
@@ -150,6 +151,9 @@ export default function UsersPage() {
                                     Email
                                 </th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                                    Phone
+                                </th>
+                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
                                     Role
                                 </th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
@@ -178,6 +182,7 @@ export default function UsersPage() {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-gray-300">{user.email}</td>
+                                    <td className="px-6 py-4 text-gray-300">{user.phone || "-"}</td>
                                     <td className="px-6 py-4">
                                         <select
                                             value={user.role}
