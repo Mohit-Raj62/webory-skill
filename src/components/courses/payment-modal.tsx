@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, CreditCard, Lock, Tag, Check, AlertCircle } from "lucide-react";
+import { X, CreditCard, Lock, Tag, Check, AlertCircle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -13,13 +13,13 @@ interface PaymentModalProps {
     price: number;
     originalPrice?: number;
     discountPercentage?: number;
-    courseId?: string; // Optional if internshipId is present
-    internshipId?: string; // Optional if courseId is present
+    courseId?: string;
+    internshipId?: string;
     userId: string;
     userName: string;
     userEmail: string;
     mobileNumber?: string;
-    resourceType?: "course" | "internship"; // Default to course if not provided
+    resourceType?: "course" | "internship";
 }
 
 export function PaymentModal({
@@ -46,6 +46,37 @@ export function PaymentModal({
     const [phoneNumber, setPhoneNumber] = useState(mobileNumber || "");
 
     const resourceId = resourceType === "course" ? courseId : internshipId;
+
+    // Handle Browser/Device Back Button to Close Modal
+    useEffect(() => {
+        if (isOpen) {
+            // Push a new entry to history stack so back button doesn't leave the page
+            window.history.pushState({ modalOpen: true }, "", window.location.href);
+
+            const handlePopState = (event: PopStateEvent) => {
+                // If back button is pressed, close the modal
+                // We don't need to call history.back() here because the user already pressed back
+                onClose();
+            };
+
+            window.addEventListener("popstate", handlePopState);
+
+            return () => {
+                window.removeEventListener("popstate", handlePopState);
+            };
+        }
+    }, [isOpen, onClose]);
+
+    const handleClose = () => {
+        // If we manually close using the X button, we should go back in history 
+        // to remove the 'modalOpen' state we pushed.
+        // Check if the current state is the one we pushed
+        if (window.history.state?.modalOpen) {
+            window.history.back(); // This will trigger popstate, which calls onClose
+        } else {
+            onClose(); // Fallback
+        }
+    };
 
     const handleValidatePromo = async () => {
         setErrorMessage("");
@@ -105,7 +136,6 @@ export function PaymentModal({
         toast.info("Promo code removed");
     };
 
-    // Load Bolt Script
     const loadBoltScript = () => {
         return new Promise((resolve) => {
             if ((window as any).bolt) {
@@ -177,7 +207,6 @@ export function PaymentModal({
                 resourceType
             });
             
-            // 1. Get Hash from Backend
             const res = await fetch("/api/payment/payu/hash", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -206,12 +235,11 @@ export function PaymentModal({
             const surl = `${window.location.origin}/api/payment/payu/response`;
             const furl = `${window.location.origin}/api/payment/payu/response`;
 
-            // 2. Launch Bolt (Popup)
             const paymentData = {
                 key,
                 txnid,
                 hash,
-                amount: finalPrice.toString(), // Bolt expects string sometimes
+                amount: finalPrice.toString(),
                 firstname,
                 email,
                 phone: phoneNumber,
@@ -229,8 +257,6 @@ export function PaymentModal({
                     console.log("Bolt Success:", BOLT.response);
                     
                     if (BOLT.response.txnStatus !== 'CANCEL') {
-                         // Manually submit to response handler if Bolt doesn't redirect
-                         // This ensures the backend gets the response and we redirect the user
                          submitPayUForm(BOLT.response, surl);
                     } else {
                         setLoading(false);
@@ -259,7 +285,7 @@ export function PaymentModal({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4"
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 sm:p-6"
             >
                 <motion.div
                     initial={{ scale: 0.95, opacity: 0, y: 20 }}
@@ -272,10 +298,20 @@ export function PaymentModal({
                         <div className="absolute top-0 right-0 p-32 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
                         
                         <button
-                            onClick={onClose}
-                            className="absolute top-4 right-4 p-2 bg-black/20 hover:bg-white/10 rounded-full text-white/70 hover:text-white transition-colors z-10"
+                            onClick={handleClose}
+                            className="absolute top-4 right-4 p-2.5 bg-black/30 hover:bg-white/20 rounded-full text-white/90 hover:text-white transition-all z-20 backdrop-blur-sm"
+                            aria-label="Close"
                         >
-                            <X size={20} />
+                            <X size={22} />
+                        </button>
+                        
+                        {/* Optional Back Button Visual (for mobile feel) */}
+                         <button
+                            onClick={handleClose}
+                            className="absolute top-4 left-4 p-2.5 bg-black/30 hover:bg-white/20 rounded-full text-white/90 hover:text-white transition-all z-20 backdrop-blur-sm md:hidden"
+                            aria-label="Back"
+                        >
+                            <ArrowLeft size={22} />
                         </button>
 
                         <div className="relative z-10 flex flex-col items-center">
