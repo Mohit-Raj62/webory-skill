@@ -140,39 +140,50 @@ async function handleInternshipApplication(
   amount: number
 ) {
   try {
-    // Typically application is created beforehand? Or created here?
-    // Assuming user applies > pays > application verified
-    // We'll update an existing application or create new if not exists
-
+    // Check if application exists
     let application = await Application.findOne({
       student: userId,
       internship: internshipId,
     });
 
-    if (!application) {
+    if (application) {
+      // Update existing application
+      application.transactionId = txnid;
+      application.amountPaid = amount;
+      // Mark as accepted immediately since payment is verified
+      application.status = "accepted";
+      await application.save();
+    } else {
       // Create if didn't exist (edge case)
       application = await Application.create({
         student: userId,
         internship: internshipId,
-        status: "pending", // Waiting admin approval? Or 'approved'/verified since paid?
+        status: "accepted", // Auto-accept paid internship
         appliedAt: new Date(),
+        transactionId: txnid,
+        amountPaid: amount,
       });
     }
 
-    // Logic to mark payment as verified/completed could be here
-    // For now, we will create an activity
     const internship = await Internship.findById(internshipId);
 
     await Activity.create({
       student: userId,
-      type: "internship_applied", // Or "payment_verified"
+      type: "internship_applied",
       category: "internship",
       relatedId: internshipId,
       metadata: { internshipTitle: internship?.title || "Internship" },
       date: new Date(),
     });
 
-    // Send email...
+    const user = await User.findById(userId);
+    if (user && internship) {
+      await sendEmail(
+        user.email,
+        `Application Received: ${internship.title}`,
+        emailTemplates.applicationReceived(user.firstName, internship.title)
+      );
+    }
   } catch (e) {
     console.error("Internship Handler Error:", e);
   }

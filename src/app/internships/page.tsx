@@ -3,12 +3,13 @@
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, DollarSign, IndianRupee, CheckCircle2, X } from "lucide-react";
+import { MapPin, Clock, IndianRupee, CheckCircle2, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { UPIPaymentModal } from "@/components/courses/upi-payment-modal";
+import { PaymentModal } from "@/components/courses/payment-modal";
 import { Invoice } from "@/components/courses/invoice";
+import { toast } from "sonner";
 
 // Fallback data for initial render or error
 const fallbackInternships = [
@@ -20,6 +21,7 @@ const fallbackInternships = [
         type: "Full-time",
         stipend: "₹15,000 - ₹30,000 / month",
         tags: ["React", "Tailwind", "TypeScript"],
+        price: 999 
     },
     {
         _id: "2",
@@ -29,14 +31,15 @@ const fallbackInternships = [
         type: "Part-time",
         stipend: "₹10,000 - ₹20,000 / month",
         tags: ["Figma", "Prototyping", "User Research"],
+        price: 999
     },
 ];
 
 export default function InternshipsPage() {
-    const [internships, setInternships] = useState < any[] > ([]);
-    const [user, setUser] = useState(null);
-    const [applied, setApplied] = useState < string[] > ([]);
-    const [selectedInternship, setSelectedInternship] = useState < string | null > (null);
+    const [internships, setInternships] = useState<any[]>([]);
+    const [user, setUser] = useState<any>(null);
+    const [applied, setApplied] = useState<string[]>([]);
+    const [selectedInternship, setSelectedInternship] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         resume: "",
         coverLetter: "",
@@ -47,7 +50,7 @@ export default function InternshipsPage() {
     const [loading, setLoading] = useState(true);
     const [showPayment, setShowPayment] = useState(false);
     const [showInvoice, setShowInvoice] = useState(false);
-    const [transactionData, setTransactionData] = useState < any > (null);
+    const [transactionData, setTransactionData] = useState<any>(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -105,46 +108,37 @@ export default function InternshipsPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedInternship) return;
-        setShowPayment(true);
-    };
-
-    const handlePaymentSuccess = async (transactionId: string, promoCode?: string) => {
-        setShowPayment(false);
+        
         setSubmitting(true);
-
         try {
+            // Submit application first with PENDING status
             const internshipDetails = internships.find(i => i._id === selectedInternship);
             
-            // Submit payment proof for verification (not direct enrollment)
-            const res = await fetch("/api/payments/submit-proof", {
+            const res = await fetch("/api/internships/apply", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     internshipId: selectedInternship,
-                    transactionId,
-                    amount: internshipDetails?.price || 0,
-                    screenshot: "pending", // This will be set by the UPI modal
-                    promoCode,
-                    type: "internship", // Mark as internship payment
-                    // Include application details
                     resume: formData.resume,
                     coverLetter: formData.coverLetter,
                     portfolio: formData.portfolio,
                     linkedin: formData.linkedin,
+                    transactionId: "PENDING_PAYU",
+                    amountPaid: internshipDetails?.price || 0
                 }),
             });
 
-            if (res.ok) {
-                alert("Application submitted! Your payment will be verified by admin within 1-2 hours.");
-                setSelectedInternship(null);
-                setFormData({ resume: "", coverLetter: "", portfolio: "", linkedin: "" });
+            const data = await res.json();
+            
+            if (res.ok || data.error === "Already applied to this internship") {
+                // If success or already applied, proceed to payment
+                setShowPayment(true);
             } else {
-                const data = await res.json();
-                alert(data.error || "Application failed. Please try again.");
+                toast.error(data.error || "Failed to submit application");
             }
         } catch (error) {
-            console.error("Application error", error);
-            alert("An error occurred. Please try again.");
+            console.error("Submission error:", error);
+            toast.error("An error occurred");
         } finally {
             setSubmitting(false);
         }
@@ -287,7 +281,7 @@ export default function InternshipsPage() {
                                     disabled={submitting}
                                     className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 border-0 py-6 text-lg font-bold mt-4"
                                 >
-                                    {submitting ? "Processing..." : `Pay ₹${internships.find(i => i._id === selectedInternship)?.price || 0} & Submit Application`}
+                                    {submitting ? "Processing..." : `Pay ₹${internships.find(i => i._id === selectedInternship)?.price || 0} & Submit`}
                                 </Button>
                             </form>
                         </motion.div>
@@ -295,14 +289,18 @@ export default function InternshipsPage() {
                 )}
             </AnimatePresence>
 
-            {selectedInternship && (
-                <UPIPaymentModal
+            {selectedInternship && user && (
+                <PaymentModal
                     isOpen={showPayment}
                     onClose={() => setShowPayment(false)}
-                    onSuccess={handlePaymentSuccess}
                     courseTitle={`Internship: ${internships.find(i => i._id === selectedInternship)?.title}`}
                     price={internships.find(i => i._id === selectedInternship)?.price || 0}
                     internshipId={selectedInternship}
+                    userId={user._id}
+                    userName={user.firstName}
+                    userEmail={user.email}
+                    mobileNumber={user.phone}
+                    resourceType="internship"
                 />
             )}
 

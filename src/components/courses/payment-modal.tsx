@@ -13,11 +13,13 @@ interface PaymentModalProps {
     price: number;
     originalPrice?: number;
     discountPercentage?: number;
-    courseId: string;
+    courseId?: string; // Optional if internshipId is present
+    internshipId?: string; // Optional if courseId is present
     userId: string;
     userName: string;
     userEmail: string;
     mobileNumber?: string;
+    resourceType?: "course" | "internship"; // Default to course if not provided
 }
 
 export function PaymentModal({
@@ -28,10 +30,12 @@ export function PaymentModal({
     originalPrice,
     discountPercentage,
     courseId,
+    internshipId,
     userId,
     userName,
     userEmail,
-    mobileNumber
+    mobileNumber,
+    resourceType = "course"
 }: PaymentModalProps) {
     const [loading, setLoading] = useState(false);
     const [promoCode, setPromoCode] = useState("");
@@ -40,6 +44,8 @@ export function PaymentModal({
     const [finalPrice, setFinalPrice] = useState(price);
     const [errorMessage, setErrorMessage] = useState("");
     const [phoneNumber, setPhoneNumber] = useState(mobileNumber || "");
+
+    const resourceId = resourceType === "course" ? courseId : internshipId;
 
     const handleValidatePromo = async () => {
         setErrorMessage("");
@@ -55,7 +61,7 @@ export function PaymentModal({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     code: promoCode,
-                    itemType: "course",
+                    itemType: resourceType,
                     price: price,
                 }),
             });
@@ -117,11 +123,34 @@ export function PaymentModal({
         });
     };
 
+    const submitPayUForm = (params: any, url: string) => {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = url;
+
+        for (const key in params) {
+            if (Object.prototype.hasOwnProperty.call(params, key)) {
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = key;
+                input.value = params[key];
+                form.appendChild(input);
+            }
+        }
+        document.body.appendChild(form);
+        form.submit();
+    };
+
     const handlePayment = async (e: React.FormEvent) => {
         e.preventDefault();
         
         if (phoneNumber.length !== 10) {
             toast.error("Please enter a valid 10-digit mobile number");
+            return;
+        }
+
+        if (!resourceId) {
+            toast.error("Invalid resource ID");
             return;
         }
 
@@ -144,7 +173,8 @@ export function PaymentModal({
                 mode: process.env.NEXT_PUBLIC_PAYU_TEST_MODE,
                 txnid,
                 firstname,
-                amount: finalPrice
+                amount: finalPrice,
+                resourceType
             });
             
             // 1. Get Hash from Backend
@@ -158,8 +188,8 @@ export function PaymentModal({
                     firstname,
                     email,
                     udf1: userId,
-                    udf2: "course",
-                    udf3: courseId
+                    udf2: resourceType,
+                    udf3: resourceId
                 }),
             });
 
@@ -173,6 +203,8 @@ export function PaymentModal({
 
             const hash = data.hash;
             const key = data.key;
+            const surl = `${window.location.origin}/api/payment/payu/response`;
+            const furl = `${window.location.origin}/api/payment/payu/response`;
 
             // 2. Launch Bolt (Popup)
             const paymentData = {
@@ -184,27 +216,25 @@ export function PaymentModal({
                 email,
                 phone: phoneNumber,
                 productinfo,
-                surl: `${window.location.origin}/api/payment/payu/response`,
-                furl: `${window.location.origin}/api/payment/payu/response`,
+                surl,
+                furl,
                 udf1: userId,
-                udf2: "course",
-                udf3: courseId
+                udf2: resourceType,
+                udf3: resourceId
             };
 
             const bolt = (window as any).bolt;
             bolt.launch(paymentData, {
                 responseHandler: function(BOLT: any) {
                     console.log("Bolt Success:", BOLT.response);
-                    // The surl will be called automatically by Bolt usually, 
-                    // or we can manually post to it. 
-                    // Standard Bolt flow automatically posts to surl if success.
-                    // If it doesn't redirect, we can force it:
+                    
                     if (BOLT.response.txnStatus !== 'CANCEL') {
                          // Manually submit to response handler if Bolt doesn't redirect
-                         // But usually Bolt redirects. 
-                         // Let's rely on standard redirect for now.
-                         // Or create a form and submit it like standard flow but with BOLT response?
-                         // Actually, Bolt docs say: "Once the payment is successful, BOLT will post the response to the surl".
+                         // This ensures the backend gets the response and we redirect the user
+                         submitPayUForm(BOLT.response, surl);
+                    } else {
+                        setLoading(false);
+                        toast.error("Payment Cancelled");
                     }
                 },
                 catchException: function(BOLT: any) {

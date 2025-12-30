@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Pencil, Loader2 } from "lucide-react";
+import { Pencil, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface Enrollment {
@@ -76,6 +76,26 @@ export default function AdminEnrollmentsPage() {
             progress: enrollment.progress,
             completed: enrollment.completed,
         });
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!confirm("Are you sure you want to delete this enrollment? This will revoke verify/access for the student.")) return;
+
+        try {
+            const res = await fetch(`/api/admin/enrollments/${id}`, {
+                method: "DELETE",
+            });
+
+            if (res.ok) {
+                toast.success("Enrollment deleted (Access Revoked)");
+                fetchEnrollments();
+            } else {
+                toast.error("Failed to delete enrollment");
+            }
+        } catch (error) {
+            console.error("Delete error:", error);
+            toast.error("Failed to delete enrollment");
+        }
     };
 
     const handleSave = async () => {
@@ -174,7 +194,7 @@ export default function AdminEnrollmentsPage() {
                                         <TableCell className="text-gray-400">
                                             {new Date(enrollment.enrolledAt).toLocaleDateString()}
                                         </TableCell>
-                                        <TableCell className="text-right">
+                                        <TableCell className="text-right flex items-center justify-end gap-2">
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
@@ -182,6 +202,14 @@ export default function AdminEnrollmentsPage() {
                                                 className="text-gray-400 hover:text-white hover:bg-gray-800"
                                             >
                                                 <Pencil className="h-4 w-4" />
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => handleDelete(enrollment._id)}
+                                                className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
                                             </Button>
                                         </TableCell>
                                     </TableRow>
