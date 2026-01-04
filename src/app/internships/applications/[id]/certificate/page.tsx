@@ -342,34 +342,33 @@ export default function CertificatePage() {
                         transform-origin: center center !important;
                     }
                     
-                    /* PORTRAIT (Mobile Default): Revert to standard fit-width */
+                    /* PORTRAIT (Mobile Default): ROTATE for MAXIMUM SIZE */
                     @media print and (orientation: portrait) {
                         @page {
                             size: portrait;
-                            margin: 10mm;
+                            margin: 0; /* Critical: Remove browser margins to prevent clipping */
                         }
                         
-                        /* 
-                           Strategy: Fit 1122px into ~794px width.
-                           Factor = 0.70
-                           We use 0.7 to maximize size without clipping.
-                        */
                         #certificate-container {
-                            position: relative !important;
-                            top: 0 !important;
-                            left: 0 !important;
-                            transform: scale(0.7) !important;
-                            /* Center horizontally */
-                            margin-left: -168px !important; /* (1122 * 0.7 = 785). (1122-794)/2 ?? No, simpler to just start left */
-                            transform-origin: top left !important;
+                            position: absolute !important;
+                            top: 50% !important;
                             left: 50% !important;
-                            margin-left: -392px !important; /* 785px / 2 = 392.5px */
+                            /* 
+                               Rotate -90 deg to use full paper height as width.
+                               Scale 0.9 to be safe (bigger than 0.7, safe from clipping).
+                            */
+                            transform: translate(-50%, -50%) rotate(-90deg) scale(0.9) !important;
+                            transform-origin: center center !important;
+                            margin: 0 !important;
                         }
                     }
 
                     /* LANDSCAPE: Full size beauty */
                     @media print and (orientation: landscape) {
-                         @page { size: landscape; }
+                         @page { 
+                             size: landscape; 
+                             margin: 0;
+                         }
                         #certificate-container {
                             transform: scale(0.98) !important;
                              transform-origin: top left !important;
