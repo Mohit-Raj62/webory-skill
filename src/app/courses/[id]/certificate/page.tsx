@@ -358,20 +358,29 @@ export default function CertificatePage() {
                     /* Nuclear Reset for Print */
                     html, body {
                         width: 100%;
-                        height: 100%;
+                        height: 100vh;
                         margin: 0 !important;
                         padding: 0 !important;
-                        overflow: visible !important;
+                        overflow: hidden !important;
+                    }
+
+                     /* Use Flexbox interactions on body to center the certificate */
+                    @media print {
+                        body {
+                            display: flex !important;
+                            align-items: center !important;
+                            justify-content: center !important;
+                        }
                     }
 
                     /* Base Print Container Settings */
                     #certificate-container {
                         visibility: visible;
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        margin: 0;
-                        padding: 0;
+                        position: relative !important;
+                        left: auto !important;
+                        top: auto !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
                         z-index: 9999;
                         overflow: hidden;
                         box-shadow: none;
@@ -382,24 +391,20 @@ export default function CertificatePage() {
                         width: 1122px !important;
                         height: 794px !important;
                         
-                        transform-origin: top left !important;
+                        transform-origin: center center !important;
                     }
                     
                     /* PORTRAIT (Mobile Default): Shrink to fit width */
                     @media print and (orientation: portrait) {
                         #certificate-container {
-                            transform: scale(0.6) !important;
-                            top: 50px;
-                            left: 10px;
+                            transform: scale(0.7) !important;
                         }
                     }
 
                     /* LANDSCAPE: Full size beauty */
                     @media print and (orientation: landscape) {
                         #certificate-container {
-                            transform: scale(0.95) !important;
-                            top: 0;
-                            left: 0;
+                            transform: scale(0.98) !important;
                         }
                     }
 
