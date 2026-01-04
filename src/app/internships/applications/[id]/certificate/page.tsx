@@ -356,17 +356,18 @@ export default function CertificatePage() {
                             left: 0 !important;
                             
                             /* 
-                               MAXIMUM WIDTH FIT:
-                               Landscape (1122px) -> Portrait (794px).
-                               Scale = 0.7 (approx).
-                               This is the biggest it can be without rotation.
+                               User requested: "80% karo to"
+                               Scale = 0.8.
+                               Width: 1122 * 0.8 = 897.6px.
+                               Note: This exceeds A4 Portrait width (794px) by ~100px.
+                               It WILL clip on sides, but user insisted.
                             */
-                            transform: scale(0.7) !important;
+                            transform: scale(0.8) !important;
                             transform-origin: top left !important;
                             left: 50% !important;
-                            margin-left: -392px !important; /* Center it: 1122 * 0.7 / 2 approx */
+                            margin-left: -449px !important; /* Center it: 1122 * 0.8 / 2 = 448.8 */
                             
-                            margin-top: 20px; /* Give it a little breathing room from top */
+                            margin-top: 20px;
                         }
                     }
 

@@ -407,11 +407,11 @@ export default function CertificatePage() {
                             top: 0 !important;
                             left: 0 !important;
                             
-                            /* Max possible width without rotation */
-                            transform: scale(0.7) !important;
+                            /* User requested 80% scale */
+                            transform: scale(0.8) !important;
                             transform-origin: top left !important;
                             left: 50% !important;
-                            margin-left: -392px !important;
+                            margin-left: -449px !important; /* 1122 * 0.8 / 2 */
                             
                             margin-top: 20px;
                         }
