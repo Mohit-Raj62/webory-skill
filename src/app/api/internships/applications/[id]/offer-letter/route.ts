@@ -3,13 +3,15 @@ import dbConnect from "@/lib/db";
 import Application from "@/models/Application";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
-import fs from 'fs';
-import path from 'path';
+import fs from "fs";
+import path from "path";
 
 function logDebug(message: string, data?: any) {
-  const logPath = path.join(process.cwd(), 'debug_log.txt');
+  const logPath = path.join(process.cwd(), "debug_log.txt");
   const timestamp = new Date().toISOString();
-  const logMessage = `[${timestamp}] ${message} ${data ? JSON.stringify(data) : ''}\n`;
+  const logMessage = `[${timestamp}] ${message} ${
+    data ? JSON.stringify(data) : ""
+  }\n`;
   try {
     fs.appendFileSync(logPath, logMessage);
   } catch (e) {
@@ -25,7 +27,7 @@ export async function GET(
     const params = await props.params;
     logDebug("=== API CALLED ===");
     logDebug("Params ID:", params.id);
-    
+
     await dbConnect();
     logDebug("DB Connected");
     const { id: applicationId } = params;
@@ -37,7 +39,9 @@ export async function GET(
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+      userId: string;
+    };
     const userId = decoded.userId;
     console.log("User ID:", userId);
 
@@ -94,7 +98,12 @@ export async function GET(
         type: application.internship?.type || "Full-time",
         stipend: application.internship?.stipend || "To be discussed",
       },
-      startDate: application.startDate || new Date(),
+      startDate:
+        application.startDate ||
+        application.offerDate ||
+        application.appliedAt ||
+        new Date(),
+      offerDate: application.offerDate || application.appliedAt || new Date(),
       duration: application.duration || "3 months",
       appliedAt: application.appliedAt || new Date(),
       isDemo: false,
@@ -102,16 +111,18 @@ export async function GET(
 
     console.log("Returning real application data successfully");
     return NextResponse.json(responseData);
-    
   } catch (error: any) {
     console.error("=== OFFER LETTER API ERROR ===");
     console.error("Error:", error);
     console.error("Error message:", error.message);
-    
+
     // Return error with details
-    return NextResponse.json({ 
-      error: "Failed to fetch offer letter",
-      details: error.message 
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: "Failed to fetch offer letter",
+        details: error.message,
+      },
+      { status: 500 }
+    );
   }
 }

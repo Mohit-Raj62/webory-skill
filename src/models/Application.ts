@@ -48,6 +48,9 @@ const ApplicationSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  offerDate: {
+    type: Date,
+  },
   // Offer Letter fields (set when application is accepted)
   startDate: {
     type: Date,

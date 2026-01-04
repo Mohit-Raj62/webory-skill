@@ -19,6 +19,7 @@ interface OfferLetterData {
         stipend: string;
     };
     startDate: string;
+    offerDate: string;
     duration: string;
     appliedAt: string;
 }
@@ -85,7 +86,9 @@ export default function OfferLetterPage() {
         year: "numeric",
     });
 
-    const todayDate = new Date().toLocaleDateString("en-IN", {
+    const displayedDate = data.offerDate ? new Date(data.offerDate) : new Date(data.appliedAt);
+    
+    const offerDate = displayedDate.toLocaleDateString("en-IN", {
         day: "numeric",
         month: "long",
         year: "numeric",
@@ -121,7 +124,7 @@ export default function OfferLetterPage() {
 
                 {/* Date */}
                 <div className="text-right mb-6 print:mb-4">
-                    <p className="text-sm print:text-xs">Date: {todayDate}</p>
+                    <p className="text-sm print:text-xs">Date: {offerDate}</p>
                 </div>
 
                 {/* Student Address */}

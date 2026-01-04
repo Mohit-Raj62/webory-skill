@@ -86,6 +86,11 @@ export async function PATCH(
           )
         );
       } else if (status === "accepted") {
+        if (!application.offerDate) {
+          await Application.findByIdAndUpdate(application._id, {
+            offerDate: new Date(),
+          });
+        }
         const offerLink = `${process.env.NEXT_PUBLIC_APP_URL}/internships/applications/${application._id}/offer-letter`;
         await sendEmail(
           student.email,

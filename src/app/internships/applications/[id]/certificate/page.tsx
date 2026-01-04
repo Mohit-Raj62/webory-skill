@@ -43,21 +43,18 @@ export default function CertificatePage() {
     useEffect(() => {
         const fetchApplication = async () => {
             try {
-                const dashRes = await fetch(`/api/user/dashboard`);
-                if (!dashRes.ok) {
-                    alert("Failed to load application data");
+                // Optimized: Fetch only the specific application data instead of full dashboard
+                const res = await fetch(`/api/internships/applications/${id}/certificate`);
+                
+                if (!res.ok) {
+                    const error = await res.json();
+                    console.error("API Error:", error);
+                    alert("Failed to load certificate data");
                     router.push('/profile');
                     return;
                 }
 
-                const dashData = await dashRes.json();
-                const fullApp = dashData.applications?.find((app: any) => app._id === id);
-
-                if (!fullApp) {
-                    alert("Application not found");
-                    router.push('/profile');
-                    return;
-                }
+                const fullApp = await res.json();
 
                 if (fullApp.status !== 'completed') {
                     alert("Certificate not available yet. Internship must be marked as completed.");
@@ -66,8 +63,6 @@ export default function CertificatePage() {
                 }
 
                 setApplication(fullApp);
-                console.log("Certificate ID:", fullApp.certificateId);
-                console.log("Full Application:", fullApp);
             } catch (error) {
                 console.error("Error fetching certificate data:", error);
                 alert("Failed to load certificate");
@@ -244,6 +239,7 @@ export default function CertificatePage() {
                             </div>
                             <p className="text-[8px] text-gray-500 mt-1 font-bold uppercase tracking-widest">Scan to Verify</p>
                             <p className="text-[8px] font-mono text-[#a5c098] font-bold">ID: {application.certificateId || 'N/A'}</p>
+                            <p className="text-[8px] text-[#2e7d32] font-bold uppercase tracking-widest mt-0.5">Govt. Recognized</p>
                         </div>
 
 
@@ -258,7 +254,7 @@ export default function CertificatePage() {
                     </div>
 
                     {/* OFFICIAL SEAL */}
-                    <div className="absolute bottom-12 right-12 opacity-90 hidden md:block print:block">
+                    <div className="absolute bottom-40 right-16 opacity-90 print:block">
                         <div className="w-32 h-32 rounded-full border-4 border-[#c5a059] flex items-center justify-center p-1 shadow-lg bg-[#fffbe6]">
                             <div className="w-full h-full rounded-full border-2 border-[#c5a059] border-dashed flex items-center justify-center relative">
                                 <div className="absolute inset-0 rounded-full flex items-center justify-center">

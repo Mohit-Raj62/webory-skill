@@ -308,7 +308,7 @@ export default function CertificatePage() {
                         </div>
 
                         {/* Official Seal Overlay */}
-                        <div className="absolute bottom-8 right-16 opacity-80 transform -rotate-12 pointer-events-none z-20 mix-blend-multiply">
+                        <div className="absolute bottom-24 right-16 opacity-80 transform -rotate-12 pointer-events-none z-20 mix-blend-multiply">
                             <div className="border-4 border-[#1a237e] rounded-full w-32 h-32 flex items-center justify-center p-2 text-center text-[#1a237e] font-bold text-xs uppercase tracking-widest">
                                 <div className="border border-[#1a237e] rounded-full w-full h-full flex items-center justify-center leading-tight">
                                     Webory Skills
