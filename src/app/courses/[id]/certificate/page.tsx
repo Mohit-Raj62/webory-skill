@@ -360,6 +360,10 @@ export default function CertificatePage() {
                         position: fixed;
                         top: 0;
                         left: 0;
+                        /* Force scale down for mobile print to fit 1 page */
+                        zoom: 0.5;
+                        min-width: 1024px;
+
                         /* Force A4 Pixels for Print - browsers handle px to physical unit well in print mode usually */
                         width: 1122px !important;
                         height: 794px !important;
