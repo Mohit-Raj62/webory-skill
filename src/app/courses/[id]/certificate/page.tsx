@@ -355,27 +355,54 @@ export default function CertificatePage() {
                         padding: 0;
                     }
                     
+                    /* Nuclear Reset for Print */
+                    html, body {
+                        width: 100%;
+                        height: 100%;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        overflow: visible !important;
+                    }
+
+                    /* Base Print Container Settings */
                     #certificate-container {
                         visibility: visible;
                         position: fixed;
                         top: 0;
                         left: 0;
-                        /* Force scale down for mobile print to fit 1 page */
-                        zoom: 0.5;
-                        min-width: 1024px;
-
-                        /* Force A4 Pixels for Print - browsers handle px to physical unit well in print mode usually */
-                        width: 1122px !important;
-                        height: 794px !important;
-                        transform: none !important;
                         margin: 0;
                         padding: 0;
                         z-index: 9999;
                         overflow: hidden;
                         box-shadow: none;
                         background: white;
+                        border: none;
+                        
+                        /* Fixed Dimensions */
+                        width: 1122px !important;
+                        height: 794px !important;
+                        
+                        transform-origin: top left !important;
                     }
                     
+                    /* PORTRAIT (Mobile Default): Shrink to fit width */
+                    @media print and (orientation: portrait) {
+                        #certificate-container {
+                            transform: scale(0.6) !important;
+                            top: 50px;
+                            left: 10px;
+                        }
+                    }
+
+                    /* LANDSCAPE: Full size beauty */
+                    @media print and (orientation: landscape) {
+                        #certificate-container {
+                            transform: scale(0.95) !important;
+                            top: 0;
+                            left: 0;
+                        }
+                    }
+
                     #certificate-container * {
                         visibility: visible;
                     }
