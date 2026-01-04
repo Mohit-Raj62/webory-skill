@@ -394,10 +394,18 @@ export default function CertificatePage() {
                         transform-origin: center center !important;
                     }
                     
-                    /* PORTRAIT (Mobile Default): Shrink to fit width */
+                    /* PORTRAIT (Mobile Default): ROTATE to fill page! */
                     @media print and (orientation: portrait) {
                         #certificate-container {
-                            transform: scale(0.7) !important;
+                            position: absolute !important;
+                            top: 50% !important;
+                            left: 50% !important;
+                            /* 
+                               Rotate -90 degrees so landscape cert fits on portrait paper.
+                               Scale 0.95 to ensure margins.
+                            */
+                            transform: translate(-50%, -50%) rotate(-90deg) scale(0.95) !important;
+                            transform-origin: center center !important;
                         }
                     }
 
