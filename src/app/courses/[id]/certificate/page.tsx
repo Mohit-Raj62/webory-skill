@@ -394,25 +394,33 @@ export default function CertificatePage() {
                         transform-origin: center center !important;
                     }
                     
-                    /* PORTRAIT (Mobile Default): ROTATE to fill page! */
+                    /* PORTRAIT (Mobile Default): Revert to standard fit-width */
                     @media print and (orientation: portrait) {
+                         @page {
+                            size: portrait;
+                            margin: 10mm;
+                        }
+                        
                         #certificate-container {
-                            position: absolute !important;
-                            top: 50% !important;
-                            left: 50% !important;
-                            /* 
-                               Rotate -90 degrees so landscape cert fits on portrait paper.
-                               Scale 0.95 to ensure margins.
-                            */
-                            transform: translate(-50%, -50%) rotate(-90deg) scale(0.95) !important;
-                            transform-origin: center center !important;
+                            position: relative !important;
+                            top: 0 !important;
+                            left: 0 !important;
+                            transform: scale(0.7) !important;
+                             /* Center horizontally */
+                            transform-origin: top left !important;
+                             left: 50% !important;
+                            margin-left: -392px !important; /* 785px width / 2 approx */
                         }
                     }
 
                     /* LANDSCAPE: Full size beauty */
                     @media print and (orientation: landscape) {
+                        @page { size: landscape; }
                         #certificate-container {
                             transform: scale(0.98) !important;
+                            transform-origin: top left !important;
+                            left: 0 !important;
+                            margin-left: 0 !important;
                         }
                     }
 

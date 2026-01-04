@@ -342,25 +342,39 @@ export default function CertificatePage() {
                         transform-origin: center center !important;
                     }
                     
-                    /* PORTRAIT (Mobile Default): ROTATE to fill page! */
+                    /* PORTRAIT (Mobile Default): Revert to standard fit-width */
                     @media print and (orientation: portrait) {
+                        @page {
+                            size: portrait;
+                            margin: 10mm;
+                        }
+                        
+                        /* 
+                           Strategy: Fit 1122px into ~794px width.
+                           Factor = 0.70
+                           We use 0.7 to maximize size without clipping.
+                        */
                         #certificate-container {
-                            position: absolute !important;
-                            top: 50% !important;
+                            position: relative !important;
+                            top: 0 !important;
+                            left: 0 !important;
+                            transform: scale(0.7) !important;
+                            /* Center horizontally */
+                            margin-left: -168px !important; /* (1122 * 0.7 = 785). (1122-794)/2 ?? No, simpler to just start left */
+                            transform-origin: top left !important;
                             left: 50% !important;
-                            /* 
-                               Rotate -90 degrees so landscape cert fits on portrait paper.
-                               Scale 0.95 to ensure margins.
-                            */
-                            transform: translate(-50%, -50%) rotate(-90deg) scale(0.95) !important;
-                            transform-origin: center center !important;
+                            margin-left: -392px !important; /* 785px / 2 = 392.5px */
                         }
                     }
 
                     /* LANDSCAPE: Full size beauty */
                     @media print and (orientation: landscape) {
+                         @page { size: landscape; }
                         #certificate-container {
                             transform: scale(0.98) !important;
+                             transform-origin: top left !important;
+                             left: 0 !important;
+                             margin-left: 0 !important;
                         }
                     }
 
