@@ -342,24 +342,31 @@ export default function CertificatePage() {
                         transform-origin: center center !important;
                     }
                     
-                    /* PORTRAIT (Mobile Default): ROTATE for MAXIMUM SIZE */
+                    /* PORTRAIT (Mobile Default): Revert to standard fit-width */
+                    /* User requested: "rotated nhi karo" (Don't rotate) */
                     @media print and (orientation: portrait) {
                         @page {
                             size: portrait;
-                            margin: 0; /* Critical: Remove browser margins to prevent clipping */
+                            margin: 0; 
                         }
                         
                         #certificate-container {
-                            position: absolute !important;
-                            top: 50% !important;
-                            left: 50% !important;
+                            position: relative !important;
+                            top: 0 !important;
+                            left: 0 !important;
+                            
                             /* 
-                               Rotate -90 deg to use full paper height as width.
-                               Scale 0.9 to be safe (bigger than 0.7, safe from clipping).
+                               MAXIMUM WIDTH FIT:
+                               Landscape (1122px) -> Portrait (794px).
+                               Scale = 0.7 (approx).
+                               This is the biggest it can be without rotation.
                             */
-                            transform: translate(-50%, -50%) rotate(-90deg) scale(0.9) !important;
-                            transform-origin: center center !important;
-                            margin: 0 !important;
+                            transform: scale(0.7) !important;
+                            transform-origin: top left !important;
+                            left: 50% !important;
+                            margin-left: -392px !important; /* Center it: 1122 * 0.7 / 2 approx */
+                            
+                            margin-top: 20px; /* Give it a little breathing room from top */
                         }
                     }
 
