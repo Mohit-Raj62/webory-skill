@@ -15,6 +15,10 @@ export async function GET(
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 
+    // Increment Views
+    course.views = (course.views || 0) + 1;
+    await course.save();
+
     // Migration logic: Convert old courses with flat videos to module structure
     if (
       course.videos &&

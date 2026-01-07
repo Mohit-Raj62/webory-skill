@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Edit, Trash2, Search, Video, ClipboardList, FileText } from "lucide-react";
+import { Plus, Edit, Trash2, Search, Video, ClipboardList, FileText, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -14,6 +14,7 @@ interface Course {
     studentsCount: string;
     videos: any[];
     createdAt: string;
+    isPopular?: boolean;
 }
 
 export default function CoursesAdminPage() {
@@ -56,6 +57,37 @@ export default function CoursesAdminPage() {
         } catch (error) {
             console.error("Delete error:", error);
             alert("Failed to delete course");
+        }
+    };
+
+    const handleTogglePopular = async (course: Course) => {
+        try {
+            const newStatus = !course.isPopular;
+            // Optimistic update
+            setCourses(courses.map(c => 
+                c._id === course._id ? { ...c, isPopular: newStatus } : c
+            ));
+
+            const res = await fetch(`/api/admin/courses/${course._id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ isPopular: newStatus }),
+            });
+
+            if (!res.ok) {
+                // Revert on failure
+                setCourses(courses.map(c => 
+                    c._id === course._id ? { ...c, isPopular: course.isPopular } : c
+                ));
+                alert("Failed to update popular status");
+            }
+        } catch (error) {
+            console.error("Update popular status error:", error);
+            // Revert on failure
+            setCourses(courses.map(c => 
+                c._id === course._id ? { ...c, isPopular: course.isPopular } : c
+            ));
+            alert("Failed to update popular status");
         }
     };
 
@@ -128,6 +160,13 @@ export default function CoursesAdminPage() {
                         <div className="flex items-start justify-between mb-4">
                             <h3 className="text-xl font-bold text-white">{course.title}</h3>
                             <div className="flex gap-2">
+                                <button
+                                    onClick={() => handleTogglePopular(course)}
+                                    className={`p-2 rounded-lg transition-colors ${course.isPopular ? "text-yellow-400 hover:bg-yellow-400/10" : "text-gray-400 hover:bg-gray-500/10"}`}
+                                    title={course.isPopular ? "Remove from Popular" : "Mark as Popular"}
+                                >
+                                    <Star size={18} fill={course.isPopular ? "currentColor" : "none"} />
+                                </button>
                                 <Link href={`/admin/courses/${course._id}/edit`}>
                                     <button className="p-2 hover:bg-blue-500/10 rounded-lg transition-colors text-blue-400">
                                         <Edit size={18} />

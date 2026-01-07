@@ -3,6 +3,7 @@ import dbConnect from "@/lib/db";
 import Course from "@/models/Course";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
+import { logActivity } from "@/lib/logger";
 
 // GET - Fetch all courses (for dropdowns/lists)
 export async function GET(req: Request) {
@@ -53,6 +54,15 @@ export async function POST(req: Request) {
 
     const data = await req.json();
     const course = await Course.create(data);
+
+    // Filter sensitive or too large data for logging
+    const { _id, title } = course;
+    await logActivity(
+      decoded.userId || decoded.id,
+      "CREATE_COURSE",
+      `Created course: ${title} (${_id})`,
+      req.headers.get("x-forwarded-for") || "unknown"
+    );
 
     return NextResponse.json({ course }, { status: 201 });
   } catch (error) {

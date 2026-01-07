@@ -618,6 +618,8 @@ export default function EditCoursePage() {
                         />
                     </div>
 
+
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
                             <label className="text-sm text-gray-300 block mb-2">Price (₹) *</label>
@@ -658,6 +660,19 @@ export default function EditCoursePage() {
                                     ? `Discounted: ₹${Math.round(formData.originalPrice * (1 - formData.discountPercentage / 100))}`
                                     : "Enter discount percentage"}
                             </p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                         <div>
+                            <label className="text-sm text-gray-300 block mb-2">Students Count</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. 10k+, 250"
+                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                value={formData.studentsCount}
+                                onChange={(e) => setFormData({ ...formData, studentsCount: e.target.value })}
+                            />
                         </div>
                     </div>
 

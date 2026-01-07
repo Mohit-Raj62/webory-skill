@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { ArrowRight, Code, Rocket, Users } from "lucide-react";
+import { ArrowRight, Code, Rocket, Users, BookOpen } from "lucide-react";
 import { useAuth } from "@/components/auth/session-provider";
 import dynamic from "next/dynamic";
 
@@ -18,6 +18,8 @@ const BackgroundCodeAnimation = dynamic(() => import("@/components/ui/background
 
 interface HeroProps {
     initialUserCount?: number;
+    initialInternshipCount?: number;
+    initialCourseCount?: number;
 }
 
 // Shatter/Explosion Effect Component
@@ -112,20 +114,17 @@ function ShatterCard({ icon: Icon, label, value, index }: { icon: any, label: st
                 <p className="text-gray-400 font-medium text-sm">{label}</p>
             </motion.div>
 
-            {/* Re-assemble Hint */}
-            <motion.div
-                 className="absolute -bottom-8 left-0 right-0 text-center text-xs text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity delay-300"
-            >
-                Restore
-            </motion.div>
+
         </motion.div>
     );
 }
 
-export function Hero({ initialUserCount = 10 }: HeroProps) {
+export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initialCourseCount = 5 }: HeroProps) {
     const { user } = useAuth();
     const isLoggedIn = !!user;
     const activeStudents = initialUserCount > 0 ? `${initialUserCount}+` : "10+";
+    const launchedInternships = initialInternshipCount > 0 ? `${initialInternshipCount}+` : "12+";
+    const availableCourses = initialCourseCount > 0 ? `${initialCourseCount}+` : "5+";
 
     return (
         <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
@@ -197,12 +196,13 @@ export function Hero({ initialUserCount = 10 }: HeroProps) {
                         initial={{ opacity: 0, y: 40 }}
                         animate={{ opacity: 2, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.2 }}
-                        className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8"
+                        className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8"
                     >
                         {[
                             { icon: Users, label: "Active Students", value: activeStudents },
+                            { icon: BookOpen, label: "Courses Available", value: availableCourses },
                             { icon: Code, label: "Projects Completed", value: "50+" },
-                            { icon: Rocket, label: "Internships Launched", value: "12+" },
+                            { icon: Rocket, label: "Internships Launched", value: launchedInternships },
                         ].map((stat, index) => (
                             <ShatterCard key={index} {...stat} index={index} />
                         ))}

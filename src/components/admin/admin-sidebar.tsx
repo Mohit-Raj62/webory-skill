@@ -19,6 +19,7 @@ import {
     Settings,
     CreditCard,
     Award,
+    Database,
 } from "lucide-react";
 
 const menuItems = [
@@ -39,6 +40,7 @@ const menuItems = [
     { name: "Settings", href: "/admin/settings", icon: Settings },
     { name: "Careers (Jobs)", href: "/admin/careers/jobs", icon: Briefcase },
     { name: "Job Applications", href: "/admin/careers/applications", icon: FileText },
+    { name: "Maintenance", href: "/admin/maintenance", icon: Database },
 ];
 
 interface AdminSidebarProps {

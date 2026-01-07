@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ClipboardList, FileText, GraduationCap, Users, BookOpen, Briefcase, Star, Award, Shield } from "lucide-react";
 import Link from "next/link";
 
@@ -196,6 +196,102 @@ export default function AdminDashboard() {
                     </div>
                 </div>
             </div>
+            
+            {/* Analytics Preview */}
+            <AnalyticsPreview />
+        </div>
+    );
+}
+
+function AnalyticsPreview() {
+    const [stats, setStats] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetch('/api/admin/stats')
+            .then(res => res.json())
+            .then(data => setStats(data))
+            .catch(err => console.error(err))
+            .finally(() => setLoading(false));
+    }, []);
+
+    if (loading) return <div className="glass-card p-6 h-40 animate-pulse rounded-2xl"></div>;
+    if (!stats) return null;
+
+    return (
+        <div className="glass-card p-8 rounded-2xl mb-8">
+            <h2 className="text-2xl font-bold text-white mb-6">📈 Most Popular Courses</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Popular Courses */}
+                 <div className="space-y-4">
+                    <h3 className="text-xl font-semibold text-white mb-4">🔥 Popular Courses</h3>
+                    {stats.topCourses?.map((course: any, index: number) => (
+                        <div key={course._id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10 hover:border-blue-500/30 transition-all">
+                            <div className="flex items-center gap-4">
+                                <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${index === 0 ? 'bg-yellow-500 text-black' : 'bg-gray-700 text-white'}`}>
+                                    {index + 1}
+                                </span>
+                                <div>
+                                    <h4 className="font-semibold text-white">{course.title}</h4>
+                                    <p className="text-xs text-gray-400">ID: {course._id}</p>
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <div className="text-xl font-bold text-blue-400">{course.views || 0}</div>
+                                <div className="text-xs text-gray-500">Views</div>
+                            </div>
+                        </div>
+                    ))}
+                    {(!stats.topCourses || stats.topCourses.length === 0) && (
+                         <div className="text-center py-6 text-gray-400">No views recorded yet.</div>
+                    )}
+                 </div>
+
+                 {/* Top Learners */}
+                 <div className="space-y-4">
+                    <h3 className="text-xl font-semibold text-white mb-4">🎓 Top Learners</h3>
+                    {stats.topLearners?.map((user: any, index: number) => (
+                        <div key={user._id} className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10 hover:border-purple-500/30 transition-all">
+                            <div className="flex items-center gap-4">
+                                <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${index === 0 ? 'bg-yellow-500 text-black' : 'bg-gray-700 text-white'}`}>
+                                    {index + 1}
+                                </span>
+                                <div>
+                                    <h4 className="font-semibold text-white">{user.firstName} {user.lastName}</h4>
+                                    <p className="text-xs text-gray-400">{user.email}</p>
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <div className="text-xl font-bold text-purple-400">{user.coursesCount}</div>
+                                <div className="text-xs text-gray-500">Courses</div>
+                            </div>
+                        </div>
+                    ))}
+                    {(!stats.topLearners || stats.topLearners.length === 0) && (
+                         <div className="text-center py-6 text-gray-400">No student activity yet.</div>
+                    )}
+                 </div>
+            </div>
+
+             {/* Key Stats Summary */}
+             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+                <div className="bg-blue-500/10 p-4 rounded-xl border border-blue-500/20 text-center">
+                    <div className="text-3xl font-bold text-blue-400 mb-1">{stats.totalUsers || 0}</div>
+                    <div className="text-sm text-gray-400">Total Users</div>
+                </div>
+                <div className="bg-green-500/10 p-4 rounded-xl border border-green-500/20 text-center">
+                    <div className="text-3xl font-bold text-green-400 mb-1">₹{stats.revenue?.toLocaleString() || 0}</div>
+                    <div className="text-sm text-gray-400">Total Revenue</div>
+                </div>
+                <div className="bg-purple-500/10 p-4 rounded-xl border border-purple-500/20 text-center">
+                     <div className="text-3xl font-bold text-purple-400 mb-1">{stats.recentEnrollments || 0}</div>
+                     <div className="text-sm text-gray-400">Recent Enrollments</div>
+                </div>
+                 <div className="bg-orange-500/10 p-4 rounded-xl border border-orange-500/20 text-center">
+                     <div className="text-3xl font-bold text-orange-400 mb-1">{stats.totalApplications || 0}</div>
+                     <div className="text-sm text-gray-400">Applications</div>
+                </div>
+             </div>
         </div>
     );
 }

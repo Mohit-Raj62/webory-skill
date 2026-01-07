@@ -3,40 +3,66 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Code2, Database, Globe, Palette } from "lucide-react";
+import { ArrowRight, Code2, Database, Globe, Palette, BookOpen } from "lucide-react";
 
-const courses = [
+interface PopularCourse {
+    _id: string;
+    title: string;
+    level: string;
+    studentsCount: string;
+    color: string;
+    icon?: string; // Icon name string if coming from DB, or component hardcoded
+}
+
+interface CoursesPreviewProps {
+    popularCourses?: any[]; // Using any[] for now to map DB fields to UI
+}
+
+// Fallback data if no popular courses found
+const fallbackCourses = [
     {
         title: "Full Stack Development",
         icon: Globe,
         level: "Advanced",
-        students: "10+",
+        studentsCount: "10+",
         color: "from-blue-500 to-cyan-500",
     },
     {
         title: "UI/UX Design",
         icon: Palette,
         level: "Intermediate",
-        students: "10+",
+        studentsCount: "10+",
         color: "from-purple-500 to-pink-500",
     },
     {
         title: "Backend Architecture",
         icon: Database,
         level: "Advanced",
-        students: "10+",
+        studentsCount: "10+",
         color: "from-orange-500 to-red-500",
     },
     {
         title: "Frontend Mastery",
         icon: Code2,
         level: "Beginner",
-        students: "10+",
+        studentsCount: "10+",
         color: "from-green-500 to-emerald-500",
     },
 ];
 
-export function CoursesPreview() {
+const getIcon = (iconName: string) => {
+    switch(iconName) {
+        case "Code2": return Code2;
+        case "Database": return Database;
+        case "Palette": return Palette;
+        case "Globe": return Globe;
+        default: return BookOpen;
+    }
+};
+
+export function CoursesPreview({ popularCourses = [] }: CoursesPreviewProps) {
+    const displayCourses = popularCourses.length > 0 ? popularCourses : fallbackCourses;
+
     return (
         <section id="courses" className="py-20 bg-black/20">
             <div className="container mx-auto px-4">
@@ -53,7 +79,10 @@ export function CoursesPreview() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {courses.map((course, index) => (
+                    {displayCourses.map((course, index) => {
+                         const Icon = course.icon && typeof course.icon === 'string' ? getIcon(course.icon) : (course.icon || BookOpen);
+                         
+                        return (
                         <motion.div
                             key={index}
                             initial={{ opacity: 0, y: 20 }}
@@ -63,15 +92,15 @@ export function CoursesPreview() {
                             className="glass-card p-6 rounded-2xl group cursor-pointer"
                         >
                             <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${course.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
-                                <course.icon className="text-white" size={24} />
+                                <Icon className="text-white" size={24} />
                             </div>
                             <h3 className="text-xl font-bold text-white mb-2">{course.title}</h3>
                             <div className="flex justify-between items-center text-sm text-gray-400 mt-4">
                                 <span>{course.level}</span>
-                                <span>{course.students} Students</span>
+                                <span>{course.studentsCount || course.students} Students</span>
                             </div>
                         </motion.div>
-                    ))}
+                    )})}
                 </div>
 
                 <div className="mt-8 text-center md:hidden">

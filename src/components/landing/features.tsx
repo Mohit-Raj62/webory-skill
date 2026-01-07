@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { BookOpen, Briefcase, LayoutDashboard, ShieldCheck, Trophy, Zap, HeartHandshake ,  BriefcaseBusiness,FileUser } from "lucide-react";
+import { BookOpen, Briefcase, LayoutDashboard, ShieldCheck, Trophy, Zap, HeartHandshake ,  BriefcaseBusiness,FileUser, Users } from "lucide-react";
 
 const features = [
     {
@@ -22,6 +22,11 @@ const features = [
                 // icon: ,
                 title: "Expert Guidance",
                 description: "Get step by step support from industry experts to help you learn, grow, and complete your tasks with confidence.",
+            },
+             {
+                icon: Users,
+                title: "Community Access",
+                description: "Join a thriving community of peers to collaborate, share inputs and grow together.",
             },
             // {
             //     icon: BriefcaseBusiness,

@@ -177,6 +177,14 @@ const CourseSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  isPopular: {
+    type: Boolean,
+    default: false,
+  },
+  views: {
+    type: Number,
+    default: 0,
+  },
 });
 
 // Force Schema Recompile
