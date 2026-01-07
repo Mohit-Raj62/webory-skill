@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   try {
     const formData = await req.formData();
     const params: any = {};
-    formData.forEach((value, key) => {
+    (formData as any).forEach((value: any, key: string) => {
       params[key] = value;
     });
 

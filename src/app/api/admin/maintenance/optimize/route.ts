@@ -44,6 +44,9 @@ export async function POST(req: Request) {
     }
 
     // 3. Connection Health & Latency
+    if (!mongoose.connection.db) {
+      throw new Error("Database connection not established");
+    }
     const adminDb = mongoose.connection.db.admin();
     let pingTime: number | string = -1;
     let serverStatus: any = {};

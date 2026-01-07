@@ -53,7 +53,7 @@ export async function POST(req: Request) {
     }
 
     const data = await req.json();
-    const course = await Course.create(data);
+    const course = (await Course.create(data)) as any;
 
     // Filter sensitive or too large data for logging
     const { _id, title } = course;
