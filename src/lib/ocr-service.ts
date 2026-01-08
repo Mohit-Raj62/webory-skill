@@ -13,8 +13,64 @@ export interface ExtractedCertificateData {
 }
 
 /**
+ * Extract text from PDF buffer
+ */
+export async function extractTextFromPDF(pdfBuffer: Buffer): Promise<string> {
+  try {
+    console.log("[OCR Service] Parsing PDF...");
+
+    // Polyfill DOMMatrix for newer pdfjs-dist versions in Node.js
+    if (!global.DOMMatrix) {
+      // @ts-ignore
+      global.DOMMatrix = class DOMMatrix {
+        a = 1;
+        b = 0;
+        c = 0;
+        d = 1;
+        e = 0;
+        f = 0;
+        constructor() {}
+      };
+    }
+
+    // @ts-ignore
+    const pdfLib = require("pdf-parse"); // Revert to standard package import
+
+    // Robustly find the function whether it's CJS, ESM, or nested default
+    let pdf = pdfLib;
+    if (typeof pdf !== "function") {
+      if (pdfLib.default) pdf = pdfLib.default;
+      if (typeof pdf !== "function" && pdf && pdf.default) pdf = pdf.default;
+    }
+
+    if (typeof pdf !== "function") {
+      const debugInfo = {
+        type: typeof pdfLib,
+        keys: Object.keys(pdfLib),
+        isDefaultFn: pdfLib.default ? typeof pdfLib.default : "undefined",
+      };
+      console.error("[OCR Service] Debug:", debugInfo);
+      throw new Error(
+        `pdf-parse import failed. Lib keys: ${JSON.stringify(
+          Object.keys(pdfLib)
+        )}`
+      );
+    }
+
+    const data = await pdf(pdfBuffer);
+    console.log("[OCR Service] PDF Parsed. Text length:", data.text.length);
+    return data.text;
+  } catch (error) {
+    console.error("PDF extraction error:", error);
+    throw new Error(
+      "Failed to extract text from PDF: " +
+        (error instanceof Error ? error.message : String(error))
+    );
+  }
+}
+
+/**
  * Extract text from certificate image using OCR
- * Note: PDF support removed due to server-side compatibility issues
  */
 export async function extractTextFromImage(
   imageBuffer: Buffer | string
@@ -30,13 +86,35 @@ export async function extractTextFromImage(
   });
 
   try {
+    // Optimization: Pre-process image with sharp if it's a buffer
+    let processedBuffer = imageBuffer;
+    if (Buffer.isBuffer(imageBuffer)) {
+      try {
+        console.log("[OCR Service] Optimizing image with Sharp...");
+        const sharp = require("sharp");
+        processedBuffer = await sharp(imageBuffer)
+          .resize(1800, 1800, { fit: "inside", withoutEnlargement: true }) // Limit size
+          .grayscale() // Enhance text contrast
+          .normalize() // Improve brightness/contrast
+          .toBuffer();
+        console.log("[OCR Service] Image optimized successfully.");
+      } catch (sharpError) {
+        console.error(
+          "[OCR Service] Sharp optimization failed/skipped:",
+          sharpError
+        );
+        // Fallback to original buffer
+        processedBuffer = imageBuffer;
+      }
+    }
+
     console.log("[OCR Service] Creating Tesseract worker...");
     worker = await createWorker("eng");
 
     console.log("[OCR Service] Worker created. Recognizing text...");
 
     // Race between recognition and timeout
-    const recognizePromise = worker.recognize(imageBuffer);
+    const recognizePromise = worker.recognize(processedBuffer);
     const result: any = await Promise.race([recognizePromise, timeoutPromise]);
 
     const { data } = result;
@@ -57,7 +135,6 @@ export async function extractTextFromImage(
         console.error("Failed to terminate worker:", e);
       }
     }
-    // Return empty string instead of crashing, or rethrow meaningful error
     throw new Error(
       "Failed to extract text: " +
         (error instanceof Error ? error.message : String(error))

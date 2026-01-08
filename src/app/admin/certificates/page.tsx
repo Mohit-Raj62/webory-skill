@@ -35,11 +35,8 @@ export default function UnifiedCertificateManagementPage() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const scannerRef = useRef<Html5QrcodeScanner | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const ocrFileInputRef = useRef<HTMLInputElement>(null);
 
-  // OCR States
-  const [ocrProcessing, setOcrProcessing] = useState(false);
-  const [ocrResult, setOcrResult] = useState<any>(null);
+
 
   // Generator States
   const [studentName, setStudentName] = useState("");
@@ -158,11 +155,9 @@ export default function UnifiedCertificateManagementPage() {
     toast.info("Processing file...");
 
     try {
-      // Handle PDF files - redirect to OCR
+      // Handle PDF files - disabled
       if (file.type === 'application/pdf') {
-        toast.info("📄 PDF detected! Scroll down to use '🤖 Smart OCR Verification' for PDFs.", {
-          duration: 5000,
-        });
+        toast.error("PDF upload is currently disabled.");
         return;
       }
 
@@ -214,61 +209,7 @@ export default function UnifiedCertificateManagementPage() {
     }
   };
 
-  // OCR Upload Handler
-  const handleOcrUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
 
-    setOcrProcessing(true);
-    setOcrResult(null);
-    toast.info("Extracting certificate data using OCR...");
-
-    try {
-      const formData = new FormData();
-      formData.append('certificate', file);
-
-      // Create a timeout signal
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s timeout
-
-      const res = await fetch('/api/verify-certificate/ocr', {
-        method: 'POST',
-        body: formData,
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      // Handle abort error specifically or generic errors
-      if (!res.ok) {
-        throw new Error(`Server responded with ${res.status}`);
-      }
-
-      const data = await res.json();
-      
-      setOcrResult(data);
-        
-        if (data.verdict === 'AUTHENTIC') {
-          toast.success("Certificate is authentic!");
-        } else if (data.verdict === 'SUSPICIOUS') {
-          toast.error("Suspicious certificate detected!");
-        } else if (data.verdict === 'INVALID') {
-          toast.error("Certificate not found in database!");
-        } else {
-          toast.warning("Certificate ID could not be extracted");
-        }
-
-    } catch (error: any) {
-      if (error.name === 'AbortError') {
-         toast.error("OCR Request timed out. Please try a smaller image or clearer text.");
-      } else {
-         toast.error("Failed to process certificate. " + (error.message || ""));
-      }
-      console.error(error);
-    } finally {
-      setOcrProcessing(false);
-    }
-  };
 
 
   // Generator Functions
@@ -422,7 +363,7 @@ export default function UnifiedCertificateManagementPage() {
       </div>
 
       {/* Tab Content */}
-      <div className="glass-card p-6 rounded-2xl">
+      <div className="glass-card p-4 md:p-6 rounded-2xl">
         {/* Verify Tab */}
         {activeTab === 'verify' && (
           <div className="space-y-6">
@@ -433,7 +374,7 @@ export default function UnifiedCertificateManagementPage() {
               <label className="block text-sm font-semibold text-white mb-3">
                 Enter Certificate ID
               </label>
-              <div className="flex gap-3">
+              <div className="flex flex-col md:flex-row gap-3">
                 <div className="flex-1 relative">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                   <input
@@ -448,7 +389,7 @@ export default function UnifiedCertificateManagementPage() {
                 <Button
                   onClick={() => verifyCertificate(certificateId)}
                   disabled={verifying || !certificateId.trim()}
-                  className="bg-blue-600 hover:bg-blue-700 px-6"
+                  className="bg-blue-600 hover:bg-blue-700 px-6 py-3 w-full md:w-auto"
                 >
                   {verifying ? <Loader2 className="animate-spin" size={20} /> : "Verify"}
                 </Button>
@@ -465,7 +406,7 @@ export default function UnifiedCertificateManagementPage() {
                   <Button
                     onClick={startScanner}
                     variant="outline"
-                    className="w-full border-blue-400/30 bg-blue-500/10 text-blue-300 hover:bg-blue-500/20 py-8 flex flex-col gap-2 h-auto"
+                    className="w-full border-blue-400/30 bg-blue-500/10 text-blue-300 hover:bg-blue-500/20 py-6 md:py-8 flex flex-col gap-2 h-auto"
                   >
                     <Camera className="mb-1" size={32} />
                     <span>Start QR Scanner</span>
@@ -492,14 +433,14 @@ export default function UnifiedCertificateManagementPage() {
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept="image/*,application/pdf"
+                  accept="image/*"
                   onChange={handleImageUpload}
                   className="hidden"
                 />
                 <Button
                   onClick={() => fileInputRef.current?.click()}
                   variant="outline"
-                  className="w-full border-purple-400/30 bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 py-8 flex flex-col gap-2 h-auto"
+                  className="w-full border-purple-400/30 bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 py-6 md:py-8 flex flex-col gap-2 h-auto"
                 >
                   <Upload className="mb-1" size={32} />
                   <span>Upload Certificate</span>
@@ -525,7 +466,7 @@ export default function UnifiedCertificateManagementPage() {
 
             {/* Verification Result */}
             {result && (
-              <div className={`p-6 rounded-xl border-2 animate-in fade-in ${
+              <div className={`p-4 md:p-6 rounded-xl border-2 animate-in fade-in ${
                 result.valid ? 'bg-green-500/10 border-green-500' : 'bg-red-500/10 border-red-500'
               }`}>
                 <div className="flex items-start gap-4">
@@ -538,7 +479,7 @@ export default function UnifiedCertificateManagementPage() {
                   </div>
 
                   <div className="flex-1">
-                    <h3 className={`text-2xl font-bold mb-2 ${result.valid ? 'text-green-400' : 'text-red-400'}`}>
+                    <h3 className={`text-xl md:text-2xl font-bold mb-2 ${result.valid ? 'text-green-400' : 'text-red-400'}`}>
                       {result.valid ? "✅ Valid Certificate" : "❌ Invalid Certificate"}
                     </h3>
 
@@ -592,114 +533,7 @@ export default function UnifiedCertificateManagementPage() {
               </div>
             )}
 
-            {/* OCR Verification Section */}
-            <div className="mt-8 pt-8 border-t border-white/10" data-ocr-section>
-              <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                <span>🤖</span> Smart OCR Verification
-              </h3>
-              <p className="text-gray-400 mb-4 text-sm">
-                Upload a certificate <strong>image</strong> (PNG, JPG) to verify using AI text extraction and tampering detection.
-                <br />
-                <span className="text-yellow-400">📄 For PDF certificates, please use QR Code verification instead.</span>
-              </p>
-              
-              <div className="bg-purple-500/10 border border-purple-500/30 rounded-xl p-6">
-                <input
-                  ref={ocrFileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleOcrUpload}
-                  className="hidden"
-                />
-                <Button
-                  onClick={() => ocrFileInputRef.current?.click()}
-                  disabled={ocrProcessing}
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 py-6 mb-6"
-                >
-                  {ocrProcessing ? (
-                    <>
-                      <Loader2 className="mr-2 animate-spin" />
-                      Processing Certificate...
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="mr-2" />
-                      Upload for Smart Verification
-                    </>
-                  )}
-                </Button>
 
-                {ocrResult && (
-                  <div className={`p-4 rounded-lg border-2 ${
-                    ocrResult.verdict === 'AUTHENTIC' ? 'bg-green-500/10 border-green-500/50' :
-                    ocrResult.verdict === 'SUSPICIOUS' ? 'bg-yellow-500/10 border-yellow-500/50' :
-                    'bg-red-500/10 border-red-500/50'
-                  }`}>
-                    <h4 className={`text-lg font-bold mb-3 ${
-                      ocrResult.verdict === 'AUTHENTIC' ? 'text-green-400' :
-                      ocrResult.verdict === 'SUSPICIOUS' ? 'text-yellow-400' :
-                      'text-red-400'
-                    }`}>
-                      {ocrResult.verdict === 'AUTHENTIC' && '✅ Certificate is AUTHENTIC'}
-                      {ocrResult.verdict === 'SUSPICIOUS' && '⚠️ Certificate is SUSPICIOUS'}
-                      {ocrResult.verdict === 'INVALID' && '❌ Certificate is INVALID'}
-                      {ocrResult.verdict === 'UNKNOWN' && '❓ Could not verify'}
-                    </h4>
-                    
-                    <p className="text-white/80 mb-4">{ocrResult.message}</p>
-
-                    {/* Manipulation Check Results */}
-                    {ocrResult.manipulationCheck && (
-                      <div className="mb-4 bg-black/20 p-3 rounded border border-white/10">
-                        <h5 className="font-semibold text-white mb-2 text-sm">Tampering Analysis</h5>
-                        {ocrResult.manipulationCheck.isManipulated ? (
-                          <div className="text-red-300 text-sm">
-                            <p className="font-bold">⚠️ Potential Manipulation Detected:</p>
-                            <ul className="list-disc pl-4 mt-1">
-                              {ocrResult.manipulationCheck.issues.map((issue: string, i: number) => (
-                                <li key={i}>{issue}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        ) : (
-                          <p className="text-green-300 text-sm">✓ No photo manipulation detected</p>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Extracted Data */}
-                    {ocrResult.extractedData && (
-                      <div className="bg-black/20 p-3 rounded border border-white/10 text-sm">
-                        <h5 className="font-semibold text-white mb-2">Extracted Data</h5>
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="text-gray-400">Name:</div>
-                          <div className="text-white">{ocrResult.extractedData.studentName || 'N/A'}</div>
-                          <div className="text-gray-400">ID:</div>
-                          <div className="text-white">{ocrResult.extractedData.certificateId || 'N/A'}</div>
-                          <div className="text-gray-400">Course:</div>
-                          <div className="text-white">{ocrResult.extractedData.courseName || 'N/A'}</div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Raw Text Debugging (Visible when ID not found or suspicious) */}
-                    {(ocrResult.verdict === "UNKNOWN" || ocrResult.verdict === "SUSPICIOUS") && ocrResult.extractedData?.rawText && (
-                      <div className="mt-4">
-                        <details className="group">
-                          <summary className="flex items-center justify-between cursor-pointer p-2 bg-gray-100 rounded-md text-xs font-medium text-gray-600 hover:bg-gray-200 transition-colors">
-                            <span>Show Raw Extracted Text (Debug)</span>
-                            <ChevronDown className="w-4 h-4 transition-transform group-open:rotate-180" />
-                          </summary>
-                          <div className="mt-2 p-3 bg-gray-900 text-gray-100 rounded-md text-xs font-mono whitespace-pre-wrap max-h-60 overflow-y-auto border border-gray-700">
-                            {ocrResult.extractedData.rawText}
-                          </div>
-                        </details>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
           </div>
         )}
 
@@ -790,29 +624,29 @@ export default function UnifiedCertificateManagementPage() {
               </div>
 
               {certificate ? (
-                <div className="border-2 border-purple-500 rounded-lg p-6 bg-gradient-to-br from-purple-900/20 to-pink-900/20">
-                  <div className="text-center space-y-4">
-                    <div className="flex items-center justify-center gap-3 mb-4">
-                      <Award className="text-purple-400" size={40} />
-                      <div>
-                        <h3 className="text-2xl font-bold text-white">Webory Skills</h3>
-                        <p className="text-xs text-purple-300 uppercase tracking-wider">Certificate of Achievement</p>
+                  <div className="border-2 border-purple-500 rounded-lg p-4 md:p-6 bg-gradient-to-br from-purple-900/20 to-pink-900/20">
+                    <div className="text-center space-y-4">
+                      <div className="flex items-center justify-center gap-3 mb-4">
+                        <Award className="text-purple-400" size={32} />
+                        <div>
+                          <h3 className="text-xl md:text-2xl font-bold text-white">Webory Skills</h3>
+                          <p className="text-[10px] md:text-xs text-purple-300 uppercase tracking-wider">Certificate of Achievement</p>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="border-t border-b border-purple-400/30 py-4">
-                      <p className="text-sm text-gray-300 mb-2">This is to certify that</p>
-                      <h4 className="text-3xl font-bold text-white mb-2">{certificate.studentName}</h4>
-                      <p className="text-sm text-gray-300 mb-2">has successfully completed</p>
-                      <h5 className="text-xl font-semibold text-purple-200">{certificate.title}</h5>
-                      {certificate.description && (
-                        <p className="text-sm text-gray-400 mt-3 max-w-md mx-auto">{certificate.description}</p>
-                      )}
-                    </div>
+                      <div className="border-t border-b border-purple-400/30 py-4">
+                        <p className="text-xs md:text-sm text-gray-300 mb-2">This is to certify that</p>
+                        <h4 className="text-2xl md:text-3xl font-bold text-white mb-2 break-words">{certificate.studentName}</h4>
+                        <p className="text-xs md:text-sm text-gray-300 mb-2">has successfully completed</p>
+                        <h5 className="text-lg md:text-xl font-semibold text-purple-200 break-words">{certificate.title}</h5>
+                        {certificate.description && (
+                          <p className="text-xs md:text-sm text-gray-400 mt-3 max-w-md mx-auto">{certificate.description}</p>
+                        )}
+                      </div>
 
                     <div className="flex justify-between items-end mt-6">
                       <div className="text-left">
-                        <p className="text-sm font-semibold text-white">
+                        <p className="text-xs md:text-sm font-semibold text-white">
                           {new Date(certificate.date).toLocaleDateString('en-IN', {
                             year: 'numeric',
                             month: 'long',
@@ -840,8 +674,8 @@ export default function UnifiedCertificateManagementPage() {
                       </div>
 
                       <div className="text-right">
-                        <div className="text-2xl text-purple-300 mb-1" style={{fontFamily: 'cursive'}}>Webory Team</div>
-                        <div className="border-t border-gray-400 w-32 mb-1"></div>
+                        <div className="text-xl md:text-2xl text-purple-300 mb-1" style={{fontFamily: 'cursive'}}>Webory Team</div>
+                        <div className="border-t border-gray-400 w-24 md:w-32 mb-1"></div>
                         <p className="text-xs text-gray-400">Authorized Signature</p>
                       </div>
                     </div>
@@ -867,7 +701,7 @@ export default function UnifiedCertificateManagementPage() {
               Search for a student by email to manually issue certificates for their enrollments or internships.
             </p>
 
-            <form onSubmit={handleSearchUser} className="flex gap-4 mb-8">
+            <form onSubmit={handleSearchUser} className="flex flex-col md:flex-row gap-4 mb-8">
               <div className="flex-1 relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                 <input 
@@ -879,7 +713,7 @@ export default function UnifiedCertificateManagementPage() {
                   required
                 />
               </div>
-              <Button type="submit" disabled={searching} className="bg-green-600 hover:bg-green-700 px-6">
+              <Button type="submit" disabled={searching} className="bg-green-600 hover:bg-green-700 px-6 py-3 w-full md:w-auto">
                 {searching ? <Loader2 className="animate-spin" /> : "Search"}
               </Button>
             </form>
@@ -898,7 +732,7 @@ export default function UnifiedCertificateManagementPage() {
                   ) : (
                     <div className="space-y-3">
                       {[...userData.enrollments, ...userData.internships].map((item: any) => (
-                        <div key={item.id} className="flex items-center justify-between p-4 border border-white/20 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
+                        <div key={item.id} className="flex flex-col md:flex-row md:items-center justify-between p-4 border border-white/20 rounded-lg bg-white/5 hover:bg-white/10 transition-colors gap-4">
                           <div>
                             <div className="flex items-center gap-2">
                               <span className={`text-xs px-2 py-0.5 rounded-full ${item.type === 'course' ? 'bg-blue-500/20 text-blue-300' : 'bg-purple-500/20 text-purple-300'}`}>
@@ -914,7 +748,7 @@ export default function UnifiedCertificateManagementPage() {
                           </div>
 
                           {item.certificateId ? (
-                            <div className="flex items-center gap-2 text-green-400 bg-green-500/20 px-3 py-1.5 rounded-md border border-green-400/30">
+                            <div className="flex items-center gap-2 text-green-400 bg-green-500/20 px-3 py-1.5 rounded-md border border-green-400/30 w-full md:w-auto justify-center md:justify-start">
                               <CheckCircle size={16} />
                               <span className="text-sm font-medium">Issued</span>
                             </div>
@@ -923,7 +757,7 @@ export default function UnifiedCertificateManagementPage() {
                               size="sm" 
                               onClick={() => handleIssueCertificate(item.type, item.id)}
                               disabled={issuingId === item.id}
-                              className="bg-green-600 hover:bg-green-700"
+                              className="bg-green-600 hover:bg-green-700 w-full md:w-auto"
                             >
                               {issuingId === item.id ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />

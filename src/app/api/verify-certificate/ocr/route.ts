@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import {
   extractCertificateData,
   validateExtractedData,
+  extractTextFromPDF,
+  parseCertificateData,
 } from "@/lib/ocr-service";
 import dbConnect from "@/lib/db";
 import Enrollment from "@/models/Enrollment";
@@ -29,24 +31,38 @@ export async function POST(req: Request) {
 
     console.log("[OCR API] Buffer created, size:", buffer.length);
 
-    // Extract data using OCR
-    console.log("[OCR API] Starting OCR extraction...");
-    const extractedData = await extractCertificateData(buffer);
-    console.log("[OCR API] OCR extraction complete:", extractedData);
+    // Extract data using OCR or PDF Parser
+    console.log("[OCR API] Starting extraction...");
+    let extractedData: any;
 
-    // Check for photo manipulation
+    if (file.type === "application/pdf") {
+      console.log("[OCR API] PDF detected. Using PDF Parser.");
+      const text = await extractTextFromPDF(buffer);
+      extractedData = parseCertificateData(text);
+      extractedData.confidence = 100; // Text extraction from PDF is usually accurate
+    } else {
+      console.log("[OCR API] Image detected. Using Smart OCR.");
+      extractedData = await extractCertificateData(buffer);
+    }
+
+    console.log("[OCR API] Extraction complete:", extractedData);
+
+    // Check for photo manipulation (Only for images)
     let manipulationCheck = {
       isManipulated: false,
       confidence: 0,
       issues: [] as string[],
     };
-    try {
-      console.log("[OCR API] Checking for manipulation...");
-      manipulationCheck = await detectPhotoManipulation(buffer);
-      console.log("[OCR API] Manipulation check result:", manipulationCheck);
-    } catch (error) {
-      console.error("[OCR API] Manipulation check failed:", error);
-      // Don't fail the whole request if manipulation check fails
+
+    if (file.type !== "application/pdf") {
+      try {
+        console.log("[OCR API] Checking for manipulation...");
+        manipulationCheck = await detectPhotoManipulation(buffer);
+        console.log("[OCR API] Manipulation check result:", manipulationCheck);
+      } catch (error) {
+        console.error("[OCR API] Manipulation check failed:", error);
+        // Don't fail the whole request if manipulation check fails
+      }
     }
 
     if (extractedData.confidence < 30) {
@@ -55,7 +71,7 @@ export async function POST(req: Request) {
         {
           success: false,
           error:
-            "Could not extract certificate data. Image quality may be too low.",
+            "Could not extract certificate data. content may be unclear or too small.",
           extractedData,
         },
         { status: 400 }
@@ -193,15 +209,15 @@ export async function POST(req: Request) {
       });
     }
   } catch (error) {
-    console.error("OCR verification error:", error);
+    console.error("OCR verification CRITICAL error:", error);
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to process certificate",
+        error: "Failed to process certificate (Server Error)",
         details: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined,
+        stack: error instanceof Error ? error.stack : undefined, // Provide stack for debugging
       },
-      { status: 200 }
+      { status: 500 }
     );
   }
 }
