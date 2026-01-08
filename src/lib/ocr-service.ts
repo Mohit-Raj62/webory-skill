@@ -19,13 +19,28 @@ export interface ExtractedCertificateData {
 export async function extractTextFromImage(
   imageBuffer: Buffer | string
 ): Promise<string> {
-  let worker;
+  let worker: any = null;
+
+  // Timeout promise
+  const timeoutPromise = new Promise((_, reject) => {
+    setTimeout(
+      () => reject(new Error("OCR Operation timed out after 30s")),
+      30000
+    );
+  });
+
   try {
     console.log("[OCR Service] Creating Tesseract worker...");
     worker = await createWorker("eng");
+
     console.log("[OCR Service] Worker created. Recognizing text...");
 
-    const { data } = await worker.recognize(imageBuffer);
+    // Race between recognition and timeout
+    const recognizePromise = worker.recognize(imageBuffer);
+    const result: any = await Promise.race([recognizePromise, timeoutPromise]);
+
+    const { data } = result;
+
     console.log("[OCR Service] Text recognized. Length:", data.text.length);
     console.log("[OCR Service] Text preview:", data.text.substring(0, 200));
 
@@ -42,8 +57,9 @@ export async function extractTextFromImage(
         console.error("Failed to terminate worker:", e);
       }
     }
+    // Return empty string instead of crashing, or rethrow meaningful error
     throw new Error(
-      "Failed to extract text from image: " +
+      "Failed to extract text: " +
         (error instanceof Error ? error.message : String(error))
     );
   }

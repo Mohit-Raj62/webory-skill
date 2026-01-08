@@ -90,37 +90,62 @@ export default function UnifiedCertificateManagementPage() {
     }
   };
 
+  // QR Scanner Effect
+  useEffect(() => {
+    if (scannerActive && !scannerRef.current) {
+      // Small delay to ensure DOM element exists
+      const timer = setTimeout(() => {
+        const scanner = new Html5QrcodeScanner(
+          "qr-reader",
+          { fps: 10, qrbox: { width: 250, height: 250 } },
+          false
+        );
+
+        scanner.render(
+          (decodedText) => {
+            const urlMatch = decodedText.match(/verify-certificate\/([A-Z0-9-]+)/);
+            const extractedId = urlMatch ? urlMatch[1] : decodedText;
+            
+            setCertificateId(extractedId);
+            verifyCertificate(extractedId);
+            scanner.clear();
+            setScannerActive(false);
+          },
+          (error) => {}
+        );
+
+        scannerRef.current = scanner;
+      }, 300); // Increased delay for safety
+
+      return () => clearTimeout(timer);
+    }
+  }, [scannerActive]);
+
+  // Cleanup scanner on unmount
+  useEffect(() => {
+    return () => {
+      if (scannerRef.current) {
+        try {
+          scannerRef.current.clear();
+        } catch (e) {
+          console.error("Failed to clear scanner", e);
+        }
+      }
+    };
+  }, []);
+
   const startScanner = () => {
     setScannerActive(true);
     setResult(null);
-
-    setTimeout(() => {
-      const scanner = new Html5QrcodeScanner(
-        "qr-reader",
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        false
-      );
-
-      scanner.render(
-        (decodedText) => {
-          const urlMatch = decodedText.match(/verify-certificate\/([A-Z0-9-]+)/);
-          const extractedId = urlMatch ? urlMatch[1] : decodedText;
-          
-          setCertificateId(extractedId);
-          verifyCertificate(extractedId);
-          scanner.clear();
-          setScannerActive(false);
-        },
-        (error) => {}
-      );
-
-      scannerRef.current = scanner;
-    }, 100);
   };
 
   const stopScanner = () => {
     if (scannerRef.current) {
-      scannerRef.current.clear();
+      try {
+        scannerRef.current.clear();
+      } catch (e) {
+        console.error("Failed to clear scanner", e);
+      }
       scannerRef.current = null;
     }
     setScannerActive(false);
@@ -202,15 +227,26 @@ export default function UnifiedCertificateManagementPage() {
       const formData = new FormData();
       formData.append('certificate', file);
 
+      // Create a timeout signal
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s timeout
+
       const res = await fetch('/api/verify-certificate/ocr', {
         method: 'POST',
         body: formData,
+        signal: controller.signal,
       });
 
-      const data = await res.json();
+      clearTimeout(timeoutId);
 
-      if (res.ok) {
-        setOcrResult(data);
+      // Handle abort error specifically or generic errors
+      if (!res.ok) {
+        throw new Error(`Server responded with ${res.status}`);
+      }
+
+      const data = await res.json();
+      
+      setOcrResult(data);
         
         if (data.verdict === 'AUTHENTIC') {
           toast.success("Certificate is authentic!");
@@ -221,11 +257,13 @@ export default function UnifiedCertificateManagementPage() {
         } else {
           toast.warning("Certificate ID could not be extracted");
         }
+
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+         toast.error("OCR Request timed out. Please try a smaller image or clearer text.");
       } else {
-        toast.error(data.error || "OCR processing failed");
+         toast.error("Failed to process certificate. " + (error.message || ""));
       }
-    } catch (error) {
-      toast.error("Failed to process certificate");
       console.error(error);
     } finally {
       setOcrProcessing(false);
@@ -417,9 +455,9 @@ export default function UnifiedCertificateManagementPage() {
               </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="flex flex-col md:grid md:grid-cols-2 gap-6">
               {/* QR Scanner */}
-              <div>
+              <div className="w-full">
                 <label className="block text-sm font-semibold text-white mb-3">
                   Scan QR Code
                 </label>
@@ -427,14 +465,14 @@ export default function UnifiedCertificateManagementPage() {
                   <Button
                     onClick={startScanner}
                     variant="outline"
-                    className="w-full border-blue-400/30 bg-blue-500/10 text-blue-300 hover:bg-blue-500/20 py-6"
+                    className="w-full border-blue-400/30 bg-blue-500/10 text-blue-300 hover:bg-blue-500/20 py-8 flex flex-col gap-2 h-auto"
                   >
-                    <Camera className="mr-2" size={20} />
-                    Start QR Scanner
+                    <Camera className="mb-1" size={32} />
+                    <span>Start QR Scanner</span>
                   </Button>
                 ) : (
-                  <div>
-                    <div id="qr-reader" className="rounded-lg overflow-hidden border border-white/20"></div>
+                  <div className="w-full">
+                    <div id="qr-reader" className="w-full rounded-lg overflow-hidden border border-white/20 bg-black/40"></div>
                     <Button
                       onClick={stopScanner}
                       variant="outline"
@@ -447,7 +485,7 @@ export default function UnifiedCertificateManagementPage() {
               </div>
 
               {/* Image Upload */}
-              <div>
+              <div className="w-full">
                 <label className="block text-sm font-semibold text-white mb-3">
                   Upload Certificate Image/PDF
                 </label>
@@ -461,17 +499,17 @@ export default function UnifiedCertificateManagementPage() {
                 <Button
                   onClick={() => fileInputRef.current?.click()}
                   variant="outline"
-                  className="w-full border-purple-400/30 bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 py-6"
+                  className="w-full border-purple-400/30 bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 py-8 flex flex-col gap-2 h-auto"
                 >
-                  <Upload className="mr-2" size={20} />
-                  Upload Certificate
+                  <Upload className="mb-1" size={32} />
+                  <span>Upload Certificate</span>
                 </Button>
                 {uploadedImage && (
                   <div className="mt-3 relative">
                     <img
                       src={uploadedImage}
                       alt="Uploaded certificate"
-                      className="w-full max-h-48 object-contain rounded-lg border border-white/20"
+                      className="w-full max-h-48 object-contain rounded-lg border border-white/20 bg-black/20"
                     />
                     <Button
                       onClick={() => setUploadedImage(null)}
