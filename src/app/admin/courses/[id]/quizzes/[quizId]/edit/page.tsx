@@ -22,12 +22,30 @@ export default function EditQuizPage() {
         passingScore: 70,
         allowRetake: true,
         showAnswers: true,
+        afterModule: 0,
         questions: [] as any[],
     });
+    
+    const [modules, setModules] = useState<any[]>([]);
 
     useEffect(() => {
         fetchQuiz();
+        fetchCourseModules();
     }, []);
+
+    const fetchCourseModules = async () => {
+        try {
+            const res = await fetch(`/api/courses/${courseId}?includeUnavailable=true`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.course && data.course.modules) {
+                    setModules(data.course.modules);
+                }
+            }
+        } catch (error) {
+            console.error("Failed to fetch course modules", error);
+        }
+    };
 
     const fetchQuiz = async () => {
         try {
@@ -42,6 +60,7 @@ export default function EditQuizPage() {
                     passingScore: data.quiz.passingScore,
                     allowRetake: data.quiz.allowRetake,
                     showAnswers: data.quiz.showAnswers,
+                    afterModule: data.quiz.afterModule || 0,
                     questions: data.quiz.questions,
                 });
             }
@@ -180,6 +199,22 @@ export default function EditQuizPage() {
                                 />
                             </div>
                         </div>
+                    </div>
+
+                    <div className="mt-4">
+                        <label className="text-sm text-gray-300 block mb-2">Place in Module</label>
+                        <select
+                            className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
+                            value={formData.afterModule}
+                            onChange={(e) => setFormData({ ...formData, afterModule: Number(e.target.value) })}
+                        >
+                            <option value={0} className="bg-gray-900 text-gray-300">General / Global Resources</option>
+                            {modules.map((module, index) => (
+                                <option key={index} value={index + 1} className="bg-gray-900 text-white">
+                                    Module {index + 1}: {module.title}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                 </div>
 

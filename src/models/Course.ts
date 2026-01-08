@@ -181,6 +181,10 @@ const CourseSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  isAvailable: {
+    type: Boolean,
+    default: true,
+  },
   views: {
     type: Number,
     default: 0,

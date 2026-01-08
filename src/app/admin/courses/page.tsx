@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Edit, Trash2, Search, Video, ClipboardList, FileText, Star } from "lucide-react";
+import { Plus, Edit, Trash2, Search, Video, ClipboardList, FileText, Star, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -15,6 +15,7 @@ interface Course {
     videos: any[];
     createdAt: string;
     isPopular?: boolean;
+    isAvailable?: boolean;
 }
 
 export default function CoursesAdminPage() {
@@ -28,7 +29,7 @@ export default function CoursesAdminPage() {
 
     const fetchCourses = async () => {
         try {
-            const res = await fetch("/api/courses");
+            const res = await fetch("/api/courses?includeUnavailable=true");
             if (res.ok) {
                 const data = await res.json();
                 setCourses(data.courses || []);
@@ -88,6 +89,37 @@ export default function CoursesAdminPage() {
                 c._id === course._id ? { ...c, isPopular: course.isPopular } : c
             ));
             alert("Failed to update popular status");
+        }
+    };
+
+    const handleToggleAvailability = async (course: Course) => {
+        try {
+            const newStatus = !course.isAvailable;
+            // Optimistic update
+            setCourses(courses.map(c => 
+                c._id === course._id ? { ...c, isAvailable: newStatus } : c
+            ));
+
+            const res = await fetch(`/api/admin/courses/${course._id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ isAvailable: newStatus }),
+            });
+
+            if (!res.ok) {
+                // Revert on failure
+                setCourses(courses.map(c => 
+                    c._id === course._id ? { ...c, isAvailable: course.isAvailable } : c
+                ));
+                alert("Failed to update availability status");
+            }
+        } catch (error) {
+            console.error("Update availability status error:", error);
+            // Revert on failure
+            setCourses(courses.map(c => 
+                c._id === course._id ? { ...c, isAvailable: course.isAvailable } : c
+            ));
+            alert("Failed to update availability status");
         }
     };
 
@@ -160,6 +192,13 @@ export default function CoursesAdminPage() {
                         <div className="flex items-start justify-between mb-4">
                             <h3 className="text-xl font-bold text-white">{course.title}</h3>
                             <div className="flex gap-2">
+                                <button
+                                    onClick={() => handleToggleAvailability(course)}
+                                    className={`p-2 rounded-lg transition-colors ${course.isAvailable ? "text-green-400 hover:bg-green-400/10" : "text-gray-500 hover:bg-gray-500/10"}`}
+                                    title={course.isAvailable ? "Mark as Unavailable" : "Mark as Available"}
+                                >
+                                    {course.isAvailable ? <Eye size={18} /> : <EyeOff size={18} />}
+                                </button>
                                 <button
                                     onClick={() => handleTogglePopular(course)}
                                     className={`p-2 rounded-lg transition-colors ${course.isPopular ? "text-yellow-400 hover:bg-yellow-400/10" : "text-gray-400 hover:bg-gray-500/10"}`}

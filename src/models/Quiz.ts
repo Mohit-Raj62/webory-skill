@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const QuestionSchema = new mongoose.Schema({
   questionText: {
@@ -7,12 +7,14 @@ const QuestionSchema = new mongoose.Schema({
   },
   questionType: {
     type: String,
-    enum: ['mcq', 'true-false'],
-    default: 'mcq',
+    enum: ["mcq", "true-false"],
+    default: "mcq",
   },
-  options: [{
-    type: String,
-  }],
+  options: [
+    {
+      type: String,
+    },
+  ],
   correctAnswer: {
     type: Number, // Index of correct option
     required: true,
@@ -29,7 +31,7 @@ const QuestionSchema = new mongoose.Schema({
 const QuizSchema = new mongoose.Schema({
   courseId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Course',
+    ref: "Course",
     required: true,
   },
   title: {
@@ -39,10 +41,14 @@ const QuizSchema = new mongoose.Schema({
   description: {
     type: String,
   },
+  afterModule: {
+    type: Number,
+    default: 0, // 0 = General/Global, N = After Module N
+  },
   type: {
     type: String,
-    enum: ['quiz', 'test', 'exam'],
-    default: 'quiz',
+    enum: ["quiz", "test", "exam"],
+    default: "quiz",
   },
   duration: {
     type: Number, // Minutes
@@ -75,6 +81,6 @@ const QuizSchema = new mongoose.Schema({
   },
 });
 
-const Quiz = mongoose.models.Quiz || mongoose.model('Quiz', QuizSchema);
+const Quiz = mongoose.models.Quiz || mongoose.model("Quiz", QuizSchema);
 
 export default Quiz;

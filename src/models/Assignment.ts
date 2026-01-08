@@ -1,9 +1,9 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const AssignmentSchema = new mongoose.Schema({
   courseId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Course',
+    ref: "Course",
     required: true,
   },
   title: {
@@ -13,6 +13,10 @@ const AssignmentSchema = new mongoose.Schema({
   description: {
     type: String,
     required: true,
+  },
+  afterModule: {
+    type: Number,
+    default: 0, // 0 = General/Global, N = After Module N
   },
   instructions: {
     type: String,
@@ -25,10 +29,12 @@ const AssignmentSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  attachments: [{
-    name: String,
-    url: String,
-  }],
+  attachments: [
+    {
+      name: String,
+      url: String,
+    },
+  ],
   isActive: {
     type: Boolean,
     default: true,
@@ -39,6 +45,7 @@ const AssignmentSchema = new mongoose.Schema({
   },
 });
 
-const Assignment = mongoose.models.Assignment || mongoose.model('Assignment', AssignmentSchema);
+const Assignment =
+  mongoose.models.Assignment || mongoose.model("Assignment", AssignmentSchema);
 
 export default Assignment;

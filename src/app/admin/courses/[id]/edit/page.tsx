@@ -42,7 +42,8 @@ export default function EditCoursePage() {
             founder: { name: "Mohit Raj", title: "Founder & CEO" },
             director: { name: "Webory Team", title: "Director of Education" },
             partner: { name: "Partner Rep.", title: "Authorized Signatory" }
-        }
+        },
+        isAvailable: true
     });
 
     const [curriculumInput, setCurriculumInput] = useState("");
@@ -82,7 +83,7 @@ export default function EditCoursePage() {
 
     const fetchCourse = async () => {
         try {
-            const res = await fetch(`/api/courses/${params.id}`);
+            const res = await fetch(`/api/courses/${params.id}?includeUnavailable=true`);
             if (res.ok) {
                 const data = await res.json();
                 
@@ -118,7 +119,8 @@ export default function EditCoursePage() {
                         founder: data.course.signatures?.founder || { name: "Mohit Raj", title: "Founder & CEO" },
                         director: data.course.signatures?.director || { name: "Webory Team", title: "Director of Education" },
                         partner: data.course.signatures?.partner || { name: "Partner Rep.", title: "Authorized Signatory" }
-                    }
+                    },
+                    isAvailable: data.course.isAvailable ?? true
                 });
             }
         } catch (error) {
@@ -388,6 +390,12 @@ export default function EditCoursePage() {
         setUploadProgress(0);
 
         try {
+            // Calculate next order for this module
+            const targetModule = Number(pdfInput.afterModule);
+            const existingInModule = pdfs.filter(p => (p.afterModule || 0) === targetModule);
+            const maxOrder = existingInModule.reduce((max, p) => Math.max(max, p.order || 0), 0);
+            const nextOrder = maxOrder + 1;
+            
             // 1. Upload to Cloudinary
             const uploadData = await uploadPDFToCloudinary(file);
 
@@ -405,7 +413,7 @@ export default function EditCoursePage() {
                     fileName: uploadData.fileName,
                     fileSize: uploadData.fileSize,
                     afterModule: Number(pdfInput.afterModule),
-                    order: Number(pdfInput.order),
+                    order: nextOrder,
                     cloudinaryId: uploadData.cloudinaryId
                 }),
             });
@@ -515,6 +523,21 @@ export default function EditCoursePage() {
                                 onChange={(e) => setFormData({ ...formData, collaboration: e.target.value })}
                             />
                             <p className="text-xs text-gray-400 mt-1">This text will appear on the student certificate.</p>
+                        </div>
+                        
+                        <div className="md:col-span-2">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    className="w-5 h-5 rounded border-white/10 bg-black/20 text-blue-500 focus:ring-blue-500/50"
+                                    checked={formData.isAvailable}
+                                    onChange={(e) => setFormData({ ...formData, isAvailable: e.target.checked })}
+                                />
+                                <span className="text-gray-300">Available for Students</span>
+                            </label>
+                            <p className="text-xs text-gray-400 mt-1 ml-7">
+                                If unchecked, this course will be hidden from the student course list.
+                            </p>
                         </div>
                     </div>
 
@@ -1162,27 +1185,22 @@ export default function EditCoursePage() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 <div>
-                                    <label className="text-xs text-gray-400 block mb-1">After Module #</label>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        placeholder="0 = Before all modules"
-                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                    <label className="text-xs text-gray-400 block mb-1">Place in Module</label>
+                                    <select
+                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none appearance-none"
                                         value={pdfInput.afterModule}
                                         onChange={(e) => setPdfInput({ ...pdfInput, afterModule: Number(e.target.value) })}
-                                    />
+                                    >
+                                        <option value={0} className="bg-gray-900 text-gray-300">General / Global Resources</option>
+                                        {formData.modules.map((module, index) => (
+                                            <option key={index} value={index + 1} className="bg-gray-900 text-white">
+                                                Module {index + 1}: {module.title}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
-                                <div>
-                                    <label className="text-xs text-gray-400 block mb-1">Order in Position</label>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        placeholder="Sequence number"
-                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                        value={pdfInput.order}
-                                        onChange={(e) => setPdfInput({ ...pdfInput, order: Number(e.target.value) })}
-                                    />
-                                </div>
+                                
+                                { /* Order field removed for simplicity - auto calculated */ }
                             </div>
 
                             <div className="relative">

@@ -427,6 +427,104 @@ export default function CourseDetailsPage() {
                                                                 </div>
                                                             );
                                                         })}
+                                                        
+                                                        {/* Module specific PDFs */}
+                                                        {isEnrolled && pdfs.some(p => p.afterModule === moduleIndex + 1) && (
+                                                            <div className="my-2 space-y-2 border-t border-white/5 pt-2">
+                                                                {pdfs.filter(p => p.afterModule === moduleIndex + 1)
+                                                                    .sort((a, b) => (a.order || 0) - (b.order || 0))
+                                                                    .map((pdf) => (
+                                                                        <div key={pdf._id} className="flex items-center justify-between p-3 bg-blue-500/5 rounded-xl border border-blue-500/10 hover:bg-blue-500/10 transition-colors ml-4">
+                                                                            <div className="flex items-center text-gray-300 flex-1">
+                                                                                <FileText className="mr-3 text-blue-400" size={18} />
+                                                                                <div>
+                                                                                    <span className="text-white font-medium text-sm">{pdf.title}</span>
+                                                                                    <p className="text-xs text-gray-500">PDF Resource</p>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className="flex gap-2">
+                                                                                <button
+                                                                                    onClick={(e) => {
+                                                                                        e.preventDefault();
+                                                                                        const proxyUrl = `/api/pdf-proxy?url=${encodeURIComponent(pdf.fileUrl)}`;
+                                                                                        window.open(proxyUrl, '_blank');
+                                                                                        trackPDFAccess(pdf._id, false);
+                                                                                    }}
+                                                                                    className="text-xs bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 px-3 py-1.5 rounded-lg transition-colors border border-blue-500/20"
+                                                                                >
+                                                                                    View PDF
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    ))}
+                                                            </div>
+
+                                                        )}
+
+                                                        {/* Module specific Quizzes */}
+                                                        {isEnrolled && quizzes.some(q => q.afterModule === moduleIndex + 1) && (
+                                                            <div className="my-2 space-y-2 border-t border-white/5 pt-2">
+                                                                {quizzes.filter(q => q.afterModule === moduleIndex + 1)
+                                                                    .map((quiz) => (
+                                                                        <div key={quiz._id} className={`flex items-center justify-between p-3 rounded-xl border transition-all ml-4 ${quizzesUnlocked
+                                                                            ? 'bg-purple-500/5 border-purple-500/10 hover:bg-purple-500/10'
+                                                                            : 'bg-white/5 border-white/5 opacity-50'
+                                                                            }`}>
+                                                                            <div className="flex items-center text-gray-300 flex-1">
+                                                                                <ClipboardList className={`mr-3 ${quizzesUnlocked ? "text-purple-400" : "text-gray-600"}`} size={18} />
+                                                                                <div>
+                                                                                    <span className="text-white font-medium text-sm">{quiz.title}</span>
+                                                                                    <p className="text-xs text-gray-500">
+                                                                                        {quiz.type === 'exam' ? 'Exam' : quiz.type === 'test' ? 'Test' : 'Quiz'} • {quiz.questions.length} Qs • {quiz.duration} min
+                                                                                    </p>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className="flex gap-2">
+                                                                                {quizzesUnlocked ? (
+                                                                                    <Link href={`/courses/${id}/quiz/${quiz._id}`}>
+                                                                                        <button
+                                                                                            className="text-xs bg-purple-500/20 text-purple-300 hover:bg-purple-500/30 px-3 py-1.5 rounded-lg transition-colors border border-purple-500/20"
+                                                                                        >
+                                                                                            Start
+                                                                                        </button>
+                                                                                    </Link>
+                                                                                ) : (
+                                                                                     <Lock size={14} className="text-gray-600" />
+                                                                                )}
+                                                                            </div>
+                                                                        </div>
+                                                                    ))}
+                                                            </div>
+                                                        )}
+
+                                                        {/* Module specific Assignments */}
+                                                        {isEnrolled && assignments.some(a => a.afterModule === moduleIndex + 1) && (
+                                                            <div className="my-2 space-y-2 border-t border-white/5 pt-2">
+                                                                {assignments.filter(a => a.afterModule === moduleIndex + 1)
+                                                                    .map((assignment) => (
+                                                                        <div key={assignment._id} className="flex items-center justify-between p-3 rounded-xl border border-green-500/10 bg-green-500/5 hover:bg-green-500/10 transition-all ml-4">
+                                                                            <div className="flex items-center text-gray-300 flex-1">
+                                                                                <FileText className="mr-3 text-green-400" size={18} />
+                                                                                <div>
+                                                                                    <span className="text-white font-medium text-sm">{assignment.title}</span>
+                                                                                    <p className="text-xs text-gray-500">
+                                                                                        Assignment • Due: {new Date(assignment.dueDate).toLocaleDateString()}
+                                                                                    </p>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className="flex gap-2">
+                                                                                <Link href={`/courses/${id}/assignment/${assignment._id}`}>
+                                                                                    <button
+                                                                                        className="text-xs bg-green-500/20 text-green-300 hover:bg-green-500/30 px-3 py-1.5 rounded-lg transition-colors border border-green-500/20"
+                                                                                    >
+                                                                                        Submit
+                                                                                    </button>
+                                                                                </Link>
+                                                                            </div>
+                                                                        </div>
+                                                                    ))}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             );
@@ -462,11 +560,11 @@ export default function CourseDetailsPage() {
                             )}
                         </div>
 
-                        {isEnrolled && pdfs.length > 0 && (
+                        {isEnrolled && pdfs.some(p => !p.afterModule || p.afterModule === 0) && (
                             <div className="glass-card p-8 rounded-2xl mb-12">
                                 <h2 className="text-2xl font-bold text-white mb-6">Course Resources</h2>
                                 <div className="space-y-4">
-                                    {pdfs.map((pdf) => (
+                                    {pdfs.filter(p => !p.afterModule || p.afterModule === 0).map((pdf) => (
                                         <div key={pdf._id} className="p-4 rounded-xl border bg-white/5 border-white/10 hover:bg-white/10 transition-all">
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-3">
@@ -500,7 +598,7 @@ export default function CourseDetailsPage() {
                             </div>
                         )}
 
-                        {isEnrolled && quizzes.length > 0 && (
+                        {isEnrolled && quizzes.some(q => !q.afterModule || q.afterModule === 0) && (
                             <div className="glass-card p-8 rounded-2xl mb-12">
                                 <div className="flex items-center justify-between mb-6">
                                     <h2 className="text-2xl font-bold text-white">Quizzes & Tests</h2>
@@ -511,7 +609,7 @@ export default function CourseDetailsPage() {
                                     )}
                                 </div>
                                 <div className="space-y-4">
-                                    {quizzes.map((quiz) => (
+                                    {quizzes.filter(q => !q.afterModule || q.afterModule === 0).map((quiz) => (
                                         <div key={quiz._id} className={`p-4 rounded-xl border transition-all ${quizzesUnlocked
                                             ? 'bg-white/5 border-white/10 hover:bg-white/10'
                                             : 'bg-white/5 border-white/5 opacity-50'
@@ -542,11 +640,11 @@ export default function CourseDetailsPage() {
                             </div>
                         )}
 
-                        {isEnrolled && assignments.length > 0 && (
+                        {isEnrolled && assignments.some(a => !a.afterModule || a.afterModule === 0) && (
                             <div className="glass-card p-8 rounded-2xl">
                                 <h2 className="text-2xl font-bold text-white mb-6">Assignments</h2>
                                 <div className="space-y-4">
-                                    {assignments.map((assignment) => (
+                                    {assignments.filter(a => !a.afterModule || a.afterModule === 0).map((assignment) => (
                                         <div key={assignment._id} className="p-4 rounded-xl border bg-white/5 border-white/10 hover:bg-white/10 transition-all">
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-3">

@@ -29,8 +29,8 @@ export default async function Home() {
         const [users, internships, courses, popular] = await Promise.all([
             User.countDocuments(),
             Internship.countDocuments({ status: 'active' }),
-            Course.countDocuments({ isPublished: true }),
-            Course.find({ isPopular: true }).select('title level studentsCount color icon').limit(4).lean(),
+            Course.countDocuments({ isAvailable: true }),
+            Course.find({ isPopular: true, isAvailable: true }).select('title level studentsCount color icon').limit(4).lean(),
         ]);
         
         userCount = users;

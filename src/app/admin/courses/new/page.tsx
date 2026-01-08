@@ -35,7 +35,8 @@ export default function NewCoursePage() {
             founder: { name: "Mohit Raj", title: "Founder & CEO" },
             director: { name: "Webory Team", title: "Director of Education" },
             partner: { name: "Partner Rep.", title: "Authorized Signatory" }
-        }
+        },
+        isAvailable: true
     });
 
     const [curriculumInput, setCurriculumInput] = useState("");
@@ -287,6 +288,21 @@ export default function NewCoursePage() {
                                 onChange={(e) => setFormData({ ...formData, collaboration: e.target.value })}
                             />
                             <p className="text-xs text-gray-400 mt-1">This text will appear on the student certificate.</p>
+                        </div>
+
+                        <div className="md:col-span-2">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    className="w-5 h-5 rounded border-white/10 bg-black/20 text-blue-500 focus:ring-blue-500/50"
+                                    checked={formData.isAvailable}
+                                    onChange={(e) => setFormData({ ...formData, isAvailable: e.target.checked })}
+                                />
+                                <span className="text-gray-300">Available for Students</span>
+                            </label>
+                            <p className="text-xs text-gray-400 mt-1 ml-7">
+                                If unchecked, this course will be hidden from the student course list.
+                            </p>
                         </div>
                     </div>
 

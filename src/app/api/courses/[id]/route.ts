@@ -9,9 +9,17 @@ export async function GET(
   const params = await props.params;
   try {
     await dbConnect();
+    const url = new URL(req.url);
+    const includeUnavailable =
+      url.searchParams.get("includeUnavailable") === "true";
+
     const course = await Course.findById(params.id);
 
     if (!course) {
+      return NextResponse.json({ error: "Course not found" }, { status: 404 });
+    }
+
+    if (!course.isAvailable && !includeUnavailable) {
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 

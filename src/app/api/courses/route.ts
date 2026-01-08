@@ -2,12 +2,22 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Course from "@/models/Course";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     await dbConnect();
 
+    const url = new URL(req.url);
+    const includeUnavailable =
+      url.searchParams.get("includeUnavailable") === "true";
+
+    const matchStage: any = {};
+    if (!includeUnavailable) {
+      matchStage.isAvailable = true;
+    }
+
     // Use aggregation to calculate student count from enrollments
     const courses = await Course.aggregate([
+      { $match: matchStage },
       {
         $lookup: {
           from: "enrollments",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Save, Upload, X } from "lucide-react";
@@ -20,7 +20,27 @@ export default function CreateAssignmentPage() {
         dueDate: "",
         totalMarks: 100,
         attachments: [] as { name: string; url: string }[],
+        afterModule: 0,
     });
+    
+    const [modules, setModules] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchCourseModules = async () => {
+            try {
+                const res = await fetch(`/api/courses/${courseId}?includeUnavailable=true`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.course && data.course.modules) {
+                        setModules(data.course.modules);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch course modules", error);
+            }
+        };
+        fetchCourseModules();
+    }, [courseId]);
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -141,7 +161,8 @@ export default function CreateAssignmentPage() {
                             <input
                                 type="datetime-local"
                                 required
-                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
+                                min={new Date().toISOString().slice(0, 16)}
+                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert"
                                 value={formData.dueDate}
                                 onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
                             />
@@ -158,6 +179,22 @@ export default function CreateAssignmentPage() {
                                 onChange={(e) => setFormData({ ...formData, totalMarks: Number(e.target.value) })}
                             />
                         </div>
+                    </div>
+
+                    <div>
+                        <label className="text-sm text-gray-300 block mb-2">Place in Module</label>
+                        <select
+                            className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
+                            value={formData.afterModule}
+                            onChange={(e) => setFormData({ ...formData, afterModule: Number(e.target.value) })}
+                        >
+                            <option value={0} className="bg-gray-900 text-gray-300">General / Global Resources</option>
+                            {modules.map((module, index) => (
+                                <option key={index} value={index + 1} className="bg-gray-900 text-white">
+                                    Module {index + 1}: {module.title}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     <div>
