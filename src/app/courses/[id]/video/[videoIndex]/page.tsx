@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
     ArrowLeft, ChevronLeft, ChevronRight, CheckCircle,
     MoreVertical, Settings, Maximize, Minimize, Expand,
-    MessageCircle, HelpCircle, FileText
+    MessageCircle, HelpCircle, FileText, Lock
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -31,22 +31,37 @@ export default function VideoPlayerPage() {
     const [lastValidTime, setLastValidTime] = useState(0);
     const [userEmail, setUserEmail] = useState('');
     const [watermarkPosition, setWatermarkPosition] = useState({ x: 10, y: 10 });
+    const [isEnrolled, setIsEnrolled] = useState(false);
+    const [checkingEnrollment, setCheckingEnrollment] = useState(true);
+    const [showTrialEndedModal, setShowTrialEndedModal] = useState(false);
 
     // Fetch user email for watermark
     useEffect(() => {
-        const fetchUserEmail = async () => {
+        const fetchUserAndEnrollment = async () => {
             try {
                 const res = await fetch('/api/auth/me');
                 if (res.ok) {
                     const data = await res.json();
                     setUserEmail(data.user.email);
+
+                    // Check enrollment
+                    const resEnroll = await fetch("/api/user/enrollments");
+                    if (resEnroll.ok) {
+                        const enrollData = await resEnroll.json();
+                        const enrolled = enrollData.enrollments.some((e: any) => 
+                            e.course?._id === courseId || e.course === courseId
+                        );
+                        setIsEnrolled(enrolled);
+                    }
                 }
             } catch (error) {
-                console.error('Failed to fetch user email', error);
+                console.error('Failed to fetch user/enrollment', error);
+            } finally {
+                setCheckingEnrollment(false);
             }
         };
-        fetchUserEmail();
-    }, []);
+        fetchUserAndEnrollment();
+    }, [courseId]);
 
     // Moving watermark animation
     useEffect(() => {
@@ -80,6 +95,40 @@ export default function VideoPlayerPage() {
         fetchData();
         fetchNotes();
     }, [courseId, videoIndex]);
+
+    // Access Control Logic
+    useEffect(() => {
+        if (loading || checkingEnrollment || !course) return;
+
+        // Access Control Logic
+        let isFreeVideo = false;
+        if (course.modules && course.modules.length > 0) {
+            // Sort modules just in case, though API usually sorts them
+            const sortedModules = [...course.modules].sort((a: any, b: any) => a.order - b.order);
+            const firstModule = sortedModules[0];
+            const firstModuleVideoCount = firstModule.videos?.length || 0;
+            
+            // The videoIndex is a global index across all modules
+            // So if currentIndex < number (videos in module 1), it belongs to module 1
+            // AND user must be logged in (userEmail proxy)
+            if (currentIndex < firstModuleVideoCount && userEmail) {
+                isFreeVideo = true;
+            }
+        } else {
+             // Fallback for courses without modules structure (though API helps prevent this)
+             // or if modules array is empty but videos exist
+             if (currentIndex === 0 && userEmail) isFreeVideo = true;
+        }
+
+        if (!isEnrolled && !isFreeVideo) {
+            if (!userEmail) {
+                 toast.error("Please login to verify Free Trial access");
+            } else {
+                 toast.error("You must enroll to continue watching");
+            }
+            router.push(`/courses/${courseId}`);
+        }
+    }, [loading, checkingEnrollment, course, isEnrolled, currentIndex, courseId, router, userEmail]);
 
     const fetchData = async () => {
         try {
@@ -270,18 +319,35 @@ export default function VideoPlayerPage() {
             // Cap progress at 100%
             const percentage = Math.min((video.currentTime / video.duration) * 100, 100);
             setVideoProgress(percentage);
-            console.log('Video progress:', percentage.toFixed(2) + '%');
+            // console.log('Video progress:', percentage.toFixed(2) + '%');
             
             if (percentage >= 90) {
-                console.log('90% reached, marking as watched');
+                // console.log('90% reached, marking as watched');
                 markAsWatched(Math.round(percentage));
             }
         };
 
         const handleEnded = () => {
+             // Check if this was the last free video
+            const checkFreeTrialCompletion = () => {
+                if (!course || !course.modules || isEnrolled) return;
+                
+                const sortedModules = [...course.modules].sort((a: any, b: any) => a.order - b.order);
+                const firstModule = sortedModules[0];
+                const firstModuleVideoCount = firstModule.videos?.length || 0;
+                
+                // If this is the last video of the first module (index is 0-based, so count - 1)
+                if (currentIndex === firstModuleVideoCount - 1) {
+                    setShowTrialEndedModal(true);
+                }
+            };
+
             if (!hasMarkedAsWatched) {
                 console.log('Video ended, marking as watched');
                 markAsWatched(100);
+                checkFreeTrialCompletion();
+            } else {
+                 checkFreeTrialCompletion();
             }
         };
 
@@ -694,6 +760,40 @@ export default function VideoPlayerPage() {
                             </div>
                         </div>
                     )}
+                    {/* Free Trial Ended Modal */}
+                    {showTrialEndedModal && (
+                        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-[100] animate-in fade-in duration-300">
+                             <div className="bg-gradient-to-br from-gray-900 to-black p-8 rounded-3xl border border-yellow-500/30 max-w-md w-full mx-4 shadow-2xl relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-20 bg-yellow-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                                
+                                <div className="relative z-10 text-center">
+                                    <div className="w-20 h-20 bg-gradient-to-tr from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-yellow-500/30">
+                                        <Lock size={40} className="text-white" />
+                                    </div>
+                                    
+                                    <h2 className="text-3xl font-bold text-white mb-2">Free Trial Completed!</h2>
+                                    <p className="text-gray-400 mb-8 leading-relaxed">
+                                        You've finished the free preview. To continue learning and unlock the full course, certificate, and resources, please enroll now.
+                                    </p>
+
+                                    <div className="space-y-3">
+                                        <Button
+                                            onClick={() => router.push(`/courses/${courseId}?buy=true`)}
+                                            className="w-full bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-white py-6 text-lg font-bold rounded-xl shadow-lg shadow-orange-500/20"
+                                        >
+                                            Unlock Full Course
+                                        </Button>
+                                        <button
+                                            onClick={() => router.push(`/courses/${courseId}`)}
+                                            className="text-gray-500 hover:text-white text-sm font-medium transition-colors"
+                                        >
+                                            Later
+                                        </button>
+                                    </div>
+                                </div>
+                             </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Sidebar - Hidden in Theater Mode */}
@@ -717,6 +817,8 @@ export default function VideoPlayerPage() {
                                                 .slice(0, moduleIndex)
                                                 .reduce((acc: number, m: any) => acc + (m.videos?.length || 0), 0);
                                             
+                                            const isModuleSidebarUnlocked = isEnrolled || moduleIndex === 0;
+
                                             return (
                                                 <div key={moduleIndex} className="mb-4">
                                                     {/* Module Header */}
@@ -727,9 +829,19 @@ export default function VideoPlayerPage() {
                                                         {module.description && (
                                                             <p className="text-xs text-gray-400 mt-1">{module.description}</p>
                                                         )}
-                                                        <p className="text-xs text-gray-500 mt-1">
-                                                            {module.videos?.length || 0} video{(module.videos?.length || 0) !== 1 ? 's' : ''}
-                                                        </p>
+                                                        <div className="flex justify-between items-center mt-1">
+                                                            <p className="text-xs text-gray-500">
+                                                                {module.videos?.length || 0} video{(module.videos?.length || 0) !== 1 ? 's' : ''}
+                                                            </p>
+                                                            {!isEnrolled && moduleIndex === 0 && (
+                                                                <span className="text-[10px] bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded uppercase font-bold">
+                                                                    Free
+                                                                </span>
+                                                            )}
+                                                            {!isModuleSidebarUnlocked && (
+                                                                <Lock size={12} className="text-gray-500" />
+                                                            )}
+                                                        </div>
                                                     </div>
                                                     
                                                     {/* Videos in this module */}
@@ -742,19 +854,27 @@ export default function VideoPlayerPage() {
                                                                 <button
                                                                     key={videoIndex}
                                                                     onClick={() => {
-                                                                        router.push(`/courses/${courseId}/video/${globalIndex}`);
-                                                                        setHasMarkedAsWatched(false);
+                                                                        if (isModuleSidebarUnlocked) {
+                                                                            router.push(`/courses/${courseId}/video/${globalIndex}`);
+                                                                            setHasMarkedAsWatched(false);
+                                                                        } else {
+                                                                            toast.error("Enroll to unlock this module");
+                                                                        }
                                                                     }}
                                                                     className={`w-full text-left p-3 rounded-lg border transition-all duration-300 ${globalIndex === currentIndex
                                                                         ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-blue-500 shadow-lg shadow-blue-500/20'
                                                                         : watched
                                                                             ? 'bg-green-500/20 border-green-500/50 hover:bg-green-500/30'
-                                                                            : 'bg-gray-800/50 border-gray-700 hover:bg-gray-700/50'
+                                                                            : isModuleSidebarUnlocked 
+                                                                                ? 'bg-gray-800/50 border-gray-700 hover:bg-gray-700/50'
+                                                                                : 'bg-gray-800/20 border-gray-700/50 opacity-60 cursor-not-allowed'
                                                                         }`}
                                                                 >
                                                                     <div className="flex items-start gap-3">
                                                                         <div className="flex-shrink-0 mt-0.5">
-                                                                            {watched ? (
+                                                                            {!isModuleSidebarUnlocked ? (
+                                                                                <Lock size={14} className="text-gray-500" />
+                                                                            ) : watched ? (
                                                                                 <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center shadow-lg shadow-green-500/20">
                                                                                     <CheckCircle size={14} className="text-white" />
                                                                                 </div>

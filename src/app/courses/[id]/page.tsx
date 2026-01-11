@@ -9,7 +9,7 @@ const PaymentModal = dynamic(() => import("@/components/courses/payment-modal").
 const Invoice = dynamic(() => import("@/components/courses/invoice").then(mod => mod.Invoice), { ssr: false });
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { CheckCircle, Clock, BarChart, Users, Globe, PlayCircle, Lock, ClipboardList, FileText, Calendar, Video } from "lucide-react";
+import { CheckCircle, Clock, BarChart, Users, Globe, PlayCircle, Lock, ClipboardList, FileText, Calendar, Video, ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 
 export default function CourseDetailsPage() {
@@ -28,6 +28,25 @@ export default function CourseDetailsPage() {
     const [certificateData, setCertificateData] = useState < any > (null);
     const [pdfs, setPdfs] = useState < any[] > ([]);
     const [enrollmentData, setEnrollmentData] = useState < any > (null);
+    const [expandedModules, setExpandedModules] = useState<Record<number, boolean>>({ 0: true });
+
+    const toggleModule = (index: number) => {
+        setExpandedModules(prev => ({
+            ...prev,
+            [index]: !prev[index]
+        }));
+    };
+
+    useEffect(() => {
+        // Check for buy param
+        const searchParams = new URLSearchParams(window.location.search);
+        if (searchParams.get('buy') === 'true' && user && !isEnrolled) {
+            setShowPayment(true);
+            // Optional: remove param from URL clean up
+            const newUrl = window.location.pathname;
+            window.history.replaceState({}, '', newUrl);
+        }
+    }, [user, isEnrolled]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -390,37 +409,76 @@ export default function CourseDetailsPage() {
                                                 .slice(0, moduleIndex)
                                                 .reduce((acc: number, m: any) => acc + (m.videos?.length || 0), 0);
                                             
+                                            // Unlocked if enrolled OR it's the first module (Free Trial)
+                                            // For guests, we will visually unlock it but redirect to login on click
+                                            const isModuleContentUnlocked = isEnrolled || moduleIndex === 0;
+
                                             return (
-                                                <div key={moduleIndex} className="border border-white/10 rounded-xl overflow-hidden">
-                                                    <div className="bg-white/5 p-4 border-b border-white/10">
-                                                        <h3 className="text-white font-bold text-lg">
-                                                            Module {moduleIndex + 1}: {module.title}
-                                                        </h3>
-                                                        {module.description && (
-                                                            <p className="text-gray-400 text-sm mt-1">{module.description}</p>
+                                                <div key={moduleIndex} className="border border-white/10 rounded-xl overflow-hidden transition-all duration-300">
+                                                    <div 
+                                                        className="bg-white/5 p-4 border-b border-white/10 cursor-pointer hover:bg-white/10 transition-colors flex items-center justify-between"
+                                                        onClick={() => toggleModule(moduleIndex)}
+                                                    >
+                                                        <div>
+                                                            <h3 className="text-white font-bold text-lg">
+                                                                Module {moduleIndex + 1}: {module.title}
+                                                            </h3>
+                                                            {module.description && (
+                                                                <p className="text-gray-400 text-sm mt-1">{module.description}</p>
+                                                            )}
+                                                            <p className="text-gray-500 text-xs mt-2 flex items-center">
+                                                                {module.videos?.length || 0} video{(module.videos?.length || 0) !== 1 ? 's' : ''}
+                                                                {!isEnrolled && moduleIndex === 0 && (
+                                                                    <span className="ml-2 bg-green-500/20 text-green-400 px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider">
+                                                                        Free Trial
+                                                                    </span>
+                                                                )}
+                                                            </p>
+                                                        </div>
+                                                        {expandedModules[moduleIndex] ? (
+                                                            <ChevronUp className="text-gray-400" size={20} />
+                                                        ) : (
+                                                            <ChevronDown className="text-gray-400" size={20} />
                                                         )}
-                                                        <p className="text-gray-500 text-xs mt-2">
-                                                            {module.videos?.length || 0} video{(module.videos?.length || 0) !== 1 ? 's' : ''}
-                                                        </p>
                                                     </div>
-                                                    <div className="space-y-2 p-2">
+                                                    
+                                                    {expandedModules[moduleIndex] && (
+                                                        <div className="space-y-2 p-2 animate-in fade-in slide-in-from-top-2 duration-300">
                                                         {(module.videos || []).map((video: any, videoIndex: number) => {
                                                             const globalIndex = startIndex + videoIndex;
                                                             return (
                                                                 <div key={videoIndex} className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:bg-white/10 transition-colors">
                                                                     <div className="flex items-center text-gray-300 flex-1">
-                                                                        <PlayCircle className="mr-3 text-gray-500" size={20} />
+                                                                        <PlayCircle className={`mr-3 ${isModuleContentUnlocked ? "text-blue-400" : "text-gray-500"}`} size={20} />
                                                                         <div>
                                                                             <span className="text-white font-medium">{video.title}</span>
                                                                             <p className="text-xs text-gray-500">{video.duration}</p>
                                                                         </div>
                                                                     </div>
-                                                                    {isEnrolled ? (
-                                                                        <Link href={`/courses/${id}/video/${globalIndex}`}>
-                                                                            <Button size="sm" variant="ghost" className="text-blue-400 hover:text-blue-300">
-                                                                                Play
+                                                                    {isModuleContentUnlocked ? (
+                                                                         user ? (
+                                                                            <Link href={`/courses/${id}/video/${globalIndex}`}>
+                                                                                <Button 
+                                                                                    size="sm" 
+                                                                                    variant={moduleIndex === 0 && !isEnrolled ? "outline" : "ghost"} 
+                                                                                    className={moduleIndex === 0 && !isEnrolled 
+                                                                                        ? "text-green-400 border-green-500/30 hover:bg-green-500/10 hover:text-green-300" 
+                                                                                        : "text-blue-400 hover:text-blue-300"
+                                                                                    }
+                                                                                >
+                                                                                    {moduleIndex === 0 && !isEnrolled ? "Free Preview" : "Play"}
+                                                                                </Button>
+                                                                            </Link>
+                                                                        ) : (
+                                                                            <Button 
+                                                                                size="sm" 
+                                                                                variant="outline"
+                                                                                className="text-green-400 border-green-500/30 hover:bg-green-500/10 hover:text-green-300"
+                                                                                onClick={() => router.push(`/login?redirect=/courses/${id}`)}
+                                                                            >
+                                                                                Watch Demo
                                                                             </Button>
-                                                                        </Link>
+                                                                        )
                                                                     ) : (
                                                                         <Lock size={16} className="text-gray-600" />
                                                                     )}
@@ -429,7 +487,7 @@ export default function CourseDetailsPage() {
                                                         })}
                                                         
                                                         {/* Module specific PDFs */}
-                                                        {isEnrolled && pdfs.some(p => p.afterModule === moduleIndex + 1) && (
+                                                        {(isEnrolled || (user && moduleIndex === 0)) && pdfs.some(p => p.afterModule === moduleIndex + 1) && (
                                                             <div className="my-2 space-y-2 border-t border-white/5 pt-2">
                                                                 {pdfs.filter(p => p.afterModule === moduleIndex + 1)
                                                                     .sort((a, b) => (a.order || 0) - (b.order || 0))
@@ -462,7 +520,7 @@ export default function CourseDetailsPage() {
                                                         )}
 
                                                         {/* Module specific Quizzes */}
-                                                        {isEnrolled && quizzes.some(q => q.afterModule === moduleIndex + 1) && (
+                                                        {(isEnrolled || (user && moduleIndex === 0)) && quizzes.some(q => q.afterModule === moduleIndex + 1) && (
                                                             <div className="my-2 space-y-2 border-t border-white/5 pt-2">
                                                                 {quizzes.filter(q => q.afterModule === moduleIndex + 1)
                                                                     .map((quiz) => (
@@ -498,7 +556,7 @@ export default function CourseDetailsPage() {
                                                         )}
 
                                                         {/* Module specific Assignments */}
-                                                        {isEnrolled && assignments.some(a => a.afterModule === moduleIndex + 1) && (
+                                                        {(isEnrolled || (user && moduleIndex === 0)) && assignments.some(a => a.afterModule === moduleIndex + 1) && (
                                                             <div className="my-2 space-y-2 border-t border-white/5 pt-2">
                                                                 {assignments.filter(a => a.afterModule === moduleIndex + 1)
                                                                     .map((assignment) => (
@@ -526,6 +584,7 @@ export default function CourseDetailsPage() {
                                                             </div>
                                                         )}
                                                     </div>
+                                                    )}
                                                 </div>
                                             );
                                         })}

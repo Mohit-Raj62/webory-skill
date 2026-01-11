@@ -13,7 +13,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    const user = await User.findOne({ email: email.toLowerCase() });
+    // Case insensitive search
+    const user = await User.findOne({
+      email: { $regex: new RegExp(`^${email}$`, "i") },
+    });
 
     // Always return success to prevent email enumeration
     // Even if user doesn't exist, we return success
