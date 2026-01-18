@@ -29,6 +29,12 @@ export default function AdminApplicationsPage() {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState("all");
     const [searchTerm, setSearchTerm] = useState("");
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 10,
+        totalPages: 1,
+        totalCount: 0
+    });
 
     // Interview Modal
     const [interviewApp, setInterviewApp] = useState<JobApplication | null>(null);
@@ -42,22 +48,52 @@ export default function AdminApplicationsPage() {
     const [offerApp, setOfferApp] = useState<JobApplication | null>(null);
     const [offerLink, setOfferLink] = useState("");
 
+    // Debounce search
     useEffect(() => {
-        fetchApplications();
-    }, []);
+        const timer = setTimeout(() => {
+            fetchApplications(1);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [searchTerm, filter]);
 
-    const fetchApplications = async () => {
+    // Initial load handled by debounce effect
+    // useEffect(() => {
+    //     fetchApplications();
+    // }, []);
+
+    const fetchApplications = async (page = pagination.page) => {
+        setLoading(true);
         try {
-            const res = await fetch("/api/admin/applications");
+            const params = new URLSearchParams({
+                page: page.toString(),
+                limit: pagination.limit.toString(),
+                search: searchTerm,
+                filter: filter
+            });
+            
+            const res = await fetch(`/api/admin/applications?${params}`);
             const data = await res.json();
+            
             if(data.success) {
                  setApplications(data.data);
+                 setPagination(prev => ({
+                     ...prev,
+                     page: data.pagination.currentPage,
+                     totalPages: data.pagination.totalPages,
+                     totalCount: data.pagination.totalCount
+                 }));
             }
         } catch (error) {
             console.error("Failed to fetch applications", error);
             toast.error("Failed to load applications");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handlePageChange = (newPage: number) => {
+        if (newPage >= 1 && newPage <= pagination.totalPages) {
+            fetchApplications(newPage);
         }
     };
 
@@ -148,14 +184,8 @@ export default function AdminApplicationsPage() {
         }
     };
 
-    const filteredApplications = applications.filter((app) => {
-        const matchesFilter = filter === "all" || app.status === filter;
-        const matchesSearch =
-            app.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            app.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            app.jobId?.title?.toLowerCase().includes(searchTerm.toLowerCase());
-        return matchesFilter && matchesSearch;
-    });
+    // Client-side filtering removed in favor of Server-side
+    const filteredApplications = applications;
 
     if (loading) return <div className="p-8 text-white">Loading applications...</div>;
 

@@ -19,11 +19,63 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const applications = await JobApplication.find()
-      .populate("jobId", "title type location")
-      .sort({ appliedAt: -1 });
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const search = searchParams.get("search") || "";
+    const filter = searchParams.get("filter") || "all";
 
-    return NextResponse.json({ success: true, data: applications });
+    const skip = (page - 1) * limit;
+
+    let query: any = {};
+
+    // Status Filter
+    if (filter !== "all") {
+      query.status = filter;
+    }
+
+    // Search Logic (Searching in name, email, phone)
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+        { phone: { $regex: search, $options: "i" } },
+        // Note: Searching populated fields like jobId.title requires aggregation or post-filter,
+        // staying simple for now to ensure speed on main fields.
+      ];
+    }
+
+    console.log(`[JobApps API] Query:`, JSON.stringify(query));
+    console.log(
+      `[JobApps API] Pagination: page=${page}, limit=${limit}, skip=${skip}`,
+    );
+
+    // Parallel execution for speed
+    const [applications, totalCount] = await Promise.all([
+      JobApplication.find(query)
+        .populate("jobId", "title type location")
+        .sort({ appliedAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      JobApplication.countDocuments(query),
+    ]);
+
+    console.log(
+      `[JobApps API] Found: ${applications.length} apps, Total: ${totalCount}`,
+    );
+
+    const totalPages = Math.ceil(totalCount / limit);
+
+    return NextResponse.json({
+      success: true,
+      data: applications,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalCount,
+        hasMore: page < totalPages,
+      },
+    });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
@@ -49,7 +101,7 @@ export async function PUT(request: NextRequest) {
     if (!application) {
       return NextResponse.json(
         { error: "Application not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -65,8 +117,8 @@ export async function PUT(request: NextRequest) {
           application.name,
           application.jobId.title,
           interviewDate,
-          interviewLink
-        )
+          interviewLink,
+        ),
       );
     } else if (status === "selected") {
       await sendEmail(
@@ -75,14 +127,14 @@ export async function PUT(request: NextRequest) {
         emailTemplates.jobOffer(
           application.name,
           application.jobId.title,
-          offerLink || "#"
-        )
+          offerLink || "#",
+        ),
       );
     } else if (status === "rejected") {
       await sendEmail(
         application.email,
         `Application Update: ${application.jobId.title}`,
-        emailTemplates.jobRejection(application.name, application.jobId.title)
+        emailTemplates.jobRejection(application.name, application.jobId.title),
       );
     }
 

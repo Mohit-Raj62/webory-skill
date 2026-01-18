@@ -1,9 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Edit, Trash2, Search, Video, ClipboardList, FileText, Star, Eye, EyeOff } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus, Edit, Trash2, Search, Video, ClipboardList, FileText, Star, Eye, EyeOff, BookOpen, IndianRupee, BarChart3, MoreVertical, LayoutGrid, List, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Course {
     _id: string;
@@ -16,12 +25,26 @@ interface Course {
     createdAt: string;
     isPopular?: boolean;
     isAvailable?: boolean;
+    color?: string;
+}
+
+interface Stats {
+    totalCourses: number;
+    totalVideos: number;
+    totalRevenue: number;
 }
 
 export default function CoursesAdminPage() {
-    const [courses, setCourses] = useState < Course[] > ([]);
+    const [courses, setCourses] = useState<Course[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
+    
+    // Calculate stats on the fly
+    const stats: Stats = {
+        totalCourses: courses.length,
+        totalVideos: courses.reduce((sum, c) => sum + (c.videos?.length || 0), 0),
+        totalRevenue: courses.reduce((sum, c) => sum + c.price, 0)
+    };
 
     useEffect(() => {
         fetchCourses();
@@ -29,7 +52,8 @@ export default function CoursesAdminPage() {
 
     const fetchCourses = async () => {
         try {
-            const res = await fetch("/api/courses?includeUnavailable=true");
+            // Include timestamp for cache busting
+            const res = await fetch(`/api/courses?includeUnavailable=true&_t=${Date.now()}`);
             if (res.ok) {
                 const data = await res.json();
                 setCourses(data.courses || []);
@@ -51,7 +75,7 @@ export default function CoursesAdminPage() {
 
             if (res.ok) {
                 setCourses(courses.filter((c) => c._id !== courseId));
-                alert("Course deleted successfully");
+                // Toast notification would be good here
             } else {
                 alert("Failed to delete course");
             }
@@ -64,7 +88,6 @@ export default function CoursesAdminPage() {
     const handleTogglePopular = async (course: Course) => {
         try {
             const newStatus = !course.isPopular;
-            // Optimistic update
             setCourses(courses.map(c => 
                 c._id === course._id ? { ...c, isPopular: newStatus } : c
             ));
@@ -76,26 +99,18 @@ export default function CoursesAdminPage() {
             });
 
             if (!res.ok) {
-                // Revert on failure
                 setCourses(courses.map(c => 
                     c._id === course._id ? { ...c, isPopular: course.isPopular } : c
                 ));
-                alert("Failed to update popular status");
             }
         } catch (error) {
-            console.error("Update popular status error:", error);
-            // Revert on failure
-            setCourses(courses.map(c => 
-                c._id === course._id ? { ...c, isPopular: course.isPopular } : c
-            ));
-            alert("Failed to update popular status");
+            console.error("Error toggling popular:", error);
         }
     };
 
     const handleToggleAvailability = async (course: Course) => {
         try {
             const newStatus = !course.isAvailable;
-            // Optimistic update
             setCourses(courses.map(c => 
                 c._id === course._id ? { ...c, isAvailable: newStatus } : c
             ));
@@ -107,19 +122,12 @@ export default function CoursesAdminPage() {
             });
 
             if (!res.ok) {
-                // Revert on failure
                 setCourses(courses.map(c => 
                     c._id === course._id ? { ...c, isAvailable: course.isAvailable } : c
                 ));
-                alert("Failed to update availability status");
             }
         } catch (error) {
-            console.error("Update availability status error:", error);
-            // Revert on failure
-            setCourses(courses.map(c => 
-                c._id === course._id ? { ...c, isAvailable: course.isAvailable } : c
-            ));
-            alert("Failed to update availability status");
+            console.error("Error toggling availability:", error);
         }
     };
 
@@ -127,140 +135,232 @@ export default function CoursesAdminPage() {
         course.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1 }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { y: 20, opacity: 0 },
+        visible: { y: 0, opacity: 1 }
+    };
+
     if (loading) {
-        return (
-            <div className="p-8">
-                <div className="text-white">Loading courses...</div>
-            </div>
-        );
+         return (
+             <div className="flex items-center justify-center min-h-screen bg-black/50">
+                 <div className="flex flex-col items-center gap-4">
+                     <div className="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
+                     <p className="text-gray-400">Loading courses...</p>
+                 </div>
+             </div>
+         );
     }
 
     return (
-        <div className="p-8">
+        <div className="p-8 space-y-8 min-h-screen bg-black/50 text-white">
             {/* Header */}
-            <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-4xl font-bold text-white mb-2">Course Management</h1>
-                    <p className="text-gray-400">Manage all courses and content</p>
+            <motion.div 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="glass-card bg-gradient-to-r from-blue-900/20 to-purple-900/20 border border-white/10 p-8 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden"
+            >
+                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2" />
+                
+                <div className="relative z-10">
+                    <h1 className="text-4xl font-bold text-white mb-2">
+                        Course Management
+                    </h1>
+                    <p className="text-blue-200/80 text-lg">Create, manage and organize your curriculum</p>
                 </div>
-                <Link href="/admin/courses/new" className="w-full md:w-auto">
-                    <Button className="w-full md:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                        <Plus size={20} className="mr-2" />
-                        Add Course
+                <Link href="/admin/courses/new" className="relative z-10">
+                    <Button className="bg-white text-blue-900 hover:bg-blue-50 shadow-lg shadow-blue-500/20 px-6 py-6 text-lg rounded-xl transition-all hover:scale-105 active:scale-95 font-semibold">
+                        <Plus size={24} className="mr-2" />
+                        Create New Course
                     </Button>
                 </Link>
-            </div>
+            </motion.div>
 
-            {/* Search */}
-            <div className="glass-card p-4 rounded-2xl mb-6">
+            {/* Stats Grid */}
+            <motion.div 
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="grid grid-cols-1 md:grid-cols-3 gap-6"
+            >
+                {[
+                    { label: "Total Courses", value: stats.totalCourses, icon: BookOpen, color: "text-blue-400", bg: "bg-blue-500/10" },
+                    { label: "Total Content", value: `${stats.totalVideos} Videos`, icon: Video, color: "text-purple-400", bg: "bg-purple-500/10" },
+                    { label: "Total Revenue", value: `₹${stats.totalRevenue.toLocaleString()}`, icon: IndianRupee, color: "text-emerald-400", bg: "bg-emerald-500/10" },
+                ].map((stat, index) => (
+                    <motion.div key={index} variants={itemVariants}>
+                        <Card className="border-white/10 bg-black/40 backdrop-blur-xl relative overflow-hidden group hover:border-white/20 transition-all duration-300">
+                             <div className={`absolute -right-6 -top-6 w-32 h-32 rounded-full ${stat.bg} blur-2xl group-hover:scale-150 transition-transform duration-700`} />
+                            <CardContent className="p-6 relative z-10">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className={`p-3 rounded-xl ${stat.bg}`}>
+                                        <stat.icon className={`w-6 h-6 ${stat.color}`} />
+                                    </div>
+                                    <BarChart3 className="w-5 h-5 text-gray-500 opacity-50" />
+                                </div>
+                                <p className="text-gray-400 text-sm font-medium">{stat.label}</p>
+                                <p className="text-3xl font-bold text-white mt-1">{stat.value}</p>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                ))}
+            </motion.div>
+
+            {/* Search and Filters */}
+            <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="glass-card p-2 rounded-2xl bg-black/20 border border-white/10 backdrop-blur-md sticky top-4 z-20"
+            >
                 <div className="relative">
-                    <Search className="absolute left-3 top-3 text-gray-400" size={20} />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                     <input
                         type="text"
-                        placeholder="Search courses..."
-                        className="w-full bg-black/20 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white focus:border-blue-500/50 outline-none"
+                        placeholder="Search courses by title, level or price..."
+                        className="w-full bg-transparent border-none rounded-xl pl-12 pr-4 py-4 text-white placeholder-gray-500 focus:outline-none focus:ring-0"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div className="glass-card p-6 rounded-2xl">
-                    <p className="text-gray-400 text-sm mb-1">Total Courses</p>
-                    <p className="text-3xl font-bold text-white">{courses.length}</p>
-                </div>
-                <div className="glass-card p-6 rounded-2xl">
-                    <p className="text-gray-400 text-sm mb-1">Total Videos</p>
-                    <p className="text-3xl font-bold text-white">
-                        {courses.reduce((sum, c) => sum + (c.videos?.length || 0), 0)}
-                    </p>
-                </div>
-                <div className="glass-card p-6 rounded-2xl">
-                    <p className="text-gray-400 text-sm mb-1">Total Revenue</p>
-                    <p className="text-3xl font-bold text-white">
-                        ₹{courses.reduce((sum, c) => sum + c.price, 0)}
-                    </p>
-                </div>
-            </div>
+            </motion.div>
 
             {/* Courses Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredCourses.map((course) => (
-                    <div key={course._id} className="glass-card p-6 rounded-2xl hover:border-white/20 transition-all">
-                        <div className="flex items-start justify-between mb-4">
-                            <h3 className="text-xl font-bold text-white">{course.title}</h3>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => handleToggleAvailability(course)}
-                                    className={`p-2 rounded-lg transition-colors ${course.isAvailable ? "text-green-400 hover:bg-green-400/10" : "text-gray-500 hover:bg-gray-500/10"}`}
-                                    title={course.isAvailable ? "Mark as Unavailable" : "Mark as Available"}
-                                >
-                                    {course.isAvailable ? <Eye size={18} /> : <EyeOff size={18} />}
-                                </button>
-                                <button
-                                    onClick={() => handleTogglePopular(course)}
-                                    className={`p-2 rounded-lg transition-colors ${course.isPopular ? "text-yellow-400 hover:bg-yellow-400/10" : "text-gray-400 hover:bg-gray-500/10"}`}
-                                    title={course.isPopular ? "Remove from Popular" : "Mark as Popular"}
-                                >
-                                    <Star size={18} fill={course.isPopular ? "currentColor" : "none"} />
-                                </button>
-                                <Link href={`/admin/courses/${course._id}/edit`}>
-                                    <button className="p-2 hover:bg-blue-500/10 rounded-lg transition-colors text-blue-400">
-                                        <Edit size={18} />
-                                    </button>
-                                </Link>
-                                <button
-                                    onClick={() => handleDelete(course._id)}
-                                    className="p-2 hover:bg-red-500/10 rounded-lg transition-colors text-red-400"
-                                >
-                                    <Trash2 size={18} />
-                                </button>
-                            </div>
-                        </div>
+            <motion.div 
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-12"
+            >
+                <AnimatePresence>
+                    {filteredCourses.map((course) => (
+                        <motion.div key={course._id} variants={itemVariants} layout>
+                            <Card className="relative border-0 bg-white/5 hover:bg-white/10 overflow-hidden group hover:shadow-2xl hover:shadow-blue-900/10 transition-all duration-300 h-full flex flex-col rounded-3xl backdrop-blur-md">
+                                {/* Gradient Border via pseudo-element - using index for variety (lighter shades) */}
+                                <div className={`absolute inset-0 rounded-3xl p-[1px] bg-gradient-to-b ${['from-purple-400', 'from-cyan-400', 'from-emerald-400', 'from-orange-400', 'from-pink-400'][filteredCourses.indexOf(course) % 5]} to-transparent opacity-40 group-hover:opacity-80 transition-opacity duration-300 pointer-events-none`} />
+                                <div className={`absolute inset-0 bg-gradient-to-b ${['from-purple-400', 'from-cyan-400', 'from-emerald-400', 'from-orange-400', 'from-pink-400'][filteredCourses.indexOf(course) % 5]} to-transparent opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none`} />
+                                
+                                <div className="p-7 flex-1 flex flex-col relative z-10">
+                                    <div className="flex items-start justify-between mb-5">
+                                        <div className="flex gap-2">
+                                            {course.isPopular && (
+                                                <Badge className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20 shadow-sm shadow-yellow-900/20">
+                                                    Popular
+                                                </Badge>
+                                            )}
+                                            {!course.isAvailable && (
+                                                <Badge variant="destructive" className="bg-red-900/20 text-red-400 border-red-500/20">
+                                                    Unavailable
+                                                </Badge>
+                                            )}
+                                        </div>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-500 hover:text-white transition-colors">
+                                                    <MoreVertical size={18} />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end" className="bg-[#111] border-white/5 shadow-xl text-gray-300 backdrop-blur-xl">
+                                                <Link href={`/admin/courses/${course._id}/edit`}>
+                                                    <DropdownMenuItem className="cursor-pointer hover:bg-white/5 focus:bg-white/5 focus:text-white">
+                                                        <Edit className="mr-2 h-4 w-4" /> Edit Details
+                                                    </DropdownMenuItem>
+                                                </Link>
+                                                <DropdownMenuItem 
+                                                    onClick={() => handleToggleAvailability(course)}
+                                                    className="cursor-pointer hover:bg-white/5 focus:bg-white/5 focus:text-white"
+                                                >
+                                                    {course.isAvailable ? <EyeOff className="mr-2 h-4 w-4" /> : <Eye className="mr-2 h-4 w-4" />}
+                                                    {course.isAvailable ? "Mark Unavailable" : "Mark Available"}
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem 
+                                                    onClick={() => handleTogglePopular(course)}
+                                                    className="cursor-pointer hover:bg-white/5 focus:bg-white/5 focus:text-white"
+                                                >
+                                                    <Star className="mr-2 h-4 w-4" fill={course.isPopular ? "currentColor" : "none"} />
+                                                    {course.isPopular ? "Remove Popular" : "Mark Popular"}
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem 
+                                                    onClick={() => handleDelete(course._id)}
+                                                    className="text-red-400 cursor-pointer hover:bg-red-900/10 focus:bg-red-900/10 focus:text-red-300"
+                                                >
+                                                    <Trash2 className="mr-2 h-4 w-4" /> Delete Course
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </div>
 
-                        <p className="text-gray-400 text-sm mb-4 line-clamp-2">
-                            {course.description}
-                        </p>
+                                    <h3 className="text-2xl font-bold text-white mb-3 leading-tight group-hover:text-blue-400 transition-colors line-clamp-2">
+                                        {course.title}
+                                    </h3>
+                                    
+                                    <p className="text-gray-400 text-sm leading-relaxed line-clamp-2 mb-6 flex-1">
+                                        {course.description}
+                                    </p>
 
-                        <div className="flex items-center justify-between text-sm">
-                            <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                                {course.level}
-                            </span>
-                            <span className="text-gray-400 flex items-center gap-1">
-                                <Video size={16} />
-                                {course.videos?.length || 0} videos
-                            </span>
-                        </div>
+                                    <div className="flex flex-wrap gap-2 mb-6">
+                                        <Badge variant="outline" className="border-white/5 bg-white/5 text-gray-400 font-normal px-3 py-1">
+                                            {course.level}
+                                        </Badge>
+                                        <Badge variant="outline" className="border-white/5 bg-white/5 text-gray-400 font-normal px-3 py-1 flex items-center gap-1.5">
+                                            <Video size={12} />
+                                            {course.videos?.length || 0} Videos
+                                        </Badge>
+                                    </div>
 
-                        <div className="mt-4 pt-4 border-t border-white/10">
-                            <div className="flex items-center justify-between mb-3">
-                                <span className="text-2xl font-bold text-white">₹{course.price}</span>
-                                <span className="text-gray-400 text-sm">{course.studentsCount} students</span>
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                <Link href={`/admin/courses/${course._id}/quizzes`}>
-                                    <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
-                                        <ClipboardList size={16} className="mr-1" />
-                                        Quizzes
-                                    </Button>
-                                </Link>
-                                <Link href={`/admin/courses/${course._id}/assignments`}>
-                                    <Button className="w-full bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700">
-                                        <FileText size={16} className="mr-1" />
-                                        Assignments
-                                    </Button>
-                                </Link>
-                            </div>
-                        </div>
+                                    <div className="flex items-center justify-between pt-5 border-t border-white/5">
+                                        <div className="flex flex-col">
+                                            <span className="text-xs text-gray-500 uppercase tracking-wider font-medium mb-0.5">Price</span>
+                                            <span className="text-2xl font-bold text-white tracking-tight">
+                                                ₹{course.price.toLocaleString()}
+                                            </span>
+                                        </div>
+                                        <div className="text-right flex flex-col items-end">
+                                            <span className="text-xs text-gray-500 uppercase tracking-wider font-medium mb-0.5">Enrolled</span>
+                                            <div className="flex items-center gap-1.5 text-white bg-white/5 px-2 py-1 rounded-md">
+                                                <Users size={12} className="text-gray-400" />
+                                                <span className="font-medium">{course.studentsCount}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="p-3 bg-white/[0.02] border-t border-white/5 grid grid-cols-2 gap-2 relative z-10">
+                                    <Link href={`/admin/courses/${course._id}/quizzes`}>
+                                        <Button variant="ghost" className="w-full justify-center gap-2 text-gray-400 hover:text-purple-300 hover:bg-purple-500/10 h-11 rounded-xl transition-all group/btn">
+                                            <ClipboardList size={18} className="text-purple-500/70 group-hover/btn:text-purple-400 transition-colors" />
+                                            <span className="font-medium">Quizzes</span>
+                                        </Button>
+                                    </Link>
+                                    <Link href={`/admin/courses/${course._id}/assignments`}>
+                                        <Button variant="ghost" className="w-full justify-center gap-2 text-gray-400 hover:text-emerald-300 hover:bg-emerald-500/10 h-11 rounded-xl transition-all group/btn">
+                                            <FileText size={18} className="text-emerald-500/70 group-hover/btn:text-emerald-400 transition-colors" />
+                                            <span className="font-medium">Assignments</span>
+                                        </Button>
+                                    </Link>
+                                </div>
+                            </Card>
+                        </motion.div>
+                    ))}
+                </AnimatePresence>
+            </motion.div>
+
+            {filteredCourses.length === 0 && !loading && (
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                    <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-4">
+                        <Search className="w-10 h-10 text-gray-500" />
                     </div>
-                ))}
-            </div>
-
-            {filteredCourses.length === 0 && (
-                <div className="text-center py-12 text-gray-400">
-                    No courses found
+                    <h3 className="text-xl font-bold text-white mb-2">No courses found</h3>
+                    <p className="text-gray-400 max-w-sm">
+                        Try adjusting your search terms or create a new course to get started.
+                    </p>
                 </div>
             )}
         </div>

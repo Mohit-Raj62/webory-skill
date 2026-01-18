@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus, X, Upload, Image, FileText, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, X, Upload, Image, FileText, Trash2, Video, DollarSign, Users, Clock, Tag, Layers, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { uploadFile, uploadPDFToCloudinary } from "@/lib/upload-utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function EditCoursePage() {
     const router = useRouter();
@@ -463,456 +464,274 @@ export default function EditCoursePage() {
 
     if (loading) {
         return (
-            <div className="p-8">
-                <div className="text-white">Loading course...</div>
+            <div className="min-h-screen flex items-center justify-center bg-black/50">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                    <p className="text-white text-lg font-medium">Loading course data...</p>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="p-8">
+        <div className="p-8 max-w-7xl mx-auto">
             {/* Header */}
-            <div className="mb-8">
-                <Link href="/admin/courses">
-                    <Button variant="ghost" className="mb-4">
-                        <ArrowLeft size={20} className="mr-2" />
-                        Back to Courses
+            <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <Link href="/admin/courses">
+                        <Button variant="ghost" className="mb-4 text-gray-400 hover:text-white hover:bg-white/5 transition-all">
+                            <ArrowLeft size={18} className="mr-2" />
+                            Back to Courses
+                        </Button>
+                    </Link>
+                    <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">Edit Course</h1>
+                    <p className="text-gray-400 text-lg">Update course details and content management</p>
+                </div>
+                <div className="flex gap-3">
+                     <Button
+                        type="submit"
+                        disabled={saving}
+                        onClick={handleSubmit}
+                        className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-blue-500/20 px-8 py-6 rounded-xl font-medium text-lg transition-all transform hover:scale-[1.02]"
+                    >
+                        {saving ? (
+                            <span className="flex items-center gap-2">
+                                <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"/>
+                                Saving...
+                            </span>
+                        ) : (
+                            <span className="flex items-center gap-2">
+                                <CheckCircle size={20} />
+                                Update Course
+                            </span>
+                        )}
                     </Button>
-                </Link>
-                <h1 className="text-4xl font-bold text-white mb-2">Edit Course</h1>
-                <p className="text-gray-400">Update course details and content</p>
+                </div>
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="glass-card p-8 rounded-2xl max-w-4xl">
-                <div className="space-y-6">
-                    {/* Basic Info */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label className="text-sm text-gray-300 block mb-2">Course Title *</label>
-                            <input
-                                type="text"
-                                required
-                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                value={formData.title}
-                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                            />
-                        </div>
-
-                        <div>
-                            <label className="text-sm text-gray-300 block mb-2">Level *</label>
-                            <select
-                                required
-                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                value={formData.level}
-                                onChange={(e) => setFormData({ ...formData, level: e.target.value })}
-                            >
-                                <option value="Beginner">Beginner</option>
-                                <option value="Intermediate">Intermediate</option>
-                                <option value="Advanced">Advanced</option>
-                            </select>
-                        </div>
-
-                        <div className="md:col-span-2">
-                             <label className="text-sm text-gray-300 block mb-2">Collaboration (Optional)</label>
-                             <input
-                                type="text"
-                                placeholder="e.g. In Partnership with JIBT College"
-                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                value={formData.collaboration}
-                                onChange={(e) => setFormData({ ...formData, collaboration: e.target.value })}
-                            />
-                            <p className="text-xs text-gray-400 mt-1">This text will appear on the student certificate.</p>
-                        </div>
+            <form onSubmit={handleSubmit} className="relative z-10">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    
+                    {/* LEFT COLUMN - MAIN CONTENT */}
+                    <div className="lg:col-span-2 space-y-8">
                         
-                        <div className="md:col-span-2">
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    className="w-5 h-5 rounded border-white/10 bg-black/20 text-blue-500 focus:ring-blue-500/50"
-                                    checked={formData.isAvailable}
-                                    onChange={(e) => setFormData({ ...formData, isAvailable: e.target.checked })}
-                                />
-                                <span className="text-gray-300">Available for Students</span>
-                            </label>
-                            <p className="text-xs text-gray-400 mt-1 ml-7">
-                                If unchecked, this course will be hidden from the student course list.
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* Certificate Signatures Section */}
-                    <div className="border-t border-white/10 pt-6 mt-6">
-                        <h3 className="text-lg font-semibold text-white mb-4">Certificate Signatures</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Founder */}
-                            <div>
-                                <label className="text-sm text-gray-300 block mb-2">Signature 1 (Left)</label>
-                                <div className="space-y-2">
+                        {/* 1. Basic Information */}
+                        <div className="glass-card border border-white/10 bg-black/40 backdrop-blur-xl p-8 rounded-3xl shadow-xl">
+                            <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
+                                <div className="p-2 bg-blue-500/20 rounded-lg text-blue-400">
+                                    <Tag size={20} />
+                                </div>
+                                Basic Information
+                            </h2>
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="text-sm text-gray-400 font-medium mb-2 block">Course Title *</label>
                                     <input
                                         type="text"
-                                        placeholder="Name (e.g. Mohit Raj)"
-                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white text-sm"
-                                        value={formData.signatures.founder.name}
-                                        onChange={(e) => setFormData({ 
-                                            ...formData, 
-                                            signatures: { ...formData.signatures, founder: { ...formData.signatures.founder, name: e.target.value } } 
-                                        })}
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Title (e.g. Founder & CEO)"
-                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white text-sm"
-                                        value={formData.signatures.founder.title}
-                                        onChange={(e) => setFormData({ 
-                                            ...formData, 
-                                            signatures: { ...formData.signatures, founder: { ...formData.signatures.founder, title: e.target.value } } 
-                                        })}
+                                        required
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder-gray-500 focus:border-blue-500/50 outline-none transition-all focus:bg-white/10 focus:ring-1 focus:ring-blue-500/20 text-lg"
+                                        value={formData.title}
+                                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                        placeholder="e.g. Full Stack Web Development"
                                     />
                                 </div>
-                            </div>
-                            
-                            {/* Director */}
-                            <div>
-                                <label className="text-sm text-gray-300 block mb-2">Signature 2 (Right/Center)</label>
-                                <div className="space-y-2">
-                                    <input
-                                        type="text"
-                                        placeholder="Name (e.g. Webory Team)"
-                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white text-sm"
-                                        value={formData.signatures.director.name}
-                                        onChange={(e) => setFormData({ 
-                                            ...formData, 
-                                            signatures: { ...formData.signatures, director: { ...formData.signatures.director, name: e.target.value } } 
-                                        })}
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Title (e.g. Director of Education)"
-                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white text-sm"
-                                        value={formData.signatures.director.title}
-                                        onChange={(e) => setFormData({ 
-                                            ...formData, 
-                                            signatures: { ...formData.signatures, director: { ...formData.signatures.director, title: e.target.value } } 
-                                        })}
+
+                                <div>
+                                    <label className="text-sm text-gray-400 font-medium mb-2 block">Description *</label>
+                                    <textarea
+                                        required
+                                        rows={6}
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder-gray-500 focus:border-blue-500/50 outline-none transition-all focus:bg-white/10 focus:ring-1 focus:ring-blue-500/20 resize-y"
+                                        value={formData.description}
+                                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                        placeholder="Detailed description of the course..."
                                     />
                                 </div>
-                            </div>
 
-                            {/* Partner (Only if collaboration) */}
-                            {formData.collaboration && (
-                                <div className="md:col-span-2">
-                                    <label className="text-sm text-[#c5a059] block mb-2">Signature 3 (Partner Rep)</label>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label className="text-sm text-gray-400 font-medium mb-2 block">Level *</label>
+                                        <select
+                                            required
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-blue-500/50 outline-none transition-all focus:bg-white/10 appearance-none cursor-pointer"
+                                            value={formData.level}
+                                            onChange={(e) => setFormData({ ...formData, level: e.target.value })}
+                                        >
+                                            <option value="Beginner" className="bg-gray-900">Beginner</option>
+                                            <option value="Intermediate" className="bg-gray-900">Intermediate</option>
+                                            <option value="Advanced" className="bg-gray-900">Advanced</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="text-sm text-gray-400 font-medium mb-2 block">Duration</label>
                                         <input
                                             type="text"
-                                            placeholder="Name (e.g. Partner Rep.)"
-                                            className="w-full bg-black/20 border border-[#c5a059]/30 rounded-xl p-3 text-white text-sm"
-                                            value={formData.signatures.partner.name}
-                                            onChange={(e) => setFormData({ 
-                                                ...formData, 
-                                                signatures: { ...formData.signatures, partner: { ...formData.signatures.partner, name: e.target.value } } 
-                                            })}
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Title (e.g. Authorized Signatory)"
-                                            className="w-full bg-black/20 border border-[#c5a059]/30 rounded-xl p-3 text-white text-sm"
-                                            value={formData.signatures.partner.title}
-                                            onChange={(e) => setFormData({ 
-                                                ...formData, 
-                                                signatures: { ...formData.signatures, partner: { ...formData.signatures.partner, title: e.target.value } } 
-                                            })}
+                                            placeholder="e.g., 10h 30m"
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder-gray-500 focus:border-blue-500/50 outline-none transition-all focus:bg-white/10"
+                                            value={formData.duration}
+                                            onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
                                         />
                                     </div>
                                 </div>
-                            )}
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="text-sm text-gray-300 block mb-2">Description *</label>
-                        <textarea
-                            required
-                            rows={4}
-                            className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                            value={formData.description}
-                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        />
-                    </div>
-
-
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div>
-                            <label className="text-sm text-gray-300 block mb-2">Price (₹) *</label>
-                            <input
-                                type="number"
-                                required
-                                min="0"
-                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                value={formData.price}
-                                onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
-                            />
-                        </div>
-
-                        <div>
-                            <label className="text-sm text-gray-300 block mb-2">Original Price (₹)</label>
-                            <input
-                                type="number"
-                                min="0"
-                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                value={formData.originalPrice}
-                                onChange={(e) => setFormData({ ...formData, originalPrice: Number(e.target.value) })}
-                            />
-                            <p className="text-xs text-gray-400 mt-1">For showing strikethrough pricing</p>
-                        </div>
-
-                        <div>
-                            <label className="text-sm text-gray-300 block mb-2">Discount %</label>
-                            <input
-                                type="number"
-                                min="0"
-                                max="100"
-                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                value={formData.discountPercentage}
-                                onChange={(e) => setFormData({ ...formData, discountPercentage: Number(e.target.value) })}
-                            />
-                            <p className="text-xs text-gray-400 mt-1">
-                                {formData.discountPercentage > 0 && formData.originalPrice > 0
-                                    ? `Discounted: ₹${Math.round(formData.originalPrice * (1 - formData.discountPercentage / 100))}`
-                                    : "Enter discount percentage"}
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                         <div>
-                            <label className="text-sm text-gray-300 block mb-2">Students Count</label>
-                            <input
-                                type="text"
-                                placeholder="e.g. 10k+, 250"
-                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                value={formData.studentsCount}
-                                onChange={(e) => setFormData({ ...formData, studentsCount: e.target.value })}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label className="text-sm text-gray-300 block mb-2">Duration</label>
-                            <input
-                                type="text"
-                                placeholder="e.g., 10h"
-                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                value={formData.duration}
-                                onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                            />
-                        </div>
-
-                        <div>
-                            <label className="text-sm text-gray-300 block mb-2">Icon Name</label>
-                            <input
-                                type="text"
-                                placeholder="e.g., Globe, Code"
-                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                value={formData.icon}
-                                onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                            />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="text-sm text-gray-300 block mb-2">Thumbnail URL</label>
-                        <div className="flex gap-2">
-                            <input
-                                type="url"
-                                placeholder="https://example.com/image.jpg"
-                                className="flex-1 bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                value={formData.thumbnail}
-                                onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
-                            />
-                            <div className="relative">
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleThumbnailUpload}
-                                    disabled={uploadingThumbnail}
-                                    className="hidden"
-                                    id="thumbnail-upload"
-                                />
-                                <label
-                                    htmlFor="thumbnail-upload"
-                                    className={`flex items-center gap-2 px-4 py-3 rounded-xl cursor-pointer transition-all ${uploadingThumbnail
-                                        ? "bg-gray-600 cursor-not-allowed"
-                                        : "bg-blue-600 hover:bg-blue-700"
-                                        } text-white`}
-                                >
-                                    <Image size={20} />
-                                    {uploadingThumbnail ? "Uploading..." : "Upload Image"}
-                                </label>
                             </div>
                         </div>
-                        {formData.thumbnail && (
-                            <div className="mt-2 relative w-40 h-24 rounded-lg overflow-hidden border border-white/10 group">
-                                <img src={formData.thumbnail} alt="Thumbnail preview" className="w-full h-full object-cover" />
-                                <button
-                                    type="button"
-                                    onClick={() => setFormData({ ...formData, thumbnail: "" })}
-                                    className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                    <X className="text-white hover:text-red-400" size={24} />
-                                </button>
-                            </div>
-                        )}
-                    </div>
 
-                    {/* Certificate Preview Image */}
-                    <div>
-                        <label className="text-sm text-gray-300 block mb-2">Sample Certificate Image</label>
-                        <div className="flex gap-2">
-                            <input
-                                type="url"
-                                placeholder="Certificate Image URL or upload file"
-                                className="flex-1 bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                value={formData.certificateImage}
-                                onChange={(e) => setFormData({ ...formData, certificateImage: e.target.value })}
-                            />
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleCertificateUpload}
-                                disabled={uploadingCertificate}
-                                className="hidden"
-                                id="certificate-upload"
-                            />
-                            <label
-                                htmlFor="certificate-upload"
-                                className={`flex items-center gap-2 px-4 py-3 rounded-xl cursor-pointer transition-all ${uploadingCertificate
-                                    ? "bg-gray-600 cursor-not-allowed"
-                                    : "bg-blue-600 hover:bg-blue-700"
-                                    } text-white`}
-                            >
-                                <Image size={20} />
-                                {uploadingCertificate ? "Uploading..." : "Upload"}
-                            </label>
-                        </div>
-                        {formData.certificateImage && (
-                            <img
-                                src={formData.certificateImage}
-                                alt="Certificate preview"
-                                className="mt-3 w-full max-w-md h-auto object-contain rounded-xl border border-white/10"
-                            />
-                        )}
-                    </div>
-
-                    {/* Curriculum */}
-                    <div>
-                        <label className="text-sm text-gray-300 block mb-2">Curriculum Topics</label>
-                        <div className="flex gap-2 mb-3">
-                            <input
-                                type="text"
-                                placeholder="Add curriculum topic"
-                                className="flex-1 bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                value={curriculumInput}
-                                onChange={(e) => setCurriculumInput(e.target.value)}
-                                onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addCurriculumItem())}
-                            />
-                            <Button type="button" onClick={addCurriculumItem}>
-                                <Plus size={20} />
-                            </Button>
-                        </div>
-                        <div className="space-y-2">
-                            {(formData.curriculum || []).map((item, index) => (
-                                <div key={index} className="flex items-center justify-between bg-white/5 p-3 rounded-lg">
-                                    <span className="text-white">{item}</span>
-                                    <button
-                                        type="button"
-                                        onClick={() => removeCurriculumItem(index)}
-                                        className="text-red-400 hover:text-red-300"
-                                    >
-                                        <X size={18} />
-                                    </button>
+                        {/* 2. Curriculum & Benefits */}
+                        <div className="glass-card border border-white/10 bg-black/40 backdrop-blur-xl p-8 rounded-3xl shadow-xl">
+                            <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
+                                <div className="p-2 bg-purple-500/20 rounded-lg text-purple-400">
+                                    <Layers size={20} />
                                 </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Benefits */}
-                    <div>
-                        <label className="text-sm text-gray-300 block mb-2">Key Benefits (What you'll get)</label>
-                        <div className="flex gap-2 mb-3">
-                            <input
-                                type="text"
-                                placeholder="Add benefit (e.g. Certificate, Lifetime Access)"
-                                className="flex-1 bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                value={benefitsInput}
-                                onChange={(e) => setBenefitsInput(e.target.value)}
-                                onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addBenefitsItem())}
-                            />
-                            <Button type="button" onClick={addBenefitsItem}>
-                                <Plus size={20} />
-                            </Button>
-                        </div>
-                        <div className="space-y-2">
-                            {formData.benefits.map((item, index) => (
-                                <div key={index} className="flex items-center justify-between bg-white/5 p-3 rounded-lg">
-                                    <span className="text-white">{item}</span>
-                                    <button
-                                        type="button"
-                                        onClick={() => removeBenefitsItem(index)}
-                                        className="text-red-400 hover:text-red-300"
-                                    >
-                                        <X size={18} />
-                                    </button>
+                                Curriculum & Benefits
+                            </h2>
+                            
+                            <div className="space-y-8">
+                                {/* Topics */}
+                                <div>
+                                    <label className="text-sm text-gray-400 font-medium mb-2 block">What will be learned?</label>
+                                    <div className="flex gap-2 mb-4">
+                                        <input
+                                            type="text"
+                                            placeholder="Add a topic and press Enter"
+                                            className="flex-1 bg-white/5 border border-white/10 rounded-xl p-3 text-white placeholder-gray-500 focus:border-purple-500/50 outline-none transition-all"
+                                            value={curriculumInput}
+                                            onChange={(e) => setCurriculumInput(e.target.value)}
+                                            onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addCurriculumItem())}
+                                        />
+                                        <Button 
+                                            type="button" 
+                                            onClick={addCurriculumItem}
+                                            className="bg-purple-600 hover:bg-purple-700 text-white p-3 rounded-xl aspect-square"
+                                        >
+                                            <Plus size={20} />
+                                        </Button>
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        <AnimatePresence>
+                                            {(formData.curriculum || []).map((item, index) => (
+                                                <motion.div 
+                                                    initial={{ opacity: 0, scale: 0.8 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    exit={{ opacity: 0, scale: 0.8 }}
+                                                    key={index} 
+                                                    className="flex items-center gap-2 bg-purple-500/10 border border-purple-500/20 px-3 py-1.5 rounded-full"
+                                                >
+                                                    <span className="text-purple-200 text-sm">{item}</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeCurriculumItem(index)}
+                                                        className="text-purple-400 hover:text-red-400 transition-colors bg-black/20 rounded-full p-0.5"
+                                                    >
+                                                        <X size={14} />
+                                                    </button>
+                                                </motion.div>
+                                            ))}
+                                        </AnimatePresence>
+                                    </div>
                                 </div>
-                            ))}
-                        </div>
-                    </div>
 
-                    {/* Modules and Videos */}
-                    <div>
-                        <label className="text-sm text-gray-300 block mb-4">Course Modules & Videos</label>
-                        
-                        {/* Add New Module */}
-                        <div className="bg-white/5 p-4 rounded-xl border border-white/10 mb-4">
-                            <h3 className="text-white font-medium mb-3 flex items-center gap-2">
-                                <Plus size={18} className="text-blue-400" />
-                                Add New Module
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-                                <input
-                                    type="text"
-                                    placeholder="Module Title (e.g., Introduction to React)"
-                                    className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                    value={moduleInput.title}
-                                    onChange={(e) => setModuleInput({ ...moduleInput, title: e.target.value })}
-                                />
-                                <input
-                                    type="text"
-                                    placeholder="Module Description (optional)"
-                                    className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                    value={moduleInput.description}
-                                    onChange={(e) => setModuleInput({ ...moduleInput, description: e.target.value })}
-                                />
+                                <div className="h-px bg-white/5 w-full my-6"/>
+
+                                {/* Benefits */}
+                                <div>
+                                    <label className="text-sm text-gray-400 font-medium mb-2 block">Key Benefits</label>
+                                    <div className="flex gap-2 mb-4">
+                                        <input
+                                            type="text"
+                                            placeholder="Add a benefit and press Enter"
+                                            className="flex-1 bg-white/5 border border-white/10 rounded-xl p-3 text-white placeholder-gray-500 focus:border-green-500/50 outline-none transition-all"
+                                            value={benefitsInput}
+                                            onChange={(e) => setBenefitsInput(e.target.value)}
+                                            onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addBenefitsItem())}
+                                        />
+                                        <Button 
+                                            type="button" 
+                                            onClick={addBenefitsItem}
+                                            className="bg-green-600 hover:bg-green-700 text-white p-3 rounded-xl aspect-square"
+                                        >
+                                            <Plus size={20} />
+                                        </Button>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <AnimatePresence>
+                                            {formData.benefits.map((item, index) => (
+                                                <motion.div 
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, height: 0 }}
+                                                    key={index} 
+                                                    className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5 group hover:border-white/10 transition-all"
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <CheckCircle size={16} className="text-green-500" />
+                                                        <span className="text-gray-200">{item}</span>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeBenefitsItem(index)}
+                                                        className="text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
+                                                    >
+                                                        <X size={18} />
+                                                    </button>
+                                                </motion.div>
+                                            ))}
+                                        </AnimatePresence>
+                                    </div>
+                                </div>
                             </div>
-                            <Button type="button" onClick={addModule} className="w-full">
-                                <Plus size={20} className="mr-2" />
-                                Create Module
-                            </Button>
                         </div>
 
-                        {/* Module List */}
-                        {formData.modules.length > 0 && (
-                            <div className="space-y-4">
+                        {/* 3. Modules & Content */}
+                        <div className="glass-card border border-white/10 bg-black/40 backdrop-blur-xl p-8 rounded-3xl shadow-xl">
+                             <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
+                                <div className="p-2 bg-indigo-500/20 rounded-lg text-indigo-400">
+                                    <Video size={20} />
+                                </div>
+                                Course Content
+                            </h2>
+
+                            {/* Add Module Box */}
+                            <div className="bg-indigo-500/5 p-6 rounded-2xl border border-indigo-500/10 mb-8 hover:border-indigo-500/20 transition-all">
+                                <h3 className="text-indigo-200 font-medium mb-4 flex items-center gap-2">
+                                    Add New Module
+                                </h3>
+                                <div className="flex flex-col md:flex-row gap-4 mb-4">
+                                    <input
+                                        type="text"
+                                        placeholder="Module Title"
+                                        className="flex-1 bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-indigo-500/50 outline-none"
+                                        value={moduleInput.title}
+                                        onChange={(e) => setModuleInput({ ...moduleInput, title: e.target.value })}
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Description (Optional)"
+                                        className="flex-1 bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-indigo-500/50 outline-none"
+                                        value={moduleInput.description}
+                                        onChange={(e) => setModuleInput({ ...moduleInput, description: e.target.value })}
+                                    />
+                                </div>
+                                <Button 
+                                    type="button" 
+                                    onClick={addModule} 
+                                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl py-6"
+                                >
+                                    <Plus size={20} className="mr-2" />
+                                    Create Module
+                                </Button>
+                            </div>
+
+                            {/* Modules List */}
+                            <div className="space-y-6">
                                 {formData.modules.map((module, moduleIndex) => (
-                                    <div key={moduleIndex} className="bg-white/5 p-4 rounded-xl border border-white/10">
-                                        <div className="flex items-center justify-between mb-3">
-                                            <div className="flex-1">
-                                                {editingModule === moduleIndex ? (
-                                                    // Edit Mode
-                                                    <div className="space-y-2">
+                                    <div key={moduleIndex} className={`bg-black/40 border ${selectedModuleIndex === moduleIndex ? 'border-indigo-500/50 shadow-lg shadow-indigo-500/10' : 'border-white/10'} rounded-2xl overflow-hidden transition-all duration-300`}>
+                                        
+                                        {/* Module Header */}
+                                        <div className="p-5 flex items-start justify-between bg-white/5 border-b border-white/5">
+                                            <div className="flex-1 mr-4">
+                                                 {editingModule === moduleIndex ? (
+                                                    <div className="space-y-3">
                                                         <input
                                                             type="text"
                                                             value={module.title}
@@ -921,8 +740,7 @@ export default function EditCoursePage() {
                                                                 newModules[moduleIndex].title = e.target.value;
                                                                 setFormData({ ...formData, modules: newModules });
                                                             }}
-                                                            className="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-white font-bold text-lg"
-                                                            placeholder="Module title"
+                                                            className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-white font-bold text-lg focus:border-indigo-500/50 outline-none"
                                                         />
                                                         <input
                                                             type="text"
@@ -932,368 +750,478 @@ export default function EditCoursePage() {
                                                                 newModules[moduleIndex].description = e.target.value;
                                                                 setFormData({ ...formData, modules: newModules });
                                                             }}
-                                                            className="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-gray-300 text-sm"
-                                                            placeholder="Module description (optional)"
+                                                            className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-gray-300 text-sm focus:border-indigo-500/50 outline-none"
                                                         />
-                                                        <p className="text-gray-500 text-xs mt-1">
-                                                            {module.videos?.length || 0} video{(module.videos?.length || 0) !== 1 ? 's' : ''}
-                                                        </p>
                                                     </div>
                                                 ) : (
-                                                    // View Mode
                                                     <>
-                                                        <h3 className="text-white font-bold text-lg">
-                                                            Module {moduleIndex + 1}: {module.title}
-                                                        </h3>
-                                                        {module.description && (
-                                                            <p className="text-gray-400 text-sm">{module.description}</p>
-                                                        )}
-                                                        <p className="text-gray-500 text-xs mt-1">
-                                                            {module.videos?.length || 0} video{(module.videos?.length || 0) !== 1 ? 's' : ''}
-                                                        </p>
+                                                        <div className="flex items-center gap-3 mb-1">
+                                                            <span className="bg-white/10 text-gray-400 text-xs px-2 py-0.5 rounded font-mono">Module {moduleIndex + 1}</span>
+                                                            <h3 className="text-white font-bold text-lg">{module.title}</h3>
+                                                        </div>
+                                                        <p className="text-gray-400 text-sm">{module.description}</p>
                                                     </>
                                                 )}
                                             </div>
+
                                             <div className="flex items-center gap-2">
                                                 <button
                                                     type="button"
                                                     onClick={() => setEditingModule(editingModule === moduleIndex ? null : moduleIndex)}
-                                                    className="px-3 py-1 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded text-sm"
+                                                    className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                                                    title="Edit Module Info"
                                                 >
-                                                    {editingModule === moduleIndex ? "Save" : "Edit"}
+                                                    {editingModule === moduleIndex ? <CheckCircle size={18} className="text-green-500"/> : <Tag size={18} />}
                                                 </button>
                                                 <Button
                                                     type="button"
                                                     size="sm"
-                                                    variant={selectedModuleIndex === moduleIndex ? "default" : "outline"}
+                                                    variant={selectedModuleIndex === moduleIndex ? "secondary" : "ghost"}
+                                                    className={selectedModuleIndex === moduleIndex ? "bg-indigo-500 text-white hover:bg-indigo-600 border-none" : "hover:text-white hover:bg-white/10"}
                                                     onClick={() => setSelectedModuleIndex(moduleIndex)}
                                                 >
-                                                    {selectedModuleIndex === moduleIndex ? "Selected" : "Select"}
+                                                    {selectedModuleIndex === moduleIndex ? "Adding Videos..." : "Select to Add"}
                                                 </Button>
                                                 <button
                                                     type="button"
                                                     onClick={() => removeModule(moduleIndex)}
-                                                    className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                                                    className="p-2 text-red-500/70 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                                                 >
-                                                    <X size={18} />
+                                                    <Trash2 size={18} />
                                                 </button>
                                             </div>
                                         </div>
 
-                                        {/* Videos in this module */}
-                                        {module.videos && module.videos.length > 0 && (
-                                            <div className="space-y-2 mt-3">
-                                                {module.videos.map((video: any, videoIndex: number) => (
-                                                    <div key={videoIndex} className="flex items-center justify-between bg-black/20 p-3 rounded-lg">
-                                                        {editingVideo?.moduleIndex === moduleIndex && editingVideo?.videoIndex === videoIndex ? (
-                                                            // Edit Mode
-                                                            <div className="flex-1 space-y-2">
-                                                                <input
-                                                                    type="text"
-                                                                    value={formData.modules[moduleIndex].videos[videoIndex].title}
-                                                                    onChange={(e) => {
-                                                                        const newModules = [...formData.modules];
-                                                                        newModules[moduleIndex].videos[videoIndex].title = e.target.value;
-                                                                        setFormData({ ...formData, modules: newModules });
-                                                                    }}
-                                                                    className="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-white text-sm"
-                                                                    placeholder="Video title"
-                                                                />
-                                                                <div className="flex gap-2">
-                                                                    <input
-                                                                        type="text"
-                                                                        value={formData.modules[moduleIndex].videos[videoIndex].url}
-                                                                        onChange={(e) => {
-                                                                            const newModules = [...formData.modules];
-                                                                            newModules[moduleIndex].videos[videoIndex].url = e.target.value;
-                                                                            setFormData({ ...formData, modules: newModules });
-                                                                        }}
-                                                                        className="flex-1 bg-black/40 border border-white/10 rounded px-3 py-2 text-white text-sm"
-                                                                        placeholder="Video URL"
-                                                                    />
-                                                                    <input
-                                                                        type="text"
-                                                                        value={formData.modules[moduleIndex].videos[videoIndex].duration}
-                                                                        onChange={(e) => {
-                                                                            const newModules = [...formData.modules];
-                                                                            newModules[moduleIndex].videos[videoIndex].duration = e.target.value;
-                                                                            setFormData({ ...formData, modules: newModules });
-                                                                        }}
-                                                                        className="w-24 bg-black/40 border border-white/10 rounded px-3 py-2 text-white text-sm"
-                                                                        placeholder="Duration"
-                                                                    />
+                                        {/* Videos inside Module */}
+                                        <div className="p-4 bg-black/20">
+                                            {(!module.videos || module.videos.length === 0) ? (
+                                                <div className="text-center py-6 text-gray-600 text-sm italic">
+                                                    No videos in this module yet. Select this module to add videos.
+                                                </div>
+                                            ) : (
+                                                <div className="space-y-3">
+                                                    {module.videos.map((video: any, videoIndex: number) => (
+                                                        <div key={videoIndex} className="flex items-center justify-between bg-black/20 p-3 rounded-xl border border-white/5 hover:border-white/10 transition-all group">
+                                                             <div className="flex items-center gap-3 flex-1">
+                                                                <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400">
+                                                                    <Video size={14} />
                                                                 </div>
-                                                            </div>
-                                                        ) : (
-                                                            // View Mode
-                                                            <div>
-                                                                <p className="text-white font-medium">{video.title}</p>
-                                                                <p className="text-gray-400 text-sm">{video.duration}</p>
-                                                            </div>
-                                                        )}
-                                                        <div className="flex gap-2">
-                                                            {editingVideo?.moduleIndex === moduleIndex && editingVideo?.videoIndex === videoIndex ? (
+                                                                
+                                                                {editingVideo?.moduleIndex === moduleIndex && editingVideo?.videoIndex === videoIndex ? (
+                                                                    <div className="flex-1 space-y-2 mr-4">
+                                                                        <input
+                                                                            type="text"
+                                                                            value={formData.modules[moduleIndex].videos[videoIndex].title}
+                                                                            onChange={(e) => {
+                                                                                const newModules = [...formData.modules];
+                                                                                newModules[moduleIndex].videos[videoIndex].title = e.target.value;
+                                                                                setFormData({ ...formData, modules: newModules });
+                                                                            }}
+                                                                            className="w-full bg-black/40 border border-white/10 rounded px-2 py-1 text-white text-sm"
+                                                                        />
+                                                                        <div className="flex gap-2">
+                                                                             <input
+                                                                                type="text"
+                                                                                value={formData.modules[moduleIndex].videos[videoIndex].url}
+                                                                                onChange={(e) => {
+                                                                                    const newModules = [...formData.modules];
+                                                                                    newModules[moduleIndex].videos[videoIndex].url = e.target.value;
+                                                                                    setFormData({ ...formData, modules: newModules });
+                                                                                }}
+                                                                                className="flex-1 bg-black/40 border border-white/10 rounded px-2 py-1 text-gray-400 text-xs"
+                                                                            />
+                                                                             <input
+                                                                                type="text"
+                                                                                value={formData.modules[moduleIndex].videos[videoIndex].duration}
+                                                                                onChange={(e) => {
+                                                                                    const newModules = [...formData.modules];
+                                                                                    newModules[moduleIndex].videos[videoIndex].duration = e.target.value;
+                                                                                    setFormData({ ...formData, modules: newModules });
+                                                                                }}
+                                                                                className="w-16 bg-black/40 border border-white/10 rounded px-2 py-1 text-gray-400 text-xs"
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                ) : (
+                                                                    <div>
+                                                                        <p className="text-gray-200 font-medium text-sm">{video.title}</p>
+                                                                        <div className="flex items-center gap-3 mt-1">
+                                                                            <span className="text-xs text-gray-500 flex items-center gap-1">
+                                                                                <Clock size={10} /> {video.duration}
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                             </div>
+
+                                                             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                {editingVideo?.moduleIndex === moduleIndex && editingVideo?.videoIndex === videoIndex ? (
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => setEditingVideo(null)}
+                                                                        className="p-2 text-green-400 hover:bg-green-500/10 rounded-lg"
+                                                                    >
+                                                                        <CheckCircle size={16} />
+                                                                    </button>
+                                                                ) : (
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => setEditingVideo({moduleIndex, videoIndex})}
+                                                                        className="p-2 text-blue-400 hover:bg-blue-500/10 rounded-lg"
+                                                                    >
+                                                                        <Tag size={16} />
+                                                                    </button>
+                                                                )}
                                                                 <button
                                                                     type="button"
-                                                                    onClick={() => setEditingVideo(null)}
-                                                                    className="px-3 py-1 bg-green-500/20 text-green-400 hover:bg-green-500/30 rounded text-sm"
+                                                                    onClick={() => removeVideoFromModule(moduleIndex, videoIndex)}
+                                                                    className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg"
                                                                 >
-                                                                    Save
+                                                                    <Trash2 size={16} />
                                                                 </button>
-                                                            ) : (
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => setEditingVideo({moduleIndex, videoIndex})}
-                                                                    className="px-3 py-1 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded text-sm"
-                                                                >
-                                                                    Edit
-                                                                </button>
-                                                            )}
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => removeVideoFromModule(moduleIndex, videoIndex)}
-                                                                className="text-red-400 hover:text-red-300"
-                                                            >
-                                                                <X size={18} />
-                                                            </button>
+                                                             </div>
                                                         </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 ))}
                             </div>
-                        )}
 
-                        {/* Add Video to Selected Module */}
-                        {formData.modules.length > 0 && (
-                            <div className="bg-blue-500/10 p-4 rounded-xl border border-blue-500/30 mt-4">
-                                <h3 className="text-white font-medium mb-3">
-                                    Add Video to: {formData.modules[selectedModuleIndex]?.title || "Module"}
-                                </h3>
-                                <div className="space-y-3">
+                            {/* Sticky Add Video Bar */}
+                            {formData.modules.length > 0 && (
+                                <div className="sticky bottom-4 mt-6 z-20">
+                                    <div className="glass-card bg-black/80 backdrop-blur-2xl border border-indigo-500/30 p-5 rounded-2xl shadow-2xl shadow-black/50">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <h3 className="text-white font-medium flex items-center gap-2">
+                                                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"/>
+                                                Add Video to: <span className="text-indigo-400 font-bold">{formData.modules[selectedModuleIndex]?.title || "Select a Module"}</span>
+                                            </h3>
+                                        </div>
+
+                                        <div className="flex flex-col gap-4">
+                                            <div className="flex gap-4">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Video Title"
+                                                    className="flex-1 bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:border-indigo-500/50 outline-none"
+                                                    value={videoInput.title}
+                                                    onChange={(e) => setVideoInput({ ...videoInput, title: e.target.value })}
+                                                />
+                                                <input
+                                                    type="text"
+                                                    placeholder="Duration"
+                                                    className="w-24 bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:border-indigo-500/50 outline-none"
+                                                    value={videoInput.duration}
+                                                    onChange={(e) => setVideoInput({ ...videoInput, duration: e.target.value })}
+                                                />
+                                            </div>
+
+                                            <div className="flex gap-4">
+                                                <div className="flex-1 relative">
+                                                    <input
+                                                        type="url"
+                                                        placeholder="Paste Video URL..."
+                                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:border-indigo-500/50 outline-none pr-12"
+                                                        value={videoInput.url}
+                                                        onChange={(e) => setVideoInput({ ...videoInput, url: e.target.value })}
+                                                    />
+                                                    <Button 
+                                                        type="button" 
+                                                        onClick={(e) => addVideoToModule(e)}
+                                                        className="absolute right-1 top-1 bottom-1 bg-indigo-600 hover:bg-indigo-700 h-auto rounded-lg px-4"
+                                                    >
+                                                        Add
+                                                    </Button>
+                                                </div>
+                                                <div className="relative">
+                                                     <input
+                                                        type="file"
+                                                        accept="video/*"
+                                                        onChange={handleVideoFileUpload}
+                                                        disabled={uploadingVideo}
+                                                        className="hidden"
+                                                        id="video-file-input"
+                                                    />
+                                                    <label
+                                                        htmlFor="video-file-input"
+                                                        className={`flex items-center gap-2 px-6 py-3 rounded-xl cursor-pointer transition-all ${uploadingVideo
+                                                            ? "bg-gray-700 cursor-not-allowed"
+                                                            : "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500"
+                                                            } text-white font-medium shadow-lg`}
+                                                    >
+                                                        {uploadingVideo ? (
+                                                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"/>
+                                                        ) : (
+                                                            <Upload size={18} />
+                                                        )}
+                                                        Upload
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            
+                                             {/* Upload Progress Bar */}
+                                            {uploadingVideo && uploadProgress > 0 && (
+                                                <div className="space-y-1">
+                                                    <div className="flex justify-between text-xs">
+                                                        <span className="text-gray-400">Uploading...</span>
+                                                        <span className="text-emerald-400">{Math.round(uploadProgress)}%</span>
+                                                    </div>
+                                                    <div className="w-full bg-white/5 rounded-full h-1.5 overflow-hidden">
+                                                        <div
+                                                            className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-300 ease-out"
+                                                            style={{ width: `${uploadProgress}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* RIGHT COLUMN - SIDEBAR */}
+                    <div className="space-y-8">
+                        
+                        {/* 4. Pricing & Signatures */}
+                        <div className="glass-card border border-white/10 bg-black/40 backdrop-blur-xl p-6 rounded-3xl shadow-xl">
+                            <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-3">
+                                <div className="p-2 bg-green-500/20 rounded-lg text-green-400">
+                                    <DollarSign size={18} />
+                                </div>
+                                Pricing & Details
+                            </h2>
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="text-sm text-gray-400 font-medium mb-2 block">Price (₹)</label>
+                                    <input
+                                        type="number"
+                                        required
+                                        min="0"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:border-green-500/50 outline-none text-2xl font-bold font-mono"
+                                        value={formData.price}
+                                        onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+                                    />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="text-xs text-gray-500 mb-1 block">Original (₹)</label>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl p-2 text-gray-400 focus:border-green-500/50 outline-none"
+                                            value={formData.originalPrice}
+                                            onChange={(e) => setFormData({ ...formData, originalPrice: Number(e.target.value) })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-gray-500 mb-1 block">Discount %</label>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            max="100"
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl p-2 text-gray-400 focus:border-green-500/50 outline-none"
+                                            value={formData.discountPercentage}
+                                            onChange={(e) => setFormData({ ...formData, discountPercentage: Number(e.target.value) })}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="h-px bg-white/5 w-full"/>
+
+                                <div>
+                                    <label className="text-sm text-gray-400 font-medium mb-2 block">Students Count</label>
+                                    <div className="flex items-center gap-2">
+                                        <Users size={16} className="text-gray-500" />
+                                        <input
+                                            type="text"
+                                            placeholder="e.g. 10k+"
+                                            className="flex-1 bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                            value={formData.studentsCount}
+                                            onChange={(e) => setFormData({ ...formData, studentsCount: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="flex items-center gap-3 cursor-pointer group p-3 rounded-xl hover:bg-white/5 transition-all">
+                                        <div className={`w-10 h-5 rounded-full relative transition-colors ${formData.isAvailable ? 'bg-green-500' : 'bg-gray-600'}`}>
+                                            <div className={`absolute top-1 w-3 h-3 rounded-full bg-white transition-all ${formData.isAvailable ? 'left-6' : 'left-1'}`}/>
+                                        </div>
+                                        <input
+                                            type="checkbox"
+                                            className="hidden"
+                                            checked={formData.isAvailable}
+                                            onChange={(e) => setFormData({ ...formData, isAvailable: e.target.checked })}
+                                        />
+                                        <div>
+                                            <span className="text-white block font-medium">Available</span>
+                                            <span className="text-xs text-gray-500">Visible to students</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 5. Images & Certificates */}
+                        <div className="glass-card border border-white/10 bg-black/40 backdrop-blur-xl p-6 rounded-3xl shadow-xl">
+                            <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-3">
+                                <div className="p-2 bg-orange-500/20 rounded-lg text-orange-400">
+                                    <Image size={18} />
+                                </div>
+                                Media Assets
+                            </h2>
+                            
+                            <div className="space-y-6">
+                                {/* Thumbnail */}
+                                <div>
+                                    <label className="text-sm text-gray-400 font-medium mb-2 block">Course Thumbnail</label>
+                                    <div className="relative group bg-black/40 rounded-xl aspect-video border border-white/10 overflow-hidden flex items-center justify-center">
+                                        {formData.thumbnail ? (
+                                            <>
+                                                <img src={formData.thumbnail} alt="Thumbnail" className="w-full h-full object-cover" />
+                                                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                                    <label htmlFor="thumb-upload" className="cursor-pointer p-2 bg-white/10 hover:bg-white/20 rounded-lg text-white">
+                                                        <Upload size={20} />
+                                                    </label>
+                                                    <button type="button" onClick={() => setFormData({...formData, thumbnail: ""})} className="p-2 bg-red-500/20 hover:bg-red-500/40 rounded-lg text-red-400">
+                                                        <X size={20} />
+                                                    </button>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <label htmlFor="thumb-upload" className="flex flex-col items-center gap-2 cursor-pointer text-gray-500 hover:text-white transition-colors">
+                                                <Image size={32} />
+                                                <span className="text-xs">Upload Thumbnail</span>
+                                            </label>
+                                        )}
+                                        <input
+                                            type="file"
+                                            id="thumb-upload"
+                                            accept="image/*"
+                                            onChange={handleThumbnailUpload}
+                                            disabled={uploadingThumbnail}
+                                            className="hidden"
+                                        />
+                                    </div>
                                     <input
                                         type="text"
-                                        placeholder="Video title"
-                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                        value={videoInput.title}
-                                        onChange={(e) => setVideoInput({ ...videoInput, title: e.target.value })}
+                                        placeholder="Or paste URL..."
+                                        className="mt-3 w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-gray-300 focus:border-orange-500/50 outline-none"
+                                        value={formData.thumbnail}
+                                        onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="h-px bg-white/5 w-full"/>
+
+                                {/* Certificate Image */}
+                                <div>
+                                    <label className="text-sm text-gray-400 font-medium mb-2 block">Certificate Template</label>
+                                    <div className="relative group bg-black/40 rounded-xl aspect-[4/3] border border-white/10 overflow-hidden flex items-center justify-center">
+                                         {formData.certificateImage ? (
+                                            <>
+                                                <img src={formData.certificateImage} alt="Cert" className="w-full h-full object-contain" />
+                                                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                                    <label htmlFor="cert-upload" className="cursor-pointer p-2 bg-white/10 hover:bg-white/20 rounded-lg text-white">
+                                                        <Upload size={20} />
+                                                    </label>
+                                                </div>
+                                            </>
+                                        ) : (
+                                             <label htmlFor="cert-upload" className="flex flex-col items-center gap-2 cursor-pointer text-gray-500 hover:text-white transition-colors">
+                                                <FileText size={32} />
+                                                <span className="text-xs">Upload Certificate</span>
+                                            </label>
+                                        )}
+                                        <input
+                                            type="file"
+                                            id="cert-upload"
+                                            accept="image/*"
+                                            onChange={handleCertificateUpload}
+                                            disabled={uploadingCertificate}
+                                            className="hidden"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                         {/* PDF Resources */}
+                         <div className="glass-card border border-white/10 bg-black/40 backdrop-blur-xl p-6 rounded-3xl shadow-xl">
+                            <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-3">
+                                <div className="p-2 bg-red-500/20 rounded-lg text-red-400">
+                                    <FileText size={18} />
+                                </div>
+                                PDF Resources
+                            </h2>
+                            
+                            <div className="space-y-4">
+                                <div className="bg-white/5 p-4 rounded-xl border border-white/5">
+                                    <input
+                                        type="text"
+                                        placeholder="Resource Title"
+                                        className="w-full bg-black/20 border border-white/10 rounded-lg p-2 text-sm text-white focus:border-red-500/50 outline-none mb-2"
+                                        value={pdfInput.title}
+                                        onChange={(e) => setPdfInput({ ...pdfInput, title: e.target.value })}
                                     />
                                     <div className="flex gap-2">
-                                        <div className="flex-1">
-                                            <input
-                                                type="url"
-                                                placeholder="Video URL (YouTube, Vimeo, etc.)"
-                                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                                value={videoInput.url}
-                                                onChange={(e) => setVideoInput({ ...videoInput, url: e.target.value })}
-                                            />
-                                        </div>
-                                        <span className="text-gray-400 flex items-center px-3">OR</span>
+                                        <select
+                                            className="flex-1 bg-white/5 border border-white/10 rounded-lg p-2 text-xs text-white outline-none focus:border-red-500/50 cursor-pointer"
+                                            value={pdfInput.afterModule}
+                                            onChange={(e) => setPdfInput({ ...pdfInput, afterModule: Number(e.target.value) })}
+                                        >
+                                            <option value={0} className="bg-gray-900 text-white">Global Resource</option>
+                                            {formData.modules.map((m, i) => (
+                                                <option key={i} value={i + 1} className="bg-gray-900 text-white">Mod {i+1}</option>
+                                            ))}
+                                        </select>
                                         <div className="relative">
                                             <input
                                                 type="file"
-                                                accept="video/*"
-                                                onChange={handleVideoFileUpload}
-                                                disabled={uploadingVideo}
+                                                id="pdf-upload"
+                                                accept="application/pdf"
+                                                onChange={handlePDFUpload}
+                                                disabled={uploadingPdf}
                                                 className="hidden"
-                                                id="video-file-input"
                                             />
-                                            <label
-                                                htmlFor="video-file-input"
-                                                className={`flex items-center gap-2 px-4 py-3 rounded-xl cursor-pointer transition-all ${uploadingVideo
-                                                    ? "bg-gray-600 cursor-not-allowed"
-                                                    : "bg-green-600 hover:bg-green-700"
-                                                    } text-white`}
+                                            <label 
+                                                htmlFor="pdf-upload"
+                                                className="block px-3 py-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded-lg text-xs cursor-pointer"
                                             >
-                                                <Upload size={20} />
-                                                {uploadingVideo ? "Uploading..." : "Upload File"}
+                                                {uploadingPdf ? "..." : <Upload size={14}/>}
                                             </label>
                                         </div>
                                     </div>
+                                </div>
 
-                                    {/* Upload Progress Bar */}
-                                    {uploadingVideo && uploadProgress > 0 && (
-                                        <div className="space-y-2">
-                                            <div className="flex justify-between text-sm">
-                                                <span className="text-gray-300">Uploading video...</span>
-                                                <span className="text-blue-400">{Math.round(uploadProgress)}%</span>
+                                <div className="space-y-2 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
+                                    {pdfs.map((pdf) => (
+                                        <div key={pdf._id} className="flex items-center justify-between bg-white/5 p-2 rounded-lg border border-white/5 hover:border-white/10">
+                                            <div className="flex items-center gap-2 overflow-hidden">
+                                                <FileText size={14} className="text-red-400 flex-shrink-0" />
+                                                <div className="truncate">
+                                                    <p className="text-white text-xs truncate font-medium">{pdf.title}</p>
+                                                    <p className="text-gray-500 text-[10px]">{(pdf.fileSize / 1024 / 1024).toFixed(1)}MB</p>
+                                                </div>
                                             </div>
-                                            <div className="w-full bg-black/30 rounded-full h-2 overflow-hidden">
-                                                <div
-                                                    className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 ease-out"
-                                                    style={{ width: `${uploadProgress}%` }}
-                                                />
-                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleDeletePDF(pdf._id)}
+                                                className="text-gray-500 hover:text-red-400 p-1"
+                                            >
+                                                <Trash2 size={12} />
+                                            </button>
                                         </div>
-                                    )}
-
-                                    <p className="text-xs text-gray-400">
-                                        Maximum file size: 500MB. Supported formats: MP4, MOV, AVI, etc.
-                                    </p>
-
-                                    <div className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            placeholder="Duration (e.g., 15:30)"
-                                            className="flex-1 bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                            value={videoInput.duration}
-                                            onChange={(e) => setVideoInput({ ...videoInput, duration: e.target.value })}
-                                        />
-                                        <Button type="button" onClick={addVideoToModule}>
-                                            <Plus size={20} className="mr-2" />
-                                            Add by URL
-                                        </Button>
-                                    </div>
+                                    ))}
+                                    {pdfs.length === 0 && <p className="text-center text-gray-600 text-xs">No PDFs uploaded</p>}
                                 </div>
-                            </div>
-                        )}
-
-                        {formData.modules.length === 0 && (
-                            <div className="text-center py-10 text-gray-500 bg-white/5 rounded-xl border border-white/10">
-                                <p>No modules created yet. Create your first module to add videos!</p>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* PDF Resources */}
-                    <div>
-                        <label className="text-sm text-gray-300 block mb-2">PDF Resources</label>
-                        <div className="space-y-3 mb-3 bg-white/5 p-4 rounded-xl border border-white/10">
-                            <h3 className="text-white font-medium mb-2 flex items-center gap-2">
-                                <FileText size={18} className="text-blue-400" />
-                                Add New PDF
-                            </h3>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <input
-                                    type="text"
-                                    placeholder="PDF Title"
-                                    className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                    value={pdfInput.title}
-                                    onChange={(e) => setPdfInput({ ...pdfInput, title: e.target.value })}
-                                />
-                                <input
-                                    type="text"
-                                    placeholder="Description (optional)"
-                                    className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                    value={pdfInput.description}
-                                    onChange={(e) => setPdfInput({ ...pdfInput, description: e.target.value })}
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <div>
-                                    <label className="text-xs text-gray-400 block mb-1">Place in Module</label>
-                                    <select
-                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none appearance-none"
-                                        value={pdfInput.afterModule}
-                                        onChange={(e) => setPdfInput({ ...pdfInput, afterModule: Number(e.target.value) })}
-                                    >
-                                        <option value={0} className="bg-gray-900 text-gray-300">General / Global Resources</option>
-                                        {formData.modules.map((module, index) => (
-                                            <option key={index} value={index + 1} className="bg-gray-900 text-white">
-                                                Module {index + 1}: {module.title}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                
-                                { /* Order field removed for simplicity - auto calculated */ }
-                            </div>
-
-                            <div className="relative">
-                                <input
-                                    type="file"
-                                    accept="application/pdf"
-                                    onChange={handlePDFUpload}
-                                    disabled={uploadingPdf}
-                                    className="hidden"
-                                    id="pdf-file-input"
-                                />
-                                <label
-                                    htmlFor="pdf-file-input"
-                                    className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl cursor-pointer transition-all ${uploadingPdf
-                                        ? "bg-gray-600 cursor-not-allowed"
-                                        : "bg-blue-600 hover:bg-blue-700"
-                                        } text-white w-full`}
-                                >
-                                    {uploadingPdf ? (
-                                        <>
-                                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                                            Uploading PDF...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Upload size={20} />
-                                            Select PDF File (Max 100MB)
-                                        </>
-                                    )}
-                                </label>
                             </div>
                         </div>
 
-                        <div className="space-y-2 mt-4">
-                            {pdfs.length === 0 && (
-                                <p className="text-gray-500 text-center py-4">No PDF resources added yet</p>
-                            )}
-                            {pdfs.map((pdf) => (
-                                <div key={pdf._id} className="flex items-center justify-between bg-white/5 p-3 rounded-lg border border-white/5">
-                                    <div className="flex items-start gap-3">
-                                        <div className="bg-red-500/20 p-2 rounded-lg">
-                                            <FileText size={20} className="text-red-400" />
-                                        </div>
-                                        <div>
-                                            <p className="text-white font-medium">{pdf.title}</p>
-                                            <p className="text-gray-400 text-xs">
-                                                {pdf.fileName} • {(pdf.fileSize / (1024 * 1024)).toFixed(2)} MB
-                                            </p>
-                                            <p className="text-gray-500 text-xs mt-1">
-                                                Position: After Module {pdf.afterModule} • Order: {pdf.order}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <a 
-                                            href={pdf.fileUrl} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            className="p-2 text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
-                                            title="View PDF"
-                                        >
-                                            <FileText size={18} />
-                                        </a>
-                                        <button
-                                            type="button"
-                                            onClick={() => handleDeletePDF(pdf._id)}
-                                            className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-                                            title="Delete PDF"
-                                        >
-                                            <Trash2 size={18} />
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Submit */}
-                    <div className="flex gap-4 pt-6">
-                        <Button
-                            type="submit"
-                            disabled={saving}
-                            className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                        >
-                            {saving ? "Saving..." : "Update Course"}
-                        </Button>
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => router.push("/admin/courses")}
-                        >
-                            Cancel
-                        </Button>
                     </div>
                 </div>
             </form>

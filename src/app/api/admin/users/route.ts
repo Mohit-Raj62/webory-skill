@@ -4,8 +4,11 @@ import User from "@/models/User";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
-// GET all users
-export async function GET() {
+// Force dynamic to prevent static optimization
+export const dynamic = "force-dynamic";
+
+// GET all users with pagination and search
+export async function GET(request: Request) {
   try {
     await dbConnect();
 
@@ -22,14 +25,47 @@ export async function GET() {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const users = await User.find().select("-password").sort({ createdAt: -1 });
+    // Parse query parameters
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const search = searchParams.get("search") || "";
+    const skip = (page - 1) * limit;
 
-    return NextResponse.json({ users });
+    // Build search query
+    const query: any = {};
+    if (search) {
+      query.$or = [
+        { firstName: { $regex: search, $options: "i" } },
+        { lastName: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // Execute queries in parallel for better performance
+    const [users, total] = await Promise.all([
+      User.find(query)
+        .select("-password")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      User.countDocuments(query),
+    ]);
+
+    return NextResponse.json({
+      users,
+      pagination: {
+        total,
+        pages: Math.ceil(total / limit),
+        page,
+        limit,
+      },
+    });
   } catch (error) {
     console.error("Get users error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
