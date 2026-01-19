@@ -50,8 +50,13 @@ export function PaymentModal({
     // Handle Browser/Device Back Button to Close Modal
     useEffect(() => {
         if (isOpen) {
-            // Push a new entry to history stack so back button doesn't leave the page
-            window.history.pushState({ modalOpen: true }, "", window.location.href);
+            try {
+                // Push a new entry to history stack so back button doesn't leave the page
+                window.history.pushState({ modalOpen: true }, "", window.location.href);
+            } catch (e) {
+                // Ignore history errors (common in some webviews/safari contexts)
+                console.warn("History pushState failed", e);
+            }
 
             const handlePopState = (event: PopStateEvent) => {
                 // If back button is pressed, close the modal
@@ -70,11 +75,16 @@ export function PaymentModal({
     const handleClose = () => {
         // If we manually close using the X button, we should go back in history 
         // to remove the 'modalOpen' state we pushed.
-        // Check if the current state is the one we pushed
-        if (window.history.state?.modalOpen) {
-            window.history.back(); // This will trigger popstate, which calls onClose
-        } else {
-            onClose(); // Fallback
+        try {
+            // Check if the current state is the one we pushed
+            if (window.history.state?.modalOpen) {
+                window.history.back(); // This will trigger popstate, which calls onClose
+            } else {
+                onClose(); // Fallback
+            }
+        } catch (e) {
+            // Fallback for any history API errors
+            onClose();
         }
     };
 
@@ -277,16 +287,15 @@ export function PaymentModal({
         }
     };
 
-    if (!isOpen) return null;
-
     return (
         <AnimatePresence>
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 sm:p-6"
-            >
+            {isOpen && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 sm:p-6"
+                >
                 <motion.div
                     initial={{ scale: 0.95, opacity: 0, y: 20 }}
                     animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -450,6 +459,7 @@ export function PaymentModal({
                     </div>
                 </motion.div>
             </motion.div>
+            )}
         </AnimatePresence>
     );
 }

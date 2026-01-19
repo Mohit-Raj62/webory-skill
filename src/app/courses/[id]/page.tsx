@@ -12,6 +12,22 @@ import { useParams, useRouter } from "next/navigation";
 import { CheckCircle, Clock, BarChart, Users, Globe, PlayCircle, Lock, ClipboardList, FileText, Calendar, Video, ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 
+// Helper for safe date parsing on iOS/Safari
+const safeDate = (date: any): string => {
+    try {
+        if (!date) return new Date().toLocaleDateString();
+        const d = new Date(date);
+        // Check if date is valid
+        if (isNaN(d.getTime())) {
+            // Try to parse if it's a specific string format or just return current/fallback
+            return new Date().toLocaleDateString();
+        }
+        return d.toLocaleDateString();
+    } catch (e) {
+        return new Date().toLocaleDateString();
+    }
+};
+
 export default function CourseDetailsPage() {
     const { id } = useParams();
     const router = useRouter();
@@ -182,7 +198,7 @@ export default function CourseDetailsPage() {
 
     const handleDownloadInvoice = () => {
         const enrollmentDate = enrollmentData?.enrolledAt 
-            ? new Date(enrollmentData.enrolledAt).toLocaleDateString()
+            ? safeDate(enrollmentData.enrolledAt)
             : new Date().toLocaleDateString();
         
         // Use enrollment ID to generate consistent transaction ID
@@ -249,7 +265,7 @@ export default function CourseDetailsPage() {
                             </div>
                             <div className="flex items-center text-gray-300">
                                 <Calendar className="mr-2 text-yellow-400" size={20} />
-                                Last Updated: {new Date(course.createdAt).toLocaleDateString()}
+                                Last Updated: {safeDate(course.createdAt)}
                             </div>
                         </div>
 
@@ -350,7 +366,7 @@ export default function CourseDetailsPage() {
                                                         </span>
                                                         <span className="text-gray-400 text-sm flex items-center gap-1">
                                                             <Calendar size={12} />
-                                                            {new Date(liveClass.date).toLocaleDateString()}
+                                                            {safeDate(liveClass.date)}
                                                         </span>
                                                         <span className="text-gray-400 text-sm flex items-center gap-1">
                                                             <Clock size={12} />
@@ -566,7 +582,7 @@ export default function CourseDetailsPage() {
                                                                                 <div>
                                                                                     <span className="text-white font-medium text-sm">{assignment.title}</span>
                                                                                     <p className="text-xs text-gray-500">
-                                                                                        Assignment • Due: {new Date(assignment.dueDate).toLocaleDateString()}
+                                                                                        Assignment • Due: {safeDate(assignment.dueDate)}
                                                                                     </p>
                                                                                 </div>
                                                                             </div>
@@ -711,7 +727,7 @@ export default function CourseDetailsPage() {
                                                     <div>
                                                         <h3 className="text-white font-medium">{assignment.title}</h3>
                                                         <p className="text-gray-400 text-sm">
-                                                            Due: {new Date(assignment.dueDate).toLocaleDateString()} • {assignment.totalMarks} marks
+                                                            Due: {safeDate(assignment.dueDate)} • {assignment.totalMarks} marks
                                                         </p>
                                                     </div>
                                                 </div>
