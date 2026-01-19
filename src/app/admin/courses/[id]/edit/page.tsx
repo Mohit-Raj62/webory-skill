@@ -1066,6 +1066,96 @@ export default function EditCoursePage() {
                             </div>
                         </div>
 
+                        {/* Collaboration & Signatures */}
+                        <div className="glass-card border border-white/10 bg-black/40 backdrop-blur-xl p-6 rounded-3xl shadow-xl">
+                            <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-3">
+                                <div className="p-2 bg-pink-500/20 rounded-lg text-pink-400">
+                                    <Users size={18} />
+                                </div>
+                                Collaboration
+                            </h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="text-sm text-gray-400 font-medium mb-2 block">College/Partner Name</label>
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. JIBT College"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:border-pink-500/50 outline-none"
+                                        value={formData.collaboration}
+                                        onChange={(e) => setFormData({ ...formData, collaboration: e.target.value })}
+                                    />
+                                </div>
+                                
+                                <div className="h-px bg-white/5 w-full my-2"/>
+                                
+                                <div className="space-y-3">
+                                    <p className="text-sm text-gray-300 font-medium">Signatories</p>
+                                    {/* Founder */}
+                                    <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                                        <p className="text-xs text-pink-400 mb-2 uppercase tracking-wide font-bold">Founder</p>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <input
+                                                type="text"
+                                                placeholder="Name"
+                                                className="bg-black/20 border border-white/10 rounded-lg p-2 text-xs text-white outline-none"
+                                                value={formData.signatures.founder.name}
+                                                onChange={(e) => setFormData({ ...formData, signatures: { ...formData.signatures, founder: { ...formData.signatures.founder, name: e.target.value } } })}
+                                            />
+                                            <input
+                                                type="text"
+                                                placeholder="Title"
+                                                className="bg-black/20 border border-white/10 rounded-lg p-2 text-xs text-white outline-none"
+                                                value={formData.signatures.founder.title}
+                                                onChange={(e) => setFormData({ ...formData, signatures: { ...formData.signatures, founder: { ...formData.signatures.founder, title: e.target.value } } })}
+                                            />
+                                        </div>
+                                    </div>
+
+                                     {/* Director */}
+                                     <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                                        <p className="text-xs text-pink-400 mb-2 uppercase tracking-wide font-bold">Director</p>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <input
+                                                type="text"
+                                                placeholder="Name"
+                                                className="bg-black/20 border border-white/10 rounded-lg p-2 text-xs text-white outline-none"
+                                                value={formData.signatures.director.name}
+                                                onChange={(e) => setFormData({ ...formData, signatures: { ...formData.signatures, director: { ...formData.signatures.director, name: e.target.value } } })}
+                                            />
+                                            <input
+                                                type="text"
+                                                placeholder="Title"
+                                                className="bg-black/20 border border-white/10 rounded-lg p-2 text-xs text-white outline-none"
+                                                value={formData.signatures.director.title}
+                                                onChange={(e) => setFormData({ ...formData, signatures: { ...formData.signatures, director: { ...formData.signatures.director, title: e.target.value } } })}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Partner */}
+                                    <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                                        <p className="text-xs text-pink-400 mb-2 uppercase tracking-wide font-bold">Partner</p>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <input
+                                                type="text"
+                                                placeholder="Name"
+                                                className="bg-black/20 border border-white/10 rounded-lg p-2 text-xs text-white outline-none"
+                                                value={formData.signatures.partner.name}
+                                                onChange={(e) => setFormData({ ...formData, signatures: { ...formData.signatures, partner: { ...formData.signatures.partner, name: e.target.value } } })}
+                                            />
+                                            <input
+                                                type="text"
+                                                placeholder="Title"
+                                                className="bg-black/20 border border-white/10 rounded-lg p-2 text-xs text-white outline-none"
+                                                value={formData.signatures.partner.title}
+                                                onChange={(e) => setFormData({ ...formData, signatures: { ...formData.signatures, partner: { ...formData.signatures.partner, title: e.target.value } } })}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         {/* 5. Images & Certificates */}
                         <div className="glass-card border border-white/10 bg-black/40 backdrop-blur-xl p-6 rounded-3xl shadow-xl">
                             <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-3">
