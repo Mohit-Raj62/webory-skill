@@ -48,6 +48,48 @@ const UserSchema = new Schema({
     type: [String],
     default: [],
   },
+  projects: {
+    type: [
+      {
+        title: String,
+        description: String,
+        url: String, // Optional URL or base64
+        image: String, // Optional URL or base64
+        technologies: [String],
+        startDate: Date,
+        endDate: Date,
+      },
+    ],
+    default: [],
+  },
+  experience: {
+    type: [
+      {
+        title: String, // Job Title
+        company: String,
+        location: String,
+        startDate: Date,
+        endDate: Date,
+        current: Boolean,
+        description: String,
+      },
+    ],
+    default: [],
+  },
+  education: {
+    type: [
+      {
+        degree: String,
+        institution: String, // School/University
+        location: String,
+        startDate: Date,
+        endDate: Date,
+        current: Boolean,
+        description: String, // Grade/GPA etc
+      },
+    ],
+    default: [],
+  },
   createdAt: {
     type: Date,
     default: Date.now,

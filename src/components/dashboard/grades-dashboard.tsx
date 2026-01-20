@@ -4,22 +4,28 @@ import { useEffect, useState } from "react";
 import { ClipboardList, FileText, Award, TrendingUp, CheckCircle, XCircle } from "lucide-react";
 
 export function GradesDashboard() {
-    const [data, setData] = useState < any > (null);
+    const [data, setData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         fetchGrades();
     }, []);
 
     const fetchGrades = async () => {
+        setLoading(true);
+        setError(null);
         try {
             const res = await fetch("/api/user/grades");
             if (res.ok) {
                 const result = await res.json();
                 setData(result);
+            } else {
+                throw new Error("Failed to fetch data");
             }
         } catch (error) {
             console.error("Failed to fetch grades", error);
+            setError("Failed to load grades. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -29,6 +35,21 @@ export function GradesDashboard() {
         return (
             <div className="glass-card p-6 rounded-2xl">
                 <p className="text-gray-400">Loading grades...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="glass-card p-6 rounded-2xl text-center">
+                <XCircle className="mx-auto text-red-500 mb-4" size={48} />
+                <p className="text-red-400 mb-4">{error}</p>
+                <button 
+                    onClick={fetchGrades}
+                    className="px-4 py-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors"
+                >
+                    Retry
+                </button>
             </div>
         );
     }

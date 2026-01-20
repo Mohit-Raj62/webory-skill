@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trash2, Search, ChevronLeft, ChevronRight, User as UserIcon, Shield, GraduationCap, Mail, Phone, Calendar } from "lucide-react";
+import { Trash2, Search, ChevronLeft, ChevronRight, User as UserIcon, Shield, GraduationCap, Mail, Phone, Calendar, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -309,14 +309,18 @@ export default function UsersPage() {
                                                 </div>
                                             </TableCell>
                                             <TableCell className="px-6 py-4 text-right">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => handleDelete(user._id)}
-                                                    className="text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl"
-                                                >
-                                                    <Trash2 size={18} />
-                                                </Button>
+                                                <div className="flex justify-end gap-2">
+                                                    {/* Manage Portfolio button removed */}
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() => handleDelete(user._id)}
+                                                        className="text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl"
+                                                        title="Delete User"
+                                                    >
+                                                        <Trash2 size={18} />
+                                                    </Button>
+                                                </div>
                                             </TableCell>
                                         </motion.tr>
                                     ))
