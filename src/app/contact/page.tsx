@@ -85,9 +85,9 @@ export default function ContactPage() {
                                     <div>
                                         <h3 className="text-white font-medium mb-1">Call Us</h3>
                                         <p>For any inquiries or support, please contact us at:</p>
-                                        <p className="text-gray-400">Mohit Raj</p>
+                                        {/* <p className="text-gray-400">Mohit Raj</p> */}
                                         <p className="text-gray-400">+91 62059 47359</p>
-                                        <p className="text-gray-400">Mon - Fri, 8am - 10pm</p>
+                                        <p className="text-gray-400">Mon - Sat, 10am - 6pm</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-4">
