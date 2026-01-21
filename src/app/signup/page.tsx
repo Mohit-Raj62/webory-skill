@@ -130,7 +130,7 @@ export default function SignupPage() {
                                         value={formData.firstName}
                                         onChange={handleChange}
                                         className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500/50 transition-colors"
-                                        placeholder="Mohit"
+                                        placeholder="First Name"
                                     />
                                 </div>
                             </div>
@@ -145,7 +145,7 @@ export default function SignupPage() {
                                         value={formData.lastName}
                                         onChange={handleChange}
                                         className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500/50 transition-colors"
-                                        placeholder="Sinha"
+                                        placeholder="Last Name"
                                     />
                                 </div>
                             </div>
@@ -162,7 +162,7 @@ export default function SignupPage() {
                                     value={formData.email}
                                     onChange={handleChange}
                                     className="w-full bg-black/20 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-500/50 transition-colors"
-                                    placeholder="mohitsinha@example.com"
+                                    placeholder="EMAIL_ADDRESS@gmail.com"
                                 />
                             </div>
                         </div>

@@ -73,7 +73,7 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <h3 className="text-white font-medium mb-1">Email Us</h3>
-                                        <p className="text-gray-400"> weboryinfo@gmail.com </p>
+                                        <p className="text-gray-400">weboryinfo@gmail.com </p>
                                         <p className="text-gray-400">supportskillwebory@gmail.com</p>
                                         <p className="text-gray-400">infoskillwebory@gmail.com</p>
                                     </div>
@@ -96,9 +96,10 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <h3 className="text-white font-medium mb-1">Visit Us</h3>
+                                        <p className="text-gray-400">Main branch </p>
+                                        <p className="text-gray-400">Dehradun,Uttarakhand Near Jbit College Dehradun 248197</p>
                                         <p className="text-gray-400">
-                                            Janpara, Bihar patna<br />
-                                            Janpara, Bihar patna 801112
+                                            Janpara, Bihar Patna 801112
                                         </p>
                                     </div>
                                 </div>
@@ -140,7 +141,7 @@ export default function ContactPage() {
                                         value={form.name}
                                         onChange={(e) => setForm({ ...form, name: e.target.value })}
                                         className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-colors"
-                                        placeholder="Mohit Sinha"
+                                        placeholder="User Name"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -151,7 +152,7 @@ export default function ContactPage() {
                                         value={form.email}
                                         onChange={(e) => setForm({ ...form, email: e.target.value })}
                                         className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-colors"
-                                        placeholder="   mohitsinha@example.com"
+                                        placeholder="Email Address"
                                     />
                                 </div>
                             </div>
@@ -174,7 +175,7 @@ export default function ContactPage() {
                                     value={form.message}
                                     onChange={(e) => setForm({ ...form, message: e.target.value })}
                                     className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 outline-none transition-colors resize-none"
-                                    placeholder="Tell us more about your inquiry..."
+                                    placeholder="write your message"
                                 />
                             </div>
                             <Button
