@@ -75,11 +75,11 @@ export async function POST(req: Request) {
     })) as any;
 
     // Filter sensitive or too large data for logging
-    const { _id, title } = course;
+    const { _id, title: savedTitle } = course;
     await logActivity(
       decoded.userId || decoded.id,
       "CREATE_COURSE",
-      `Created course: ${title} (${_id})`,
+      `Created course: ${savedTitle} (${_id})`,
       req.headers.get("x-forwarded-for") || "unknown",
     );
 
