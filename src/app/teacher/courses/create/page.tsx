@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Save, Loader2 } from "lucide-react";
+import { ArrowLeft, Save, Loader2, Plus, X } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -16,7 +16,45 @@ export default function CreateCourse() {
         price: "",
         color: "#3B82F6",
         icon: "BookOpen",
+        outcome: "",
+        whoIsThisFor: [] as string[],
+        projects: [] as { title: string; description: string }[],
+        careerOutcomes: [] as string[]
     });
+
+    const [whoIsThisForInput, setWhoIsThisForInput] = useState("");
+    const [careerInput, setCareerInput] = useState("");
+    const [projectInput, setProjectInput] = useState({ title: "", description: "" });
+
+    const addWhoIsThisFor = () => {
+        if (whoIsThisForInput.trim()) {
+            setFormData({ ...formData, whoIsThisFor: [...formData.whoIsThisFor, whoIsThisForInput.trim()] });
+            setWhoIsThisForInput("");
+        }
+    };
+    const removeWhoIsThisFor = (index: number) => {
+        setFormData({ ...formData, whoIsThisFor: formData.whoIsThisFor.filter((_, i) => i !== index) });
+    };
+
+    const addCareerOutcome = () => {
+        if (careerInput.trim()) {
+            setFormData({ ...formData, careerOutcomes: [...formData.careerOutcomes, careerInput.trim()] });
+            setCareerInput("");
+        }
+    };
+    const removeCareerOutcome = (index: number) => {
+        setFormData({ ...formData, careerOutcomes: formData.careerOutcomes.filter((_, i) => i !== index) });
+    };
+
+    const addProject = () => {
+        if (projectInput.title.trim() && projectInput.description.trim()) {
+            setFormData({ ...formData, projects: [...formData.projects, { ...projectInput }] });
+            setProjectInput({ title: "", description: "" });
+        }
+    };
+    const removeProject = (index: number) => {
+        setFormData({ ...formData, projects: formData.projects.filter((_, i) => i !== index) });
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -107,6 +145,111 @@ export default function CreateCourse() {
                             className="w-full bg-gray-800 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors resize-none"
                             placeholder="Brief description of what students will learn..."
                         />
+                    </div>
+                    </div>
+
+
+
+                    {/* Curriculum & Outcomes */}
+                    <div className="bg-gray-900 border border-white/10 rounded-2xl p-6 space-y-6">
+                        <h2 className="text-xl font-bold text-white mb-4">Curriculum & Outcomes</h2>
+
+                        <div className="space-y-2">
+                             <label className="text-sm font-medium text-gray-400">One-Line Outcome</label>
+                             <input
+                                 type="text"
+                                 name="outcome"
+                                 value={formData.outcome}
+                                 onChange={handleChange}
+                                 className="w-full bg-gray-800 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                                 placeholder="e.g. Build real-world web applications and become job-ready."
+                             />
+                     </div>
+
+                    {/* Dynamic Fields Section */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Who Is This For */}
+                        <div>
+                            <label className="text-sm font-medium text-gray-400 mb-2 block">Who Is This For?</label>
+                            <div className="flex gap-2 mb-3">
+                                <input
+                                    type="text"
+                                    placeholder="Add Target Audience"
+                                    className="flex-1 bg-gray-800 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500"
+                                    value={whoIsThisForInput}
+                                    onChange={(e) => setWhoIsThisForInput(e.target.value)}
+                                    onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addWhoIsThisFor())}
+                                />
+                                <button type="button" onClick={addWhoIsThisFor} className="bg-purple-600 px-3 rounded-lg text-white">+</button>
+                            </div>
+                            <div className="space-y-1">
+                                {formData.whoIsThisFor.map((item, index) => (
+                                    <div key={index} className="flex items-center justify-between bg-white/5 px-3 py-2 rounded-lg">
+                                        <span className="text-white text-sm">{item}</span>
+                                        <button type="button" onClick={() => removeWhoIsThisFor(index)} className="text-red-400 text-xs">Remove</button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                         {/* Career Outcomes */}
+                         <div>
+                            <label className="text-sm font-medium text-gray-400 mb-2 block">Career Outcomes</label>
+                            <div className="flex gap-2 mb-3">
+                                <input
+                                    type="text"
+                                    placeholder="Add Job Role"
+                                    className="flex-1 bg-gray-800 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500"
+                                    value={careerInput}
+                                    onChange={(e) => setCareerInput(e.target.value)}
+                                    onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addCareerOutcome())}
+                                />
+                                <button type="button" onClick={addCareerOutcome} className="bg-purple-600 px-3 rounded-lg text-white">+</button>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {formData.careerOutcomes.map((item, index) => (
+                                    <div key={index} className="flex items-center gap-2 bg-white/5 px-2 py-1 rounded-full border border-white/10">
+                                        <span className="text-white text-xs">{item}</span>
+                                        <button type="button" onClick={() => removeCareerOutcome(index)} className="text-red-400 text-xs">x</button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Projects */}
+                     <div>
+                        <label className="text-sm font-medium text-gray-400 mb-2 block">Projects</label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
+                            <input
+                                type="text"
+                                placeholder="Project Title"
+                                className="bg-gray-800 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500"
+                                value={projectInput.title}
+                                onChange={(e) => setProjectInput({ ...projectInput, title: e.target.value })}
+                            />
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    placeholder="Brief Description"
+                                    className="flex-1 bg-gray-800 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500"
+                                    value={projectInput.description}
+                                    onChange={(e) => setProjectInput({ ...projectInput, description: e.target.value })}
+                                />
+                                <button type="button" onClick={addProject} className="bg-purple-600 px-3 rounded-lg text-white">+</button>
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            {formData.projects.map((item, index) => (
+                                <div key={index} className="flex items-center justify-between bg-white/5 p-3 rounded-lg border border-white/5">
+                                    <div>
+                                        <p className="text-white text-sm font-bold">{item.title}</p>
+                                        <p className="text-gray-400 text-xs">{item.description}</p>
+                                    </div>
+                                    <button type="button" onClick={() => removeProject(index)} className="text-red-400 text-xs">Remove</button>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
 

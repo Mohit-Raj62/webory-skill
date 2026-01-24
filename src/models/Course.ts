@@ -9,6 +9,27 @@ const CourseSchema = new Schema({
     type: String,
     required: true,
   },
+  outcome: {
+    type: String,
+    default: "", // One-line outcome (e.g. "Build real-world apps...")
+  },
+  whoIsThisFor: {
+    type: [String],
+    default: [], // Array of target audience
+  },
+  projects: {
+    type: [
+      {
+        title: String,
+        description: String,
+      },
+    ],
+    default: [],
+  },
+  careerOutcomes: {
+    type: [String],
+    default: [], // Array of job roles
+  },
   level: {
     type: String,
     required: true,

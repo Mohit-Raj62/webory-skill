@@ -36,11 +36,18 @@ export default function NewCoursePage() {
             director: { name: "Webory Team", title: "Director of Education" },
             partner: { name: "Partner Rep.", title: "Authorized Signatory" }
         },
-        isAvailable: true
+        isAvailable: true,
+        outcome: "",
+        whoIsThisFor: [] as string[],
+        projects: [] as { title: string; description: string }[],
+        careerOutcomes: [] as string[]
     });
 
     const [curriculumInput, setCurriculumInput] = useState("");
     const [benefitsInput, setBenefitsInput] = useState("");
+    const [whoIsThisForInput, setWhoIsThisForInput] = useState("");
+    const [careerInput, setCareerInput] = useState("");
+    const [projectInput, setProjectInput] = useState({ title: "", description: "" });
     const [videoInput, setVideoInput] = useState({ title: "", url: "", duration: "" });
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -100,6 +107,39 @@ export default function NewCoursePage() {
             ...formData,
             benefits: formData.benefits.filter((_, i) => i !== index),
         });
+    };
+
+    const addWhoIsThisFor = () => {
+        if (whoIsThisForInput.trim()) {
+            setFormData({ ...formData, whoIsThisFor: [...formData.whoIsThisFor, whoIsThisForInput.trim()] });
+            setWhoIsThisForInput("");
+        }
+    };
+
+    const removeWhoIsThisFor = (index: number) => {
+        setFormData({ ...formData, whoIsThisFor: formData.whoIsThisFor.filter((_, i) => i !== index) });
+    };
+
+    const addCareerOutcome = () => {
+        if (careerInput.trim()) {
+            setFormData({ ...formData, careerOutcomes: [...formData.careerOutcomes, careerInput.trim()] });
+            setCareerInput("");
+        }
+    };
+
+    const removeCareerOutcome = (index: number) => {
+        setFormData({ ...formData, careerOutcomes: formData.careerOutcomes.filter((_, i) => i !== index) });
+    };
+
+    const addProject = () => {
+        if (projectInput.title.trim() && projectInput.description.trim()) {
+            setFormData({ ...formData, projects: [...formData.projects, { ...projectInput }] });
+            setProjectInput({ title: "", description: "" });
+        }
+    };
+
+    const removeProject = (index: number) => {
+        setFormData({ ...formData, projects: formData.projects.filter((_, i) => i !== index) });
     };
 
     const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -404,6 +444,100 @@ export default function NewCoursePage() {
                             value={formData.description}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         />
+                    </div>
+
+                    <div>
+                        <label className="text-sm text-gray-300 block mb-2">One-Line Outcome *</label>
+                        <input
+                            type="text"
+                            placeholder="e.g. Build real-world web applications and become job-ready."
+                            className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                            value={formData.outcome}
+                            onChange={(e) => setFormData({ ...formData, outcome: e.target.value })}
+                        />
+                    </div>
+
+                    {/* Who Is This For */}
+                    <div>
+                        <label className="text-sm text-gray-300 block mb-2">Who Is This For?</label>
+                        <div className="flex gap-2 mb-3">
+                            <input
+                                type="text"
+                                placeholder="e.g. Beginners with basic knowledge"
+                                className="flex-1 bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                value={whoIsThisForInput}
+                                onChange={(e) => setWhoIsThisForInput(e.target.value)}
+                                onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addWhoIsThisFor())}
+                            />
+                            <Button type="button" onClick={addWhoIsThisFor}><Plus size={20} /></Button>
+                        </div>
+                        <div className="space-y-2">
+                            {formData.whoIsThisFor.map((item, index) => (
+                                <div key={index} className="flex items-center justify-between bg-white/5 p-3 rounded-lg">
+                                    <span className="text-white">{item}</span>
+                                    <button type="button" onClick={() => removeWhoIsThisFor(index)} className="text-red-400 hover:text-red-300"><X size={18} /></button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Career Outcomes */}
+                    <div>
+                        <label className="text-sm text-gray-300 block mb-2">Career Outcomes (Job Roles)</label>
+                        <div className="flex gap-2 mb-3">
+                            <input
+                                type="text"
+                                placeholder="e.g. Frontend Developer"
+                                className="flex-1 bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                value={careerInput}
+                                onChange={(e) => setCareerInput(e.target.value)}
+                                onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addCareerOutcome())}
+                            />
+                            <Button type="button" onClick={addCareerOutcome}><Plus size={20} /></Button>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                            {formData.careerOutcomes.map((item, index) => (
+                                <div key={index} className="flex items-center gap-2 bg-white/5 px-3 py-1 rounded-full border border-white/10">
+                                    <span className="text-white text-sm">{item}</span>
+                                    <button type="button" onClick={() => removeCareerOutcome(index)} className="text-red-400 hover:text-red-300"><X size={14} /></button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                     {/* Projects */}
+                     <div>
+                        <label className="text-sm text-gray-300 block mb-2">Projects</label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
+                            <input
+                                type="text"
+                                placeholder="Project Title"
+                                className="bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                value={projectInput.title}
+                                onChange={(e) => setProjectInput({ ...projectInput, title: e.target.value })}
+                            />
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    placeholder="Brief Description"
+                                    className="flex-1 bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                    value={projectInput.description}
+                                    onChange={(e) => setProjectInput({ ...projectInput, description: e.target.value })}
+                                />
+                                <Button type="button" onClick={addProject}><Plus size={20} /></Button>
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            {formData.projects.map((item, index) => (
+                                <div key={index} className="flex items-center justify-between bg-white/5 p-3 rounded-lg border border-white/5">
+                                    <div>
+                                        <p className="text-white font-bold">{item.title}</p>
+                                        <p className="text-gray-400 text-sm">{item.description}</p>
+                                    </div>
+                                    <button type="button" onClick={() => removeProject(index)} className="text-red-400 hover:text-red-300"><X size={18} /></button>
+                                </div>
+                            ))}
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

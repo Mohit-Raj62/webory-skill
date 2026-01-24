@@ -37,6 +37,9 @@ export function CoursesView({ courses, enrolledCourseIds }: CoursesViewProps) {
 
             <div className="pt-32 pb-20 container mx-auto px-4">
                 <div className="text-center mb-16">
+                    <p className="text-blue-400 font-medium mb-3 tracking-wide uppercase text-sm">
+                        Choose a skill path, not just a course
+                    </p>
                     <h1 className="text-4xl md:text-6xl font-bold mb-6">
                         Explore Our <span className="text-blue-400">Courses</span>
                     </h1>
@@ -107,7 +110,7 @@ export function CoursesView({ courses, enrolledCourseIds }: CoursesViewProps) {
                                         onClick={() => router.push(`/courses/${course._id}`)}
                                         className="w-full bg-white/10 hover:bg-white/20 border border-white/10"
                                     >
-                                        View Details
+                                        Explore Course
                                     </Button>
                                 )}
                             </div>

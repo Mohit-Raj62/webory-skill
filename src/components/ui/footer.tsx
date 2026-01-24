@@ -16,7 +16,7 @@ export function Footer() {
                             </span>
                         </Link>
                         <p className="text-gray-400 text-sm leading-relaxed">
-                            Empowering the next generation of tech leaders through real-world skills and internships.
+                            Webory Skills is a career-focused learning platform that combines AI, mentorship, and real projects to make students industry-ready.
                         </p>
                         <div className="mt-4 flex items-center space-x-2">
                             <div className="bg-orange-500/10 border border-orange-500/20 rounded-full px-3 py-1">

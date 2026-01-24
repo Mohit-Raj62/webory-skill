@@ -1,68 +1,47 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { BookOpen, Briefcase, LayoutDashboard, ShieldCheck, Trophy, Zap, HeartHandshake ,  BriefcaseBusiness,FileUser, Users } from "lucide-react";
+import { BookOpen, Briefcase, LayoutDashboard, ShieldCheck, Trophy, Zap, HeartHandshake ,  BriefcaseBusiness,FileUser, Users, Building2 } from "lucide-react";
 
 const features = [
     {
-        title: "For Students",
+        title: "Why students choose Webory Skills",
         items: [
             {
                 icon: BookOpen,
-                title: "Skill Courses",
-                description: "Learn in a structured, easy to follow format and build strong, job ready skills.",
+                title: "AI-Generated Personalized Roadmap",
+                description: "Get a clear, custom learning path tailored to your career goals using AI.",
             },
             {
                 icon: Briefcase,
-                title: "Real Internships",
-                description: "Work on live tasks with real teams and gain practical experience you can add to your resume.",
+                title: "Industry-Relevant Skills",
+                description: "Learn what companies are actually hiring for, not outdated syllabus.",
             },
             {
-                icon:HeartHandshake ,
-                // icon: ,
-                title: "Expert Guidance",
-                description: "Get step by step support from industry experts to help you learn, grow, and complete your tasks with confidence.",
+                icon: HeartHandshake,
+                title: "Real Projects & Problems",
+                description: "Build your portfolio by solving real-world problems, not dummy projects.",
             },
              {
                 icon: Users,
-                title: "Community Access",
-                description: "Join a thriving community of peers to collaborate, share inputs and grow together.",
+                title: "Mentor Support",
+                description: "Get guidance from industry experts at every stage of your learning journey.",
             },
-            // {
-            //     icon: BriefcaseBusiness,
-            //     title: "portfolio",
-            //     description: "automatically  portfolio builder.",
-            // },
-            // {
-            //     icon: FileUser,
-            //     title: "Resume",
-            //     description: "Resume Builder with AI and cover letter generator.",
-            // }
+            {
+                icon: Trophy,
+                title: "Career-Focused Outcomes",
+                description: "We focus on making you employable and career-ready, not just collecting certificates.",
+            }
         ],
     },
     {
-        title: "Benefits for Students ",
+        title: "Benefits for Students",
         items: [
              {
                 icon: ShieldCheck,
                 title: "Government Recognized",
                 description: "Trust in a platform that is officially registered and recognized by the Ministry of MSME, Govt. of India.",
             },
-            // {
-            //     icon: LayoutDashboard,
-            //     title: "Comprehensive Dashboard",
-            //     description: "Track student activity, course progress, and platform analytics.",
-            // },
-            // {
-            //     icon: ShieldCheck,
-            //     title: "Task Approval",
-            //     description: "Review and approve student tasks and projects efficiently.",
-            // },
-            // {
-            //     icon: Zap,
-            //     title: "Automated Workflows",
-            //     description: "Streamline internship management and certificate generation.",
-            // },
              {
                 icon: Trophy,
                 title: "Certificate",
@@ -77,6 +56,11 @@ const features = [
                 icon: FileUser,
                 title: "Resume Build",
                 description: "Create polished, professional resumes with smart templates that highlight your strengths.",
+            },
+            {
+                icon: Building2,
+                title: "Internship Support",
+                description: "Unlock exclusive internship opportunities to gain work experience while you learn.",
             }
         ],
     },
@@ -88,7 +72,7 @@ export function Features() {
             <div className="container mx-auto px-4">
                 <div className="text-center mb-16">
                     <h2 className="text-3xl md:text-5xl font-bold mb-4">
-                        Why Choose <span className="text-blue-400">Webory?</span>
+                        Why <span className="text-blue-400">Webory Skills?</span>
                     </h2>
                     <p className="text-gray-400 max-w-2xl mx-auto">
                         A complete ecosystem designed to bridge the gap between learning and earning.

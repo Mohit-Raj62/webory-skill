@@ -25,6 +25,7 @@ interface ChatMessage {
 export default function AIWeboryskillsPage() {
     const [mode, setMode] = useState<"roadmap" | "chat">("roadmap");
     const [topic, setTopic] = useState("");
+    const [level, setLevel] = useState("Beginner");  // Added Level state
     const [roadmapData, setRoadmapData] = useState<RoadmapPhase[]>([]);
     const [overview, setOverview] = useState("");
     const [prerequisites, setPrerequisites] = useState<string[]>([]);
@@ -389,20 +390,60 @@ export default function AIWeboryskillsPage() {
                                 <div>
                                     <label className="text-white font-semibold block mb-3 text-base sm:text-lg flex items-center gap-2">
                                         <Rocket className="text-blue-400" size={20} />
-                                        What do you want to master?
+                                        What is your Career Goal?
                                     </label>
-                                    <div className="flex flex-col sm:flex-row gap-3">
-                                        <input type="text" value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="e.g., React.js, Python, Machine Learning..." className="flex-1 bg-black/30 border-2 border-white/10 focus:border-blue-500/50 rounded-2xl p-4 text-white text-sm sm:text-base placeholder-gray-500 outline-none transition-all" disabled={loading} />
-                                        <Button type="submit" disabled={loading || !topic.trim()} className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 px-8 sm:px-10 w-full sm:w-auto h-14 text-base font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-105">
-                                            {loading ? (<><Loader2 className="animate-spin mr-2" size={20} /><span>Generating...</span></>) : (<><Send size={20} className="mr-2" /><span>Generate Roadmap</span></>)}
-                                        </Button>
+                                    <div className="flex flex-col md:flex-row gap-4">
+                                        <div className="flex-1">
+                                             <input 
+                                                type="text" 
+                                                value={topic} 
+                                                onChange={(e) => setTopic(e.target.value)} 
+                                                placeholder="e.g., Full Stack Developer, AI Engineer, Data Scientist..." 
+                                                className="w-full bg-black/30 border-2 border-white/10 focus:border-blue-500/50 rounded-2xl p-4 text-white text-sm sm:text-base placeholder-gray-500 outline-none transition-all" 
+                                                disabled={loading} 
+                                            />
+                                        </div>
+                                        <div className="md:w-1/3">
+                                            <select
+                                                className="w-full bg-black/30 border-2 border-white/10 focus:border-blue-500/50 rounded-2xl p-4 text-white text-sm sm:text-base outline-none transition-all appearance-none cursor-pointer"
+                                                disabled={loading}
+                                                value={level}
+                                                onChange={(e) => setLevel(e.target.value)}
+                                            >
+                                                <option value="Beginner" className="bg-gray-900">Beginner (Student)</option>
+                                                <option value="Intermediate" className="bg-gray-900">Intermediate (Working Pro)</option>
+                                                <option value="Advanced" className="bg-gray-900">Advanced (Expert)</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
 
+                                <div className="flex justify-end">
+                                    <Button type="submit" disabled={loading || !topic.trim()} className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 px-8 sm:px-10 w-full md:w-auto h-14 text-base font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-105">
+                                        {loading ? (
+                                            <>
+                                                <Loader2 className="animate-spin mr-2" size={20} />
+                                                <span>Connecting with Mentor...</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Send size={20} className="mr-2" />
+                                                <span>Get Free AI Roadmap</span>
+                                            </>
+                                        )}
+                                    </Button>
+                                </div>
+                                {loading && (
+                                     <div className="text-center animate-pulse mt-4">
+                                        <p className="text-blue-300 font-medium">Your personalized roadmap is being generated.</p>
+                                        <p className="text-gray-400 text-sm">Our mentor will connect with you shortly.</p>
+                                     </div>
+                                )}
+                                
                                 <div>
                                     <p className="text-gray-400 text-xs sm:text-sm mb-3 flex items-center gap-2">
                                         <Zap className="text-yellow-400" size={16} />
-                                        Popular topics:
+                                        Popular Career Paths:
                                     </p>
                                     <div className="flex flex-wrap gap-2">
                                         {exampleTopics.map((example) => (

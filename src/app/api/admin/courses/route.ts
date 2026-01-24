@@ -29,7 +29,7 @@ export async function GET(req: Request) {
     console.error("Fetch courses error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -53,7 +53,26 @@ export async function POST(req: Request) {
     }
 
     const data = await req.json();
-    const course = (await Course.create(data)) as any;
+    const {
+      title,
+      description,
+      level,
+      color,
+      icon,
+      price,
+      outcome,
+      whoIsThisFor,
+      projects,
+      careerOutcomes,
+    } = data;
+
+    const course = (await Course.create({
+      ...data,
+      outcome: outcome || "",
+      whoIsThisFor: whoIsThisFor || [],
+      projects: projects || [],
+      careerOutcomes: careerOutcomes || [],
+    })) as any;
 
     // Filter sensitive or too large data for logging
     const { _id, title } = course;
@@ -61,7 +80,7 @@ export async function POST(req: Request) {
       decoded.userId || decoded.id,
       "CREATE_COURSE",
       `Created course: ${title} (${_id})`,
-      req.headers.get("x-forwarded-for") || "unknown"
+      req.headers.get("x-forwarded-for") || "unknown",
     );
 
     return NextResponse.json({ course }, { status: 201 });
@@ -69,7 +88,7 @@ export async function POST(req: Request) {
     console.error("Create course error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

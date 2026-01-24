@@ -160,33 +160,33 @@ export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initi
                                 </span>
                             </div>
                         </div>
-                        <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
-                            Master Skills. <br />
-                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
-                                Build Your Future.
+                        <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight leading-tight">
+                            AI-Powered <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400">Skill</span> Platform for <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+                                Industry-Ready Careers
                             </span>
                         </h1>
                         <p className="text-lg md:text-xl text-gray-400 mb-8 max-w-2xl mx-auto leading-relaxed">
-                            The ultimate platform for students to learn real-world skills, complete internships, and launch their careers. Join the Webory revolution today.
+                            Webory Skills helps students and freshers build real-world skills using AI-driven roadmaps, hands-on projects, and expert mentorship, not just recorded videos.
                         </p>
 
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                             {!isLoggedIn ? (
                                 <Link href="/signup">
                                     <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 text-lg h-12 px-8">
-                                        Start Learning <ArrowRight className="ml-2 h-5 w-5" />
+                                        Get Your AI Roadmap <ArrowRight className="ml-2 h-5 w-5" />
                                     </Button>
                                 </Link>
                             ) : (
-                                <Link href="/profile">
+                                <Link href="/ai-weboryskills">
                                     <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 text-lg h-12 px-8">
-                                        Go to Dashboard <ArrowRight className="ml-2 h-5 w-5" />
+                                        Get Your AI Roadmap <ArrowRight className="ml-2 h-5 w-5" />
                                     </Button>
                                 </Link>
                             )}
-                            <Link href="/internships">
+                            <Link href="/courses">
                                 <Button size="lg" variant="glass" className="w-full sm:w-auto text-lg h-12 px-8">
-                                    View Internships
+                                    Explore Courses
                                 </Button>
                             </Link>
                         </div>

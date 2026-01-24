@@ -6,6 +6,7 @@ import { EnrolledCourses } from "@/components/landing/enrolled-courses";
 import { AppliedInternships } from "@/components/landing/applied-internships";
 import { CoursesPreview } from "@/components/landing/courses-preview";
 import { Internships } from "@/components/landing/internships";
+import { TrustProofSection } from "@/components/landing/trust-proof";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { FAQ } from "@/components/landing/faq";
 import { Footer } from "@/components/ui/footer";
@@ -17,6 +18,8 @@ import Course from "@/models/Course";
 // Force dynamic rendering to ensure the user count is up-to-date
 // Alternatively we can use revalidate = 60 (seconds) for performance
 export const revalidate = 60;
+
+import { AIRoadmapFlow } from "@/components/landing/ai-roadmap-flow";
 
 export default async function Home() {
     let userCount = 0;
@@ -49,10 +52,12 @@ export default async function Home() {
             <Navbar />
             <Hero initialUserCount={userCount} initialInternshipCount={internshipCount} initialCourseCount={courseCount} />
             <Features />
+            <AIRoadmapFlow />
             <EnrolledCourses />
             <AppliedInternships />
             <CoursesPreview popularCourses={popularCourses} />
             <Internships />
+            <TrustProofSection />
             <TestimonialsSection />
             <FAQ />
             <Footer />

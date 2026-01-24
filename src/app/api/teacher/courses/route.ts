@@ -46,13 +46,24 @@ export async function POST(request: NextRequest) {
     }
 
     const reqBody = await request.json();
-    const { title, description, level, color, icon, price } = reqBody;
+    const {
+      title,
+      description,
+      level,
+      color,
+      icon,
+      price,
+      outcome,
+      whoIsThisFor,
+      projects,
+      careerOutcomes,
+    } = reqBody;
 
     // Basic validation
     if (!title || !description || !level || !color || !icon) {
       return NextResponse.json(
         { error: "Please fill all required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -65,6 +76,10 @@ export async function POST(request: NextRequest) {
       price: price || 0,
       instructor: userId,
       studentsCount: "0",
+      outcome: outcome || "",
+      whoIsThisFor: whoIsThisFor || [],
+      projects: projects || [],
+      careerOutcomes: careerOutcomes || [],
     });
 
     const savedCourse = await newCourse.save();

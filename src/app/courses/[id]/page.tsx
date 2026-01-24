@@ -9,7 +9,7 @@ const PaymentModal = dynamic(() => import("@/components/courses/payment-modal").
 const Invoice = dynamic(() => import("@/components/courses/invoice").then(mod => mod.Invoice), { ssr: false });
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { CheckCircle, Clock, BarChart, Users, Globe, PlayCircle, Lock, ClipboardList, FileText, Calendar, Video, ChevronDown, ChevronUp } from "lucide-react";
+import { CheckCircle, Clock, BarChart, Users, Globe, PlayCircle, Lock, ClipboardList, FileText, Calendar, Video, ChevronDown, ChevronUp, Brain } from "lucide-react";
 import Link from "next/link";
 
 // Helper for safe date parsing on iOS/Safari
@@ -243,8 +243,9 @@ export default function CourseDetailsPage() {
             <div className="pt-32 pb-20 container mx-auto px-4">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                     <div className="lg:col-span-2">
-                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">{course.title}</h1>
-                        <p className="text-xl text-gray-400 mb-8 leading-relaxed">{course.description}</p>
+                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">{course.title}</h1>
+                        <p className="text-xl text-blue-400 font-medium mb-6">Build real-world web applications and become job-ready.</p>
+                        <p className="text-gray-400 mb-8 leading-relaxed max-w-3xl">{course.description}</p>
 
                         <div className="flex flex-wrap gap-6 mb-12">
                             <div className="flex items-center text-gray-300">
@@ -268,6 +269,25 @@ export default function CourseDetailsPage() {
                                 Last Updated: {safeDate(course.createdAt)}
                             </div>
                         </div>
+
+                         {/* Who is this for? */}
+                         <div className="mb-12">
+                            <h2 className="text-2xl font-bold text-white mb-6">Who Is This Course For?</h2>
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {[
+                                    "College students looking for structured learning",
+                                    "Beginners with basic computer knowledge",
+                                    "Freshers aiming for their first tech job",
+                                    "Career switchers wanting hands-on skills"
+                                ].map((item, index) => (
+                                    <div key={index} className="flex items-center text-gray-300">
+                                        <div className="w-2 h-2 rounded-full bg-blue-500 mr-3" />
+                                        {item}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
 
                         {course.benefits && course.benefits.length > 0 && (
                             <div className="glass-card p-8 rounded-2xl mb-12 border border-[#c5a059]/30 bg-[#c5a059]/5">
@@ -331,7 +351,7 @@ export default function CourseDetailsPage() {
                         )}
 
                         <div className="glass-card p-8 rounded-2xl mb-12">
-                            <h2 className="text-2xl font-bold text-white mb-6">What you'll learn</h2>
+                            <h2 className="text-2xl font-bold text-white mb-6">Skills You Will Learn</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {course.curriculum.map((topic: string, index: number) => (
                                     <div key={index} className="flex items-start text-gray-300">
@@ -340,6 +360,54 @@ export default function CourseDetailsPage() {
                                     </div>
                                 ))}
                             </div>
+                        </div>
+
+                        {/* Projects Section */}
+                         <div className="glass-card p-8 rounded-2xl mb-12 border border-purple-500/20 bg-purple-500/5">
+                            <h2 className="text-2xl font-bold text-white mb-6">Projects You Will Build</h2>
+                            <div className="space-y-6">
+                                {[
+                                    { title: "Portfolio Website", desc: "Build a personal portfolio to showcase your skills." },
+                                    { title: "Real-world CRUD App", desc: "Create a fully functional application with database integration." },
+                                    { title: "Mini SaaS Project", desc: "Understand subscription models and user management." }
+                                ].map((project, index) => (
+                                    <div key={index} className="flex items-start">
+                                        <div className="mr-4 mt-1 bg-purple-500/20 p-2 rounded-lg text-purple-400">
+                                            <ClipboardList size={20} />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-lg font-bold text-white">{project.title}</h4>
+                                            <p className="text-gray-400 text-sm">{project.desc}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* AI Roadmap Explainer */}
+                        <div className="mb-12 p-6 rounded-2xl bg-gradient-to-r from-blue-900/20 to-purple-900/20 border border-blue-500/20">
+                            <div className="flex items-center gap-4 mb-3">
+                                <div className="p-2 bg-blue-500/20 rounded-lg text-blue-400">
+                                    <Brain size={24} />
+                                </div>
+                                <h3 className="text-xl font-bold text-white">AI Roadmap Integration</h3>
+                            </div>
+                            <p className="text-gray-300 leading-relaxed">
+                                This course is delivered through a personalized AI-generated roadmap, ensuring you learn the right skills at the right time based on your goal and progress. No random videos, just a structured path to success.
+                            </p>
+                        </div>
+
+                        {/* Career Outcomes */}
+                        <div className="mb-12">
+                             <h2 className="text-2xl font-bold text-white mb-6">Career Outcomes</h2>
+                             <p className="text-gray-400 mb-4">After completing this course, you can apply for:</p>
+                             <div className="flex flex-wrap gap-3">
+                                {["Junior Web Developer", "Frontend Developer", "Freelance Projects", "Internship Opportunities"].map((role, i) => (
+                                    <span key={i} className="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-gray-300 text-sm font-medium">
+                                        {role}
+                                    </span>
+                                ))}
+                             </div>
                         </div>
 
                         {/* Live Classes Section */}
