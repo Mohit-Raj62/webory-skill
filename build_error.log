@@ -1,0 +1,249 @@
+
+> skill-webory@0.1.0 build
+> next build
+
+ΓÜá Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\91620\package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * C:\Users\91620\Desktop\skill-webory\package-lock.json
+
+Γû▓ Next.js 16.1.0-canary.15 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 60s
+  Running TypeScript ...
+  Collecting page data using 15 workers ...
+  Generating static pages using 15 workers (0/122) ...
+  Generating static pages using 15 workers (30/122) 
+  Generating static pages using 15 workers (60/122) 
+  Generating static pages using 15 workers (91/122) 
+Γ£ô Generating static pages using 15 workers (122/122) in 13.2s
+  Finalizing page optimization ...
+
+Route (app)                                                                          Revalidate  Expire
+Γöî Γùï /                                                                                        1m      1y
+Γö£ Γùï /_not-found
+Γö£ Γùï /about
+Γö£ Γùï /admin
+Γö£ Γùï /admin/analytics
+Γö£ Γùï /admin/applications
+Γö£ Γùï /admin/broadcast
+Γö£ Γùï /admin/careers/applications
+Γö£ Γùï /admin/careers/jobs
+Γö£ Γùï /admin/certificates
+Γö£ Γùï /admin/certificates/generate
+Γö£ Γùï /admin/courses
+Γö£ ╞Æ /admin/courses/[id]/assignments
+Γö£ ╞Æ /admin/courses/[id]/assignments/[assignmentId]/submissions
+Γö£ ╞Æ /admin/courses/[id]/assignments/new
+Γö£ ╞Æ /admin/courses/[id]/edit
+Γö£ ╞Æ /admin/courses/[id]/quizzes
+Γö£ ╞Æ /admin/courses/[id]/quizzes/[quizId]/edit
+Γö£ ╞Æ /admin/courses/[id]/quizzes/[quizId]/results
+Γö£ ╞Æ /admin/courses/[id]/quizzes/new
+Γö£ Γùï /admin/courses/new
+Γö£ Γùï /admin/doubts
+Γö£ Γùï /admin/enrollments
+Γö£ Γùï /admin/feedback
+Γö£ Γùï /admin/internships
+Γö£ ╞Æ /admin/internships/[id]/edit
+Γö£ ╞Æ /admin/internships/[id]/tasks
+Γö£ ╞Æ /admin/internships/[id]/tasks/[taskId]/submissions
+Γö£ Γùï /admin/internships/new
+Γö£ Γùï /admin/live-classes
+Γö£ Γùï /admin/maintenance
+Γö£ Γùï /admin/payments
+Γö£ Γùï /admin/promo-codes
+Γö£ Γùï /admin/settings
+Γö£ Γùï /admin/users
+Γö£ ╞Æ /admin/users/[id]/portfolio
+Γö£ Γùï /admin/verify-certificate
+Γö£ Γùï /ai-weboryskills
+Γö£ ╞Æ /api/activities
+Γö£ ╞Æ /api/admin/analytics
+Γö£ ╞Æ /api/admin/applications
+Γö£ ╞Æ /api/admin/applications/[id]
+Γö£ ╞Æ /api/admin/broadcast
+Γö£ ╞Æ /api/admin/certificates/generate
+Γö£ ╞Æ /api/admin/certificates/generate-custom
+Γö£ ╞Æ /api/admin/certificates/issue
+Γö£ ╞Æ /api/admin/certificates/search-user
+Γö£ ╞Æ /api/admin/courses
+Γö£ ╞Æ /api/admin/courses/[id]
+Γö£ ╞Æ /api/admin/courses/[id]/assignments
+Γö£ ╞Æ /api/admin/courses/[id]/assignments/[assignmentId]/submissions
+Γö£ ╞Æ /api/admin/courses/[id]/assignments/[assignmentId]/submissions/[submissionId]
+Γö£ ╞Æ /api/admin/courses/[id]/pdfs
+Γö£ ╞Æ /api/admin/courses/[id]/pdfs/[pdfId]
+Γö£ ╞Æ /api/admin/courses/[id]/quizzes
+Γö£ ╞Æ /api/admin/courses/[id]/quizzes/[quizId]
+Γö£ ╞Æ /api/admin/doubts
+Γö£ ╞Æ /api/admin/doubts/[id]
+Γö£ ╞Æ /api/admin/enrollments
+Γö£ ╞Æ /api/admin/enrollments/[id]
+Γö£ ╞Æ /api/admin/feedback
+Γö£ ╞Æ /api/admin/feedback/[id]
+Γö£ ╞Æ /api/admin/internship-applications
+Γö£ ╞Æ /api/admin/internships/[id]
+Γö£ ╞Æ /api/admin/internships/[id]/tasks
+Γö£ ╞Æ /api/admin/internships/submissions/[submissionId]
+Γö£ ╞Æ /api/admin/internships/tasks/[taskId]/submissions
+Γö£ ╞Æ /api/admin/live-classes
+Γö£ ╞Æ /api/admin/live-classes/[id]
+Γö£ ╞Æ /api/admin/maintenance/cleanup
+Γö£ ╞Æ /api/admin/maintenance/debug-cloud
+Γö£ ╞Æ /api/admin/maintenance/export
+Γö£ ╞Æ /api/admin/maintenance/logs
+Γö£ ╞Æ /api/admin/maintenance/optimize
+Γö£ ╞Æ /api/admin/maintenance/revalidate
+Γö£ ╞Æ /api/admin/maintenance/test-email
+Γö£ ╞Æ /api/admin/payments
+Γö£ ╞Æ /api/admin/payments/[id]
+Γö£ ╞Æ /api/admin/promo-codes
+Γö£ ╞Æ /api/admin/promo-codes/[id]
+Γö£ ╞Æ /api/admin/settings
+Γö£ ╞Æ /api/admin/stats
+Γö£ ╞Æ /api/admin/users
+Γö£ ╞Æ /api/admin/users/[id]
+Γö£ ╞Æ /api/admin/users/[id]/portfolio
+Γö£ ╞Æ /api/ai/roadmap
+Γö£ ╞Æ /api/auth/apple
+Γö£ ╞Æ /api/auth/apple/callback
+Γö£ ╞Æ /api/auth/forgot-password
+Γö£ ╞Æ /api/auth/github
+Γö£ ╞Æ /api/auth/github/callback
+Γö£ ╞Æ /api/auth/google
+Γö£ ╞Æ /api/auth/google/callback
+Γö£ ╞Æ /api/auth/login
+Γö£ ╞Æ /api/auth/logout
+Γö£ ╞Æ /api/auth/me
+Γö£ ╞Æ /api/auth/reset-password/[token]
+Γö£ ╞Æ /api/auth/send-otp
+Γö£ ╞Æ /api/auth/session
+Γö£ ╞Æ /api/auth/signup
+Γö£ ╞Æ /api/auth/verify-otp
+Γö£ ╞Æ /api/careers/apply
+Γö£ ╞Æ /api/code/run
+Γö£ ╞Æ /api/code/snippets
+Γö£ ╞Æ /api/code/snippets/[id]
+Γö£ ╞Æ /api/contact
+Γö£ ╞Æ /api/courses
+Γö£ ╞Æ /api/courses/[id]
+Γö£ ╞Æ /api/courses/[id]/assignments/[assignmentId]/submit
+Γö£ ╞Æ /api/courses/[id]/certificate-eligibility
+Γö£ ╞Æ /api/courses/[id]/doubts
+Γö£ ╞Æ /api/courses/[id]/live-classes
+Γö£ ╞Æ /api/courses/[id]/progress
+Γö£ ╞Æ /api/courses/[id]/quizzes/[quizId]
+Γö£ ╞Æ /api/courses/[id]/recalculate-progress
+Γö£ ╞Æ /api/courses/[id]/reset-progress
+Γö£ ╞Æ /api/courses/[id]/videos/[videoIndex]/notes
+Γö£ ╞Æ /api/courses/[id]/videos/[videoIndex]/watch
+Γö£ ╞Æ /api/courses/enroll
+Γö£ ╞Æ /api/feedback
+Γö£ ╞Æ /api/fix-course
+Γö£ ╞Æ /api/internships
+Γö£ ╞Æ /api/internships/[id]
+Γö£ ╞Æ /api/internships/applications/[id]/certificate
+Γö£ ╞Æ /api/internships/applications/[id]/offer-letter
+Γö£ ╞Æ /api/internships/apply
+Γö£ ╞Æ /api/jobs
+Γö£ ╞Æ /api/jobs/[id]
+Γö£ ╞Æ /api/mentorship/book
+Γö£ ╞Æ /api/mentorship/purchase
+Γö£ ╞Æ /api/payment/payu/hash
+Γö£ ╞Æ /api/payment/payu/response
+Γö£ ╞Æ /api/payments/submit-proof
+Γö£ ╞Æ /api/pdf-proxy
+Γö£ ╞Æ /api/portfolio
+Γö£ ╞Æ /api/portfolio/[id]
+Γö£ ╞Æ /api/promo-codes
+Γö£ ╞Æ /api/promo-codes/validate
+Γö£ ╞Æ /api/settings
+Γö£ ╞Æ /api/stats/users
+Γö£ ╞Æ /api/student/applications/[id]/resume
+Γö£ ╞Æ /api/student/courses/[id]/pdfs/[pdfId]/access
+Γö£ ╞Æ /api/student/internships/[id]/tasks
+Γö£ ╞Æ /api/student/internships/tasks/[taskId]/submit
+Γö£ ╞Æ /api/student/live-classes
+Γö£ ╞Æ /api/teacher/courses
+Γö£ ╞Æ /api/teacher/courses/[id]
+Γö£ ╞Æ /api/teacher/courses/[id]/assignments
+Γö£ ╞Æ /api/teacher/courses/[id]/assignments/[assignmentId]/submissions
+Γö£ ╞Æ /api/teacher/courses/[id]/assignments/[assignmentId]/submissions/[submissionId]
+Γö£ ╞Æ /api/teacher/courses/[id]/pdfs
+Γö£ ╞Æ /api/teacher/courses/[id]/pdfs/[pdfId]
+Γö£ ╞Æ /api/teacher/courses/[id]/quizzes
+Γö£ ╞Æ /api/teacher/courses/[id]/quizzes/[quizId]
+Γö£ ╞Æ /api/teacher/doubts
+Γö£ ╞Æ /api/teacher/doubts/[id]
+Γö£ ╞Æ /api/teacher/stats
+Γö£ ╞Æ /api/test/become-teacher
+Γö£ ╞Æ /api/upload/file
+Γö£ ╞Æ /api/upload/image
+Γö£ ╞Æ /api/upload/pdf
+Γö£ ╞Æ /api/upload/resume
+Γö£ ╞Æ /api/upload/signature
+Γö£ ╞Æ /api/upload/video
+Γö£ ╞Æ /api/user/dashboard
+Γö£ ╞Æ /api/user/enrollments
+Γö£ ╞Æ /api/user/grades
+Γö£ ╞Æ /api/verify-certificate/[id]
+Γö£ ╞Æ /api/verify-certificate/ocr
+Γö£ Γùï /blog
+Γö£ ╞Æ /blog/[slug]
+Γö£ Γùï /careers
+Γö£ Γùï /contact
+Γö£ ╞Æ /courses
+Γö£ ╞Æ /courses/[id]
+Γö£ ╞Æ /courses/[id]/assignment/[assignmentId]
+Γö£ ╞Æ /courses/[id]/certificate
+Γö£ ╞Æ /courses/[id]/doubts
+Γö£ ╞Æ /courses/[id]/quiz/[quizId]
+Γö£ ╞Æ /courses/[id]/quiz/[quizId]/result
+Γö£ ╞Æ /courses/[id]/video/[videoIndex]
+Γö£ Γùï /forgot-password
+Γö£ ╞Æ /internships
+Γö£ ╞Æ /internships/[id]/tasks
+Γö£ ╞Æ /internships/applications/[id]/certificate
+Γö£ ╞Æ /internships/applications/[id]/offer-letter
+Γö£ Γùï /live-classes
+Γö£ Γùï /login
+Γö£ Γùï /mentorship
+Γö£ Γùï /payment/failure
+Γö£ Γùï /payment/success
+Γö£ Γùï /playground
+Γö£ ╞Æ /portfolio/[id]
+Γö£ Γùï /privacy
+Γö£ Γùï /refund-policy
+Γö£ ╞Æ /reset-password/[token]
+Γö£ Γùï /resume
+Γö£ Γùï /robots.txt
+Γö£ Γùï /signup
+Γö£ Γùï /sitemap.xml
+Γö£ Γùï /teacher
+Γö£ Γùï /teacher/courses
+Γö£ ╞Æ /teacher/courses/[id]/assignments
+Γö£ ╞Æ /teacher/courses/[id]/assignments/[assignmentId]/submissions
+Γö£ ╞Æ /teacher/courses/[id]/assignments/new
+Γö£ ╞Æ /teacher/courses/[id]/edit
+Γö£ ╞Æ /teacher/courses/[id]/quizzes
+Γö£ ╞Æ /teacher/courses/[id]/quizzes/[quizId]/edit
+Γö£ ╞Æ /teacher/courses/[id]/quizzes/[quizId]/results
+Γö£ ╞Æ /teacher/courses/[id]/quizzes/new
+Γö£ Γùï /teacher/courses/create
+Γö£ Γùï /teacher/doubts
+Γö£ Γùï /teacher/live-classes
+Γö£ Γùï /terms
+Γö£ Γùï /verify-certificate
+Γöö ╞Æ /verify-certificate/[id]
+
+
+╞Æ Proxy (Middleware)
+
+Γùï  (Static)   prerendered as static content
+╞Æ  (Dynamic)  server-rendered on demand
+

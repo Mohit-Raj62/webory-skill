@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Activity from "@/models/Activity";
+import User from "@/models/User";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
@@ -22,7 +23,7 @@ export async function GET(req: Request) {
     const endDate = searchParams.get("endDate");
 
     const query: any = { student: decoded.userId };
-    
+
     if (category) {
       query.category = category;
     }
@@ -38,10 +39,10 @@ export async function GET(req: Request) {
 
     // Aggregate by date for calendar view
     const dailyStats: { [key: string]: any } = {};
-    
+
     activities.forEach((activity) => {
-      const dateKey = activity.date.toISOString().split('T')[0];
-      
+      const dateKey = activity.date.toISOString().split("T")[0];
+
       if (!dailyStats[dateKey]) {
         dailyStats[dateKey] = {
           date: dateKey,
@@ -54,22 +55,26 @@ export async function GET(req: Request) {
 
       dailyStats[dateKey].totalActivities += 1;
       dailyStats[dateKey].videoMinutes += activity.metadata?.videoMinutes || 0;
-      dailyStats[dateKey].questionsAttempted += activity.metadata?.questionsCount || 0;
+      dailyStats[dateKey].questionsAttempted +=
+        activity.metadata?.questionsCount || 0;
       dailyStats[dateKey].activities.push({
         type: activity.type,
         metadata: activity.metadata,
       });
     });
 
-    return NextResponse.json({ 
-      activities,
-      dailyStats: Object.values(dailyStats),
-    }, { status: 200 });
+    return NextResponse.json(
+      {
+        activities,
+        dailyStats: Object.values(dailyStats),
+      },
+      { status: 200 },
+    );
   } catch (error) {
     console.error("Get activities error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -93,12 +98,15 @@ export async function POST(req: Request) {
       ...body,
     });
 
+    // Award +10 XP to the student
+    await User.findByIdAndUpdate(decoded.userId, { $inc: { xp: 10 } });
+
     return NextResponse.json({ activity }, { status: 201 });
   } catch (error) {
     console.error("Create activity error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

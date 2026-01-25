@@ -72,7 +72,7 @@ export function Features() {
             <div className="container mx-auto px-4">
                 <div className="text-center mb-16">
                     <h2 className="text-3xl md:text-5xl font-bold mb-4">
-                        Why <span className="text-blue-400">Webory Skills?</span>
+                        Why <span className="text-emerald-400">Webory Skills?</span>
                     </h2>
                     <p className="text-gray-400 max-w-2xl mx-auto">
                         A complete ecosystem designed to bridge the gap between learning and earning.
@@ -82,7 +82,7 @@ export function Features() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                     {features.map((group, groupIndex) => (
                         <div key={groupIndex} className="space-y-8">
-                            <h3 className="text-2xl font-bold text-white border-l-4 border-blue-500 pl-4">
+                            <h3 className="text-2xl font-bold text-white border-l-4 border-emerald-500 pl-4">
                                 {group.title}
                             </h3>
                             <div className="grid gap-6 ">
@@ -95,7 +95,7 @@ export function Features() {
                                         transition={{ delay: index * 0.1 }}
                                         className="glass-card p-6 rounded-xl flex items-start space-x-4"
                                     >
-                                        <div className="p-3 bg-blue-500/10 rounded-lg text-blue-400">
+                                        <div className="p-3 bg-emerald-500/10 rounded-lg text-emerald-400">
                                             <feature.icon size={24} />
                                         </div>
                                         <div>

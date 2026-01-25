@@ -9,7 +9,7 @@ import jwt from "jsonwebtoken";
 // GET - Fetch quiz for taking (without correct answers)
 export async function GET(
   req: Request,
-  props: { params: Promise<{ id: string; quizId: string }> }
+  props: { params: Promise<{ id: string; quizId: string }> },
 ) {
   try {
     await dbConnect();
@@ -17,7 +17,7 @@ export async function GET(
     const { quizId } = params;
 
     const quiz = await Quiz.findById(quizId).select(
-      "-questions.correctAnswer -questions.explanation"
+      "-questions.correctAnswer -questions.explanation",
     );
 
     if (!quiz) {
@@ -29,7 +29,7 @@ export async function GET(
     console.error("Fetch quiz error:", error);
     return NextResponse.json(
       { error: "Failed to fetch quiz" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -37,7 +37,7 @@ export async function GET(
 // POST - Submit quiz attempt
 export async function POST(
   req: Request,
-  props: { params: Promise<{ id: string; quizId: string }> }
+  props: { params: Promise<{ id: string; quizId: string }> },
 ) {
   try {
     await dbConnect();
@@ -76,7 +76,7 @@ export async function POST(
 
     const obtainedMarks = gradedAnswers.reduce(
       (sum: number, ans: any) => sum + ans.marksObtained,
-      0
+      0,
     );
     const percentage = (obtainedMarks / quiz.totalMarks) * 100;
     const passed = percentage >= quiz.passingScore;
@@ -107,6 +107,10 @@ export async function POST(
       date: new Date(),
     });
 
+    // Award +20 XP for submitting a quiz
+    const User = (await import("@/models/User")).default;
+    await User.findByIdAndUpdate(decoded.userId, { $inc: { xp: 20 } });
+
     // Return results with correct answers if showAnswers is true
     const result = {
       attemptId: attempt._id,
@@ -130,7 +134,7 @@ export async function POST(
     console.error("Submit quiz error:", error);
     return NextResponse.json(
       { error: "Failed to submit quiz" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

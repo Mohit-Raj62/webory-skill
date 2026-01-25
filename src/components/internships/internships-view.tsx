@@ -3,8 +3,8 @@
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, IndianRupee, CheckCircle2, X } from "lucide-react";
-import { useState } from "react";
+import { MapPin, Clock, IndianRupee, CheckCircle2, X, Search, Filter } from "lucide-react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { PaymentModal } from "@/components/courses/payment-modal";
@@ -19,6 +19,9 @@ interface InternshipsViewProps {
 
 export function InternshipsView({ internships, user, appliedInternshipIds }: InternshipsViewProps) {
     const [selectedInternship, setSelectedInternship] = useState<string | null>(null);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedType, setSelectedType] = useState("All");
+
     const [formData, setFormData] = useState({
         resume: "",
         coverLetter: "",
@@ -29,15 +32,23 @@ export function InternshipsView({ internships, user, appliedInternshipIds }: Int
     const [submitting, setSubmitting] = useState(false);
     const [showPayment, setShowPayment] = useState(false);
     const [showInvoice, setShowInvoice] = useState(false);
-    const [transactionData, setTransactionData] = useState<any>(null); // This might be used if we handle invoice after payment success callback
+    const [transactionData, setTransactionData] = useState<any>(null);
     const router = useRouter();
+
+    const filteredInternships = useMemo(() => {
+        return internships.filter(job => {
+            const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                 job.company.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesType = selectedType === "All" || job.type === selectedType;
+            return matchesSearch && matchesType;
+        });
+    }, [internships, searchQuery, selectedType]);
 
     const handleApplyClick = (id: string) => {
         if (!user) {
             router.push("/login");
             return;
         }
-        // If using fallback data (string IDs), we can't submit to backend that expects ObjectId
         if (id.length < 24) {
             alert("This is a demo internship. Please wait for real internships to be loaded or contact admin.");
             return;
@@ -70,7 +81,6 @@ export function InternshipsView({ internships, user, appliedInternshipIds }: Int
             const data = await res.json();
             
             if (res.ok || data.error === "Already applied to this internship") {
-                // If success or already applied, proceed to payment
                 setShowPayment(true);
             } else {
                 toast.error(data.error || "Failed to submit application");
@@ -84,62 +94,176 @@ export function InternshipsView({ internships, user, appliedInternshipIds }: Int
     };
 
     return (
-        <main className="min-h-screen bg-background relative">
+        <main className="min-h-screen bg-background relative overflow-hidden">
+             <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+            
             <Navbar />
 
-            <div className="pt-32 pb-20 container mx-auto px-4">
-                <div className="text-center mb-16">
-                    <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                        Find Your Dream <span className="text-purple-400">Internship</span>
-                    </h1>
-                    <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-                        Kickstart your career with real-world experience at top companies.
-                    </p>
-                </div>
-
-                <div className="max-w-4xl mx-auto space-y-6">
-                    {internships.map((job) => (
-                        <div key={job._id} className="glass-card p-6 md:p-8 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-6 group hover:border-purple-500/50 transition-colors">
-                            <div className="flex-1">
-                                <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-purple-400 transition-colors">{job.title}</h3>
-                                <p className="text-lg text-gray-300 mb-4">{job.company}</p>
-
-                                <div className="flex flex-wrap gap-4 text-sm text-gray-400 mb-4">
-                                    <span className="flex items-center"><MapPin size={16} className="mr-1" /> {job.location}</span>
-                                    <span className="flex items-center"><Clock size={16} className="mr-1" /> {job.type}</span>
-                                    <span className="flex items-center"><IndianRupee size={16} className="mr-1" /> {job.stipend}</span>
-                                    <span className="flex items-center text-purple-400 font-semibold"><IndianRupee size={16} className="mr-1" /> Fee: ₹{job.price || 0}</span>
-                                </div>
-
-                                <div className="flex flex-wrap gap-2">
-                                    {job.tags && job.tags.map((tag: string, i: number) => (
-                                        <span key={i} className="px-3 py-1 rounded-full bg-blue-500/10 text-blue-300 text-xs border border-blue-500/20">
-                                            {tag}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="flex-shrink-0">
-                                {appliedInternshipIds.includes(job._id) ? (
-                                    <Button disabled className="w-full md:w-auto bg-green-500/20 text-green-400 border border-green-500/50 px-8">
-                                        <CheckCircle2 className="mr-2 h-4 w-4" /> Applied
-                                    </Button>
-                                ) : (
-                                    <Button
-                                        onClick={() => handleApplyClick(job._id)}
-                                        className="w-full md:w-auto bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 border-0 px-8"
-                                    >
-                                        Apply Now
-                                    </Button>
-                                )}
-                            </div>
+            <div className="pt-32 pb-20 container mx-auto px-4 relative z-10">
+                <div className="text-center mb-16 relative">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 max-w-4xl bg-emerald-500/5 blur-[120px] -z-10 rounded-full" />
+                    
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                    >
+                         <div className="flex flex-wrap justify-center gap-3 mb-6">
+                            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-950/40 text-emerald-300 text-[9px] font-black uppercase tracking-widest backdrop-blur-md shadow-lg">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                                Hiring Now
+                            </span>
                         </div>
-                    ))}
+
+                        <h1 className="text-2xl md:text-4xl lg:text-5xl font-black mb-5 tracking-tighter text-white leading-tight">
+                            Launch Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Career</span> <span className="text-slate-500 mx-2 font-light">|</span> <span className="text-slate-200 opacity-90">Earn While You Learn</span>
+                        </h1>
+                        <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed font-light">
+                            Gain <span className="text-white font-medium italic underline decoration-emerald-500/50">real-world experience</span> by working with 
+                            growing startups and established tech companies.
+                        </p>
+                    </motion.div>
                 </div>
+
+                {/* Search & Filter Bar */}
+                <div className="max-w-4xl mx-auto mb-12 flex flex-col md:flex-row gap-4 items-center justify-between">
+                    <div className="relative w-full md:max-w-md group">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-hover:text-emerald-400 transition-colors" size={18} />
+                        <input 
+                            type="text" 
+                            placeholder="Search by role or company..." 
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full bg-white/5 border border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/50 focus:bg-white/[0.08] transition-all backdrop-blur-md"
+                        />
+                    </div>
+
+                    <div className="flex items-center gap-2 p-1.5 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-md overflow-x-auto max-w-full">
+                        {["All", "Full Time", "Part Time", "Remote", "Hybrid"].map(type => (
+                            <button
+                                key={type}
+                                onClick={() => setSelectedType(type)}
+                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all whitespace-nowrap ${
+                                    selectedType === type 
+                                    ? "bg-emerald-500 text-black shadow-[0_0_20px_rgba(16,185,129,0.3)]" 
+                                    : "text-slate-400 hover:text-white hover:bg-white/5"
+                                }`}
+                            >
+                                {type}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="max-w-5xl mx-auto space-y-6">
+                    <AnimatePresence mode="popLayout">
+                        {filteredInternships.length > 0 ? (
+                            filteredInternships.map((job, index) => (
+                                <motion.div 
+                                    layout
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.95 }}
+                                    transition={{ duration: 0.4 }}
+                                    key={job._id || index} 
+                                    className="group relative bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-emerald-500/50 transition-all duration-700 hover:shadow-[0_0_40px_-10px_rgba(16,185,129,0.2)] hover:-translate-y-1"
+                                >
+                                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
+                                        <div className="absolute inset-[-2px] bg-gradient-to-tr from-emerald-500/50 via-cyan-500/20 to-blue-500/50 rounded-[2.1rem] blur-sm -z-10" />
+                                    </div>
+
+                                    <div className="flex-1 relative z-30">
+                                        <div className="mb-4 flex items-center gap-3">
+                                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#10b981] animate-pulse" />
+                                             <span className="text-[9px] font-black text-emerald-400/90 uppercase tracking-[0.2em] leading-none">
+                                                Active Enrollment
+                                             </span>
+                                        </div>
+
+                                        <h3 className="text-2xl font-black text-white mb-2 tracking-tight group-hover:text-emerald-300 transition-colors duration-500">{job.title}</h3>
+                                        <div className="text-base text-slate-300 font-bold mb-4 flex items-center gap-2 opacity-90">
+                                            <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                                            {job.company}
+                                        </div>
+
+                                         <div className="flex flex-wrap gap-3 mb-6">
+                                            <div className="flex items-center gap-2 bg-white/5 border border-white/5 px-2.5 py-1.5 rounded-lg">
+                                                <MapPin size={13} className="text-blue-400" />
+                                                <span className="text-[11px] font-bold text-slate-400">{job.location}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 bg-white/5 border border-white/5 px-2.5 py-1.5 rounded-lg">
+                                                <Clock size={13} className="text-orange-400" />
+                                                <span className="text-[11px] font-bold text-slate-400">{job.type}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 bg-white/5 border border-white/5 px-2.5 py-1.5 rounded-lg">
+                                                <IndianRupee size={13} className="text-green-400" />
+                                                <span className="text-[11px] font-black text-white">{job.stipend}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-wrap gap-2">
+                                            {job.tags && job.tags.map((tag: string, i: number) => (
+                                                <span key={i} className="px-2.5 py-1 rounded-lg bg-emerald-950/20 text-emerald-400/80 text-[9px] font-black uppercase tracking-wider border border-emerald-500/10 transition-all">
+                                                    {tag}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="flex-shrink-0 relative z-30 flex flex-col items-end gap-5 w-full md:w-auto">
+                                        <div className="w-full md:w-auto p-4 rounded-2xl bg-white/[0.02] border border-white/5 flex flex-col items-end group-hover:bg-white/[0.04] transition-colors">
+                                             <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] mb-1.5">Registration Fee</span>
+                                             <div className="flex items-baseline gap-2">
+                                                <span className="text-2xl font-black text-white tracking-tighter">
+                                                    ₹{job.price || 0}
+                                                </span>
+                                                <span className="text-[9px] text-emerald-500/80 font-black uppercase tracking-widest">Industry Standard</span>
+                                             </div>
+                                        </div>
+
+                                        {appliedInternshipIds.includes(job._id) ? (
+                                            <Button disabled className="w-full bg-slate-800/50 text-slate-500 border border-slate-700/50 h-11 rounded-xl font-black uppercase tracking-widest text-[9px] shadow-inner">
+                                                <CheckCircle2 className="mr-2 h-3.5 w-3.5" /> Applied Successfully
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                onClick={() => handleApplyClick(job._id)}
+                                                className="w-full bg-white hover:bg-emerald-500 text-black hover:text-white border-0 px-8 h-11 rounded-xl font-black uppercase tracking-wider text-[10px] shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group/btn"
+                                            >
+                                                <span className="relative z-20">Apply Now</span>
+                                                <div className="absolute top-0 -left-[100%] w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover/btn:left-[100%] transition-all duration-1000" />
+                                            </Button>
+                                        )}
+                                    </div>
+                                </motion.div>
+                            ))
+                        ) : (
+                            <motion.div 
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="py-20 text-center"
+                            >
+                                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/5 mb-6 border border-white/10">
+                                    <Search size={32} className="text-slate-500" />
+                                </div>
+                                <h3 className="text-xl font-bold text-white mb-2">No internships found</h3>
+                                <p className="text-slate-400 max-w-xs mx-auto text-sm">
+                                    Try adjusting your search or filter to find available opportunities.
+                                </p>
+                                <Button 
+                                    onClick={() => { setSearchQuery(""); setSelectedType("All"); }}
+                                    className="mt-6 bg-white/10 hover:bg-white/20 text-white border-white/10"
+                                >
+                                    Clear all filters
+                                </Button>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+
             </div>
 
-            {/* Application Modal */}
             <AnimatePresence>
                 {selectedInternship && (
                     <motion.div

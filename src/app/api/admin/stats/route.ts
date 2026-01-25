@@ -52,14 +52,14 @@ export async function GET() {
       (sum: number, enrollment: any) => {
         return sum + (enrollment.course?.price || 0);
       },
-      0
+      0,
     );
 
     const internshipRevenue = allApplications.reduce(
       (sum: number, app: any) => {
         return sum + (app.amountPaid || 0);
       },
-      0
+      0,
     );
 
     const revenue = courseRevenue + internshipRevenue;
@@ -83,7 +83,7 @@ export async function GET() {
           ...course.toObject(),
           completionRate: Math.round(completionRate),
         };
-      })
+      }),
     );
 
     // Revenue Distribution (Top 5 Earning Courses)
@@ -107,34 +107,21 @@ export async function GET() {
       { $limit: 5 },
     ]);
 
-    // Top Learners (Users with most enrollments)
-    const topLearnersRaw = await Enrollment.aggregate([
-      {
-        $group: {
-          _id: "$student",
-          count: { $sum: 1 },
-        },
-      },
-      { $sort: { count: -1 } },
-      { $limit: 5 },
-    ]);
+    // Top Learners (Users with most XP)
+    const topLearners = await User.find({ role: "student" })
+      .sort({ xp: -1 })
+      .limit(5)
+      .select("firstName lastName email avatar xp");
 
-    const topLearners = await User.find({
-      _id: { $in: topLearnersRaw.map((l) => l._id) },
-    }).select("firstName lastName email avatar");
-
-    // Map count back to user objects
-    const topLearnersWithCount = topLearners
-      .map((user) => {
-        const learner = topLearnersRaw.find(
-          (l) => l._id.toString() === user._id.toString()
-        );
+    const topLearnersWithCount = await Promise.all(
+      topLearners.map(async (user) => {
+        const count = await Enrollment.countDocuments({ student: user._id });
         return {
           ...user.toObject(),
-          coursesCount: learner?.count || 0,
+          coursesCount: count,
         };
-      })
-      .sort((a, b) => b.coursesCount - a.coursesCount);
+      }),
+    );
 
     // Real User Growth (Last 7 Days)
     const sevenDaysAgo = new Date();
@@ -191,7 +178,7 @@ export async function GET() {
     console.error("Admin stats error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

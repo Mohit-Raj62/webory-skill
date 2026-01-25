@@ -1,0 +1,35 @@
+
+> skill-webory@0.1.0 build
+> next build
+
+ΓÜá Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\91620\package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * C:\Users\91620\Desktop\skill-webory\package-lock.json
+
+Γû▓ Next.js 16.1.0-canary.15 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+
+> Build error occurred
+Error: Turbopack build failed with 1 errors:
+./Desktop/skill-webory/src/app/layout.tsx:4:1
+Module not found: Can't resolve './globals.css'
+  2 | import { Inter, Outfit, Great_Vibes } from "next/font/google";
+  3 | import { Suspense } from "react";
+> 4 | import "./globals.css";
+    | ^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import { cn } from "@/lib/utils";
+  6 | import { ProgressBar } from "@/components/ui/progress-bar";
+  7 | import { InactivityLogout } from "@/components/auth/inactivity-logout";
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at <unknown> (./Desktop/skill-webory/src/app/layout.tsx:4:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)

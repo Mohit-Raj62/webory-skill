@@ -145,47 +145,60 @@ export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initi
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                     >
-                        <div className="flex flex-col items-center gap-2 mb-6">
-                            <span className="inline-block py-1 px-3 rounded-full bg-white/5 border border-white/10 text-sm text-blue-300 backdrop-blur-sm">
+                        <div className="flex flex-col items-center gap-2 mb-8">
+                            <motion.span 
+                                initial={{ opacity: 0, scale: 0.9 }} 
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="inline-block py-1.5 px-4 rounded-full bg-blue-500/10 border border-blue-500/20 text-sm font-semibold text-blue-300 backdrop-blur-md shadow-[0_0_15px_rgba(59,130,246,0.3)]"
+                            >
                                 🚀 Launching the Future of EdTech
-                            </span>
-                            <div className="flex items-center gap-2 bg-green-500/10 border border-green-500/20 px-4 py-1.5 rounded-full backdrop-blur-sm shadow-[0_0_15px_rgba(34,197,94,0.2)] animate-fade-in-up delay-100">
-                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_10px_#22c55e]" />
-                                <span className="text-green-400 text-xs font-semibold tracking-wide uppercase">
-                                    Govt. of India Recognized Startup
+                            </motion.span>
+                            
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.9 }} 
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: 0.1 }}
+                                className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-1.5 rounded-full backdrop-blur-sm shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+                            >
+                                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10b981]" />
+                                <span className="text-emerald-400 text-xs font-bold tracking-wide uppercase">
+                                    Govt. of India Recognized
                                 </span>
-                                <span className="hidden sm:inline w-px h-3 bg-green-500/30 mx-1" />
-                                <span className="text-green-300 text-xs font-mono hidden sm:inline">
+                                <span className="hidden sm:inline w-px h-3 bg-emerald-500/30 mx-1" />
+                                <span className="text-emerald-300 text-xs font-mono hidden sm:inline opacity-80">
                                     MSME: UDYAM-BR-26-0208472
                                 </span>
-                            </div>
+                            </motion.div>
                         </div>
-                        <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight leading-tight">
-                            AI-Powered <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400">Skill</span> Platform for <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
-                                Industry-Ready Careers
+                        
+                        <h1 className="text-5xl md:text-8xl font-extrabold mb-8 tracking-tight leading-[1.1] drop-shadow-2xl text-white">
+                            AI-Powered <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-500 animate-gradient-x">Skill</span> Platform
+                            <br />
+                            <span className="text-3xl md:text-5xl font-semibold text-gray-300 block mt-2">
+                                for <span className="text-white border-b-4 border-purple-500/50">Industry-Ready</span> Careers
                             </span>
                         </h1>
-                        <p className="text-lg md:text-xl text-gray-400 mb-8 max-w-2xl mx-auto leading-relaxed">
-                            Webory Skills helps students and freshers build real-world skills using AI-driven roadmaps, hands-on projects, and expert mentorship, not just recorded videos.
+                        
+                        <p className="text-lg md:text-2xl text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed font-light">
+                            Webory Skills helps you build <span className="text-white font-medium">real-world skills</span> using AI-driven roadmaps, hands-on projects, and expert mentorship.
                         </p>
 
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                             {!isLoggedIn ? (
                                 <Link href="/signup">
-                                    <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 text-lg h-12 px-8">
+                                    <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 text-lg h-14 px-10 rounded-2xl shadow-[0_0_30px_-5px_rgba(59,130,246,0.4)] hover:shadow-[0_0_40px_-5px_rgba(139,92,246,0.6)] hover:-translate-y-1 transition-all duration-300 font-bold">
                                         Get Your AI Roadmap <ArrowRight className="ml-2 h-5 w-5" />
                                     </Button>
                                 </Link>
                             ) : (
                                 <Link href="/ai-weboryskills">
-                                    <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 text-lg h-12 px-8">
+                                    <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 text-lg h-14 px-10 rounded-2xl shadow-[0_0_30px_-5px_rgba(59,130,246,0.4)] hover:shadow-[0_0_40px_-5px_rgba(139,92,246,0.6)] hover:-translate-y-1 transition-all duration-300 font-bold">
                                         Get Your AI Roadmap <ArrowRight className="ml-2 h-5 w-5" />
                                     </Button>
                                 </Link>
                             )}
                             <Link href="/courses">
-                                <Button size="lg" variant="glass" className="w-full sm:w-auto text-lg h-12 px-8">
+                                <Button size="lg" variant="outline" className="w-full sm:w-auto text-lg h-14 px-10 rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 text-white hover:border-white/20 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 backdrop-blur-md">
                                     Explore Courses
                                 </Button>
                             </Link>

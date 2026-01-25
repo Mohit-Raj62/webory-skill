@@ -262,8 +262,9 @@ function AnalyticsPreview() {
                                 </div>
                             </div>
                             <div className="text-right">
-                                <div className="text-xl font-bold text-purple-400">{user.coursesCount}</div>
-                                <div className="text-xs text-gray-500">Courses</div>
+                                <div className="text-xl font-bold text-purple-400">{user.xp || 0}</div>
+                                <div className="text-xs text-gray-500 font-bold uppercase tracking-widest">XP Points</div>
+                                <div className="text-[10px] text-slate-600 mt-1">{user.coursesCount} Courses</div>
                             </div>
                         </div>
                     ))}

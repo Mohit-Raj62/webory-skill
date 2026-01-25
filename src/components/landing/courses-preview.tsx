@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Code2, Database, Globe, Palette, BookOpen } from "lucide-react";
+import { ArrowRight, Code2, Database, Globe, Palette, BookOpen, Users, Zap } from "lucide-react";
 
 interface PopularCourse {
     _id: string;
@@ -11,14 +11,13 @@ interface PopularCourse {
     level: string;
     studentsCount: string;
     color: string;
-    icon?: string; // Icon name string if coming from DB, or component hardcoded
+    icon?: string;
 }
 
 interface CoursesPreviewProps {
-    popularCourses?: any[]; // Using any[] for now to map DB fields to UI
+    popularCourses?: any[];
 }
 
-// Fallback data if no popular courses found
 const fallbackCourses = [
     {
         title: "Full Stack Development",
@@ -64,28 +63,31 @@ export function CoursesPreview({ popularCourses = [] }: CoursesPreviewProps) {
     const displayCourses = popularCourses.length > 0 ? popularCourses : fallbackCourses;
 
     return (
-        <section id="courses" className="py-24 relative overflow-hidden">
+        <section id="courses" className="py-24 relative overflow-hidden bg-slate-950/20">
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[100px] pointer-events-none" />
 
             <div className="container mx-auto px-4 relative z-10">
                 <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
-                    <div>
-                        <h2 className="text-3xl md:text-5xl font-bold mb-4">
-                            Popular <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Courses</span>
+                    <div className="max-w-2xl">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-widest mb-4">
+                            <Zap size={12} className="fill-current" /> Featured Paths
+                        </div>
+                        <h2 className="text-3xl md:text-5xl font-black mb-4 tracking-tighter text-white">
+                            Popular <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Skill Paths</span>
                         </h2>
-                        <p className="text-xl text-gray-400 max-w-2xl">
-                            Master in-demand skills with our expert-led, project-based curriculum.
+                        <p className="text-lg text-slate-400 leading-relaxed font-light">
+                            Master in-demand skills with our expert-led, project-based curriculum designed for outcomes.
                         </p>
                     </div>
                     <Link href="/courses" className="hidden md:flex">
-                        <Button className="bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-full px-6 group transition-all">
-                            View All Courses <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                        <Button className="bg-white/5 hover:bg-white text-white hover:text-black border border-white/10 rounded-xl px-6 h-12 font-bold transition-all group">
+                            Explore All Paths <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1.5 transition-all" />
                         </Button>
                     </Link>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {displayCourses.map((course, index) => {
                          const Icon = course.icon && typeof course.icon === 'string' ? getIcon(course.icon) : (course.icon || BookOpen);
                          
@@ -96,38 +98,38 @@ export function CoursesPreview({ popularCourses = [] }: CoursesPreviewProps) {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.1 }}
-                            className="group relative bg-black/40 backdrop-blur-xl p-6 rounded-[2rem] border border-white/10 hover:border-blue-500/30 transition-all duration-300 hover:-translate-y-2 cursor-pointer overflow-hidden"
+                            className="group relative bg-slate-900/40 backdrop-blur-xl p-5 rounded-[1.5rem] border border-white/5 hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-2 cursor-pointer overflow-hidden flex flex-col h-full"
                         >
-                            <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${course.color} opacity-10 blur-3xl rounded-full group-hover:opacity-20 transition-opacity`} />
+                            <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${course.color} opacity-5 blur-3xl rounded-full group-hover:opacity-10 transition-opacity`} />
 
-                            <div className="relative z-10">
-                                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${course.color} flex items-center justify-center mb-6 text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                                    <Icon size={26} />
+                            <div className="relative z-10 flex flex-col h-full">
+                                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${course.color} flex items-center justify-center mb-5 text-white shadow-xl group-hover:scale-110 transition-transform duration-500`}>
+                                    <Icon size={22} />
                                 </div>
                                 
-                                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors line-clamp-1">{course.title}</h3>
+                                <h3 className="text-lg font-black text-white mb-2 group-hover:text-blue-400 transition-colors line-clamp-1 tracking-tight">{course.title}</h3>
                                 
                                 <div className="flex items-center gap-2 mb-6">
-                                    <span className="px-3 py-1 bg-white/5 rounded-full text-xs font-medium text-gray-400 border border-white/5">
+                                    <span className="px-2.5 py-1 bg-white/5 rounded-lg text-[10px] font-black uppercase tracking-widest text-slate-400 border border-white/5">
                                         {course.level}
                                     </span>
                                 </div>
 
-                                <div className="flex items-center justify-between pt-4 border-t border-white/5 text-sm text-gray-500">
+                                <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/5 text-[11px] font-bold text-slate-500">
                                     <span className="flex items-center gap-1.5">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                                        {course.studentsCount || course.students} Students
+                                        <Users size={14} className="text-blue-500" />
+                                        {course.studentsCount || course.students} Learners
                                     </span>
-                                    <ArrowRight className="w-4 h-4 text-white/20 group-hover:text-white transition-colors group-hover:translate-x-1" />
+                                    <ArrowRight className="w-4 h-4 text-white/20 group-hover:text-blue-400 transition-all group-hover:translate-x-1" />
                                 </div>
                             </div>
                         </motion.div>
                     )})}
                 </div>
 
-                <div className="mt-12 text-center md:hidden">
+                <div className="mt-10 text-center md:hidden">
                     <Link href="/courses">
-                        <Button className="bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-full px-8 w-full">
+                        <Button className="bg-white/5 hover:bg-white text-white hover:text-black border border-white/10 rounded-xl px-8 h-12 w-full font-bold">
                             View All Courses <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
                     </Link>

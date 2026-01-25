@@ -63,85 +63,86 @@ export function GradesDashboard() {
     return (
         <div className="space-y-6">
             {/* Stats Cards */}
+            {/* Stats Cards - Balanced Version */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="glass-card p-6 rounded-2xl">
-                    <div className="flex items-center gap-3 mb-2">
-                        <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                <div className="glass-card p-6 rounded-2xl border border-white/5 bg-slate-900/40 backdrop-blur-xl">
+                    <div className="flex items-center gap-4">
+                        <div className="w-11 h-11 rounded-xl bg-purple-500/10 flex items-center justify-center shrink-0">
                             <ClipboardList className="text-purple-400" size={20} />
                         </div>
                         <div>
-                            <p className="text-gray-400 text-xs">Quizzes Taken</p>
-                            <p className="text-2xl font-bold text-white">{stats.totalQuizzes}</p>
+                            <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest">Quizzes</p>
+                            <p className="text-2xl font-black text-white">{stats.totalQuizzes}</p>
                         </div>
                     </div>
                 </div>
 
-                <div className="glass-card p-6 rounded-2xl">
-                    <div className="flex items-center gap-3 mb-2">
-                        <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
+                <div className="glass-card p-6 rounded-2xl border border-white/5 bg-slate-900/40 backdrop-blur-xl">
+                    <div className="flex items-center gap-4">
+                        <div className="w-11 h-11 rounded-xl bg-green-500/10 flex items-center justify-center shrink-0">
                             <CheckCircle className="text-green-400" size={20} />
                         </div>
                         <div>
-                            <p className="text-gray-400 text-xs">Quizzes Passed</p>
-                            <p className="text-2xl font-bold text-white">{stats.passedQuizzes}</p>
+                            <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest">Passed</p>
+                            <p className="text-2xl font-black text-white">{stats.passedQuizzes}</p>
                         </div>
                     </div>
                 </div>
 
-                <div className="glass-card p-6 rounded-2xl">
-                    <div className="flex items-center gap-3 mb-2">
-                        <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                <div className="glass-card p-6 rounded-2xl border border-white/5 bg-slate-900/40 backdrop-blur-xl">
+                    <div className="flex items-center gap-4">
+                        <div className="w-11 h-11 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
                             <TrendingUp className="text-blue-400" size={20} />
                         </div>
                         <div>
-                            <p className="text-gray-400 text-xs">Avg Quiz Score</p>
-                            <p className="text-2xl font-bold text-white">{stats.avgQuizScore}%</p>
+                            <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest">Avg Score</p>
+                            <p className="text-2xl font-black text-white">{stats.avgQuizScore}%</p>
                         </div>
                     </div>
                 </div>
 
-                <div className="glass-card p-6 rounded-2xl">
-                    <div className="flex items-center gap-3 mb-2">
-                        <div className="w-10 h-10 rounded-lg bg-orange-500/20 flex items-center justify-center">
+                <div className="glass-card p-6 rounded-2xl border border-white/5 bg-slate-900/40 backdrop-blur-xl">
+                    <div className="flex items-center gap-4">
+                        <div className="w-11 h-11 rounded-xl bg-orange-500/10 flex items-center justify-center shrink-0">
                             <FileText className="text-orange-400" size={20} />
                         </div>
                         <div>
-                            <p className="text-gray-400 text-xs">Assignments</p>
-                            <p className="text-2xl font-bold text-white">{stats.gradedAssignments}/{stats.totalAssignments}</p>
+                            <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest">Graded</p>
+                            <p className="text-2xl font-black text-white">
+                                {stats.gradedAssignments}<span className="text-slate-600">/{stats.totalAssignments}</span>
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Recent Quiz Results */}
+            {/* Recent Quiz Results - Balanced */}
             {quizAttempts.length > 0 && (
-                <div className="glass-card p-6 rounded-2xl">
-                    <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                        <ClipboardList size={24} className="text-purple-400" />
+                <div className="glass-card p-6 rounded-2xl border border-white/5 bg-slate-900/40 backdrop-blur-xl">
+                    <h3 className="text-lg font-black text-white mb-6 flex items-center gap-3 uppercase tracking-widest">
+                        <ClipboardList size={20} className="text-purple-400" />
                         Recent Quiz Results
                     </h3>
                     <div className="space-y-3">
                         {quizAttempts.map((attempt: any) => (
-                            <div key={attempt._id} className="bg-white/5 p-4 rounded-xl">
-                                <div className="flex justify-between items-start mb-2">
-                                    <div>
-                                        <h4 className="text-white font-medium">{attempt.quizId?.title || "Quiz"}</h4>
-                                        <p className="text-gray-400 text-sm">{attempt.courseId?.title || "Course"}</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="text-2xl font-bold text-white">
-                                            {attempt.obtainedMarks}/{attempt.totalMarks}
-                                        </div>
-                                        <div className={`text-sm font-medium ${attempt.passed ? 'text-green-400' : 'text-red-400'}`}>
-                                            {attempt.percentage}% - {attempt.passed ? 'PASSED' : 'FAILED'}
-                                        </div>
+                            <div key={attempt._id} className="bg-white/5 p-5 rounded-2xl border border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4 group/item hover:bg-white/[0.07] transition-colors">
+                                <div>
+                                    <h4 className="text-base text-white font-black tracking-tight mb-1 group-hover/item:text-purple-400 transition-colors uppercase">{attempt.quizId?.title || "Quiz"}</h4>
+                                    <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                        <span>{attempt.courseId?.title || "Course"}</span>
+                                        <span className="text-slate-700">|</span>
+                                        <span>{new Date(attempt.submittedAt).toLocaleDateString()}</span>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-4 text-xs text-gray-500">
-                                    <span>{new Date(attempt.submittedAt).toLocaleDateString()}</span>
-                                    <span className="px-2 py-1 rounded bg-purple-500/20 text-purple-300">
-                                        {attempt.quizId?.type || 'Quiz'}
-                                    </span>
+                                <div className="flex items-center gap-5 text-right">
+                                    <div className="shrink-0">
+                                        <div className="text-2xl font-black text-white tracking-tighter">
+                                            {attempt.obtainedMarks}<span className="text-slate-600">/{attempt.totalMarks}</span>
+                                        </div>
+                                        <div className={`text-[10px] font-black uppercase tracking-widest mt-0.5 ${attempt.passed ? 'text-emerald-400' : 'text-red-400'}`}>
+                                            {attempt.percentage}% • {attempt.passed ? 'Passed' : 'Failed'}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -149,46 +150,43 @@ export function GradesDashboard() {
                 </div>
             )}
 
-            {/* Recent Assignment Submissions */}
+            {/* Recent Assignment Submissions - Balanced */}
             {assignmentSubmissions.length > 0 && (
-                <div className="glass-card p-6 rounded-2xl">
-                    <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                        <FileText size={24} className="text-green-400" />
+                <div className="glass-card p-6 rounded-2xl border border-white/5 bg-slate-900/40 backdrop-blur-xl">
+                    <h3 className="text-lg font-black text-white mb-6 flex items-center gap-3 uppercase tracking-widest">
+                        <FileText size={20} className="text-green-400" />
                         Assignment Submissions
                     </h3>
                     <div className="space-y-3">
                         {assignmentSubmissions.map((submission: any) => (
-                            <div key={submission._id} className="bg-white/5 p-4 rounded-xl">
-                                <div className="flex justify-between items-start mb-2">
-                                    <div>
-                                        <h4 className="text-white font-medium">{submission.assignmentId?.title || "Assignment"}</h4>
-                                        <p className="text-gray-400 text-sm">{submission.courseId?.title || "Course"}</p>
+                            <div key={submission._id} className="bg-white/5 p-5 rounded-2xl border border-white/5 group/sub hover:bg-white/[0.07] transition-colors">
+                                <div className="flex justify-between items-center mb-3 gap-4">
+                                    <div className="flex-1">
+                                        <h4 className="text-base text-white font-black tracking-tight mb-1 group-hover/sub:text-emerald-400 transition-colors uppercase">{submission.assignmentId?.title || "Assignment"}</h4>
+                                        <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                            <span>{submission.courseId?.title || "Course"}</span>
+                                            <span className="text-slate-700">|</span>
+                                            <span>{new Date(submission.submittedAt).toLocaleDateString()}</span>
+                                        </div>
                                     </div>
-                                    <div className="text-right">
+                                    <div className="text-right shrink-0">
                                         {submission.status === 'graded' ? (
                                             <>
-                                                <div className="text-2xl font-bold text-white">
-                                                    {submission.marksObtained}/{submission.assignmentId?.totalMarks || 0}
+                                                <div className="text-2xl font-black text-white tracking-tighter">
+                                                    {submission.marksObtained}<span className="text-slate-600">/{submission.assignmentId?.totalMarks || 0}</span>
                                                 </div>
-                                                <div className="text-sm text-green-400">Graded</div>
+                                                <div className="text-[10px] font-black uppercase tracking-widest text-emerald-400 mt-0.5">Graded</div>
                                             </>
                                         ) : (
-                                            <div className="text-sm text-yellow-400">Pending Review</div>
+                                            <div className="text-[10px] font-black uppercase tracking-widest text-amber-500 bg-amber-500/10 px-3 py-1 rounded-lg border border-amber-500/20">Awaiting Grade</div>
                                         )}
                                     </div>
                                 </div>
                                 {submission.feedback && (
-                                    <div className="mt-2 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-                                        <p className="text-blue-300 text-xs font-medium mb-1">Feedback:</p>
-                                        <p className="text-gray-300 text-sm">{submission.feedback}</p>
+                                    <div className="mt-3 p-4 bg-blue-500/5 border border-white/5 rounded-xl">
+                                        <p className="text-slate-400 text-xs leading-relaxed italic">"{submission.feedback}"</p>
                                     </div>
                                 )}
-                                <div className="flex items-center gap-4 text-xs text-gray-500 mt-2">
-                                    <span>Submitted: {new Date(submission.submittedAt).toLocaleDateString()}</span>
-                                    {submission.status === 'late' && (
-                                        <span className="px-2 py-1 rounded bg-red-500/20 text-red-300">Late</span>
-                                    )}
-                                </div>
                             </div>
                         ))}
                     </div>
