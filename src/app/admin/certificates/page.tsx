@@ -647,10 +647,10 @@ export default function UnifiedCertificateManagementPage() {
                     <div className="flex justify-between items-end mt-6">
                       <div className="text-left">
                         <p className="text-xs md:text-sm font-semibold text-white">
-                          {new Date(certificate.date).toLocaleDateString('en-IN', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
+                          {new Date(certificate.date).toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric'
                           })}
                         </p>
                         <p className="text-xs text-gray-400">Date Issued</p>
@@ -674,7 +674,7 @@ export default function UnifiedCertificateManagementPage() {
                       </div>
 
                       <div className="text-right">
-                        <div className="text-xl md:text-2xl text-purple-300 mb-1" style={{fontFamily: 'cursive'}}>Webory Team</div>
+                        <div className="text-3xl md:text-4xl text-purple-300 mb-1" style={{fontFamily: "'Mr De Haviland', cursive"}}>Webory Team</div>
                         <div className="border-t border-gray-400 w-24 md:w-32 mb-1"></div>
                         <p className="text-xs text-gray-400">Authorized Signature</p>
                       </div>
@@ -779,6 +779,9 @@ export default function UnifiedCertificateManagementPage() {
           </div>
         )}
       </div>
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Mr+De+Haviland&display=swap');
+      `}</style>
     </div>
   );
 }

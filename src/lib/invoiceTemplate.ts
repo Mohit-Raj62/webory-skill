@@ -5,10 +5,10 @@ export function createInvoiceHTML(
   amount: number,
   transactionId: string,
   date: string,
-  itemType: "course" | "internship"
+  itemType: "course" | "internship",
 ) {
   const invoiceNumber = "INV-" + transactionId.substring(4, 12).toUpperCase();
-  const formattedDate = new Date(date).toLocaleDateString("en-IN", {
+  const formattedDate = new Date(date).toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -113,7 +113,7 @@ export function createInvoiceHTML(
                   </td>
                   <td align="right" style="padding: 20px; border-bottom: 1px solid #e2e8f0; vertical-align: top; background-color: #ffffff;">
                     <p style="margin: 0; font-size: 15px; color: #0f172a; font-weight: 600;">₹${amount.toLocaleString(
-                      "en-IN"
+                      "en-IN",
                     )}</p>
                   </td>
                 </tr>
@@ -133,14 +133,20 @@ export function createInvoiceHTML(
                         <td style="padding: 8px 0; color: #64748b; font-size: 13px;">Subtotal</td>
                         <td align="right" style="padding: 8px 0; color: #0f172a; font-size: 13px; font-weight: 500;">₹${baseAmount.toLocaleString(
                           "en-IN",
-                          { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+                          {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          },
                         )}</td>
                       </tr>
                       <tr>
                         <td style="padding: 8px 0; color: #64748b; font-size: 13px;">IGST (18%)</td>
                         <td align="right" style="padding: 8px 0; color: #0f172a; font-size: 13px; font-weight: 500;">₹${taxAmount.toLocaleString(
                           "en-IN",
-                          { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+                          {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          },
                         )}</td>
                       </tr>
                       <tr>
@@ -152,7 +158,7 @@ export function createInvoiceHTML(
                         <td style="padding-top: 15px; color: #0f172a; font-size: 16px; font-weight: 700;">Total Amount</td>
                         <td align="right" style="padding-top: 15px; color: #2563eb; font-size: 20px; font-weight: 800;">₹${amount.toLocaleString(
                           "en-IN",
-                          { minimumFractionDigits: 2 }
+                          { minimumFractionDigits: 2 },
                         )}</td>
                       </tr>
                     </table>

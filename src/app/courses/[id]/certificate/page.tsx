@@ -216,7 +216,7 @@ export default function CertificatePage() {
                                 </div>
                                 <span className="font-sans text-base font-bold text-[#1a237e] tracking-wide">
                                     {certificateData?.enrolledAt 
-                                        ? new Date(certificateData.enrolledAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+                                        ? new Date(certificateData.enrolledAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
                                         : "N/A"
                                     }
                                 </span>
@@ -230,8 +230,8 @@ export default function CertificatePage() {
                                 </div>
                                 <span className="font-sans text-base font-bold text-[#1a237e] tracking-wide">
                                     {certificateData?.completedAt 
-                                        ? new Date(certificateData.completedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
-                                        : new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+                                        ? new Date(certificateData.completedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+                                        : new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
                                     }
                                 </span>
                             </div>
@@ -332,13 +332,13 @@ export default function CertificatePage() {
             </div>
 
             <style jsx global>{`
-                @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Great+Vibes&display=swap');
+                @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Mr+De+Haviland&display=swap');
 
                 .font-serif {
                     font-family: 'Playfair Display', serif;
                 }
                 .font-signature {
-                    font-family: 'Great Vibes', cursive;
+                    font-family: 'Mr De Haviland', cursive;
                 }
                 
                 @media print {

@@ -201,7 +201,7 @@ export default function CertificatePage() {
                              <div className="flex flex-col items-center px-2 border-l border-gray-200 pl-12">
                                 <span className="text-[10px] uppercase tracking-widest font-semibold text-gray-500">Started</span>
                                 <span className="font-sans text-base font-bold text-[#1a237e] tracking-wide">
-                                    {application.startDate ? new Date(application.startDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : (application.appliedAt ? new Date(application.appliedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A')}
+                                    {application.startDate ? new Date(application.startDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : (application.appliedAt ? new Date(application.appliedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A')}
                                 </span>
                             </div>
 
@@ -210,8 +210,8 @@ export default function CertificatePage() {
                                 <span className="text-[10px] uppercase tracking-widest font-semibold text-gray-500">Completed</span>
                                 <span className="font-sans text-base font-bold text-[#1a237e] tracking-wide">
                                     {application.completedAt 
-                                        ? new Date(application.completedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) 
-                                        : new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                                        ? new Date(application.completedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) 
+                                        : new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                                 </span>
                             </div>
                         </div>
@@ -279,13 +279,13 @@ export default function CertificatePage() {
             </div>
 
             <style jsx global>{`
-                @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Great+Vibes&display=swap');
+                @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Mr+De+Haviland&display=swap');
 
                 .font-serif {
                     font-family: 'Playfair Display', serif;
                 }
                 .font-signature {
-                    font-family: 'Great Vibes', cursive;
+                    font-family: 'Mr De Haviland', cursive;
                 }
 
                 @media print {

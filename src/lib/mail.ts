@@ -60,13 +60,13 @@ export const emailTemplates = {
     name: string,
     internshipTitle: string,
     date: string,
-    link?: string
+    link?: string,
   ) => `
     <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
       <h2 style="color: #9333ea;">Interview Scheduled! 📅</h2>
       <p>Hi ${name},</p>
       <p>Great news! We have scheduled an interview for your <strong>${internshipTitle}</strong> application.</p>
-      <p><strong>Date & Time:</strong> ${new Date(date).toLocaleString()}</p>
+      <p><strong>Date & Time:</strong> ${new Date(date).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })} ${new Date(date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p>
       ${
         link
           ? `<p><strong>Meeting Link:</strong> <a href="${link}">${link}</a></p>`
@@ -79,7 +79,7 @@ export const emailTemplates = {
   applicationAccepted: (
     name: string,
     internshipTitle: string,
-    offerLink: string
+    offerLink: string,
   ) => `
     <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
       <h2 style="color: #16a34a;">Congratulations! You're Hired! 🎉</h2>
@@ -161,22 +161,22 @@ export const emailTemplates = {
     courseTitle: string,
     score: number,
     totalQuestions: number,
-    passed: boolean
+    passed: boolean,
   ) => `
     <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
       <h2 style="color: ${passed ? "#16a34a" : "#f59e0b"};">Quiz ${
-    passed ? "Passed" : "Completed"
-  }! ${passed ? "🎉" : "📊"}</h2>
+        passed ? "Passed" : "Completed"
+      }! ${passed ? "🎉" : "📊"}</h2>
       <p>Hi ${name},</p>
       <p>You have completed the quiz for <strong>${courseTitle}</strong>.</p>
       <div style="background: ${
         passed ? "#f0fdf4" : "#fef3c7"
       }; border-left: 4px solid ${
-    passed ? "#16a34a" : "#f59e0b"
-  }; padding: 15px; margin: 20px 0;">
+        passed ? "#16a34a" : "#f59e0b"
+      }; padding: 15px; margin: 20px 0;">
         <p style="margin: 0; font-size: 18px;"><strong>Your Score: ${score}/${totalQuestions}</strong></p>
         <p style="margin: 5px 0 0 0; color: #666;">Percentage: ${Math.round(
-          (score / totalQuestions) * 100
+          (score / totalQuestions) * 100,
         )}%</p>
       </div>
       ${
@@ -190,7 +190,7 @@ export const emailTemplates = {
   certificateUnlocked: (
     name: string,
     courseTitle: string,
-    certificateLink: string
+    certificateLink: string,
   ) => `
     <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #9333ea;">Certificate Unlocked! 🎓</h2>
@@ -214,7 +214,7 @@ export const emailTemplates = {
     amount: number,
     transactionId: string,
     date: string,
-    itemType: "course" | "internship"
+    itemType: "course" | "internship",
   ) =>
     createInvoiceHTML(name, itemTitle, amount, transactionId, date, itemType),
   loginOtp: (name: string, otp: string) => `
@@ -237,7 +237,7 @@ export const emailTemplates = {
     itemTitle: string,
     amount: number,
     transactionId: string,
-    itemType: "course" | "internship"
+    itemType: "course" | "internship",
   ) => `
     <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #ea580c;">New Payment Received! 💰</h2>
@@ -267,7 +267,7 @@ export const emailTemplates = {
     name: string,
     email: string,
     subject: string,
-    message: string
+    message: string,
   ) => `
     <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #2563eb;">New Contact Form Submission 📬</h2>
@@ -278,7 +278,7 @@ export const emailTemplates = {
         <p style="margin: 5px 0;"><strong>Message:</strong></p>
         <p style="white-space: pre-wrap; color: #475569;">${message}</p>
       </div>
-      <p style="color: #64748b; font-size: 12px; text-align: center;">Received via Webory Skills Contact Form<br>${new Date().toLocaleString()}</p>
+      <p style="color: #64748b; font-size: 12px; text-align: center;">Received via Webory Skills Contact Form<br>${new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })} ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p>
     </div>
   `,
   jobApplicationReceived: (name: string, jobTitle: string) => `
@@ -294,13 +294,13 @@ export const emailTemplates = {
     name: string,
     jobTitle: string,
     date: string,
-    link?: string
+    link?: string,
   ) => `
     <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
       <h2 style="color: #9333ea;">Interview Scheduled! 📅</h2>
       <p>Hi ${name},</p>
       <p>Great news! We have scheduled an interview for your <strong>${jobTitle}</strong> application.</p>
-      <p><strong>Date & Time:</strong> ${new Date(date).toLocaleString()}</p>
+      <p><strong>Date & Time:</strong> ${new Date(date).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })} ${new Date(date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p>
       ${
         link
           ? `<p><strong>Meeting Link:</strong> <a href="${link}">${link}</a></p>`
@@ -334,7 +334,7 @@ export const emailTemplates = {
     jobTitle: string,
     email: string,
     phone: string,
-    resumeLink: string
+    resumeLink: string,
   ) => `
     <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #ea580c;">New Job Application Received! 📄</h2>
