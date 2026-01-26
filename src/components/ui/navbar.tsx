@@ -188,7 +188,7 @@ export function Navbar() {
                 <div className="fixed top-16 w-full z-[40] bg-black/40 backdrop-blur-md border-b border-white/5 py-1.5 overflow-hidden">
                     <motion.div 
                         animate={{ x: ["100%", "-100%"] }}
-                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                        transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
                         className="flex items-center gap-12 whitespace-nowrap"
                     >
                         {[1, 2, 3, 4].map((i) => (
