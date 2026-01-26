@@ -19,6 +19,9 @@ export async function GET() {
     const mentorshipSetting = await Settings.findOne({
       key: "mentorshipEnabled",
     });
+    const announcementSetting = await Settings.findOne({
+      key: "announcementBar",
+    });
 
     // Default to true if not set
     const careerApplicationsEnabled = careerSetting
@@ -28,15 +31,24 @@ export async function GET() {
       ? mentorshipSetting.value
       : true;
 
+    // Default announcement settings
+    const announcementBar = announcementSetting
+      ? announcementSetting.value
+      : {
+          enabled: true,
+          text: "Waitlist for January 2026 is full. February batch closing soon!",
+        };
+
     return NextResponse.json({
       careerApplicationsEnabled,
       mentorshipEnabled,
+      announcementBar,
     });
   } catch (error) {
     console.error("Fetch settings error:", error);
     return NextResponse.json(
       { error: "Failed to fetch settings" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -70,7 +82,7 @@ export async function POST(req: Request) {
     const setting = await Settings.findOneAndUpdate(
       { key },
       { value, updatedAt: new Date() },
-      { upsert: true, new: true }
+      { upsert: true, new: true },
     );
 
     return NextResponse.json({
@@ -81,7 +93,7 @@ export async function POST(req: Request) {
     console.error("Update setting error:", error);
     return NextResponse.json(
       { error: "Failed to update setting" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -98,6 +98,12 @@ export default function AdminSettingsPage() {
 
   const [careerEnabled, setCareerEnabled] = useState(true);
   const [mentorshipEnabled, setMentorshipEnabled] = useState(true);
+  
+  // Announcement Bar State
+  const [announcementSettings, setAnnouncementSettings] = useState({
+    enabled: true,
+    text: "Waitlist for January 2026 is full. February batch closing soon!"
+  });
 
   useEffect(() => {
     fetchSettings();
@@ -110,6 +116,9 @@ export default function AdminSettingsPage() {
         const data = await res.json();
         setCareerEnabled(data.careerApplicationsEnabled);
         setMentorshipEnabled(data.mentorshipEnabled);
+        if (data.announcementBar) {
+            setAnnouncementSettings(data.announcementBar);
+        }
       }
     } catch (error) {
       console.error("Failed to fetch settings", error);
@@ -162,6 +171,28 @@ export default function AdminSettingsPage() {
       setMentorshipEnabled(!checked);
       toast.error("Failed to update setting");
     }
+  };
+
+  const handleAnnouncementUpdate = async (newSettings: any) => {
+    try {
+        setAnnouncementSettings(newSettings); // Optimistic
+        const res = await fetch("/api/settings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            key: "announcementBar",
+            value: newSettings
+          }),
+        });
+  
+        if (res.ok) {
+          toast.success("Announcement updated");
+        } else {
+          toast.error("Failed to update setting");
+        }
+      } catch (error) {
+        toast.error("Failed to update setting");
+      }
   };
 
   if (loading) {
@@ -265,6 +296,8 @@ export default function AdminSettingsPage() {
             <CardDescription className="text-gray-400">Manage global application settings</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+
+
             <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10">
               <div className="space-y-0.5">
                 <Label className="text-base">Enable Career Applications</Label>
@@ -288,6 +321,35 @@ export default function AdminSettingsPage() {
                 checked={mentorshipEnabled}
                 onCheckedChange={handleMentorshipToggle}
               />
+            </div>
+
+            <div className="flex flex-col space-y-4 p-4 bg-white/5 rounded-lg border border-white/10">
+                <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                        <Label className="text-base">Top Announcement Bar</Label>
+                        <p className="text-sm text-gray-400">
+                        Show a scrolling notification bar at the top of the website.
+                        </p>
+                    </div>
+                    <Switch
+                        checked={announcementSettings.enabled}
+                        onCheckedChange={(checked) => handleAnnouncementUpdate({...announcementSettings, enabled: checked})}
+                    />
+                </div>
+                {announcementSettings.enabled && (
+                    <div className="pt-2">
+                        <Label htmlFor="announcementText" className="mb-2 block">Announcement Text</Label>
+                        <div className="flex gap-2">
+                            <Input 
+                                id="announcementText"
+                                value={announcementSettings.text}
+                                onChange={(e) => setAnnouncementSettings({...announcementSettings, text: e.target.value})}
+                                className="bg-black/20"
+                            />
+                            <Button size="sm" onClick={() => handleAnnouncementUpdate(announcementSettings)}>Save</Button>
+                        </div>
+                    </div>
+                )}
             </div>
           </CardContent>
         </Card>

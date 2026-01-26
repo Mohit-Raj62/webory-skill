@@ -109,6 +109,12 @@ export function CoursesPreview({ popularCourses = [] }: CoursesPreviewProps) {
                                 
                                 <h3 className="text-lg font-black text-white mb-2 group-hover:text-blue-400 transition-colors line-clamp-1 tracking-tight">{course.title}</h3>
                                 
+                                <div className="absolute top-4 right-4 z-20">
+                                    <span className="px-3 py-1 bg-emerald-500 text-black rounded-full text-[9px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/40 animate-pulse">
+                                        Free Preview
+                                    </span>
+                                </div>
+
                                 <div className="flex items-center gap-2 mb-6">
                                     <span className="px-2.5 py-1 bg-white/5 rounded-lg text-[10px] font-black uppercase tracking-widest text-slate-400 border border-white/5">
                                         {course.level}

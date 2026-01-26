@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Menu, X, User, Code2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FeedbackForm } from "@/components/feedback/FeedbackForm";
 import { useAuth } from "@/components/auth/session-provider";
 
@@ -13,9 +13,23 @@ export function Navbar() {
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
     const { user } = useAuth();
 
+    const [announcement, setAnnouncement] = useState({ enabled: true, text: "Waitlist for January 2026 is full. February batch closing soon!" });
+
+    useEffect(() => {
+        // Fetch global settings
+        fetch("/api/settings")
+            .then(res => res.json())
+            .then(data => {
+                if (data.announcementBar) {
+                    setAnnouncement(data.announcementBar);
+                }
+            })
+            .catch(err => console.error("Failed to fetch settings", err));
+    }, []);
+
     return (
         <>
-            <nav className="fixed top-0 w-full z-50 border-b border-white/10 bg-black/20 backdrop-blur-xl">
+            <nav className="fixed top-0 w-full z-50 border-b border-white/10 bg-black/40 backdrop-blur-2xl transition-all duration-300">
                 <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                     <Link href="/" className="flex items-center space-x-2">
                         <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
@@ -31,8 +45,13 @@ export function Navbar() {
                         <Link href="/#features" className="text-sm text-gray-300 hover:text-white transition-colors">
                             Features
                         </Link>
-                        <Link href="/courses" className="text-sm text-gray-300 hover:text-white transition-colors">
+                        <Link href="/courses" className="group relative text-sm text-gray-300 hover:text-white transition-colors flex items-center gap-1.5">
                             Courses
+                            <span className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            </span>
+                            <span className="text-[9px] font-black bg-emerald-500 text-black px-1.5 py-0.5 rounded leading-none">FREE</span>
                         </Link>
                         <Link href="/internships" className="text-sm text-gray-300 hover:text-white transition-colors">
                             Internships
@@ -105,8 +124,9 @@ export function Navbar() {
                             <Link href="/#features" className="text-sm text-gray-300 hover:text-white" onClick={() => setIsOpen(false)}>
                                 Features
                             </Link>
-                            <Link href="/courses" className="text-sm text-gray-300 hover:text-white" onClick={() => setIsOpen(false)}>
-                                Courses
+                            <Link href="/courses" className="text-sm text-gray-300 hover:text-white flex items-center justify-between" onClick={() => setIsOpen(false)}>
+                                <span>Courses</span>
+                                <span className="bg-emerald-500 text-black text-[10px] font-black px-2 py-1 rounded">FREE TRIAL</span>
                             </Link>
                             <Link href="/internships" className="text-sm text-gray-300 hover:text-white" onClick={() => setIsOpen(false)}>
                                 Internships
@@ -162,6 +182,24 @@ export function Navbar() {
                     </motion.div>
                 )}
             </nav>
+
+            {/* High Visibility Notification Bar (Dynamic) - Below Navbar */}
+            {announcement.enabled && (
+                <div className="fixed top-16 w-full z-[40] bg-black/40 backdrop-blur-md border-b border-white/5 py-1.5 overflow-hidden">
+                    <motion.div 
+                        animate={{ x: ["100%", "-100%"] }}
+                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                        className="flex items-center gap-12 whitespace-nowrap"
+                    >
+                        {[1, 2, 3, 4].map((i) => (
+                            <span key={i} className="text-[10px] md:text-xs font-medium text-gray-300 uppercase tracking-[0.2em] flex items-center gap-4">
+                                <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded italic font-bold">New Update</span>
+                                {announcement.text}
+                            </span>
+                        ))}
+                    </motion.div>
+                </div>
+            )}
 
             <FeedbackForm isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} />
         </>

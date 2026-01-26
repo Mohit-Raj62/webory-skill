@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { ArrowRight, Code, Rocket, Users, BookOpen } from "lucide-react";
+import { ArrowRight, Code, Rocket, Users, BookOpen, PlayCircle, Zap } from "lucide-react";
 import { useAuth } from "@/components/auth/session-provider";
 import dynamic from "next/dynamic";
 
@@ -145,30 +145,33 @@ export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initi
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                     >
-                        <div className="flex flex-col items-center gap-2 mb-8">
-                            <motion.span 
-                                initial={{ opacity: 0, scale: 0.9 }} 
-                                animate={{ opacity: 1, scale: 1 }}
-                                className="inline-block py-1.5 px-4 rounded-full bg-blue-500/10 border border-blue-500/20 text-sm font-semibold text-blue-300 backdrop-blur-md shadow-[0_0_15px_rgba(59,130,246,0.3)]"
-                            >
-                                🚀 Launching the Future of EdTech
-                            </motion.span>
-                            
+                        <div className="flex flex-col items-center gap-3 mb-12">
+                            {/* Primary Trust Signal */}
                             <motion.div 
-                                initial={{ opacity: 0, scale: 0.9 }} 
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ delay: 0.1 }}
-                                className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-1.5 rounded-full backdrop-blur-sm shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+                                initial={{ opacity: 0, y: -10 }} 
+                                animate={{ opacity: 1, y: 0 }}
+                                className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-2xl backdrop-blur-md"
                             >
-                                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10b981]" />
-                                <span className="text-emerald-400 text-xs font-bold tracking-wide uppercase">
-                                    Govt. of India Recognized
-                                </span>
-                                <span className="hidden sm:inline w-px h-3 bg-emerald-500/30 mx-1" />
-                                <span className="text-emerald-300 text-xs font-mono hidden sm:inline opacity-80">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                    <span className="text-emerald-400 text-[10px] font-black tracking-widest uppercase">
+                                        Govt. of India Recognized
+                                    </span>
+                                </div>
+                                <div className="w-px h-3 bg-white/10" />
+                                <span className="text-gray-400 text-[10px] font-mono opacity-80">
                                     MSME: UDYAM-BR-26-0208472
                                 </span>
                             </motion.div>
+
+                            {/* Main Title Area */}
+                            <motion.span 
+                                initial={{ opacity: 0, scale: 0.9 }} 
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="inline-block py-1 px-3 rounded-lg bg-blue-500/10 border border-blue-500/20 text-[10px] font-bold text-blue-300 uppercase tracking-widest"
+                            >
+                                🚀 The Future of Practical Learning
+                            </motion.span>
                         </div>
                         
                         <h1 className="text-5xl md:text-8xl font-extrabold mb-8 tracking-tight leading-[1.1] drop-shadow-2xl text-white">
@@ -180,28 +183,50 @@ export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initi
                         </h1>
                         
                         <p className="text-lg md:text-2xl text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed font-light">
-                            Webory Skills helps you build <span className="text-white font-medium">real-world skills</span> using AI-driven roadmaps, hands-on projects, and expert mentorship.
+                            Personalized AI roadmaps, hands-on projects, and industry mentorship. 
+                            Build your <span className="text-white font-medium">high-income career</span> with Webory.
                         </p>
 
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                            {!isLoggedIn ? (
-                                <Link href="/signup">
-                                    <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 text-lg h-14 px-10 rounded-2xl shadow-[0_0_30px_-5px_rgba(59,130,246,0.4)] hover:shadow-[0_0_40px_-5px_rgba(139,92,246,0.6)] hover:-translate-y-1 transition-all duration-300 font-bold">
-                                        Get Your AI Roadmap <ArrowRight className="ml-2 h-5 w-5" />
+                        <div className="flex flex-col items-center justify-center gap-6 mt-12">
+                            {/* The "Eye-Catcher" Component (High Visibility Emerald) */}
+                            <motion.div 
+                                initial={{ opacity: 0, x: -50 }} 
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
+                                className="relative flex items-center gap-4 bg-white text-black px-6 py-3 rounded-2xl shadow-[0_20px_50px_rgba(255,255,255,0.2)] border-2 border-emerald-400/50 -rotate-2 hover:rotate-0 transition-transform cursor-default"
+                            >
+                                <div className="absolute -top-3 -right-3 w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center animate-bounce shadow-lg">
+                                    <span className="text-[10px] font-black text-white italic">HOT</span>
+                                </div>
+                                <div className="p-2 bg-emerald-500 rounded-xl text-white">
+                                    <Rocket size={20} className="fill-current" />
+                                </div>
+                                <div className="text-left">
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600 leading-none mb-1">Unmissable Value</p>
+                                    <h4 className="text-lg font-black leading-none">Watch Module 1 <span className="text-emerald-500">FREE</span></h4>
+                                </div>
+                            </motion.div>
+
+                            <div className="flex flex-col sm:flex-row items-center gap-6 w-full justify-center">
+                                {!isLoggedIn ? (
+                                    <Link href="/signup">
+                                        <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 text-lg h-14 px-10 rounded-2xl shadow-[0_0_30px_-5px_rgba(59,130,246,0.4)] hover:shadow-[0_0_40px_-5px_rgba(139,92,246,0.6)] hover:-translate-y-1 transition-all duration-300 font-bold">
+                                            Get Your AI Roadmap <ArrowRight className="ml-2 h-5 w-5" />
+                                        </Button>
+                                    </Link>
+                                ) : (
+                                    <Link href="/ai-weboryskills">
+                                        <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 text-lg h-14 px-10 rounded-2xl shadow-[0_0_30px_-5px_rgba(59,130,246,0.4)] hover:shadow-[0_0_40px_-5px_rgba(139,92,246,0.6)] hover:-translate-y-1 transition-all duration-300 font-bold">
+                                            Get Your AI Roadmap <ArrowRight className="ml-2 h-5 w-5" />
+                                        </Button>
+                                    </Link>
+                                )}
+                                <Link href="/courses">
+                                    <Button size="lg" variant="outline" className="w-full sm:w-auto text-lg h-14 px-10 rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 text-white hover:border-white/20 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 backdrop-blur-md font-bold">
+                                        Browse Courses
                                     </Button>
                                 </Link>
-                            ) : (
-                                <Link href="/ai-weboryskills">
-                                    <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 text-lg h-14 px-10 rounded-2xl shadow-[0_0_30px_-5px_rgba(59,130,246,0.4)] hover:shadow-[0_0_40px_-5px_rgba(139,92,246,0.6)] hover:-translate-y-1 transition-all duration-300 font-bold">
-                                        Get Your AI Roadmap <ArrowRight className="ml-2 h-5 w-5" />
-                                    </Button>
-                                </Link>
-                            )}
-                            <Link href="/courses">
-                                <Button size="lg" variant="outline" className="w-full sm:w-auto text-lg h-14 px-10 rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 text-white hover:border-white/20 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 backdrop-blur-md">
-                                    Explore Courses
-                                </Button>
-                            </Link>
+                            </div>
                         </div>
                     </motion.div>
 

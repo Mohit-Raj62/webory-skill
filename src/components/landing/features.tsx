@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { BookOpen, Briefcase, LayoutDashboard, ShieldCheck, Trophy, Zap, HeartHandshake ,  BriefcaseBusiness,FileUser, Users, Building2 } from "lucide-react";
+import { BookOpen, Briefcase, LayoutDashboard, ShieldCheck, Trophy, Zap, HeartHandshake ,  BriefcaseBusiness,FileUser, Users, Building2, PlayCircle } from "lucide-react";
 
 const features = [
     {
@@ -27,10 +27,15 @@ const features = [
                 title: "Mentor Support",
                 description: "Get guidance from industry experts at every stage of your learning journey.",
             },
-            {
+             {
                 icon: Trophy,
                 title: "Career-Focused Outcomes",
                 description: "We focus on making you employable and career-ready, not just collecting certificates.",
+            },
+            {
+                icon: PlayCircle,
+                title: "Zero-Risk Exploration",
+                description: "Experience our teaching quality firsthand. The first module of every course is unlocked for free.",
             }
         ],
     },

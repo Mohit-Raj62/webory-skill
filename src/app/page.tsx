@@ -22,6 +22,9 @@ export const revalidate = 60;
 import { AIRoadmapFlow } from "@/components/landing/ai-roadmap-flow";
 import { DevLabPreview } from "@/components/landing/devlab-preview";
 
+
+import { FreeExperienceHighlight } from "@/components/landing/free-experience";
+
 export default async function Home() {
     let userCount = 0;
     let internshipCount = 0;
@@ -52,6 +55,7 @@ export default async function Home() {
         <main className="min-h-screen">
             <Navbar />
             <Hero initialUserCount={userCount} initialInternshipCount={internshipCount} initialCourseCount={courseCount} />
+            <FreeExperienceHighlight />
             <Features />
             <AIRoadmapFlow />
             <DevLabPreview />
