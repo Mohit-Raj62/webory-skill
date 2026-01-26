@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 
 const PaymentModal = dynamic(() => import("@/components/courses/payment-modal").then(mod => mod.PaymentModal), { ssr: false });
 const Invoice = dynamic(() => import("@/components/courses/invoice").then(mod => mod.Invoice), { ssr: false });
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { CheckCircle, Clock, BarChart, Users, Globe, PlayCircle, Lock, ClipboardList, FileText, Calendar, Video, ChevronDown, ChevronUp, Brain } from "lucide-react";
 import Link from "next/link";
@@ -45,6 +45,7 @@ export default function CourseDetailsPage() {
     const [pdfs, setPdfs] = useState < any[] > ([]);
     const [enrollmentData, setEnrollmentData] = useState < any > (null);
     const [expandedModules, setExpandedModules] = useState<Record<number, boolean>>({ 0: true });
+    const fetchingRef = useRef(false);
 
     const toggleModule = (index: number) => {
         setExpandedModules(prev => ({
@@ -66,53 +67,45 @@ export default function CourseDetailsPage() {
 
     useEffect(() => {
         const fetchData = async () => {
+            if (fetchingRef.current) return;
+            fetchingRef.current = true;
+            
             try {
                 const resCourse = await fetch(`/api/courses/${id}`);
-                if (resCourse.ok) {
-                    const data = await resCourse.json();
-                    setCourse(data.course);
-                    // Set PDFs from course data if available (populated) or fetch separately if needed
-                    // Assuming course.pdfResources is available in the course object
-                    if (data.course.pdfResources) {
-                        setPdfs(data.course.pdfResources.sort((a: any, b: any) => {
-                            if (a.afterModule !== b.afterModule) return a.afterModule - b.afterModule;
-                            return a.order - b.order;
-                        }));
-                    }
-
-                    try {
-                        const resQuizzes = await fetch(`/api/admin/courses/${id}/quizzes`);
-                        if (resQuizzes.ok) {
-                            const quizData = await resQuizzes.json();
-                            setQuizzes(quizData.quizzes || []);
-                        }
-                    } catch (err) {
-                        console.log('No quizzes found');
-                    }
-
-                    try {
-                        const resAssignments = await fetch(`/api/admin/courses/${id}/assignments`);
-                        if (resAssignments.ok) {
-                            const assignmentData = await resAssignments.json();
-                            setAssignments(assignmentData.assignments || []);
-                        }
-                    } catch (err) {
-                        console.log('No assignments found');
-                    }
-
-                    try {
-                        const resLiveClasses = await fetch(`/api/courses/${id}/live-classes`);
-                        if (resLiveClasses.ok) {
-                            const liveClassData = await resLiveClasses.json();
-                            setLiveClasses(liveClassData.liveClasses || []);
-                        }
-                    } catch (err) {
-                        console.log('No live classes found');
-                    }
+                if (!resCourse.ok) throw new Error("Course not found");
+                
+                const data = await resCourse.json();
+                setCourse(data.course);
+                
+                if (data.course.pdfResources) {
+                    setPdfs(data.course.pdfResources.sort((a: any, b: any) => {
+                        if (a.afterModule !== b.afterModule) return a.afterModule - b.afterModule;
+                        return a.order - b.order;
+                    }));
                 }
 
-                const resAuth = await fetch("/api/auth/me");
-                if (resAuth.ok) {
+                // Parallel fetch for secondary data
+                const [resQuizzes, resAssignments, resLiveClasses, resAuth] = await Promise.all([
+                    fetch(`/api/admin/courses/${id}/quizzes`).catch(() => null),
+                    fetch(`/api/admin/courses/${id}/assignments`).catch(() => null),
+                    fetch(`/api/courses/${id}/live-classes`).catch(() => null),
+                    fetch("/api/auth/me").catch(() => null)
+                ]);
+
+                if (resQuizzes?.ok) {
+                    const quizData = await resQuizzes.json();
+                    setQuizzes(quizData.quizzes || []);
+                }
+                if (resAssignments?.ok) {
+                    const assignmentData = await resAssignments.json();
+                    setAssignments(assignmentData.assignments || []);
+                }
+                if (resLiveClasses?.ok) {
+                    const liveClassData = await resLiveClasses.json();
+                    setLiveClasses(liveClassData.liveClasses || []);
+                }
+
+                if (resAuth?.ok) {
                     const userData = await resAuth.json();
                     setUser(userData.user);
 
@@ -127,15 +120,10 @@ export default function CourseDetailsPage() {
                         setEnrollmentData(currentEnrollment);
 
                         if (enrolled) {
-                            // Fetch certificate eligibility
-                            try {
-                                const resCert = await fetch(`/api/courses/${id}/certificate-eligibility`);
-                                if (resCert.ok) {
-                                    const certData = await resCert.json();
-                                    setCertificateData(certData);
-                                }
-                            } catch (err) {
-                                console.error("Failed to fetch certificate data", err);
+                            const resCert = await fetch(`/api/courses/${id}/certificate-eligibility`);
+                            if (resCert.ok) {
+                                const certData = await resCert.json();
+                                setCertificateData(certData);
                             }
                         }
                     }
@@ -144,6 +132,7 @@ export default function CourseDetailsPage() {
                 console.error("Failed to fetch data", error);
             } finally {
                 setLoading(false);
+                fetchingRef.current = false;
             }
         };
 
