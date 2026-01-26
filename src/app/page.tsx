@@ -20,6 +20,7 @@ import Course from "@/models/Course";
 export const revalidate = 60;
 
 import { AIRoadmapFlow } from "@/components/landing/ai-roadmap-flow";
+import { DevLabPreview } from "@/components/landing/devlab-preview";
 
 export default async function Home() {
     let userCount = 0;
@@ -53,6 +54,7 @@ export default async function Home() {
             <Hero initialUserCount={userCount} initialInternshipCount={internshipCount} initialCourseCount={courseCount} />
             <Features />
             <AIRoadmapFlow />
+            <DevLabPreview />
             <EnrolledCourses />
             <AppliedInternships />
             <CoursesPreview popularCourses={popularCourses} />

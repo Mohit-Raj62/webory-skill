@@ -265,6 +265,8 @@ export default function ProfilePage() {
                         </div>
                     </div>
 
+
+
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         {/* Enrolled Courses */}
                         <div className="relative group">
