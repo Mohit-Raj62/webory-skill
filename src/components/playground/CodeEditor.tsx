@@ -979,7 +979,7 @@ export default function CodeEditor() {
                                 
                                 // Indentation & Formatting
                                 autoIndent: "full",
-                                formatOnPaste: true,
+
                                 tabSize: 4,
                                 insertSpaces: true,
                                 detectIndentation: true,

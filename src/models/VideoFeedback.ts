@@ -35,7 +35,7 @@ const VideoFeedbackSchema = new Schema({
 });
 
 // Update timestamp on save
-VideoFeedbackSchema.pre("save", function (next) {
+VideoFeedbackSchema.pre("save", function (next: any) {
   this.updatedAt = new Date();
   next();
 });

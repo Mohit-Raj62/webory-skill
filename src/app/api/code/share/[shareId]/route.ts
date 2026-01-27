@@ -5,12 +5,12 @@ import CodeSnippet from "@/models/CodeSnippet";
 // GET - Get shared code by shareId
 export async function GET(
   req: NextRequest,
-  { params }: { params: { shareId: string } },
+  { params }: { params: Promise<{ shareId: string }> },
 ) {
   try {
     await dbConnect();
 
-    const { shareId } = params;
+    const { shareId } = await params;
 
     const snippet = await CodeSnippet.findOne({
       shareId,
