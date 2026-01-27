@@ -29,7 +29,6 @@ export default function SharedCodePage() {
             setIsLoading(true);
             const res = await fetch(`/api/code/share/${shareId}`);
             const data = await res.json();
-            console.log("DEBUG_SHARE_PAGE: Received data", data);
 
             if (res.ok) {
                 setCode(data.snippet.code);
@@ -140,15 +139,6 @@ export default function SharedCodePage() {
                             }}
                         />
                     </div>
-                </div>
-                
-                {/* DEBUG: Raw code view to verify data arrival */}
-                <div className="max-w-7xl mx-auto w-full p-4 bg-black text-white border border-gray-800 rounded mt-4">
-                    <h3 className="text-sm font-bold text-red-400 mb-2">DEBUG VIEW (Remove after fixing)</h3>
-                    <p className="text-xs text-gray-500 mb-2">Code Length: {code ? code.length : 0} chars</p>
-                    <pre className="text-xs font-mono whitespace-pre-wrap break-all max-h-40 overflow-auto">
-                        {code || "NO CODE DATA"}
-                    </pre>
                 </div>
             </div>
 
