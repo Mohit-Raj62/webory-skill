@@ -1,24 +1,30 @@
-import mongoose, { Schema, model, models } from 'mongoose';
+import mongoose, { Schema, model, models } from "mongoose";
 
 const ActivitySchema = new Schema({
   student: {
     type: Schema.Types.ObjectId,
-    ref: 'User',
+    ref: "User",
     required: true,
   },
   type: {
     type: String,
-    enum: ['video_watched', 'quiz_attempted', 'course_enrolled', 'internship_applied'],
+    enum: [
+      "video_watched",
+      "quiz_attempted",
+      "course_enrolled",
+      "internship_applied",
+      "internship_task_submitted",
+    ],
     required: true,
   },
   category: {
     type: String,
-    enum: ['course', 'internship'],
+    enum: ["course", "internship"],
     required: true,
   },
   relatedId: {
     type: Schema.Types.ObjectId,
-    refPath: 'category',
+    refPath: "category",
   },
   metadata: {
     videoMinutes: { type: Number, default: 0 },
@@ -40,6 +46,6 @@ const ActivitySchema = new Schema({
 ActivitySchema.index({ student: 1, date: -1 });
 ActivitySchema.index({ student: 1, category: 1, date: -1 });
 
-const Activity = models.Activity || model('Activity', ActivitySchema);
+const Activity = models.Activity || model("Activity", ActivitySchema);
 
 export default Activity;

@@ -218,11 +218,11 @@ export default function CreateQuizPage() {
                         </div>
 
                         <div>
-                            <label className="text-sm text-gray-300 block mb-2">Passing Score (%)</label>
+                            <label className="text-sm text-gray-300 block mb-2">Passing Score (%) *</label>
                             <input
                                 type="number"
                                 min="0"
-                                max="100"
+                                onWheel={(e) => e.currentTarget.blur()}
                                 className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
                                 value={formData.passingScore}
                                 onChange={(e) => setFormData({ ...formData, passingScore: Number(e.target.value) })}

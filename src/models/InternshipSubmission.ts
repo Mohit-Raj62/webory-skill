@@ -30,6 +30,10 @@ const InternshipSubmissionSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  xpAwarded: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const InternshipSubmission =

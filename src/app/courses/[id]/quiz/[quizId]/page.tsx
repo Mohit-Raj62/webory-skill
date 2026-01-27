@@ -94,6 +94,11 @@ export default function TakeQuizPage() {
         try {
             const timeSpent = Math.floor((Date.now() - startTime) / 1000);
 
+            console.log("🎯 Submitting quiz to API...");
+            console.log("Course ID:", courseId);
+            console.log("Quiz ID:", quizId);
+            console.log("Answers:", answers);
+
             const res = await fetch(`/api/courses/${courseId}/quizzes/${quizId}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -105,9 +110,12 @@ export default function TakeQuizPage() {
 
             if (res.ok) {
                 const data = await res.json();
+                console.log("✅ Quiz submitted successfully!");
+                console.log("Result:", data.result);
                 sessionStorage.setItem('quizResult', JSON.stringify(data.result));
                 router.push(`/courses/${courseId}/quiz/${quizId}/result?attemptId=${data.result.attemptId}`);
             } else {
+                console.error("❌ Quiz submission failed:", res.status, res.statusText);
                 alert("Failed to submit quiz");
                 setSubmitting(false);
             }

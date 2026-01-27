@@ -200,7 +200,7 @@ export function TrustProofSection() {
                         onClick={() => router.push(user ? '/ai-weboryskills' : '/login')}
                         className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white px-10 py-8 rounded-2xl text-xl font-bold shadow-[0_0_30px_rgba(37,99,235,0.3)] hover:shadow-[0_0_50px_rgba(37,99,235,0.5)] transition-all hover:scale-105"
                     >
-                        Get Your Personalized AI Roadmap
+                        Get Your AI Roadmap
                     </Button>
                     <p className="text-gray-500 text-sm mt-4">Free for students • No credit card required</p>
                 </div>

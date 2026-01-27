@@ -99,7 +99,7 @@ export function InternshipsView({ internships, user, appliedInternshipIds }: Int
             
             <Navbar />
 
-            <div className="pt-32 pb-20 container mx-auto px-4 relative z-10">
+            <div className="pt-24 md:pt-32 pb-20 container mx-auto px-4 relative z-10">
                 <div className="text-center mb-16 relative">
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 max-w-4xl bg-emerald-500/5 blur-[120px] -z-10 rounded-full" />
                     
@@ -127,7 +127,7 @@ export function InternshipsView({ internships, user, appliedInternshipIds }: Int
                 </div>
 
                 {/* Search & Filter Bar */}
-                <div className="max-w-4xl mx-auto mb-12 flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div className="max-w-4xl mx-auto mb-8 md:mb-12 flex flex-col md:flex-row gap-4 items-center justify-between">
                     <div className="relative w-full md:max-w-md group">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-hover:text-emerald-400 transition-colors" size={18} />
                         <input 
@@ -167,7 +167,7 @@ export function InternshipsView({ internships, user, appliedInternshipIds }: Int
                                     exit={{ opacity: 0, scale: 0.95 }}
                                     transition={{ duration: 0.4 }}
                                     key={job._id || index} 
-                                    className="group relative bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-emerald-500/50 transition-all duration-700 hover:shadow-[0_0_40px_-10px_rgba(16,185,129,0.2)] hover:-translate-y-1"
+                                    className="group relative bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-5 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-emerald-500/50 transition-all duration-700 hover:shadow-[0_0_40px_-10px_rgba(16,185,129,0.2)] hover:-translate-y-1"
                                 >
                                     <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
                                         <div className="absolute inset-[-2px] bg-gradient-to-tr from-emerald-500/50 via-cyan-500/20 to-blue-500/50 rounded-[2.1rem] blur-sm -z-10" />

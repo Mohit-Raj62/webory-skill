@@ -54,7 +54,7 @@ export function CoursesView({ courses, enrolledCourseIds }: CoursesViewProps) {
 
             <Navbar />
 
-            <div className="pt-32 pb-20 container mx-auto px-4 relative z-10">
+            <div className="pt-24 md:pt-32 pb-20 container mx-auto px-4 relative z-10">
                  {/* Hero Section */}
                 <div className="text-center mb-16 relative">
                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 max-w-4xl bg-cyan-500/5 blur-[120px] -z-10 rounded-full" />
@@ -91,19 +91,19 @@ export function CoursesView({ courses, enrolledCourseIds }: CoursesViewProps) {
                 </div>
 
                 {/* Search & Filter Bar */}
-                <div className="max-w-4xl mx-auto mb-16 flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div className="max-w-4xl mx-auto mb-10 md:mb-16 flex flex-col md:flex-row gap-4 items-center justify-between">
                     <div className="relative w-full md:max-w-md group">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-hover:text-cyan-400 transition-colors" size={18} />
                         <input 
                             type="text" 
-                            placeholder="Search for skills, technologies, or keywords..." 
+                            placeholder="Search for skills..." 
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full bg-white/5 border border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:bg-white/[0.08] transition-all backdrop-blur-md"
                         />
                     </div>
 
-                    <div className="flex items-center gap-2 p-1.5 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-md text-nowrap">
+                    <div className="w-full md:w-auto flex items-center gap-2 p-1.5 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-md text-nowrap overflow-x-auto max-w-full no-scrollbar">
                         {["All", "Beginner", "Intermediate", "Advanced"].map(level => (
                             <button
                                 key={level}

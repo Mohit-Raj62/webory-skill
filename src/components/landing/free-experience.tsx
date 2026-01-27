@@ -12,16 +12,16 @@ export function FreeExperienceHighlight() {
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[100px] bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none" />
             
             <div className="container mx-auto px-4 relative z-10">
-                <div className="mx-auto max-w-4xl bg-gradient-to-r from-slate-900/80 to-black/80 border border-emerald-500/20 rounded-2xl p-6 backdrop-blur-md shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
+                <div className="mx-auto max-w-4xl bg-gradient-to-r from-slate-900/80 to-black/80 border border-emerald-500/20 rounded-2xl p-5 md:p-6 backdrop-blur-md shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
                     
                     {/* Left: Text Content */}
                     <div className="flex-1 text-center md:text-left">
                         <div className="inline-flex items-center gap-2 mb-2">
                             <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span className="text-emerald-400 text-xs font-bold uppercase tracking-widest">Risk-Free Trial</span>
+                            <span className="text-emerald-400 text-[10px] md:text-xs font-bold uppercase tracking-widest">Risk-Free Trial</span>
                         </div>
                         
-                        <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
+                        <h3 className="text-lg md:text-2xl font-bold text-white mb-2">
                             Experience Quality <span className="text-emerald-400">Before You Pay</span>
                         </h3>
                         

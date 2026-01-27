@@ -3,12 +3,13 @@ import dbConnect from "@/lib/db";
 import Enrollment from "@/models/Enrollment";
 import Course from "@/models/Course";
 import Activity from "@/models/Activity";
+import User from "@/models/User";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 
 export async function POST(
   req: Request,
-  props: { params: Promise<{ id: string; videoIndex: string }> }
+  props: { params: Promise<{ id: string; videoIndex: string }> },
 ) {
   try {
     await dbConnect();
@@ -37,7 +38,7 @@ export async function POST(
     if (!enrollment) {
       return NextResponse.json(
         { error: "Enrollment not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -56,14 +57,19 @@ export async function POST(
 
     // Check if video already watched
     const existingWatch = enrollment.watchedVideos.find(
-      (w: any) => w.videoIndex === videoIdx
+      (w: any) => w.videoIndex === videoIdx,
     );
 
+    let previouslyCompleted = false;
+
     if (existingWatch) {
+      if (existingWatch.watchedPercentage >= 90) {
+        previouslyCompleted = true;
+      }
       // Update watched percentage
       existingWatch.watchedPercentage = Math.max(
         existingWatch.watchedPercentage,
-        watchedPercentage
+        watchedPercentage,
       );
       existingWatch.watchedAt = new Date();
     } else {
@@ -78,7 +84,7 @@ export async function POST(
 
     // Calculate progress: count videos watched >= 90%
     const watchedCount = enrollment.watchedVideos.filter(
-      (w: any) => w.watchedPercentage >= 90
+      (w: any) => w.watchedPercentage >= 90,
     ).length;
     const totalVideos = course.videos.length;
     const newProgress =
@@ -90,7 +96,7 @@ export async function POST(
     await enrollment.save();
 
     // Record Activity if watched >= 90%
-    if (watchedPercentage >= 90) {
+    if (watchedPercentage >= 90 && !previouslyCompleted) {
       // Check if activity already exists for this video today to avoid duplicates
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -99,16 +105,11 @@ export async function POST(
         student: userId,
         type: "video_watched",
         "metadata.courseName": course.title,
-        // We can't easily check video index in metadata without adding it,
-        // but checking if we have an activity for this course today is a decent start.
-        // Better: Check if we just added a new watched video or updated it significantly.
         date: { $gte: today },
       });
 
-      // Only create activity if we don't have one for this video today?
-      // Or just create it. The dashboard aggregates by day.
-      // Let's create it, but maybe limit frequency?
-      // For now, simple implementation: create activity.
+      // Award +10 XP to the student
+      await User.findByIdAndUpdate(userId, { $inc: { xp: 10 } });
 
       await Activity.create({
         student: userId,
@@ -123,17 +124,6 @@ export async function POST(
       });
     }
 
-    console.log("=== VIDEO WATCH DEBUG ===");
-    console.log(`Course ID: ${courseId}`);
-    console.log(`Video Index: ${videoIdx}`);
-    console.log(`Total Videos in course.videos: ${totalVideos}`);
-    console.log(`Watched Count (>=90%): ${watchedCount}`);
-    console.log(`Calculated Progress: ${newProgress}%`);
-    console.log(
-      `Video ${videoIdx} marked as watched. Progress: ${newProgress}%`
-    );
-    console.log("========================");
-
     return NextResponse.json({
       success: true,
       progress: newProgress,
@@ -144,7 +134,7 @@ export async function POST(
     console.error("Error marking video as watched:", error);
     return NextResponse.json(
       { error: "Internal server error", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

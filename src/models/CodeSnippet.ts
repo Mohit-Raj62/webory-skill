@@ -25,8 +25,29 @@ const CodeSnippetSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    // Share functionality
+    shareId: {
+      type: String,
+      unique: true,
+      sparse: true, // Only enforce uniqueness if value exists
+    },
+    isPublic: {
+      type: Boolean,
+      default: false,
+    },
+    shareCount: {
+      type: Number,
+      default: 0,
+    },
+    viewCount: {
+      type: Number,
+      default: 0,
+    },
+    sharedAt: {
+      type: Date,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Prevent duplicate filenames for the same user

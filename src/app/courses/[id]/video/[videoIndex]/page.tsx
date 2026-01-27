@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import {
     ArrowLeft, ChevronLeft, ChevronRight, CheckCircle,
     MoreVertical, Settings, Maximize, Minimize, Expand,
-    MessageCircle, HelpCircle, FileText, Lock, Play, Pause
+    MessageCircle, HelpCircle, FileText, Lock, Play, Pause,
+    ThumbsUp, ThumbsDown, MessageSquare
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -48,6 +49,11 @@ export default function VideoPlayerPage() {
     const totalTimeRef = useRef<HTMLSpanElement>(null);
     const handleEndedRef = useRef<() => void>(() => {});
     const fetchingRef = useRef(false);
+    
+    // Feedback State
+    const [likeStatus, setLikeStatus] = useState<boolean | null>(null);
+    const [feedbackText, setFeedbackText] = useState('');
+    const [showFeedbackModal, setShowFeedbackModal] = useState(false);
 
 
     const currentIndex = parseInt(videoIndex as string) || 0;
@@ -138,6 +144,19 @@ export default function VideoPlayerPage() {
             }
         } catch (error) {
             console.error("Failed to fetch notes", error);
+        }
+    };
+
+    const fetchFeedback = async () => {
+        try {
+            const res = await fetch(`/api/courses/${courseId}/videos/${currentIndex}/feedback`);
+            if (res.ok) {
+                const data = await res.json();
+                setLikeStatus(data.feedback?.isLiked ?? null); // Use null coalescing if undefined
+                setFeedbackText(data.feedback?.feedback || '');
+            }
+        } catch (error) {
+            console.error("Failed to fetch feedback", error);
         }
     };
 
@@ -316,6 +335,40 @@ export default function VideoPlayerPage() {
         }
     };
 
+    const handleLike = async (isLiked: boolean) => {
+        const newStatus = likeStatus === isLiked ? null : isLiked;
+        setLikeStatus(newStatus); // Optimistic
+
+        try {
+            await fetch(`/api/courses/${courseId}/videos/${currentIndex}/feedback`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ isLiked: newStatus })
+            });
+            if (newStatus === true) toast.success('Liked video');
+            else if (newStatus === false) toast.success('Disliked video');
+        } catch (error) {
+            console.error('Failed to update like status', error);
+            setLikeStatus(likeStatus); // Revert
+        }
+    };
+
+    const submitFeedback = async () => {
+        if (!feedbackText.trim()) return;
+        try {
+             await fetch(`/api/courses/${courseId}/videos/${currentIndex}/feedback`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ feedback: feedbackText })
+            });
+            toast.success('Feedback submitted! Thank you.');
+            setShowFeedbackModal(false);
+        } catch (error) {
+            console.error('Failed to submit feedback', error);
+            toast.error('Failed to submit feedback');
+        }
+    };
+
     // Fetch user email for watermark
     useEffect(() => {
         const fetchUserAndEnrollment = async () => {
@@ -383,6 +436,7 @@ export default function VideoPlayerPage() {
     useEffect(() => {
         fetchData();
         fetchNotes();
+        fetchFeedback();
         // Reset YouTube player reference on video change
         ytPlayerRef.current = null;
     }, [courseId, videoIndex]);
@@ -847,6 +901,35 @@ export default function VideoPlayerPage() {
                                 Next
                                 <ChevronRight className="ml-1 h-5 w-5" />
                             </Button>
+                            
+                            {/* Like & Feedback Buttons */}
+                            <div className="h-6 w-px bg-gray-700 mx-1" />
+                            <div className="flex items-center gap-1">
+                                <Button
+                                    onClick={() => handleLike(true)}
+                                    variant="ghost"
+                                    className={`p-2 h-9 ${likeStatus === true ? "text-green-500 bg-green-500/10" : "text-gray-400 hover:text-white hover:bg-gray-800"}`}
+                                    title="I like this"
+                                >
+                                    <ThumbsUp className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                    onClick={() => handleLike(false)}
+                                    variant="ghost"
+                                    className={`p-2 h-9 ${likeStatus === false ? "text-red-500 bg-red-500/10" : "text-gray-400 hover:text-white hover:bg-gray-800"}`}
+                                    title="I dislike this"
+                                >
+                                    <ThumbsDown className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                    onClick={() => setShowFeedbackModal(true)}
+                                    variant="ghost"
+                                    className="p-2 h-9 text-gray-400 hover:text-blue-400 hover:bg-gray-800"
+                                    title="Send Feedback"
+                                >
+                                    <MessageSquare className="h-4 w-4" />
+                                </Button>
+                            </div>
                         </div>
 
                         {/* Manual Mark as Watched button - Anti-cheating enabled
@@ -1086,6 +1169,42 @@ export default function VideoPlayerPage() {
                                     </div>
                                 </div>
                              </div>
+                        </div>
+                    )}
+
+                    {/* Feedback Modal */}
+                    {showFeedbackModal && (
+                        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setShowFeedbackModal(false)}>
+                            <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-6 border border-gray-700 max-w-md w-full mx-4 animate-in zoom-in-95" onClick={(e) => e.stopPropagation()}>
+                                <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                                    <MessageSquare className="text-blue-400" size={20} />
+                                    Send Feedback
+                                </h2>
+                                <p className="text-sm text-gray-400 mb-4">
+                                    Tell us what you think about this specific video. Is it helpful? Confusing?
+                                </p>
+                                <textarea
+                                    value={feedbackText}
+                                    onChange={(e) => setFeedbackText(e.target.value)}
+                                    placeholder="Your feedback here..."
+                                    className="w-full bg-gray-800 text-white rounded-lg p-3 border border-gray-700 focus:border-blue-500 focus:outline-none min-h-[120px] resize-y mb-4"
+                                />
+                                <div className="flex gap-2 justify-end">
+                                    <button
+                                        onClick={() => setShowFeedbackModal(false)}
+                                        className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm font-medium transition-all"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={submitFeedback}
+                                        disabled={!feedbackText.trim()}
+                                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg text-sm font-medium transition-all"
+                                    >
+                                        Send Feedback
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>

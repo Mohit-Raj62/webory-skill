@@ -29,9 +29,14 @@ export default function QuizResultsPage() {
                 setQuiz(quizData.quiz);
             }
 
-            // TODO: Fetch all attempts for this quiz
-            // For now, showing placeholder
-            setAttempts([]);
+            // Fetch all attempts for this quiz
+            const resAttempts = await fetch(
+                `/api/teacher/courses/${courseId}/quizzes/${quizId}/attempts`
+            );
+            if (resAttempts.ok) {
+                const attemptsData = await resAttempts.json();
+                setAttempts(attemptsData.attempts);
+            }
         } catch (error) {
             console.error("Failed to fetch results", error);
         } finally {
@@ -83,8 +88,12 @@ export default function QuizResultsPage() {
                                                 <User className="text-white" size={24} />
                                             </div>
                                             <div>
-                                                <h3 className="text-xl font-bold text-white">Student Name</h3>
-                                                <p className="text-gray-400 text-sm">student@example.com</p>
+                                                <h3 className="text-xl font-bold text-white">
+                                                    {attempt.userId?.firstName} {attempt.userId?.lastName}
+                                                </h3>
+                                                <p className="text-gray-400 text-sm">
+                                                    {attempt.userId?.email}
+                                                </p>
                                             </div>
                                         </div>
 

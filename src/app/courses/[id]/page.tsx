@@ -229,7 +229,7 @@ export default function CourseDetailsPage() {
         <main className="min-h-screen bg-background">
             <Navbar />
 
-            <div className="pt-32 pb-20 container mx-auto px-4">
+            <div className="pt-24 md:pt-32 pb-20 container mx-auto px-4">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                     <div className="lg:col-span-2">
                         <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">{course.title}</h1>
@@ -279,7 +279,7 @@ export default function CourseDetailsPage() {
 
 
                         {course.benefits && course.benefits.length > 0 && (
-                            <div className="glass-card p-8 rounded-2xl mb-12 border border-[#c5a059]/30 bg-[#c5a059]/5">
+                            <div className="glass-card p-5 md:p-8 rounded-2xl mb-12 border border-[#c5a059]/30 bg-[#c5a059]/5">
                                 <h2 className="text-2xl font-bold text-white mb-6">Key Benefits</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {course.benefits.map((benefit: string, index: number) => (
@@ -296,7 +296,7 @@ export default function CourseDetailsPage() {
 
                         {/* Certificate Preview Section */}
                         {course.certificateImage && (
-                            <div className="glass-card p-8 rounded-2xl mb-12 border border-[#c5a059]/30 bg-[#c5a059]/5">
+                            <div className="glass-card p-5 md:p-8 rounded-2xl mb-12 border border-[#c5a059]/30 bg-[#c5a059]/5">
                                 <h2 className="text-2xl font-bold text-white mb-6">Earn Your Certificate</h2>
                                 <div className="flex flex-col md:flex-row gap-8 items-center">
                                     <div className="flex-1">
@@ -339,7 +339,7 @@ export default function CourseDetailsPage() {
                             </div>
                         )}
 
-                        <div className="glass-card p-8 rounded-2xl mb-12">
+                        <div className="glass-card p-5 md:p-8 rounded-2xl mb-12">
                             <h2 className="text-2xl font-bold text-white mb-6">Skills You Will Learn</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {course.curriculum.map((topic: string, index: number) => (
@@ -352,7 +352,7 @@ export default function CourseDetailsPage() {
                         </div>
 
                         {/* Projects Section */}
-                         <div className="glass-card p-8 rounded-2xl mb-12 border border-purple-500/20 bg-purple-500/5">
+                         <div className="glass-card p-5 md:p-8 rounded-2xl mb-12 border border-purple-500/20 bg-purple-500/5">
                             <h2 className="text-2xl font-bold text-white mb-6">Projects You Will Build</h2>
                             <div className="space-y-6">
                                 {[
@@ -401,7 +401,7 @@ export default function CourseDetailsPage() {
 
                         {/* Live Classes Section */}
                         {liveClasses.length > 0 && (
-                            <div className="glass-card p-8 rounded-2xl mb-12 border border-purple-500/30 bg-purple-500/5">
+                            <div className="glass-card p-5 md:p-8 rounded-2xl mb-12 border border-purple-500/30 bg-purple-500/5">
                                 <div className="flex items-center gap-3 mb-6">
                                     <div className="p-2 bg-purple-500/20 rounded-lg text-purple-400">
                                         <Video size={24} />
@@ -470,7 +470,7 @@ export default function CourseDetailsPage() {
                             </div>
                         )}
 
-                        <div className="glass-card p-8 rounded-2xl mb-12">
+                        <div className="glass-card p-5 md:p-8 rounded-2xl mb-12">
                             <h2 className="text-2xl font-bold text-white mb-6">Course Content</h2>
                             {course.modules && course.modules.length > 0 && course.modules.some((m: any) => m.videos && m.videos.length > 0) ? (
                                 <div className="space-y-4">
@@ -693,7 +693,7 @@ export default function CourseDetailsPage() {
                         </div>
 
                         {isEnrolled && pdfs.some(p => !p.afterModule || p.afterModule === 0) && (
-                            <div className="glass-card p-8 rounded-2xl mb-12">
+                            <div className="glass-card p-5 md:p-8 rounded-2xl mb-12">
                                 <h2 className="text-2xl font-bold text-white mb-6">Course Resources</h2>
                                 <div className="space-y-4">
                                     {pdfs.filter(p => !p.afterModule || p.afterModule === 0).map((pdf) => (
@@ -731,7 +731,7 @@ export default function CourseDetailsPage() {
                         )}
 
                         {isEnrolled && quizzes.some(q => !q.afterModule || q.afterModule === 0) && (
-                            <div className="glass-card p-8 rounded-2xl mb-12">
+                            <div className="glass-card p-5 md:p-8 rounded-2xl mb-12">
                                 <div className="flex items-center justify-between mb-6">
                                     <h2 className="text-2xl font-bold text-white">Quizzes & Tests</h2>
                                     {!quizzesUnlocked && (
@@ -773,7 +773,7 @@ export default function CourseDetailsPage() {
                         )}
 
                         {isEnrolled && assignments.some(a => !a.afterModule || a.afterModule === 0) && (
-                            <div className="glass-card p-8 rounded-2xl">
+                            <div className="glass-card p-5 md:p-8 rounded-2xl">
                                 <h2 className="text-2xl font-bold text-white mb-6">Assignments</h2>
                                 <div className="space-y-4">
                                     {assignments.filter(a => !a.afterModule || a.afterModule === 0).map((assignment) => (

@@ -204,7 +204,7 @@ export function AIRoadmapFlow() {
                                     size="lg" 
                                     className="w-full sm:w-auto bg-gradient-to-r from-white to-gray-200 text-black hover:bg-white text-lg h-14 px-8 rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] transition-all font-bold"
                                 >
-                                    Get Your Personalized AI Roadmap <ArrowRight className="ml-2 h-5 w-5" />
+                                    Get Your AI Roadmap <ArrowRight className="ml-2 h-5 w-5" />
                                 </Button>
                                 <p className="text-sm text-gray-500 font-medium flex items-center gap-2">
                                     <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>

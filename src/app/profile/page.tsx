@@ -138,7 +138,7 @@ export default function ProfilePage() {
                          {/* Glow Backplate */}
                         <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-transparent blur-3xl -z-10 opacity-50 group-hover:opacity-100 transition-opacity duration-1000" />
                         
-                        <div className="glass-card p-8 md:p-10 rounded-[2rem] border border-white/10 bg-slate-900/40 backdrop-blur-2xl flex flex-col md:flex-row items-center gap-10 relative overflow-hidden">
+                        <div className="glass-card p-5 md:p-10 rounded-[2rem] border border-white/10 bg-slate-900/40 backdrop-blur-2xl flex flex-col md:flex-row items-center gap-10 relative overflow-hidden">
                             {/* Decorative Line Accent */}
                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
                             
@@ -212,7 +212,7 @@ export default function ProfilePage() {
                                 <div className="w-1 h-6 bg-blue-500 rounded-full" />
                                 Student Hub
                             </h2>
-                            <div className="hidden md:flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
+                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
                                 <Clock size={12} /> Live Updates
                             </div>
                         </div>
@@ -338,7 +338,7 @@ export default function ProfilePage() {
                                     {applications
                                         .filter((app: any) => app.internship)
                                         .map((app, index) => (
-                                            <div key={index} className="group/app relative bg-slate-900/40 backdrop-blur-xl p-6 rounded-[1.5rem] border border-white/5 hover:border-purple-500/30 transition-all duration-500">
+                                            <div key={index} className="group/app relative bg-slate-900/40 backdrop-blur-xl p-5 md:p-6 rounded-[1.5rem] border border-white/5 hover:border-purple-500/30 transition-all duration-500">
                                                 <div className="flex justify-between items-start mb-6">
                                                     <div className="flex-1">
                                                         <h3 className="text-white font-black tracking-tight mb-1 group-hover/app:text-purple-400 transition-colors">

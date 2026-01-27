@@ -67,7 +67,7 @@ export function TestimonialsSection() {
                     {[...feedbacks, ...feedbacks].map((feedback, index) => (
                         <div
                             key={`${feedback._id}-${index}`}
-                            className="w-[350px] md:w-[400px] flex-shrink-0 bg-white/5 backdrop-blur-sm border border-white/10 p-6 rounded-2xl hover:bg-white/10 transition-colors"
+                            className="w-[85vw] md:w-[400px] flex-shrink-0 bg-white/5 backdrop-blur-sm border border-white/10 p-6 rounded-2xl hover:bg-white/10 transition-colors"
                         >
                             <div className="flex justify-between items-start mb-4">
                                 <div className="flex items-center gap-3">

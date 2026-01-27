@@ -13,7 +13,7 @@ import { sendEmail, emailTemplates } from "@/lib/mail";
 
 export async function GET(
   req: Request,
-  props: { params: Promise<{ id: string }> }
+  props: { params: Promise<{ id: string }> },
 ) {
   try {
     await dbConnect();
@@ -87,7 +87,8 @@ export async function GET(
       const totalScoreSum = totalQuizPercentage + totalAssignmentPercentage;
       // We divide by total ITEMS (including unattempted ones which count as 0)
       // This enforces that they must complete everything to get a high score
-      overallScore = totalScoreSum / totalItems;
+      // Cap at 100% to prevent display issues from bad data
+      overallScore = Math.min(totalScoreSum / totalItems, 100);
     } else {
       // If no quizzes or assignments exist, we only check video progress
       // Set score to 100 so it doesn't block certificate eligibility
@@ -144,8 +145,8 @@ export async function GET(
               emailTemplates.certificateUnlocked(
                 user.firstName,
                 course.title,
-                certificateLink
-              )
+                certificateLink,
+              ),
             );
 
             // Mark email as sent
@@ -209,7 +210,7 @@ export async function GET(
     console.error("Certificate eligibility check error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

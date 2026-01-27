@@ -157,6 +157,7 @@ export default function AIWeboryskillsPage() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     topic: topic.trim(),
+                    level: level,
                     mode: mode,
                     conversationHistory: mode === "chat" ? chatHistory : undefined
                 }),
@@ -205,7 +206,7 @@ export default function AIWeboryskillsPage() {
                 <BackgroundCodeAnimation />
             </div>
 
-            <div className="container mx-auto px-4 pt-20 sm:pt-24 pb-8 sm:pb-12 max-w-7xl relative z-10">
+            <div className="container mx-auto px-4 pt-32 sm:pt-36 pb-8 sm:pb-12 max-w-7xl relative z-10">
                 <div className="text-center mb-8 sm:mb-12">
                     <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 px-4 py-2 rounded-full mb-4 border border-white/10 backdrop-blur-sm">
                         <Sparkles className="text-blue-400 animate-pulse" size={18} />
@@ -242,15 +243,27 @@ export default function AIWeboryskillsPage() {
 
                 {/* Chat Mode Overlay */}
                 {mode === "chat" && (
-                    <div className="fixed inset-0 z-40 bg-gray-900/95 backdrop-blur-md pt-20 pb-4 px-4 sm:px-6 flex flex-col animate-fadeIn">
+                    <div className="fixed inset-0 z-40 bg-gray-900/95 backdrop-blur-md pt-28 pb-4 px-4 sm:px-6 flex flex-col animate-fadeIn">
                         <div className="max-w-5xl mx-auto w-full flex-1 flex flex-col min-h-0 relative z-50">
-                        {/* Header for Chat Mode Back Button */}
-                        <div className="flex items-center justify-between mb-4 flex-shrink-0">
-                             <div className="flex items-center gap-2">
-                                <span className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">AI Mentor Chat</span>
+                        {/* Enhanced Header for Chat Mode */}
+                        <div className="flex items-center justify-between mb-4 flex-shrink-0 glass-card p-4 rounded-xl border border-white/10">
+                             <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+                                    <Bot className="text-white" size={20} />
+                                </div>
+                                <div>
+                                    <h2 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">AI Mentor Chat</h2>
+                                    <p className="text-xs text-gray-400">Ask anything about coding & tech</p>
+                                </div>
                              </div>
-                             <button onClick={() => setMode("roadmap")} className="text-green-400 hover:text-white transition-colors bg-green-500/10 hover:bg-green-500/20 p-2 rounded-lg border border-green-500/20">
-                                <span className="text-sm font-semibold">Exit Chat</span>
+                             <button 
+                                onClick={() => setMode("roadmap")} 
+                                className="group flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-500/10 to-orange-500/10 hover:from-red-500/20 hover:to-orange-500/20 border border-red-500/20 hover:border-red-500/40 rounded-lg transition-all duration-300 hover:scale-105"
+                             >
+                                <span className="text-sm font-semibold text-red-400 group-hover:text-red-300">Exit</span>
+                                <svg className="w-4 h-4 text-red-400 group-hover:text-red-300 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
                              </button>
                         </div>
 

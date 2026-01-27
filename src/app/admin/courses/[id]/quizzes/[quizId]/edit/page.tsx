@@ -153,7 +153,7 @@ export default function EditQuizPage() {
 
                     <div className="space-y-4">
                         <div>
-                            <label className="text-sm text-gray-300 block mb-2">Title *</label>
+                            <label className="text-sm text-gray-300 block mb-2">Title <span className="text-red-500">*</span></label>
                             <input
                                 type="text"
                                 required
@@ -175,7 +175,7 @@ export default function EditQuizPage() {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="text-sm text-gray-300 block mb-2">Duration (minutes) *</label>
+                                <label className="text-sm text-gray-300 block mb-2">Duration (minutes) <span className="text-red-500">*</span></label>
                                 <input
                                     type="number"
                                     required
@@ -187,16 +187,16 @@ export default function EditQuizPage() {
                             </div>
 
                             <div>
-                                <label className="text-sm text-gray-300 block mb-2">Passing Score (%) *</label>
+                                <label className="text-sm text-gray-300 block mb-2">Passing Score (%) <span className="text-red-500">*</span></label>
                                 <input
-                                    type="number"
-                                    required
-                                    min="0"
-                                    max="100"
-                                    className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
-                                    value={formData.passingScore}
-                                    onChange={(e) => setFormData({ ...formData, passingScore: Number(e.target.value) })}
-                                />
+                                        type="number"
+                                        required
+                                        min="0"
+                                        onWheel={(e) => e.currentTarget.blur()}
+                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
+                                        value={formData.passingScore}
+                                        onChange={(e) => setFormData({ ...formData, passingScore: Number(e.target.value) })}
+                                    />
                             </div>
                         </div>
                     </div>
@@ -243,6 +243,28 @@ export default function EditQuizPage() {
                                 </div>
 
                                 <div className="space-y-3">
+                                    <div className="mb-4">
+                                        <label className="text-sm text-gray-300 block mb-2">Question Type</label>
+                                        <select
+                                            className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
+                                            value={question.questionType}
+                                            onChange={(e) => {
+                                                const type = e.target.value;
+                                                const updated = [...formData.questions];
+                                                updated[index] = {
+                                                    ...updated[index],
+                                                    questionType: type,
+                                                    options: type === "true-false" ? ["True", "False"] : ["", "", "", ""],
+                                                    correctAnswer: 0
+                                                };
+                                                setFormData({ ...formData, questions: updated });
+                                            }}
+                                        >
+                                            <option value="mcq">Multiple Choice</option>
+                                            <option value="true-false">True/False</option>
+                                        </select>
+                                    </div>
+
                                     <input
                                         type="text"
                                         placeholder="Question text"
@@ -295,6 +317,17 @@ export default function EditQuizPage() {
                                             className="bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
                                             value={question.marks}
                                             onChange={(e) => updateQuestion(index, "marks", Number(e.target.value))}
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="text-sm text-gray-300 block mb-2">Explanation (Optional)</label>
+                                        <textarea
+                                            rows={2}
+                                            className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
+                                            value={question.explanation || ""}
+                                            onChange={(e) => updateQuestion(index, "explanation", e.target.value)}
+                                            placeholder="Explain the correct answer..."
                                         />
                                     </div>
                                 </div>

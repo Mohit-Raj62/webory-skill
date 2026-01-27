@@ -63,7 +63,7 @@ export function CoursesPreview({ popularCourses = [] }: CoursesPreviewProps) {
     const displayCourses = popularCourses.length > 0 ? popularCourses : fallbackCourses;
 
     return (
-        <section id="courses" className="py-24 relative overflow-hidden bg-slate-950/20">
+        <section id="courses" className="py-16 md:py-24 relative overflow-hidden bg-slate-950/20">
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[100px] pointer-events-none" />
 

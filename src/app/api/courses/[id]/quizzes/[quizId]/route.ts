@@ -78,8 +78,26 @@ export async function POST(
       (sum: number, ans: any) => sum + ans.marksObtained,
       0,
     );
-    const percentage = (obtainedMarks / quiz.totalMarks) * 100;
+
+    // Calculate total possible marks dynamically from questions
+    const totalPossibleMarks = quiz.questions.reduce(
+      (sum: number, q: any) => sum + (q.marks || 1),
+      0,
+    );
+
+    const percentage =
+      totalPossibleMarks > 0
+        ? Math.round((obtainedMarks / totalPossibleMarks) * 100)
+        : 0;
+
     const passed = percentage >= quiz.passingScore;
+
+    // Check if user has previously passed this quiz (BEFORE creating new attempt)
+    const alreadyPassed = await QuizAttempt.findOne({
+      userId: decoded.userId,
+      quizId,
+      passed: true,
+    });
 
     // Save attempt
     const attempt = await QuizAttempt.create({
@@ -87,7 +105,7 @@ export async function POST(
       quizId,
       courseId,
       answers: gradedAnswers,
-      totalMarks: quiz.totalMarks,
+      totalMarks: totalPossibleMarks,
       obtainedMarks,
       percentage,
       passed,
@@ -107,9 +125,35 @@ export async function POST(
       date: new Date(),
     });
 
-    // Award +20 XP for submitting a quiz
-    const User = (await import("@/models/User")).default;
-    await User.findByIdAndUpdate(decoded.userId, { $inc: { xp: 20 } });
+    // Award +50 XP ONLY if passed AND didn't pass before
+    console.log("=== QUIZ XP CHECK ===");
+    console.log("Quiz ID:", quizId);
+    console.log("User ID:", decoded.userId);
+    console.log("Passed:", passed);
+    console.log("Percentage:", percentage);
+    console.log("Passing Score Required:", quiz.passingScore);
+    console.log("Already Passed Before:", !!alreadyPassed);
+
+    if (passed && !alreadyPassed) {
+      console.log("✅ Awarding 50 XP for first-time pass");
+      const User = (await import("@/models/User")).default;
+      const userBefore = await User.findById(decoded.userId);
+      console.log("User XP before:", userBefore?.xp);
+
+      const updated = await User.findByIdAndUpdate(
+        decoded.userId,
+        { $inc: { xp: 50 } },
+        { new: true },
+      );
+      console.log("User XP after:", updated?.xp);
+      console.log("✅ XP successfully awarded!");
+    } else {
+      console.log(
+        "❌ XP NOT awarded - Reason:",
+        !passed ? "Quiz not passed" : "User already passed this quiz before",
+      );
+    }
+    console.log("===================");
 
     // Return results with correct answers if showAnswers is true
     const result = {

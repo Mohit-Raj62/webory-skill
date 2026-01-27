@@ -33,10 +33,10 @@ export function EnrolledCourses() {
         <section className="py-20 relative overflow-hidden">
             <div className="container mx-auto px-4">
                 <div className="text-center mb-12">
-                    <h2 className="text-4xl md:text-5xl font-bold mb-4">
+                    <h2 className="text-3xl md:text-5xl font-bold mb-4">
                         Your <span className="text-blue-400">Enrolled Courses</span>
                     </h2>
-                    <p className="text-xl text-gray-400">Continue learning from where you left off</p>
+                    <p className="text-lg md:text-xl text-gray-400">Continue learning from where you left off</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -47,7 +47,7 @@ export function EnrolledCourses() {
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.1 }}
                             viewport={{ once: true }}
-                            className="glass-card p-6 rounded-2xl hover:border-blue-500/50 transition-all group"
+                            className="glass-card p-4 md:p-6 rounded-2xl hover:border-blue-500/50 transition-all group"
                         >
                             <div className="flex items-start justify-between mb-4">
                                 <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
