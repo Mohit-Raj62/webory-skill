@@ -797,9 +797,9 @@ export default function CodeEditor() {
             <AnimatePresence mode="wait">
                 {(isDesktop || activeMobileTab === 'files') && (
                     <motion.div 
-                        initial={!isDesktop ? { opacity: 0, x: -20 } : false}
-                        animate={!isDesktop ? { opacity: 1, x: 0 } : false}
-                        exit={!isDesktop ? { opacity: 0, x: -20 } : false}
+                        initial={!isDesktop ? { opacity: 0, x: -20 } : undefined}
+                        animate={!isDesktop ? { opacity: 1, x: 0 } : undefined}
+                        exit={!isDesktop ? { opacity: 0, x: -20 } : undefined}
                         className={`${activeMobileTab === 'files' ? 'flex w-full absolute inset-0 z-20' : 'hidden'} lg:flex lg:static lg:w-auto flex-col bg-[#010409] border-r border-[#30363d] h-full`}
                     >
                 <div className="p-3 border-b border-[#30363d] flex items-center justify-between">
