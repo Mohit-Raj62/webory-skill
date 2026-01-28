@@ -895,9 +895,9 @@ export default function CodeEditor() {
                 <AnimatePresence mode="wait">
                     {(isDesktop || activeMobileTab === 'editor') && (
                         <motion.div 
-                            initial={!isDesktop ? { opacity: 0, y: 10 } : false}
-                            animate={!isDesktop ? { opacity: 1, y: 0 } : false}
-                            exit={!isDesktop ? { opacity: 0, y: -10 } : false}
+                            initial={!isDesktop ? { opacity: 0, y: 10 } : undefined}
+                            animate={!isDesktop ? { opacity: 1, y: 0 } : undefined}
+                            exit={!isDesktop ? { opacity: 0, y: -10 } : undefined}
                             className={`${activeMobileTab === 'editor' ? 'flex' : 'hidden'} lg:flex flex-col bg-[#0d1117] min-h-0 relative h-full lg:h-auto w-full lg:w-[var(--editor-width)] transition-[width] duration-0 lg:border-r border-[#30363d]`}
                             style={{ '--editor-width': `${editorWidth}%` } as React.CSSProperties}
                         >
@@ -1114,9 +1114,9 @@ export default function CodeEditor() {
                 <AnimatePresence mode="wait">
                     {(isDesktop || activeMobileTab === 'output') && (
                         <motion.div 
-                            initial={!isDesktop ? { opacity: 0, x: 20 } : false}
-                            animate={!isDesktop ? { opacity: 1, x: 0 } : false}
-                            exit={!isDesktop ? { opacity: 0, x: 20 } : false}
+                            initial={!isDesktop ? { opacity: 0, x: 20 } : undefined}
+                            animate={!isDesktop ? { opacity: 1, x: 0 } : undefined}
+                            exit={!isDesktop ? { opacity: 0, x: 20 } : undefined}
                             className={`${activeMobileTab === 'output' ? 'flex' : 'hidden'} lg:flex flex-col h-full lg:h-full lg:flex-1 bg-[#010409] border-t border-[#30363d] lg:border-t-0 min-w-0`}
                         >
                      {/* Terminal Header */}
