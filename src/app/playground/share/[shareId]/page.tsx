@@ -19,6 +19,7 @@ export default function SharedCodePage() {
     const [viewCount, setViewCount] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
+    const [activeTab, setActiveTab] = useState<"code" | "preview">("code");
 
     useEffect(() => {
         fetchSharedCode();
@@ -113,20 +114,48 @@ export default function SharedCodePage() {
             </div>
 
             {/* Editor (Read-only) */}
-            <div className="flex-1 p-4 flex flex-col gap-4">
-                <div className="max-w-7xl mx-auto w-full h-full min-h-[500px] bg-[#161b22] border border-[#30363d] rounded-lg overflow-hidden flex flex-col">
-                    <div className="flex-1 relative">
+            {/* Main Content */}
+            <div className="flex-1 flex flex-col min-h-0 bg-[#0d1117]">
+                {/* Tabs Header */}
+                <div className="border-b border-[#30363d] px-4">
+                    <div className="flex items-center gap-6">
+                        <button
+                            onClick={() => setActiveTab("code")}
+                            className={`py-3 text-sm font-medium border-b-2 transition-colors ${
+                                activeTab === "code"
+                                    ? "border-blue-500 text-white"
+                                    : "border-transparent text-gray-400 hover:text-gray-300"
+                            }`}
+                        >
+                            Code
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("preview")}
+                            className={`py-3 text-sm font-medium border-b-2 transition-colors ${
+                                activeTab === "preview"
+                                    ? "border-blue-500 text-white"
+                                    : "border-transparent text-gray-400 hover:text-gray-300"
+                            }`}
+                        >
+                            Preview
+                        </button>
+                    </div>
+                </div>
+
+                {/* Content Area */}
+                <div className="flex-1 relative">
+                    {activeTab === "code" ? (
                         <Editor
                             height="100%"
                             language={language}
                             value={code}
                             theme="vs-dark"
-                            key={code ? "loaded" : "empty"} 
+                            key={code ? "loaded" : "empty"}
                             options={{
                                 readOnly: true,
                                 minimap: { enabled: false },
-                                fontSize: 14,
-                                lineHeight: 22,
+                                fontSize: 16,
+                                lineHeight: 24,
                                 fontFamily: "'Fira Code', 'Cascadia Code', 'JetBrains Mono', Consolas, 'Courier New', monospace",
                                 fontLigatures: true,
                                 scrollBeyondLastLine: false,
@@ -136,9 +165,19 @@ export default function SharedCodePage() {
                                 bracketPairColorization: { enabled: true },
                                 matchBrackets: "always",
                                 automaticLayout: true,
+                                padding: { top: 16, bottom: 16 },
                             }}
                         />
-                    </div>
+                    ) : (
+                        <div className="w-full h-full bg-white">
+                            <iframe
+                                title="Preview"
+                                srcDoc={code}
+                                className="w-full h-full border-0"
+                                sandbox="allow-scripts allow-modals allow-forms allow-popups allow-same-origin"
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
 
