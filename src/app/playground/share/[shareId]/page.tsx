@@ -143,7 +143,7 @@ export default function SharedCodePage() {
                 </div>
 
                 {/* Content Area */}
-                <div className="flex-1 relative">
+                <div className="relative h-[85vh] w-full">
                     {activeTab === "code" ? (
                         <Editor
                             height="100%"
