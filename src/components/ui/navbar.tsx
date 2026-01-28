@@ -33,7 +33,7 @@ export function Navbar() {
                 <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                     <Link href="/" className="flex items-center space-x-2">
                         <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                            <span className="font-black text-xl bg-gradient-to-br from-green-400 to-emerald-500 bg-clip-text text-transparent">W</span>
+                            <span className="font-black text-xl text-white">W</span>
                         </div>
                         <span className="text-lg md:text-xl font-bold">
                             <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">WEBORY </span>

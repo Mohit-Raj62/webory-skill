@@ -20,7 +20,7 @@ export function Footer() {
                     <div className="col-span-1 md:col-span-5 lg:col-span-4 space-y-6">
                         <Link href="/" className="inline-flex items-center space-x-3 group">
                             <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
-                                <span className="font-black text-xl bg-gradient-to-br from-green-400 to-emerald-500 bg-clip-text text-transparent">W</span>
+                                <span className="font-black text-xl text-white">W</span>
                                 <div className="absolute -inset-0.5 bg-gradient-to-br from-blue-400 to-purple-400 rounded-xl opacity-30 blur-sm group-hover:opacity-50 transition-opacity"></div>
                             </div>
                             <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-600 tracking-tight">
