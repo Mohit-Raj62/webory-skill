@@ -3,7 +3,8 @@
 
 import React, { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
-import { Play, RotateCcw, Loader2, AlertCircle, Terminal, Copy, Check, Info, Save, FilePlus, FolderOpen, Trash2, FileCode, ChevronRight, ChevronDown, Share2 } from "lucide-react";
+import { Play, RotateCcw, Loader2, AlertCircle, Terminal, Copy, Check, Info, Save, FilePlus, FolderOpen, Trash2, FileCode, ChevronRight, ChevronDown, Share2, Code2, Folder } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -268,8 +269,20 @@ export default function CodeEditor() {
     const [isCopied, setIsCopied] = useState(false);
     
     // Resizable Layout State
+    // Resizable Layout State
     const [editorWidth, setEditorWidth] = useState(60); // Percentage width
     const [isDragging, setIsDragging] = useState(false);
+    const [isDesktop, setIsDesktop] = useState(true); 
+    
+    // Mobile Tab State
+    const [activeMobileTab, setActiveMobileTab] = useState<"files" | "editor" | "output">("editor");
+
+    useEffect(() => {
+        const checkDesktop = () => setIsDesktop(window.innerWidth >= 1024);
+        checkDesktop();
+        window.addEventListener('resize', checkDesktop);
+        return () => window.removeEventListener('resize', checkDesktop);
+    }, []);
 
     useEffect(() => {
         fetchFiles();
@@ -778,10 +791,17 @@ export default function CodeEditor() {
     }, [resize, stopResizing]);
 
     return (
-        <div className="flex flex-col lg:grid lg:grid-cols-[250px_1fr] lg:gap-0 bg-[#0d1117] h-[85vh] lg:h-[75vh] font-sans border border-[#30363d] rounded-lg overflow-hidden shadow-2xl">
+        <div className="flex flex-col lg:grid lg:grid-cols-[250px_1fr] lg:gap-0 bg-[#0d1117] h-[calc(100dvh-180px)] lg:h-[75vh] font-sans border border-[#30363d] rounded-lg overflow-hidden shadow-2xl relative">
             
-            {/* Sidebar / File Explorer - Hidden on Mobile unless toggled (TODO: Add mobile toggle) */}
-            <div className={`${isSidebarOpen ? 'flex' : 'hidden'} lg:flex flex-col bg-[#010409] border-r border-[#30363d]`}>
+            {/* Sidebar / File Explorer */}
+            <AnimatePresence mode="wait">
+                {(isDesktop || activeMobileTab === 'files') && (
+                    <motion.div 
+                        initial={!isDesktop ? { opacity: 0, x: -20 } : false}
+                        animate={!isDesktop ? { opacity: 1, x: 0 } : false}
+                        exit={!isDesktop ? { opacity: 0, x: -20 } : false}
+                        className={`${activeMobileTab === 'files' ? 'flex w-full absolute inset-0 z-20' : 'hidden'} lg:flex lg:static lg:w-auto flex-col bg-[#010409] border-r border-[#30363d] h-full`}
+                    >
                 <div className="p-3 border-b border-[#30363d] flex items-center justify-between">
                     <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Explorer</span>
                     <Dialog open={isNewFileOpen} onOpenChange={setIsNewFileOpen}>
@@ -837,21 +857,50 @@ export default function CodeEditor() {
                         </div>
                     ))}
                     {files.length === 0 && (
-                        <div className="text-center py-8 px-4 text-gray-600">
-                             <p className="text-xs">No files yet.</p>
-                             <p className="text-[10px] mt-1">Create one to start saving your work.</p>
+                        <div className="text-center py-10 px-4 text-gray-600 flex flex-col items-center">
+                             <p className="text-xs mb-3">No files found.</p>
+                             <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => setIsNewFileOpen(true)}
+                                className="text-xs border-dashed border-gray-600 text-gray-400 hover:text-white hover:bg-[#21262d] gap-2 h-8"
+                            >
+                                <FilePlus size={14} />
+                                Create New File
+                             </Button>
                         </div>
                     )}
-                </div>
-            </div>
+                    
+                    {/* Mobile Floating Action Button for New File */}
+                    {!isDesktop && activeMobileTab === 'files' && files.length > 0 && (
+                        <motion.button
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => setIsNewFileOpen(true)}
+                            className="absolute bottom-6 right-6 w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-blue-500 z-50 border border-white/10"
+                        >
+                            <FilePlus size={20} />
+                        </motion.button>
+                    )}
+                    </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Main Content Area */}
-            <div id="editor-container" className="flex flex-col lg:flex-row lg:col-start-2 bg-[#0d1117] min-w-0 h-full overflow-hidden">
+            <div id="editor-container" className={`${activeMobileTab === 'editor' || activeMobileTab === 'output' ? 'flex' : 'hidden'} lg:flex flex-col lg:flex-row lg:col-start-2 bg-[#0d1117] min-w-0 h-full overflow-hidden`}>
                 {/* Editor Panel */}
-                <div 
-                    className="flex flex-col bg-[#0d1117] min-h-0 relative"
-                    style={{ width: window.innerWidth >= 1024 ? `${editorWidth}%` : '100%', borderRight: '1px solid #30363d' }}
-                >
+                <AnimatePresence mode="wait">
+                    {(isDesktop || activeMobileTab === 'editor') && (
+                        <motion.div 
+                            initial={!isDesktop ? { opacity: 0, y: 10 } : false}
+                            animate={!isDesktop ? { opacity: 1, y: 0 } : false}
+                            exit={!isDesktop ? { opacity: 0, y: -10 } : false}
+                            className={`${activeMobileTab === 'editor' ? 'flex' : 'hidden'} lg:flex flex-col bg-[#0d1117] min-h-0 relative h-full lg:h-auto w-full lg:w-[var(--editor-width)] transition-[width] duration-0 lg:border-r border-[#30363d]`}
+                            style={{ '--editor-width': `${editorWidth}%` } as React.CSSProperties}
+                        >
                     
                     {/* File Tab Look Header */}
                     <div className="flex items-center justify-between h-10 bg-[#161b22] border-b border-[#30363d] px-4 shrink-0">
@@ -1049,7 +1098,9 @@ export default function CodeEditor() {
                             }}
                         />
                     </div>
-                </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
                 {/* Resizer Handle (Desktop Only) */}
                 <div
@@ -1060,7 +1111,14 @@ export default function CodeEditor() {
                 </div>
 
                 {/* Output Panel / Terminal */}
-                <div className="flex flex-col h-[35%] lg:h-full lg:flex-1 bg-[#010409] border-t border-[#30363d] lg:border-t-0 min-w-0">
+                <AnimatePresence mode="wait">
+                    {(isDesktop || activeMobileTab === 'output') && (
+                        <motion.div 
+                            initial={!isDesktop ? { opacity: 0, x: 20 } : false}
+                            animate={!isDesktop ? { opacity: 1, x: 0 } : false}
+                            exit={!isDesktop ? { opacity: 0, x: 20 } : false}
+                            className={`${activeMobileTab === 'output' ? 'flex' : 'hidden'} lg:flex flex-col h-full lg:h-full lg:flex-1 bg-[#010409] border-t border-[#30363d] lg:border-t-0 min-w-0`}
+                        >
                      {/* Terminal Header */}
                      <div className="flex items-center justify-between h-10 px-4 bg-[#161b22] border-b border-[#30363d] shrink-0">
                         <div className="flex items-center gap-2 sm:gap-6 overflow-x-auto no-scrollbar">
@@ -1208,8 +1266,48 @@ export default function CodeEditor() {
                                 />
                             </div>
                         )}
-                    </div>
                 </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+
+            {/* Mobile Bottom Navigation - Glassmorphism */}
+            <div className="lg:hidden flex items-center justify-around bg-[#161b22]/95 backdrop-blur-md border-t border-[#30363d] h-14 shrink-0 z-30 shadow-[0_-5px_20px_rgba(0,0,0,0.3)] pb-2">
+                <button
+                    onClick={() => setActiveMobileTab('files')}
+                    className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-all duration-300 relative ${activeMobileTab === 'files' ? 'text-blue-400' : 'text-gray-500 hover:text-gray-300'}`}
+                >
+                    <Folder size={20} strokeWidth={activeMobileTab === 'files' ? 2.5 : 2} />
+                    <span className="text-[10px] font-medium">Files</span>
+                    {activeMobileTab === 'files' && <motion.div layoutId="mobileTabIndicator" className="absolute top-0 w-8 h-1 bg-blue-500 rounded-b-md" />}
+                </button>
+                <button
+                    onClick={() => setActiveMobileTab('editor')}
+                    className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-all duration-300 relative ${activeMobileTab === 'editor' ? 'text-blue-400' : 'text-gray-500 hover:text-gray-300'}`}
+                >
+                    <Code2 size={20} strokeWidth={activeMobileTab === 'editor' ? 2.5 : 2} />
+                    <span className="text-[10px] font-medium">Code</span>
+                    {activeMobileTab === 'editor' && <motion.div layoutId="mobileTabIndicator" className="absolute top-0 w-8 h-1 bg-blue-500 rounded-b-md" />}
+                </button>
+                <button
+                    onClick={() => setActiveMobileTab('output')}
+                    className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-all duration-300 relative ${activeMobileTab === 'output' ? 'text-blue-400' : 'text-gray-500 hover:text-gray-300'}`}
+                >
+                    <Terminal size={20} strokeWidth={activeMobileTab === 'output' ? 2.5 : 2} />
+                    <span className="text-[10px] font-medium">Terminal</span>
+                    {activeMobileTab === 'output' && <motion.div layoutId="mobileTabIndicator" className="absolute top-0 w-8 h-1 bg-blue-500 rounded-b-md" />}
+                </button>
+                <button
+                    onClick={runCode}
+                    disabled={isLoading}
+                    className="flex flex-col items-center justify-center w-full h-full space-y-1 text-green-500 hover:text-green-400 disabled:opacity-50 disabled:cursor-not-allowed group active:scale-95 transition-transform"
+                >
+                    <div className="bg-green-500/10 p-1.5 rounded-full group-hover:bg-green-500/20 transition-colors">
+                        {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Play size={18} className="fill-current" />}
+                    </div>
+                    <span className="text-[10px] font-bold">Run</span>
+                </button>
             </div>
 
             {/* Share Modal */}

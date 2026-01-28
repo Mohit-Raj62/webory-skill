@@ -7,7 +7,7 @@ import {
     ArrowLeft, ChevronLeft, ChevronRight, CheckCircle,
     MoreVertical, Settings, Maximize, Minimize, Expand,
     MessageCircle, HelpCircle, FileText, Lock, Play, Pause,
-    ThumbsUp, ThumbsDown, MessageSquare
+    ThumbsUp, ThumbsDown, MessageSquare, Heart, HeartOff
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -54,6 +54,8 @@ export default function VideoPlayerPage() {
     const [likeStatus, setLikeStatus] = useState<boolean | null>(null);
     const [feedbackText, setFeedbackText] = useState('');
     const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+    const [isLikeAnimating, setIsLikeAnimating] = useState(false);
+    const [isDislikeAnimating, setIsDislikeAnimating] = useState(false);
 
 
     const currentIndex = parseInt(videoIndex as string) || 0;
@@ -338,6 +340,14 @@ export default function VideoPlayerPage() {
     const handleLike = async (isLiked: boolean) => {
         const newStatus = likeStatus === isLiked ? null : isLiked;
         setLikeStatus(newStatus); // Optimistic
+        
+        if (newStatus === true) {
+            setIsLikeAnimating(true);
+            setTimeout(() => setIsLikeAnimating(false), 600); // Heart effect
+        } else if (newStatus === false) {
+            setIsDislikeAnimating(true);
+            setTimeout(() => setIsDislikeAnimating(false), 600); // Broken Heart effect
+        }
 
         try {
             await fetch(`/api/courses/${courseId}/videos/${currentIndex}/feedback`, {
@@ -437,8 +447,11 @@ export default function VideoPlayerPage() {
         fetchData();
         fetchNotes();
         fetchFeedback();
-        // Reset YouTube player reference on video change
+        // Reset YouTube player reference and state on video change
         ytPlayerRef.current = null;
+        setLastValidTime(0);
+        lastValidTimeRef.current = 0;
+        setVideoProgress(0);
     }, [courseId, videoIndex]);
 
     useEffect(() => {
@@ -538,10 +551,12 @@ export default function VideoPlayerPage() {
 
                 if (isCurrentlyPlaying) {
                     // Anti-Cheat: Increase buffer to 5s to handle network micro-jumps
-                    if (!hasMarkedRef.current && currentTime > lastValidTimeRef.current + 5) {
+                    // Anti-Cheat: Disabled for now due to user issues
+                    /* if (!hasMarkedRef.current && currentTime > lastValidTimeRef.current + 5) {
                         if (ytPlayerRef.current) ytPlayerRef.current.seekTo(lastValidTimeRef.current, true);
-                        else if (videoRef.current) videoRef.current.currentTime = lastValidTimeRef.current;
-                    } else if (currentTime > lastValidTimeRef.current) {
+                        else if (videoRef.current) videoRef.current.currentTime = lastValidTimeRef.current; 
+                    } else */ 
+                    if (currentTime > lastValidTimeRef.current) {
                         lastValidTimeRef.current = currentTime;
                         
                         // Throttle state update for hover-indicator UI to once per second
@@ -703,7 +718,7 @@ export default function VideoPlayerPage() {
             </div>
 
             {/* Main Content */}
-            <div className={`mx-auto p-4 lg:p-6 flex flex-col lg:flex-row gap-8 transition-all duration-300 ${isTheaterMode ? 'max-w-full' : 'max-w-[1600px]'}`}>
+            <div className={`mx-auto p-2 sm:p-4 lg:p-6 flex flex-col lg:flex-row gap-6 lg:gap-8 transition-all duration-300 ${isTheaterMode ? 'max-w-full' : 'max-w-[1600px]'}`}>
                 <div className="flex-1 w-full">
                     <div className="relative group" ref={playerContainerRef}>
                         <div className="absolute -inset-2 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-blue-600/20 rounded-3xl blur-2xl opacity-40 group-hover:opacity-70 transition duration-500"></div>
@@ -874,7 +889,8 @@ export default function VideoPlayerPage() {
                     </div>
 
                     {/* Controls Bar */}
-                    <div className="flex items-center justify-between mt-4 bg-gray-900/50 p-2 rounded-xl border border-gray-800">
+                    {/* Controls Bar */}
+                    <div className="flex items-center justify-between mt-4 bg-gray-900/50 p-2 rounded-xl border border-gray-800 gap-2">
                         <div className="flex items-center gap-2">
                             <Button
                                 onClick={togglePlay}
@@ -889,8 +905,8 @@ export default function VideoPlayerPage() {
                                 variant="ghost"
                                 className="text-gray-400 hover:text-white hover:bg-gray-800"
                             >
-                                <ChevronLeft className="mr-1 h-5 w-5" />
-                                Prev
+                                <ChevronLeft className="h-5 w-5 sm:mr-1" />
+                                <span className="hidden sm:inline">Prev</span>
                             </Button>
                             <Button
                                 onClick={goToNext}
@@ -898,28 +914,36 @@ export default function VideoPlayerPage() {
                                 variant="ghost"
                                 className="text-gray-400 hover:text-white hover:bg-gray-800"
                             >
-                                Next
-                                <ChevronRight className="ml-1 h-5 w-5" />
+                                <span className="hidden sm:inline">Next</span>
+                                <ChevronRight className="h-5 w-5 sm:ml-1" />
                             </Button>
                             
                             {/* Like & Feedback Buttons */}
-                            <div className="h-6 w-px bg-gray-700 mx-1" />
+                            <div className="hidden sm:block h-6 w-px bg-gray-700 mx-1" />
                             <div className="flex items-center gap-1">
                                 <Button
                                     onClick={() => handleLike(true)}
                                     variant="ghost"
-                                    className={`p-2 h-9 ${likeStatus === true ? "text-green-500 bg-green-500/10" : "text-gray-400 hover:text-white hover:bg-gray-800"}`}
+                                    className={`p-2 h-9 transition-all duration-300 transform ${isLikeAnimating ? 'scale-125 rotate-12 bg-red-500/10' : ''} ${likeStatus === true && !isLikeAnimating ? "text-blue-500 bg-blue-500/10" : "text-gray-400 hover:text-white hover:bg-gray-800"}`}
                                     title="I like this"
                                 >
-                                    <ThumbsUp className="h-4 w-4" />
+                                    {isLikeAnimating ? (
+                                        <Heart className="h-5 w-5 fill-red-500 text-red-500 animate-in zoom-in spin-in-12 duration-300" />
+                                    ) : (
+                                        <ThumbsUp className={`h-4 w-4 ${likeStatus === true ? 'fill-blue-500 text-blue-500' : ''}`} />
+                                    )}
                                 </Button>
                                 <Button
                                     onClick={() => handleLike(false)}
                                     variant="ghost"
-                                    className={`p-2 h-9 ${likeStatus === false ? "text-red-500 bg-red-500/10" : "text-gray-400 hover:text-white hover:bg-gray-800"}`}
+                                    className={`p-2 h-9 transition-all duration-300 transform ${isDislikeAnimating ? 'scale-125 rotate-[-12deg] bg-red-500/10' : ''} ${likeStatus === false && !isDislikeAnimating ? "text-red-500 bg-red-500/10" : "text-gray-400 hover:text-white hover:bg-gray-800"}`}
                                     title="I dislike this"
                                 >
-                                    <ThumbsDown className="h-4 w-4" />
+                                    {isDislikeAnimating ? (
+                                        <HeartOff className="h-5 w-5 text-red-500 fill-red-500/10 animate-in zoom-in duration-300" />
+                                    ) : (
+                                        <ThumbsDown className={`h-4 w-4 ${likeStatus === false ? 'fill-red-500 text-red-500' : ''}`} />
+                                    )}
                                 </Button>
                                 <Button
                                     onClick={() => setShowFeedbackModal(true)}
@@ -939,10 +963,10 @@ export default function VideoPlayerPage() {
                         {isCurrentVideoWatched ? (
                             <Button
                                 disabled
-                                className="bg-gray-600 text-gray-300 cursor-not-allowed"
+                                className="bg-gray-600 text-gray-300 cursor-not-allowed hidden sm:flex"
                             >
-                                <CheckCircle className="mr-2 h-4 w-4" />
-                                Already Watched
+                                <CheckCircle className="h-4 w-4 sm:mr-2" />
+                                <span className="hidden sm:inline">Already Watched</span>
                             </Button>
                         ) : null}
 
@@ -952,8 +976,8 @@ export default function VideoPlayerPage() {
                                 variant="ghost"
                                 className="text-gray-400 hover:text-white hover:bg-gray-800"
                             >
-                                <Settings className="h-5 w-5 mr-2" />
-                                Controls
+                                <Settings className="h-5 w-5 sm:mr-2" />
+                                <span className="hidden sm:inline">Controls</span>
                             </Button>
 
                             {/* Dropdown Menu */}

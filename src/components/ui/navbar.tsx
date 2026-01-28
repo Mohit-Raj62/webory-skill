@@ -32,11 +32,12 @@ export function Navbar() {
             <nav className="fixed top-0 w-full z-50 border-b border-white/10 bg-black/40 backdrop-blur-2xl transition-all duration-300">
                 <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                     <Link href="/" className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                            <span className="text-white font-bold text-xl">W</span>
+                        <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                            <span className="font-black text-xl bg-gradient-to-br from-green-400 to-emerald-500 bg-clip-text text-transparent">W</span>
                         </div>
-                        <span className="text-lg md:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                            WEBORY <span className="text-white">SKILL's</span>
+                        <span className="text-lg md:text-xl font-bold">
+                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">WEBORY </span>
+                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-600">Skills</span>
                         </span>
                     </Link>
 

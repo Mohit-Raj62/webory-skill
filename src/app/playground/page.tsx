@@ -1,11 +1,14 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { Code2, Sparkles, Terminal, ChevronLeft, Cpu, Globe } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Code2, Sparkles, Terminal, ChevronLeft, Cpu, Globe, Lock } from "lucide-react";
 import { ErrorBoundary } from "react-error-boundary";
 import { motion } from "framer-motion";
+import { useAuth } from "@/components/auth/session-provider";
+import { Button } from "@/components/ui/button";
 
 const CodeEditor = dynamic(
     () => import("@/components/playground/CodeEditor"),
@@ -31,8 +34,58 @@ function ErrorFallback({ error, resetErrorBoundary }: any) {
 }
 
 export default function PlaygroundPage() {
+    const { user, loading } = useAuth();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!loading && !user) {
+            // Redirect to login if not authenticated
+            router.push("/login?callbackUrl=/playground");
+        }
+    }, [user, loading, router]);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-[#0d1117] flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
+                    <p className="text-gray-400 font-mono text-sm animate-pulse">Initializing DevLab...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!user) {
+        return (
+             <div className="min-h-screen bg-[#0d1117] flex items-center justify-center p-4">
+                <div className="max-w-md w-full bg-[#161b22] border border-[#30363d] rounded-xl p-8 text-center shadow-2xl">
+                    <div className="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <Lock className="text-blue-400 w-8 h-8" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-white mb-2">Authentication Required</h2>
+                    <p className="text-gray-400 mb-8">Access to the Webory DevLab is restricted to registered members only. Please sign in to continue.</p>
+                    
+                    <div className="flex flex-col gap-3">
+                        <Button 
+                            onClick={() => router.push("/login?callbackUrl=/playground")}
+                            className="bg-blue-600 hover:bg-blue-500 text-white w-full py-6 text-lg"
+                        >
+                            Sign In to DevLab
+                        </Button>
+                        <Link 
+                            href="/"
+                            className="text-gray-500 hover:text-gray-400 text-sm mt-2 transition-colors"
+                        >
+                            Return Home
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div className="min-h-screen bg-[#0d1117] text-gray-300 font-sans selection:bg-blue-500/30 pt-20">
+        <div className="min-h-screen bg-[#0d1117] text-gray-300 font-sans selection:bg-blue-500/30 pt-4 md:pt-20">
             {/* Grid Background */}
             <div className="fixed inset-0 z-0 pointer-events-none" 
                 style={{
@@ -46,21 +99,21 @@ export default function PlaygroundPage() {
                 <motion.header 
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#30363d] pb-6"
+                    className="mb-2 md:mb-6 flex flex-row items-center justify-between gap-4 border-b border-[#30363d] pb-2 md:pb-6"
                 >
-                    <div className="flex items-center gap-4">
-                         <div className="h-12 w-12 rounded-lg bg-blue-600/10 border border-blue-500/20 flex items-center justify-center">
-                            <Code2 className="text-blue-400" size={24} />
+                    <div className="flex items-center gap-3 md:gap-4">
+                         <div className="h-8 w-8 md:h-12 md:w-12 rounded-lg bg-blue-600/10 border border-blue-500/20 flex items-center justify-center">
+                            <Code2 className="text-blue-400 h-4 w-4 md:h-6 md:w-6" />
                         </div>
                         <div>
-                            <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
-                                Webory DevLab
-                                <span className="px-2 py-0.5 rounded text-[10px] bg-green-500/10 border border-green-500/20 text-green-400 font-mono tracking-wider uppercase">
-                                    v1.0.0
+                            <h1 className="text-xl md:text-3xl font-bold text-white tracking-tight flex items-center gap-2 md:gap-3">
+                                <span className="hidden sm:inline">Webory</span> DevLab
+                                <span className="px-1.5 py-0.5 rounded text-[8px] md:text-[10px] bg-green-500/10 border border-green-500/20 text-green-400 font-mono tracking-wider uppercase">
+                                    v1.0
                                 </span>
                             </h1>
-                            <p className="text-gray-400 text-sm font-mono mt-1 flex items-center gap-2">
-                                <Cpu size={12} /> Cloud Runtime Environment
+                            <p className="text-gray-400 text-xs md:text-sm font-mono mt-0.5 md:mt-1 hidden sm:flex items-center gap-2">
+                                <Cpu size={12} /> Cloud Runtime
                                 <span className="text-gray-600">|</span>
                                 <Globe size={12} /> Global CDN
                             </p>
