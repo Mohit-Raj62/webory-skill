@@ -60,9 +60,7 @@ export default function AdminEnrollmentsPage() {
                 const data = await res.json();
                 setEnrollments(data.enrollments);
             } else {
-                const errorData = await res.json().catch(() => ({}));
-                console.error("Fetch enrollments error:", errorData);
-                toast.error(errorData.details || errorData.error || "Failed to fetch enrollments");
+                toast.error("Failed to fetch enrollments");
             }
         } catch (error) {
             console.error("Error fetching enrollments:", error);
