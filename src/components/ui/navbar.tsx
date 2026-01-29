@@ -13,7 +13,7 @@ export function Navbar() {
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
     const { user } = useAuth();
 
-    const [announcement, setAnnouncement] = useState({ enabled: true, text: "Waitlist for January 2026 is full. February batch closing soon!" });
+    const [announcement, setAnnouncement] = useState({ enabled: false, text: "" });
 
     useEffect(() => {
         // Fetch global settings
@@ -37,7 +37,14 @@ export function Navbar() {
                         </div>
                         <span className="text-lg md:text-xl font-bold">
                             <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">WEBORY </span>
-                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-600">Skills</span>
+                            <span className="relative">
+                                <span className="absolute -top-1.5 left-[30%] -translate-x-1/2 flex gap-1">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-[#FF9933]"></span>
+                                    <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
+                                    <span className="w-1.5 h-1.5 rounded-full bg-[#138808]"></span>
+                                </span>
+                                <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-600">SKILLS</span>
+                            </span>
                         </span>
                     </Link>
 
@@ -52,7 +59,7 @@ export function Navbar() {
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                             </span>
-                            <span className="text-[9px] font-black bg-emerald-500 text-black px-1.5 py-0.5 rounded leading-none">FREE</span>
+                            <span className="text-[9px] font-black bg-emerald-500 text-black px-1.5 py-0.5 rounded leading-none">Free</span>
                         </Link>
                         <Link href="/internships" className="text-sm text-gray-300 hover:text-white transition-colors">
                             Internships
@@ -92,7 +99,7 @@ export function Navbar() {
                             <div className="flex items-center space-x-4">
                                 <Link href="/login">
                                     <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white">
-                                        Log in
+                                        Log In
                                     </Button>
                                 </Link>
                                 <Link href="/signup">
@@ -168,7 +175,7 @@ export function Navbar() {
                                     <>
                                         <Link href="/login" onClick={() => setIsOpen(false)}>
                                             <Button variant="ghost" className="w-full justify-start text-gray-300">
-                                                Log in
+                                                Log In
                                             </Button>
                                         </Link>
                                         <Link href="/signup" onClick={() => setIsOpen(false)}>

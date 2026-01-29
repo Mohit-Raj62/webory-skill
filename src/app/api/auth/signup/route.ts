@@ -7,12 +7,12 @@ import { sendEmail, emailTemplates } from "@/lib/mail";
 export async function POST(req: Request) {
   try {
     await dbConnect();
-    const { firstName, lastName, email, password } = await req.json();
+    const { firstName, lastName, email, password, phone } = await req.json();
 
     if (!firstName || !lastName || !email || !password) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     if (existingUser) {
       return NextResponse.json(
         { error: "User already exists" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -31,6 +31,7 @@ export async function POST(req: Request) {
       lastName,
       email,
       password: hashedPassword,
+      phone,
     });
 
     // Send welcome email
@@ -38,23 +39,25 @@ export async function POST(req: Request) {
       await sendEmail(
         user.email,
         "Welcome to Skill Webory! 🎉",
-        emailTemplates.welcomeSignup(user.firstName)
+        emailTemplates.welcomeSignup(user.firstName),
       );
-      console.log('✅ Welcome email sent to:', user.email);
+      console.log("✅ Welcome email sent to:", user.email);
     } catch (emailError) {
-      console.error('❌ Failed to send welcome email:', emailError);
+      console.error("❌ Failed to send welcome email:", emailError);
       // Don't fail signup if email fails
     }
 
     return NextResponse.json(
       { message: "User created successfully", userId: user._id },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Signup error:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Internal server error" },
-      { status: 500 }
+      {
+        error: error instanceof Error ? error.message : "Internal server error",
+      },
+      { status: 500 },
     );
   }
 }

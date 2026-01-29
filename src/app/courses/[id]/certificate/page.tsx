@@ -159,7 +159,16 @@ export default function CertificatePage() {
                         <div className="flex items-start justify-center gap-4 mb-1">
                             <Award className="text-[#c5a059] mt-1" size={48} />
                             <div className="text-left">
-                                <h2 className="text-3xl font-bold text-[#1a237e] tracking-wide uppercase font-serif">Webory Skill&apos;s </h2>
+                                <h2 className="text-3xl font-bold text-[#1a237e] tracking-wide uppercase font-serif">
+                                    WEBORY <span className="relative inline-block ml-2">
+                                        <span className="absolute -top-1.5 left-[30%] -translate-x-1/2 flex gap-1">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-[#FF9933]"></span>
+                                            <span className="w-1.5 h-1.5 rounded-full bg-white border border-gray-200"></span>
+                                            <span className="w-1.5 h-1.5 rounded-full bg-[#138808]"></span>
+                                        </span>
+                                        SKILLS
+                                    </span>
+                                </h2>
                                 <p className="text-sm text-[#c5a059] tracking-[0.2em] uppercase">Excellence in Education</p>
                                 <div className="flex gap-4 mt-1">
                                     <div className="flex flex-col items-start border-l-2 border-[#c5a059] pl-2">

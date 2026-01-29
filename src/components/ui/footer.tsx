@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Facebook, Github, Instagram, Linkedin, Twitter, ExternalLink } from "lucide-react";
+import { Facebook, Github, Instagram, Linkedin, Twitter, ExternalLink, Youtube } from "lucide-react";
 
 export function Footer() {
     return (
@@ -23,8 +23,15 @@ export function Footer() {
                                 <span className="font-black text-xl text-white">W</span>
                                 <div className="absolute -inset-0.5 bg-gradient-to-br from-blue-400 to-purple-400 rounded-xl opacity-30 blur-sm group-hover:opacity-50 transition-opacity"></div>
                             </div>
-                            <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-600 tracking-tight">
-                                Webory Skills
+                            <span className="text-2xl font-bold tracking-tight text-white">
+                                WEBORY <span className="relative inline-block">
+                                    <span className="absolute -top-1.5 left-[30%] -translate-x-1/2 flex gap-1">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-[#FF9933]"></span>
+                                        <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
+                                        <span className="w-1.5 h-1.5 rounded-full bg-[#138808]"></span>
+                                    </span>
+                                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-600">SKILLS</span>
+                                </span>
                             </span>
                         </Link>
                         <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
@@ -87,6 +94,7 @@ export function Footer() {
                                 } color="hover:bg-black hover:border-white/20 hover:text-white" />
                                 <SocialLink href="#" icon={<Linkedin size={18} />} color="hover:bg-blue-700" />
                                 <SocialLink href="#" icon={<Instagram size={18} />} color="hover:bg-pink-600" />
+                                <SocialLink href="https://www.youtube.com/@WeborySkill" icon={<Youtube size={18} />} color="hover:bg-red-600" />
                             </div>
                             <p className="text-xs text-gray-500">
                                 Follow us for the latest updates and coding challenges.

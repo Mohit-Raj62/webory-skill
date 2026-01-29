@@ -9,6 +9,7 @@ import { useAuth } from "@/components/auth/session-provider";
 import { User, Mail, Award, Briefcase, LogOut, ExternalLink, Trophy, Calendar, Video, FileText, Clock, Upload, ChevronRight, Zap } from "lucide-react";
 import { ActivityDashboard } from "@/components/dashboard/activity-dashboard";
 import { GradesDashboard } from "@/components/dashboard/grades-dashboard";
+import { PhoneCollectionModal } from "@/components/profile/phone-collection-modal";
 
 interface UserProfile {
     firstName: string;
@@ -17,6 +18,7 @@ interface UserProfile {
     role: string;
     _id: string;
     xp?: number;
+    phone?: string;
 }
 
 export default function ProfilePage() {
@@ -26,8 +28,16 @@ export default function ProfilePage() {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState < 'courses' | 'internships' | 'grades' > ('courses');
     const [uploadingAppId, setUploadingAppId] = useState<string | null>(null);
+    const [showPhoneModal, setShowPhoneModal] = useState(false);
     const router = useRouter();
     const { refreshAuth } = useAuth();
+
+    const handlePhoneUpdated = (phone: string) => {
+        if (user) {
+            setUser({ ...user, phone });
+        }
+        setShowPhoneModal(false);
+    };
 
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, appId: string) => {
         const file = event.target.files?.[0];
@@ -81,6 +91,10 @@ export default function ProfilePage() {
                 if (!resAuth.ok) throw new Error("Not authenticated");
                 const userData = await resAuth.json();
                 setUser(userData.user);
+
+                if (!userData.user.phone) {
+                    setShowPhoneModal(true);
+                }
 
                 if (resDash.ok) {
                     const dashData = await resDash.json();
@@ -415,6 +429,10 @@ export default function ProfilePage() {
                 </div>
             </div>
 
+            <PhoneCollectionModal 
+                isOpen={showPhoneModal} 
+                onPhoneUpdated={handlePhoneUpdated} 
+            />
             <Footer />
         </main>
     );

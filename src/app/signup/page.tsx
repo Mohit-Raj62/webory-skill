@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Lock, Mail, User, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, User, Loader2, Phone } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function SignupPage() {
@@ -14,6 +14,7 @@ export default function SignupPage() {
         firstName: "",
         lastName: "",
         email: "",
+        phone: "",
         password: "",
     });
     const [showPassword, setShowPassword] = useState(false);
@@ -150,6 +151,26 @@ export default function SignupPage() {
                                         onChange={handleChange}
                                         className="w-full bg-transparent border-none py-3.5 pl-11 pr-4 text-white placeholder-gray-600 focus:ring-0 text-sm"
                                         placeholder="you@example.com"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-medium text-gray-400 ml-1">Phone Number</label>
+                                <div className={`relative transition-all duration-300 rounded-xl bg-black/20 border ${focusedField === 'phone' ? 'border-blue-500/50 shadow-[0_0_0_4px_rgba(59,130,246,0.1)]' : 'border-white/10 hover:border-white/20'}`}>
+                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">
+                                        <Phone size={18} />
+                                    </div>
+                                    <input
+                                        type="tel"
+                                        name="phone"
+                                        required
+                                        value={formData.phone}
+                                        onFocus={() => setFocusedField('phone')}
+                                        onBlur={() => setFocusedField(null)}
+                                        onChange={handleChange}
+                                        className="w-full bg-transparent border-none py-3.5 pl-11 pr-4 text-white placeholder-gray-600 focus:ring-0 text-sm"
+                                        placeholder="+91 98765 43210"
                                     />
                                 </div>
                             </div>
