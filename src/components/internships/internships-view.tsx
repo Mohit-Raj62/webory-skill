@@ -14,10 +14,10 @@ import { toast } from "sonner";
 interface InternshipsViewProps {
     internships: any[];
     user: any | null;
-    appliedInternshipIds: string[];
+    userApplications: { internshipId: string; status: string }[];
 }
 
-export function InternshipsView({ internships, user, appliedInternshipIds }: InternshipsViewProps) {
+export function InternshipsView({ internships, user, userApplications }: InternshipsViewProps) {
     const [selectedInternship, setSelectedInternship] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedType, setSelectedType] = useState("All");
@@ -218,23 +218,52 @@ export function InternshipsView({ internships, user, appliedInternshipIds }: Int
                                                 <span className="text-2xl font-black text-white tracking-tighter">
                                                     ₹{job.price || 0}
                                                 </span>
+                                                {job.gstPercentage > 0 && <span className="text-[10px] text-gray-400 font-bold">+ GST</span>}
                                                 <span className="text-[9px] text-emerald-500/80 font-black uppercase tracking-widest">Industry Standard</span>
                                              </div>
                                         </div>
 
-                                        {appliedInternshipIds.includes(job._id) ? (
-                                            <Button disabled className="w-full bg-slate-800/50 text-slate-500 border border-slate-700/50 h-11 rounded-xl font-black uppercase tracking-widest text-[9px] shadow-inner">
-                                                <CheckCircle2 className="mr-2 h-3.5 w-3.5" /> Applied Successfully
-                                            </Button>
-                                        ) : (
-                                            <Button
-                                                onClick={() => handleApplyClick(job._id)}
-                                                className="w-full bg-white hover:bg-emerald-500 text-black hover:text-white border-0 px-8 h-11 rounded-xl font-black uppercase tracking-wider text-[10px] shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group/btn"
-                                            >
-                                                <span className="relative z-20">Apply Now</span>
-                                                <div className="absolute top-0 -left-[100%] w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover/btn:left-[100%] transition-all duration-1000" />
-                                            </Button>
-                                        )}
+                                        {(() => {
+                                            const app = userApplications.find(a => a.internshipId === job._id);
+                                            const isPaidJob = (job.price || 0) > 0;
+                                            
+                                            if (app) {
+                                                if (app.status === 'accepted' || app.status === 'completed' || app.status === 'interview_scheduled') {
+                                                    return (
+                                                        <Button disabled className="w-full bg-slate-800/50 text-slate-500 border border-slate-700/50 h-11 rounded-xl font-black uppercase tracking-widest text-[9px] shadow-inner">
+                                                            <CheckCircle2 className="mr-2 h-3.5 w-3.5" /> Applied Successfully
+                                                        </Button>
+                                                    );
+                                                } else if (app.status === 'pending') {
+                                                    if (isPaidJob) {
+                                                        return (
+                                                            <Button
+                                                                onClick={() => handleApplyClick(job._id)}
+                                                                className="w-full bg-yellow-500 hover:bg-yellow-600 text-black border-0 px-8 h-11 rounded-xl font-black uppercase tracking-wider text-[10px] shadow-lg hover:shadow-yellow-500/30 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group/btn"
+                                                            >
+                                                                <span className="relative z-20">Complete Payment</span>
+                                                            </Button>
+                                                        );
+                                                    } else {
+                                                         return (
+                                                            <Button disabled className="w-full bg-slate-800/50 text-amber-500 border border-amber-500/20 h-11 rounded-xl font-black uppercase tracking-widest text-[9px] shadow-inner">
+                                                                <Clock className="mr-2 h-3.5 w-3.5" /> Application Pending
+                                                            </Button>
+                                                        );
+                                                    }
+                                                }
+                                            }
+
+                                            return (
+                                                <Button
+                                                    onClick={() => handleApplyClick(job._id)}
+                                                    className="w-full bg-white hover:bg-emerald-500 text-black hover:text-white border-0 px-8 h-11 rounded-xl font-black uppercase tracking-wider text-[10px] shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group/btn"
+                                                >
+                                                    <span className="relative z-20">Apply Now</span>
+                                                    <div className="absolute top-0 -left-[100%] w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover/btn:left-[100%] transition-all duration-1000" />
+                                                </Button>
+                                            );
+                                        })()}
                                     </div>
                                 </motion.div>
                             ))
@@ -340,7 +369,7 @@ export function InternshipsView({ internships, user, appliedInternshipIds }: Int
                                     disabled={submitting}
                                     className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 border-0 py-6 text-lg font-bold mt-4"
                                 >
-                                    {submitting ? "Processing..." : `Pay ₹${internships.find(i => i._id === selectedInternship)?.price || 0} & Submit`}
+                                    {submitting ? "Processing..." : `Pay ₹${Math.round((internships.find(i => i._id === selectedInternship)?.price || 0) * (1 + (internships.find(i => i._id === selectedInternship)?.gstPercentage || 0) / 100))} & Submit`}
                                 </Button>
                             </form>
                         </motion.div>
@@ -354,6 +383,7 @@ export function InternshipsView({ internships, user, appliedInternshipIds }: Int
                     onClose={() => setShowPayment(false)}
                     courseTitle={`Internship: ${internships.find(i => i._id === selectedInternship)?.title}`}
                     price={internships.find(i => i._id === selectedInternship)?.price || 0}
+                    gstPercentage={internships.find(i => i._id === selectedInternship)?.gstPercentage || 0}
                     internshipId={selectedInternship}
                     userId={user._id}
                     userName={user.firstName}

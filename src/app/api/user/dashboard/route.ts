@@ -38,7 +38,7 @@ export async function GET() {
           return [];
         }),
 
-      Application.find({ student: decoded.userId })
+      Application.find({ student: decoded.userId, status: { $ne: "rejected" } })
         .populate("internship")
         .populate("student")
         .lean()
@@ -47,7 +47,7 @@ export async function GET() {
           if (res.length > 0) {
             console.log(
               "First application sample:",
-              JSON.stringify(res[0], null, 2)
+              JSON.stringify(res[0], null, 2),
             );
             console.log("Is internship populated?", !!res[0].internship);
           }
@@ -64,7 +64,7 @@ export async function GET() {
         enrollments: enrollments || [],
         applications: applications || [],
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Dashboard error:", error);
@@ -73,7 +73,7 @@ export async function GET() {
         error: "Internal server error",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

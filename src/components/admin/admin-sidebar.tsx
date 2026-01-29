@@ -40,6 +40,8 @@ const menuItems = [
     { name: "Settings", href: "/admin/settings", icon: Settings },
     { name: "Careers (Jobs)", href: "/admin/careers/jobs", icon: Briefcase },
     { name: "Job Applications", href: "/admin/careers/applications", icon: FileText },
+    { name: "Live Interest", href: "/admin/activity", icon: Video },
+    { name: "Leads", href: "/admin/leads", icon: Users },
     { name: "Maintenance", href: "/admin/maintenance", icon: Database },
 ];
 

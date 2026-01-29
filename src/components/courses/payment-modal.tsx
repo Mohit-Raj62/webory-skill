@@ -12,6 +12,7 @@ interface PaymentModalProps {
     price: number;
     originalPrice?: number;
     discountPercentage?: number;
+    gstPercentage?: number;
     courseId?: string;
     internshipId?: string;
     userId: string;
@@ -28,6 +29,7 @@ export function PaymentModal({
     price,
     originalPrice,
     discountPercentage,
+    gstPercentage = 0,
     courseId,
     internshipId,
     userId,
@@ -40,7 +42,8 @@ export function PaymentModal({
     const [promoCode, setPromoCode] = useState("");
     const [validatingPromo, setValidatingPromo] = useState(false);
     const [appliedPromo, setAppliedPromo] = useState<any>(null);
-    const [finalPrice, setFinalPrice] = useState(price);
+    const [finalPrice, setFinalPrice] = useState(Math.round(price + (price * gstPercentage / 100)));
+    const [basePrice, setBasePrice] = useState(price); // Price after course discount, before promo
     const [errorMessage, setErrorMessage] = useState("");
     const [phoneNumber, setPhoneNumber] = useState(mobileNumber || "");
 
@@ -111,29 +114,34 @@ export function PaymentModal({
                 const data = await res.json();
                 setAppliedPromo(data.promoCode);
 
-                // Calculate new price
-                let newPrice = price;
+                // Calculate new base price
+                let newBasePrice = price;
                 if (data.promoCode.discountType === "percentage") {
-                    newPrice = Math.round(price * (1 - data.promoCode.discountValue / 100));
+                    newBasePrice = Math.round(price * (1 - data.promoCode.discountValue / 100));
                 } else {
-                    newPrice = Math.max(0, price - data.promoCode.discountValue);
+                    newBasePrice = Math.max(0, price - data.promoCode.discountValue);
                 }
 
-                setFinalPrice(newPrice);
-                toast.success(`Promo code applied! You save ₹${price - newPrice}`);
+                setBasePrice(newBasePrice);
+                const gstAmount = newBasePrice * (gstPercentage / 100);
+                setFinalPrice(Math.round(newBasePrice + gstAmount));
+
+                toast.success(`Promo code applied! You save ₹${price - newBasePrice}`);
             } else {
                 const error = await res.json();
                 const msg = error.error || "Invalid promo code";
                 setErrorMessage(msg);
                 toast.error(msg);
                 setAppliedPromo(null);
-                setFinalPrice(price);
+                setBasePrice(price);
+                setFinalPrice(Math.round(price + (price * gstPercentage / 100)));
             }
         } catch (error) {
             console.error("Error validating promo code:", error);
             setErrorMessage("Failed to validate promo code");
             setAppliedPromo(null);
-            setFinalPrice(price);
+            setBasePrice(price);
+            setFinalPrice(Math.round(price + (price * gstPercentage / 100)));
         } finally {
             setValidatingPromo(false);
         }
@@ -142,7 +150,8 @@ export function PaymentModal({
     const handleRemovePromo = () => {
         setAppliedPromo(null);
         setPromoCode("");
-        setFinalPrice(price);
+        setBasePrice(price);
+        setFinalPrice(Math.round(price + (price * gstPercentage / 100)));
         toast.info("Promo code removed");
     };
 
@@ -264,13 +273,17 @@ export function PaymentModal({
             const bolt = (window as any).bolt;
             bolt.launch(paymentData, {
                 responseHandler: function(BOLT: any) {
-                    console.log("Bolt Success:", BOLT.response);
+                    console.log("Bolt Response:", BOLT.response);
                     
-                    if (BOLT.response.txnStatus !== 'CANCEL') {
+                    if (BOLT.response.txnStatus === 'SUCCESS') {
                          submitPayUForm(BOLT.response, surl);
-                    } else {
+                    } else if (BOLT.response.txnStatus === 'CANCEL') {
                         setLoading(false);
                         toast.error("Payment Cancelled");
+                    } else {
+                        setLoading(false);
+                        toast.error("Payment Failed: " + (BOLT.response.txnMessage || "Unknown Error"));
+                        // Optional: Log failure to backend if needed, but don't redirect
                     }
                 },
                 catchException: function(BOLT: any) {
@@ -327,16 +340,33 @@ export function PaymentModal({
 
                 <div className="p-6 space-y-6">
                     {/* Price Display */}
-                    <div className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col items-center">
-                        <div className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">Total Amount</div>
-                        <div className="flex items-end gap-2 text-white">
-                            {originalPrice && (discountPercentage || 0) > 0 && (
-                                <span className="text-gray-500 line-through text-lg mb-1">₹{originalPrice}</span>
-                            )}
-                            <span className="text-4xl font-bold tracking-tight">₹{finalPrice}</span>
+                    <div className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col">
+                        <div className="flex justify-between items-center mb-2">
+                            <span className="text-gray-400 text-sm">Course Price</span>
+                            <span className="text-white font-medium">₹{basePrice}</span>
                         </div>
+                        
+                        {gstPercentage > 0 && (
+                            <div className="flex justify-between items-center mb-2">
+                                <span className="text-gray-400 text-sm">GST ({gstPercentage}%)</span>
+                                <span className="text-white font-medium">₹{Math.round(basePrice * gstPercentage / 100)}</span>
+                            </div>
+                        )}
+
+                        <div className="h-px bg-white/10 my-2"></div>
+
+                        <div className="flex justify-between items-end">
+                            <span className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">Total Payable</span>
+                            <div className="flex flex-col items-end">
+                                {originalPrice && (discountPercentage || 0) > 0 && !appliedPromo && (
+                                    <span className="text-gray-500 line-through text-xs">₹{Math.round(originalPrice + (originalPrice * gstPercentage / 100))}</span>
+                                )}
+                                <span className="text-4xl font-bold tracking-tight text-white">₹{finalPrice}</span>
+                            </div>
+                        </div>
+
                         {appliedPromo && (
-                            <div className="mt-2 flex items-center gap-2 bg-green-500/10 text-green-400 px-3 py-1 rounded-full text-xs font-bold border border-green-500/20">
+                            <div className="mt-3 flex items-center gap-2 bg-green-500/10 text-green-400 px-3 py-1 rounded-full text-xs font-bold border border-green-500/20 w-fit">
                                 <Tag size={12} />
                                 <span>Code {appliedPromo.code} Applied</span>
                             </div>
@@ -404,7 +434,7 @@ export function PaymentModal({
                                         <div>
                                             <p className="text-green-400 font-bold text-sm">{appliedPromo.code}</p>
                                             <p className="text-green-500/70 text-xs">
-                                                Saved ₹{price - finalPrice}
+                                                Saved ₹{price - basePrice}
                                             </p>
                                         </div>
                                     </div>

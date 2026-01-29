@@ -34,33 +34,54 @@ export async function POST(req: Request) {
     if (!internshipId || !resume || !coverLetter) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Check if already applied
-    const existing = await Application.findOne({
+    let application = await Application.findOne({
       student: decoded.userId,
       internship: internshipId,
     });
 
-    if (existing) {
-      return NextResponse.json(
-        { error: "Already applied to this internship" },
-        { status: 400 }
-      );
+    if (application) {
+      const isPaidValues = amountPaid > 0;
+      // Allow retry if:
+      // 1. Rejected
+      // 2. Pending AND it was a paid application (meaning payment failed/cancelled)
+      if (
+        application.status === "rejected" ||
+        (application.status === "pending" && isPaidValues)
+      ) {
+        // Re-open/Update the application
+        application.status = "pending";
+        application.resume = resume;
+        application.coverLetter = coverLetter;
+        application.portfolio = portfolio;
+        application.linkedin = linkedin;
+        application.transactionId = transactionId;
+        application.amountPaid = amountPaid;
+        application.appliedAt = new Date(); // Reset applied date
+        await application.save();
+      } else {
+        return NextResponse.json(
+          { error: "Already applied to this internship" },
+          { status: 400 },
+        );
+      }
+    } else {
+      // Create new
+      application = await Application.create({
+        student: decoded.userId,
+        internship: internshipId,
+        resume,
+        coverLetter,
+        portfolio,
+        linkedin,
+        transactionId,
+        amountPaid,
+      });
     }
-
-    const application = await Application.create({
-      student: decoded.userId,
-      internship: internshipId,
-      resume,
-      coverLetter,
-      portfolio,
-      linkedin,
-      transactionId,
-      amountPaid,
-    });
 
     // Record Activity
     await Activity.create({
@@ -83,7 +104,7 @@ export async function POST(req: Request) {
       await sendEmail(
         student.email,
         `Application Received: ${internship.title}`,
-        emailTemplates.applicationReceived(student.firstName, internship.title)
+        emailTemplates.applicationReceived(student.firstName, internship.title),
       );
 
       // Optional: Notify Admin
@@ -92,13 +113,13 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       { message: "Application submitted successfully", application },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Application error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

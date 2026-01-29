@@ -14,6 +14,7 @@ const ActivitySchema = new Schema({
       "course_enrolled",
       "internship_applied",
       "internship_task_submitted",
+      "course_viewed",
     ],
     required: true,
   },

@@ -35,6 +35,12 @@ const InternshipSchema = new Schema({
     min: 0,
     max: 100,
   },
+  gstPercentage: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 100,
+  },
   tags: {
     type: [String],
     default: [],

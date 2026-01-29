@@ -7,6 +7,8 @@ import dynamic from "next/dynamic";
 
 const PaymentModal = dynamic(() => import("@/components/courses/payment-modal").then(mod => mod.PaymentModal), { ssr: false });
 const Invoice = dynamic(() => import("@/components/courses/invoice").then(mod => mod.Invoice), { ssr: false });
+import { LeadCaptureModal } from "@/components/lead-capture-modal"; // New Import
+import { useAuth } from "@/components/auth/session-provider";
 import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { CheckCircle, Clock, BarChart, Users, Globe, PlayCircle, Lock, ClipboardList, FileText, Calendar, Video, ChevronDown, ChevronUp, Brain } from "lucide-react";
@@ -31,9 +33,10 @@ const safeDate = (date: any): string => {
 export default function CourseDetailsPage() {
     const { id } = useParams();
     const router = useRouter();
+    const { user, loading: authLoading } = useAuth();
     const [course, setCourse] = useState < any > (null);
     const [loading, setLoading] = useState(true);
-    const [user, setUser] = useState < any > (null);
+    // user state removed, using hook
     const [isEnrolled, setIsEnrolled] = useState(false);
     const [showPayment, setShowPayment] = useState(false);
     const [showInvoice, setShowInvoice] = useState(false);
@@ -85,11 +88,10 @@ export default function CourseDetailsPage() {
                 }
 
                 // Parallel fetch for secondary data
-                const [resQuizzes, resAssignments, resLiveClasses, resAuth] = await Promise.all([
+                const [resQuizzes, resAssignments, resLiveClasses] = await Promise.all([
                     fetch(`/api/admin/courses/${id}/quizzes`).catch(() => null),
                     fetch(`/api/admin/courses/${id}/assignments`).catch(() => null),
-                    fetch(`/api/courses/${id}/live-classes`).catch(() => null),
-                    fetch("/api/auth/me").catch(() => null)
+                    fetch(`/api/courses/${id}/live-classes`).catch(() => null)
                 ]);
 
                 if (resQuizzes?.ok) {
@@ -105,10 +107,8 @@ export default function CourseDetailsPage() {
                     setLiveClasses(liveClassData.liveClasses || []);
                 }
 
-                if (resAuth?.ok) {
-                    const userData = await resAuth.json();
-                    setUser(userData.user);
-
+                // Auth is handled by hook, but we need enrollment check
+                if (user) {
                     const resEnroll = await fetch("/api/user/enrollments");
                     if (resEnroll.ok) {
                         const enrollData = await resEnroll.json();
@@ -137,7 +137,30 @@ export default function CourseDetailsPage() {
         };
 
         if (id) fetchData();
-    }, [id]);
+    }, [id, user]); // Added user dependency to re-fetch enrollments if user loads late
+
+
+
+    // Analytics Helper
+    useEffect(() => {
+        if (user && course) {
+             const trackInterest = async () => {
+                try {
+                    await fetch("/api/analytics/track", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                             courseId: course._id,
+                             courseName: course.title 
+                        }),
+                    });
+                } catch (err) {
+                    console.error("Tracking Error", err);
+                }
+            };
+            trackInterest();
+        }
+    }, [user, course]);
 
     const handleBuyClick = () => {
         if (!user) {
@@ -195,10 +218,19 @@ export default function CourseDetailsPage() {
             ? `TXN${enrollmentData._id.toString().substring(0, 12)}`
             : `TXN${Date.now()}`;
         
+        // Calculate price based on current course settings (fallback since we don't store historical price yet)
+        const basePrice = course.discountPercentage > 0 && course.originalPrice > 0
+            ? Math.round(course.originalPrice * (1 - course.discountPercentage / 100))
+            : course.price;
+
+        const gstPercent = course.gstPercentage || 0;
+        const totalAmount = Math.round(basePrice * (1 + gstPercent / 100));
+
         const invoiceData = {
             transactionId,
             courseTitle: course.title,
-            amount: course.price,
+            amount: totalAmount,
+            gstPercentage: gstPercent,
             date: enrollmentDate,
             userEmail: user?.email || 'student@example.com',
         };
@@ -228,6 +260,7 @@ export default function CourseDetailsPage() {
     return (
         <main className="min-h-screen bg-background">
             <Navbar />
+            <LeadCaptureModal courseId={id as string} courseName={course?.title} />
 
             <div className="pt-24 md:pt-32 pb-20 container mx-auto px-4">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
@@ -920,6 +953,9 @@ export default function CourseDetailsPage() {
                                                     ? Math.round(course.originalPrice * (1 - course.discountPercentage / 100))
                                                     : course.price}
                                             </span>
+                                            {course.gstPercentage > 0 && (
+                                                <span className="text-sm text-gray-400 font-medium">+ GST</span>
+                                            )}
 
                                             {/* Original Price (if discount exists) */}
                                             {course.discountPercentage > 0 && course.originalPrice > 0 && (
@@ -974,6 +1010,7 @@ export default function CourseDetailsPage() {
                     : course.price}
                 originalPrice={course.originalPrice}
                 discountPercentage={course.discountPercentage}
+                gstPercentage={course.gstPercentage || 0}
                 courseId={id as string}
                 userId={user?._id || ""}
                 userName={user ? `${user.firstName} ${user.lastName}` : ""}
@@ -987,6 +1024,8 @@ export default function CourseDetailsPage() {
                     onClose={() => setShowInvoice(false)}
                 />
             )}
+
+
 
             <Footer />
         </main>

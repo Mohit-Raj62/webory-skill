@@ -44,7 +44,8 @@ export default function EditCoursePage() {
             director: { name: "Webory Team", title: "Director of Education" },
             partner: { name: "Partner Rep.", title: "Authorized Signatory" }
         },
-        isAvailable: true
+        isAvailable: true,
+        gstPercentage: 0
     });
 
     const [curriculumInput, setCurriculumInput] = useState("");
@@ -106,6 +107,7 @@ export default function EditCoursePage() {
                     price: data.course.price || 0,
                     originalPrice: data.course.originalPrice || 0,
                     discountPercentage: data.course.discountPercentage || 0,
+                    gstPercentage: data.course.gstPercentage || 0,
                     studentsCount: data.course.studentsCount || "0",
                     color: data.course.color || "from-blue-500 to-purple-500",
                     icon: data.course.icon || "Globe",
@@ -1028,6 +1030,19 @@ export default function EditCoursePage() {
                                             onChange={(e) => setFormData({ ...formData, discountPercentage: Number(e.target.value) })}
                                         />
                                     </div>
+                                </div>
+                                
+                                <div>
+                                    <label className="text-xs text-gray-500 mb-1 block">GST %</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        max="100"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-2 text-gray-400 focus:border-green-500/50 outline-none"
+                                        value={formData.gstPercentage}
+                                        onChange={(e) => setFormData({ ...formData, gstPercentage: Number(e.target.value) })}
+                                    />
+                                    <p className="text-[10px] text-gray-500 mt-1">Tax added on top of final price</p>
                                 </div>
 
                                 <div className="h-px bg-white/5 w-full"/>

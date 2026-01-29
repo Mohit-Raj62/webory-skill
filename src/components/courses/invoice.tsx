@@ -8,14 +8,25 @@ interface InvoiceProps {
     transactionId: string;
     courseTitle: string;
     amount: number;
+    gstPercentage?: number;
+    gstAmount?: number;
     date: string;
     userEmail: string;
     onClose: () => void;
 }
 
-export function Invoice({ transactionId, courseTitle, amount, date, userEmail, onClose }: InvoiceProps) {
+export function Invoice({ transactionId, courseTitle, amount, gstPercentage = 0, gstAmount = 0, date, userEmail, onClose }: InvoiceProps) {
     const [mounted, setMounted] = useState(false);
     const invoiceNumber = `INV-${transactionId.substring(4, 12)}`;
+    
+    // Calculate Base Amount (Amount - GST)
+    const calculatedGstAmount = gstAmount > 0 
+        ? gstAmount 
+        : gstPercentage > 0 
+            ? Math.round(amount - (amount / (1 + gstPercentage / 100))) 
+            : 0;
+            
+    const baseAmount = amount - calculatedGstAmount;
     
     useEffect(() => {
         setMounted(true);
@@ -93,8 +104,8 @@ export function Invoice({ transactionId, courseTitle, amount, date, userEmail, o
                                         <p className="font-bold text-gray-900 text-lg mb-1">{courseTitle}</p>
                                         <p className="text-sm text-gray-500">Lifetime Access • Course Materials • Certificate</p>
                                     </td>
-                                     <td className="py-6 text-right text-gray-600">₹{amount.toLocaleString('en-IN')}</td>
-                                    <td className="py-6 text-right font-bold text-gray-900">₹{amount.toLocaleString('en-IN')}</td>
+                                     <td className="py-6 text-right text-gray-600">₹{baseAmount.toLocaleString('en-IN')}</td>
+                                    <td className="py-6 text-right font-bold text-gray-900">₹{baseAmount.toLocaleString('en-IN')}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -105,11 +116,11 @@ export function Invoice({ transactionId, courseTitle, amount, date, userEmail, o
                         <div className="w-64">
                             <div className="flex justify-between py-2 text-gray-600">
                                 <span>Subtotal</span>
-                                <span>₹{amount.toLocaleString('en-IN')}</span>
+                                <span>₹{baseAmount.toLocaleString('en-IN')}</span>
                             </div>
                             <div className="flex justify-between py-2 text-gray-600">
-                                <span>Tax (0%)</span>
-                                <span>₹0</span>
+                                <span>Tax ({gstPercentage}%)</span>
+                                <span>₹{calculatedGstAmount.toLocaleString('en-IN')}</span>
                             </div>
                             <div className="flex justify-between py-4 border-t-2 border-gray-900 mt-2">
                                 <span className="font-bold text-xl text-gray-900">Total</span>

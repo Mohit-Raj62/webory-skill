@@ -14,6 +14,7 @@ interface Application {
     internship: {
         title: string;
         company: string;
+        price?: number;
     };
     status: string;
     resume: string;
@@ -187,13 +188,36 @@ export default function ApplicationsPage() {
     };
 
     const filteredApplications = applications.filter((app) => {
-        const matchesFilter = filter === "all" || app.status === filter;
+        let matchesFilter = false;
+        
+        const isPaid = (app.internship?.price || 0) > 0;
+        const isPendingPayment = app.status === 'pending' && isPaid;
+        const isPendingReview = app.status === 'pending' && !isPaid;
+
+        switch (filter) {
+            case 'all':
+                matchesFilter = true;
+                break;
+            case 'pending_payment':
+                matchesFilter = isPendingPayment;
+                break;
+            case 'pending_review':
+                matchesFilter = isPendingReview;
+                break;
+            default:
+                matchesFilter = app.status === filter;
+        }
+
         const matchesSearch =
             app.student?.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             app.student?.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             app.internship?.title?.toLowerCase().includes(searchTerm.toLowerCase());
         return matchesFilter && matchesSearch;
     });
+
+    const pendingReviewCount = applications.filter(a => a.status === 'pending' && !(a.internship?.price || 0)).length;
+    const pendingPaymentCount = applications.filter(a => a.status === 'pending' && (a.internship?.price || 0) > 0).length;
+
 
     if (loading) {
         return (
@@ -225,20 +249,21 @@ export default function ApplicationsPage() {
                         />
                     </div>
                     <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
-                        {["all", "pending", "interview_scheduled", "accepted", "rejected"].map((f) => (
+                        {["all", "pending_review", "pending_payment", "interview_scheduled", "accepted", "rejected"].map((f) => (
                             <button
                                 key={f}
                                 onClick={() => setFilter(f)}
                                 className={`px-4 py-2 rounded-lg transition-all capitalize whitespace-nowrap ${filter === f
                                     ? f === "all" ? "bg-blue-600 text-white" :
-                                        f === "pending" ? "bg-yellow-600 text-white" :
-                                            f === "interview_scheduled" ? "bg-purple-600 text-white" :
-                                                f === "accepted" ? "bg-green-600 text-white" :
-                                                    "bg-red-600 text-white"
+                                        f === "pending_review" ? "bg-yellow-600 text-white" :
+                                            f === "pending_payment" ? "bg-orange-600 text-white" :
+                                                f === "interview_scheduled" ? "bg-purple-600 text-white" :
+                                                    f === "accepted" ? "bg-green-600 text-white" :
+                                                        "bg-red-600 text-white"
                                     : "bg-white/5 text-gray-400 hover:bg-white/10"
                                     }`}
                             >
-                                {f.replace('_', ' ')}
+                                {f === 'pending_review' ? 'Review Needed' : f === 'pending_payment' ? 'Payment Pending' : f.replace('_', ' ')}
                             </button>
                         ))}
                     </div>
@@ -246,32 +271,38 @@ export default function ApplicationsPage() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6 mb-6">
-                <div className="glass-card p-6 rounded-2xl">
-                    <p className="text-gray-400 text-sm mb-1">Total</p>
-                    <p className="text-3xl font-bold text-white">{applications.length}</p>
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-4 md:gap-4 mb-6">
+                <div className="glass-card p-4 rounded-xl">
+                    <p className="text-gray-400 text-xs mb-1">Total</p>
+                    <p className="text-2xl font-bold text-white">{applications.length}</p>
                 </div>
-                <div className="glass-card p-6 rounded-2xl">
-                    <p className="text-gray-400 text-sm mb-1">Pending</p>
-                    <p className="text-3xl font-bold text-yellow-400">
-                        {applications.filter((a) => a.status === "pending").length}
+                <div className="glass-card p-4 rounded-xl">
+                    <p className="text-gray-400 text-xs mb-1">Review Needed</p>
+                    <p className="text-2xl font-bold text-yellow-400">
+                        {pendingReviewCount}
                     </p>
                 </div>
-                <div className="glass-card p-6 rounded-2xl">
-                    <p className="text-gray-400 text-sm mb-1">Interviews</p>
-                    <p className="text-3xl font-bold text-purple-400">
+                <div className="glass-card p-4 rounded-xl">
+                    <p className="text-gray-400 text-xs mb-1">Payment Pending</p>
+                    <p className="text-2xl font-bold text-orange-400">
+                        {pendingPaymentCount}
+                    </p>
+                </div>
+                <div className="glass-card p-4 rounded-xl">
+                    <p className="text-gray-400 text-xs mb-1">Interviews</p>
+                    <p className="text-2xl font-bold text-purple-400">
                         {applications.filter((a) => a.status === "interview_scheduled").length}
                     </p>
                 </div>
-                <div className="glass-card p-6 rounded-2xl">
-                    <p className="text-gray-400 text-sm mb-1">Accepted</p>
-                    <p className="text-3xl font-bold text-green-400">
+                <div className="glass-card p-4 rounded-xl">
+                    <p className="text-gray-400 text-xs mb-1">Accepted</p>
+                    <p className="text-2xl font-bold text-green-400">
                         {applications.filter((a) => a.status === "accepted").length}
                     </p>
                 </div>
-                <div className="glass-card p-6 rounded-2xl">
-                    <p className="text-gray-400 text-sm mb-1">Rejected</p>
-                    <p className="text-3xl font-bold text-red-400">
+                <div className="glass-card p-4 rounded-xl">
+                    <p className="text-gray-400 text-xs mb-1">Rejected</p>
+                    <p className="text-2xl font-bold text-red-400">
                         {applications.filter((a) => a.status === "rejected").length}
                     </p>
                 </div>
@@ -289,7 +320,9 @@ export default function ApplicationsPage() {
                                     </h3>
                                     <span
                                         className={`px-3 py-1 rounded-full text-xs ${app.status === "pending"
-                                            ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30"
+                                            ? (app.internship?.price || 0) > 0 
+                                                ? "bg-orange-500/20 text-orange-300 border border-orange-500/30"
+                                                : "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30"
                                             : app.status === "interview_scheduled"
                                                 ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
                                                 : app.status === "accepted"
@@ -297,7 +330,11 @@ export default function ApplicationsPage() {
                                                     : "bg-red-500/20 text-red-300 border border-red-500/30"
                                             }`}
                                     >
-                                        {app.status.toUpperCase().replace('_', ' ')}
+                                        {app.status === 'pending' 
+                                            ? (app.internship?.price || 0) > 0 ? 'PAYMENT PENDING' : 'REVIEW NEEDED'
+                                            : app.status === 'accepted' && (app.internship?.price || 0) > 0 ? 'PAYMENT COMPLETE'
+                                            : app.status.toUpperCase().replace('_', ' ')
+                                        }
                                     </span>
                                 </div>
                                 <p className="text-gray-400 text-sm mb-1">{app.student?.email}</p>

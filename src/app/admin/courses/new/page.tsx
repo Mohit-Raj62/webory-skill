@@ -21,6 +21,7 @@ export default function NewCoursePage() {
         price: 0,
         originalPrice: 0,
         discountPercentage: 0,
+        gstPercentage: 0,
         studentsCount: "0",
         color: "from-blue-500 to-purple-500",
         icon: "Globe",
@@ -540,7 +541,7 @@ export default function NewCoursePage() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                         <div>
                             <label className="text-sm text-gray-300 block mb-2">Price (₹) *</label>
                             <input
@@ -580,6 +581,19 @@ export default function NewCoursePage() {
                                     ? `Discounted: ₹${Math.round(formData.originalPrice * (1 - formData.discountPercentage / 100))}`
                                     : "Enter discount percentage"}
                             </p>
+                        </div>
+
+                        <div>
+                            <label className="text-sm text-gray-300 block mb-2">GST %</label>
+                            <input
+                                type="number"
+                                min="0"
+                                max="100"
+                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                value={formData.gstPercentage}
+                                onChange={(e) => setFormData({ ...formData, gstPercentage: Number(e.target.value) })}
+                            />
+                            <p className="text-xs text-gray-400 mt-1">Tax on top (Default: 0)</p>
                         </div>
                     </div>
 

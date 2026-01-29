@@ -19,6 +19,7 @@ export default function EditInternshipPage() {
         duration: "",
         stipend: "",
         price: 0,
+        gstPercentage: 0,
         description: "",
         requirements: [] as string[],
         responsibilities: [] as string[],
@@ -43,6 +44,7 @@ export default function EditInternshipPage() {
                     ...data.internship,
                     requirements: data.internship.requirements || [],
                     responsibilities: data.internship.responsibilities || [],
+                    gstPercentage: data.internship.gstPercentage || 0,
                     tags: data.internship.tags || [],
                 });
             }
@@ -208,6 +210,18 @@ export default function EditInternshipPage() {
                                 className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
                                 value={formData.price}
                                 onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="text-sm text-gray-300 block mb-2">GST %</label>
+                            <input
+                                type="number"
+                                min="0"
+                                max="100"
+                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                value={formData.gstPercentage}
+                                onChange={(e) => setFormData({ ...formData, gstPercentage: Number(e.target.value) })}
                             />
                         </div>
                     </div>

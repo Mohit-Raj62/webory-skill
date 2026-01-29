@@ -84,6 +84,12 @@ const CourseSchema = new Schema({
     min: 0,
     max: 100,
   },
+  gstPercentage: {
+    type: Number,
+    default: 0, // e.g. 18 for 18%
+    min: 0,
+    max: 100,
+  },
   curriculum: {
     type: [String], // Array of topic titles
     default: [],

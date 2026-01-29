@@ -44,8 +44,11 @@ async function getInternshipsData() {
 async function getUserApplications(userId: string) {
     try {
         await dbConnect();
-        const applications = await Application.find({ student: userId }).select("internship").lean();
-        return applications.map((a: any) => a.internship.toString());
+        const applications = await Application.find({ student: userId, status: { $ne: 'rejected' } }).select("internship status").lean();
+        return applications.map((a: any) => ({
+            internshipId: a.internship.toString(),
+            status: a.status
+        }));
     } catch (error) {
         console.error("Failed to fetch applications:", error);
         return [];
@@ -55,13 +58,13 @@ async function getUserApplications(userId: string) {
 export default async function InternshipsPage() {
     const user = await getUser();
     const internshipsData = await getInternshipsData();
-    let appliedInternshipIds: string[] = [];
+    let userApplications: { internshipId: string; status: string }[] = [];
 
     if (user) {
-        appliedInternshipIds = await getUserApplications(user._id);
+        userApplications = await getUserApplications(user._id);
     }
 
     const internships = (internshipsData && internshipsData.length > 0) ? internshipsData : fallbackInternships;
 
-    return <InternshipsView internships={internships} user={user} appliedInternshipIds={appliedInternshipIds} />;
+    return <InternshipsView internships={internships} user={user} userApplications={userApplications} />;
 }

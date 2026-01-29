@@ -27,7 +27,7 @@ export async function GET(req: Request) {
 
     const applications = await Application.find()
       .populate("student", "firstName lastName email")
-      .populate("internship", "title company")
+      .populate("internship", "title company price")
       .sort({ appliedAt: -1 });
 
     return NextResponse.json({ applications });
@@ -35,7 +35,7 @@ export async function GET(req: Request) {
     console.error("Fetch applications error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

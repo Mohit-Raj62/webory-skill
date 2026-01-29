@@ -23,7 +23,9 @@ import { AIRoadmapFlow } from "@/components/landing/ai-roadmap-flow";
 import { DevLabPreview } from "@/components/landing/devlab-preview";
 
 
+
 import { FreeExperienceHighlight } from "@/components/landing/free-experience";
+
 
 export default async function Home() {
     let userCount = 0;
@@ -59,6 +61,7 @@ export default async function Home() {
             <Features />
             <AIRoadmapFlow />
             <DevLabPreview />
+
             <EnrolledCourses />
             <AppliedInternships />
             <CoursesPreview popularCourses={popularCourses} />
