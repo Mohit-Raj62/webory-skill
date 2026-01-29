@@ -1015,7 +1015,7 @@ export default function CourseDetailsPage() {
                 userId={user?._id || ""}
                 userName={user ? `${user.firstName} ${user.lastName}` : ""}
                 userEmail={user?.email || ""}
-                mobileNumber={user?.mobileNumber}
+                mobileNumber={user?.phone}
             />
 
             {showInvoice && transactionData && (
