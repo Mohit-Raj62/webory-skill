@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Phone, Calendar, ExternalLink } from "lucide-react";
 import Link from "next/link";
-import { AdminSidebar } from "@/components/admin/sidebar"; // Assuming this exists or similar
+import { AdminSidebar } from "@/components/admin/admin-sidebar";
 
 export default function AdminLeadsPage() {
   const [leads, setLeads] = useState<any[]>([]);
