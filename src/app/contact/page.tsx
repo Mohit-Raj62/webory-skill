@@ -95,7 +95,7 @@ export default function ContactPage() {
                                     icon={<Mail size={20} />} 
                                     title="Email Us"
                                     content={
-                                        <div className="flex flex-col gap-1">
+                                        <div className="flex flex-col gap-1 break-all">
                                             <a href="mailto:weboryinfo@gmail.com" className="hover:text-blue-400 transition-colors">weboryinfo@gmail.com</a>
                                             <a href="mailto:supportskillwebory@gmail.com" className="hover:text-blue-400 transition-colors">supportskillwebory@gmail.com</a>
                                         </div>

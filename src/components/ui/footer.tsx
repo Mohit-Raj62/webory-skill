@@ -15,7 +15,7 @@ export function Footer() {
             </div>
 
             <div className="container relative z-10 mx-auto px-6">
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-8 mb-16">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-16 mb-16">
                     {/* Brand Section */}
                     <div className="col-span-1 md:col-span-5 lg:col-span-4 space-y-6">
                         <Link href="/" className="inline-flex items-center space-x-3 group">
@@ -34,7 +34,7 @@ export function Footer() {
                                 </span>
                             </span>
                         </Link>
-                        <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
+                        <p className="text-gray-400 text-sm leading-relaxed max-w-sm sm:max-w-xs md:max-w-sm">
                             Empowering the next generation of developers with AI-driven learning, real-world projects, and expert mentorship. Build your future with Webory.
                         </p>
                         
@@ -44,16 +44,16 @@ export function Footer() {
                                     MSME
                                 </div>
                                 <div className="w-px h-8 bg-white/10"></div>
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Registered Enterprise</span>
-                                    <span className="text-[10px] text-orange-400/80 font-mono">UDYAM-BR-26-0208472</span>
+                                 <div className="flex flex-col min-w-0">
+                                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider truncate">Registered Enterprise</span>
+                                    <span className="text-[10px] text-orange-400/80 font-mono break-all">UDYAM-BR-26-0208472</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     {/* Navigation Links */}
-                    <div className="col-span-1 md:col-span-7 lg:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-8">
+                    <div className="col-span-1 md:col-span-7 lg:col-span-8 grid grid-cols-2 lg:grid-cols-3 gap-10 sm:gap-8">
                         <div>
                             <h4 className="text-white font-semibold mb-6 flex items-center gap-2">
                                 <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
@@ -80,24 +80,24 @@ export function Footer() {
                             </ul>
                         </div>
 
-                        <div>
-                            <h4 className="text-white font-semibold mb-6 flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-pink-500"></span>
-                                Connect
+                        <div className="flex flex-col items-center md:items-start col-span-2 sm:col-span-1 md:col-span-1">
+                            <h4 className="text-white font-bold mb-6 flex items-center justify-center md:justify-start gap-2 group/title">
+                                <span className="w-1.5 h-1.5 rounded-full bg-pink-500 shadow-[0_0_8px_rgba(236,72,153,0.5)] group-hover/title:scale-125 transition-transform duration-300"></span>
+                                <span className="tracking-tight text-lg">Connect</span>
                             </h4>
-                            <div className="flex gap-3 mb-6">
-                                <SocialLink href="#" icon={<Github size={18} />} color="hover:bg-gray-800" />
+                            <div className="flex flex-wrap justify-center md:justify-start gap-4 mb-6">
+                                <SocialLink href="#" icon={<Github size={20} />} brandColor="hover:text-[#fafafa] hover:bg-gray-800 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]" />
                                 <SocialLink href="#" icon={
-                                    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[18px] w-[18px] fill-current">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[20px] w-[20px] fill-current">
                                         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
                                     </svg>
-                                } color="hover:bg-black hover:border-white/20 hover:text-white" />
-                                <SocialLink href="#" icon={<Linkedin size={18} />} color="hover:bg-blue-700" />
-                                <SocialLink href="#" icon={<Instagram size={18} />} color="hover:bg-pink-600" />
-                                <SocialLink href="https://www.youtube.com/@WeborySkill" icon={<Youtube size={18} />} color="hover:bg-red-600" />
+                                } brandColor="hover:text-white hover:bg-black hover:shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:border-white/20" />
+                                <SocialLink href="#" icon={<Linkedin size={20} />} brandColor="hover:text-white hover:bg-[#0077b5] hover:shadow-[0_0_20px_rgba(0,119,181,0.3)]" />
+                                <SocialLink href="#" icon={<Instagram size={20} />} brandColor="hover:text-white hover:bg-gradient-to-tr hover:from-[#f9ce34] hover:via-[#ee2a7b] hover:to-[#6228d7] hover:shadow-[0_0_20px_rgba(238,42,123,0.3)]" />
+                                <SocialLink href="https://www.youtube.com/@WeborySkill" icon={<Youtube size={20} />} brandColor="hover:text-white hover:bg-[#ff0000] hover:shadow-[0_0_20px_rgba(255,0,0,0.3)]" />
                             </div>
-                            <p className="text-xs text-gray-500">
-                                Follow us for the latest updates and coding challenges.
+                            <p className="text-xs text-gray-500 font-medium leading-relaxed max-w-[150px] text-center md:text-left">
+                                Join our community for latest updates & tech insights.
                             </p>
                         </div>
                     </div>
@@ -118,13 +118,16 @@ export function Footer() {
     );
 }
 
-function SocialLink({ href, icon, color }: { href: string; icon: React.ReactNode; color: string }) {
+function SocialLink({ href, icon, brandColor }: { href: string; icon: React.ReactNode; brandColor: string }) {
     return (
         <Link 
             href={href} 
-            className={`w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white transition-all duration-300 hover:scale-110 hover:-translate-y-1 ${color}`}
+            className={`w-11 h-11 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-center text-gray-400 transition-all duration-500 hover:scale-110 hover:-translate-y-1.5 ${brandColor} group/icon overflow-hidden relative`}
         >
-            {icon}
+            <div className="absolute inset-0 bg-white/20 opacity-0 group-hover/icon:opacity-100 blur-xl transition-opacity duration-500"></div>
+            <div className="relative z-10 transition-transform duration-300 group-hover/icon:rotate-[5deg]">
+                {icon}
+            </div>
         </Link>
     );
 }
