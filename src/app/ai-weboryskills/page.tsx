@@ -40,6 +40,18 @@ export default function AIWeboryskillsPage() {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [chatHistory]);
 
+    // Added Scroll Lock for Chat Mode
+    useEffect(() => {
+        if (mode === "chat") {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "unset";
+        }
+        return () => {
+            document.body.style.overflow = "unset";
+        };
+    }, [mode]);
+
     const parseRoadmap = (text: string) => {
         const phases: RoadmapPhase[] = [];
         const colors = [
@@ -658,7 +670,7 @@ export default function AIWeboryskillsPage() {
                 )}
             </div>
 
-            <Footer />
+            {mode !== "chat" && <Footer />}
         </div>
     );
 }
