@@ -28,36 +28,29 @@ export default function CertificatePage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // 1. Fetch User
-                const resAuth = await fetch("/api/auth/me");
+                // Parallel fetching using Promise.all for speed
+                const [resAuth, resCourse, resCert] = await Promise.all([
+                    fetch("/api/auth/me"),
+                    fetch(`/api/courses/${id}`),
+                    fetch(`/api/courses/${id}/certificate-eligibility`)
+                ]);
+
                 if (!resAuth.ok) {
-                    router.push("/login");
+                    router.push("/login"); // router.push() works fine here since it's an event loop cycle
                     return;
                 }
                 const userData = await resAuth.json();
                 setUser(userData.user);
 
-                // 2. Fetch Course
-                const resCourse = await fetch(`/api/courses/${id}`);
                 if (resCourse.ok) {
                     const data = await resCourse.json();
                     setCourse(data.course);
                 }
 
-                // 3. Fetch Eligibility
-                const resCert = await fetch(`/api/courses/${id}/certificate-eligibility`);
                 if (resCert.ok) {
                     const data = await resCert.json();
                     setCertificateData(data);
-
-                    // Use backend generated ID if available, otherwise fallback (though backend should generate it now)
-                    const certId = data.certificateId;
-                    setCertificateId(certId || "");
-
-                    if (!data.isEligible) {
-                        // If not eligible, redirect back to course page after a delay or show message
-                        // For now, we'll just let the UI handle the "Not Eligible" state
-                    }
+                    setCertificateId(data.certificateId || "");
                 }
             } catch (error) {
                 console.error("Failed to fetch certificate data", error);
@@ -71,8 +64,21 @@ export default function CertificatePage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-100 text-gray-900 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+            <div className="min-h-screen bg-gray-100 flex flex-col items-center py-8 px-4">
+                <div className="w-full max-w-[297mm] h-[210mm] bg-white shadow-2xl rounded-sm p-12 flex flex-col items-center justify-between animate-pulse">
+                    <div className="w-full h-full border-[12px] border-double border-gray-200 relative p-8 flex flex-col items-center gap-8">
+                        <div className="w-20 h-20 bg-gray-100 rounded-full" />
+                        <div className="w-3/4 h-12 bg-gray-100 rounded-lg" />
+                        <div className="w-1/2 h-6 bg-gray-100 rounded" />
+                        <div className="w-2/3 h-16 bg-gray-100 rounded-xl my-8" />
+                        <div className="w-full h-24 bg-gray-100 rounded-lg" />
+                        <div className="w-full flex justify-between mt-auto">
+                            <div className="w-32 h-10 bg-gray-100 rounded" />
+                            <div className="w-32 h-10 bg-gray-100 rounded" />
+                            <div className="w-32 h-10 bg-gray-100 rounded" />
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }

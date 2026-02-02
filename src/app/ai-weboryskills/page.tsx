@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Send, Sparkles, BookOpen, Loader2, CheckCircle, Clock, Target, Zap, Award, TrendingUp, Rocket, MessageCircle, Map, User, Bot, Star, Code, Terminal } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { BackgroundCodeAnimation } from "@/components/ui/background-code-animation";
+import { Skeleton } from "@/components/ui/skeleton";
+import Image from "next/image";
 
 interface RoadmapPhase {
   phase: string;
@@ -23,6 +25,50 @@ interface ChatMessage {
 }
 
 export default function AIWeboryskillsPage() {
+    const RoadmapSkeleton = () => (
+        <div className="space-y-8 animate-pulse">
+            <div className="glass-card p-6 sm:p-8 rounded-3xl border border-white/10">
+                <div className="flex items-center gap-3 mb-4">
+                    <Skeleton className="h-8 w-8 rounded-xl" />
+                    <Skeleton className="h-8 w-48" />
+                </div>
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-3/4" />
+            </div>
+            <div className="glass-card p-6 sm:p-8 rounded-3xl border border-white/10">
+                <div className="flex items-center gap-3 mb-5">
+                    <Skeleton className="h-8 w-8 rounded-xl" />
+                    <Skeleton className="h-8 w-56" />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <Skeleton className="h-16 rounded-xl" />
+                    <Skeleton className="h-16 rounded-xl" />
+                </div>
+            </div>
+            <div className="glass-card p-6 sm:p-8 rounded-3xl border border-white/10">
+                <div className="flex items-center gap-3 mb-8">
+                    <Skeleton className="h-8 w-8 rounded-xl" />
+                    <Skeleton className="h-8 w-48" />
+                </div>
+                <div className="space-y-8">
+                    {[1, 2].map(i => (
+                        <div key={i} className="p-[3px] rounded-3xl bg-white/5">
+                            <div className="bg-black/90 p-6 sm:p-8 rounded-3xl space-y-4">
+                                <Skeleton className="h-10 w-3/4" />
+                                <Skeleton className="h-4 w-1/4" />
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                    <Skeleton className="h-24 rounded-xl" />
+                                    <Skeleton className="h-24 rounded-xl" />
+                                    <Skeleton className="h-24 rounded-xl" />
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+
     const [mode, setMode] = useState<"roadmap" | "chat">("roadmap");
     const [topic, setTopic] = useState("");
     const [level, setLevel] = useState("Beginner");  // Added Level state
@@ -459,9 +505,16 @@ export default function AIWeboryskillsPage() {
                                     </Button>
                                 </div>
                                 {loading && (
-                                     <div className="text-center animate-pulse mt-4">
-                                        <p className="text-blue-300 font-medium">Your personalized roadmap is being generated.</p>
-                                        <p className="text-gray-400 text-sm">Our mentor will connect with you shortly.</p>
+                                     <div className="mt-12">
+                                        <div className="text-center mb-8 animate-pulse">
+                                            <div className="inline-flex items-center gap-2 bg-blue-500/10 px-4 py-2 rounded-full mb-4 border border-blue-500/20">
+                                                <Loader2 className="animate-spin text-blue-400" size={16} />
+                                                <span className="text-blue-300 text-sm font-medium">Mentor is analyzing your goal...</span>
+                                            </div>
+                                            <h2 className="text-2xl font-bold text-white mb-2">Generating Your Personalized Roadmap</h2>
+                                            <p className="text-gray-400 text-sm">This usually takes 5-10 seconds. Hang tight!</p>
+                                        </div>
+                                        <RoadmapSkeleton />
                                      </div>
                                 )}
                                 
@@ -629,8 +682,14 @@ export default function AIWeboryskillsPage() {
                                             {recommendedCourses.map((course: any) => (
                                                 <div key={course.id} className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border border-white/10 rounded-2xl overflow-hidden hover:border-blue-500/50 transition-all hover:scale-105 group">
                                                     {course.thumbnail && (
-                                                        <div className="h-40 overflow-hidden bg-gray-800">
-                                                            <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+                                                        <div className="h-40 overflow-hidden bg-gray-800 relative">
+                                                            <Image 
+                                                                src={course.thumbnail} 
+                                                                alt={course.title} 
+                                                                fill
+                                                                className="object-cover group-hover:scale-110 transition-transform duration-300"
+                                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                                            />
                                                         </div>
                                                     )}
                                                     <div className="p-5">

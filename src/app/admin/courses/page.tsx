@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Edit, Trash2, Search, Video, ClipboardList, FileText, Star, Eye, EyeOff, BookOpen, IndianRupee, BarChart3, MoreVertical, LayoutGrid, List, Users } from "lucide-react";
+import { Plus, Edit, Trash2, Search, Video, ClipboardList, FileText, Star, Eye, EyeOff, BookOpen, IndianRupee, BarChart3, MoreVertical, LayoutGrid, List, Users, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -38,6 +39,12 @@ export default function CoursesAdminPage() {
     const [courses, setCourses] = useState<Course[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 9,
+        totalPages: 1,
+        totalCount: 0
+    });
     
     // Calculate stats on the fly
     const stats: Stats = {
@@ -47,16 +54,32 @@ export default function CoursesAdminPage() {
     };
 
     useEffect(() => {
-        fetchCourses();
-    }, []);
+        fetchCourses(1);
+    }, [searchTerm]); // Re-fetch on search
 
-    const fetchCourses = async () => {
+    const fetchCourses = async (page = pagination.page) => {
+        setLoading(true);
         try {
-            // Include timestamp for cache busting
-            const res = await fetch(`/api/courses?includeUnavailable=true&_t=${Date.now()}`);
+            const params = new URLSearchParams({
+                includeUnavailable: "true",
+                page: page.toString(),
+                limit: pagination.limit.toString(),
+                search: searchTerm,
+                _t: Date.now().toString()
+            });
+            
+            const res = await fetch(`/api/courses?${params}`);
             if (res.ok) {
                 const data = await res.json();
                 setCourses(data.courses || []);
+                if (data.pagination) {
+                    setPagination(prev => ({
+                        ...prev,
+                        page: data.pagination.currentPage,
+                        totalPages: data.pagination.totalPages,
+                        totalCount: data.pagination.totalCount
+                    }));
+                }
             }
         } catch (error) {
             console.error("Failed to fetch courses", error);
@@ -148,16 +171,38 @@ export default function CoursesAdminPage() {
         visible: { y: 0, opacity: 1 }
     };
 
-    if (loading) {
-         return (
-             <div className="flex items-center justify-center min-h-screen bg-black/50">
-                 <div className="flex flex-col items-center gap-4">
-                     <div className="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
-                     <p className="text-gray-400">Loading courses...</p>
-                 </div>
-             </div>
-         );
-    }
+    // Loading Skeleton
+    const CourseSkeleton = () => (
+        <Card className="relative border-0 bg-white/5 overflow-hidden h-full flex flex-col rounded-3xl backdrop-blur-md">
+            <div className="p-7 flex-1 flex flex-col space-y-4">
+                <div className="flex justify-between items-start">
+                    <Skeleton className="h-6 w-20 rounded-full" />
+                    <Skeleton className="h-8 w-8 rounded-full" />
+                </div>
+                <Skeleton className="h-8 w-3/4 rounded-lg" />
+                <Skeleton className="h-4 w-full rounded" />
+                <Skeleton className="h-4 w-1/2 rounded" />
+                <div className="flex gap-2">
+                    <Skeleton className="h-6 w-16 rounded-full" />
+                    <Skeleton className="h-6 w-24 rounded-full" />
+                </div>
+                <div className="pt-5 border-t border-white/5 flex justify-between">
+                    <div className="space-y-2">
+                        <Skeleton className="h-3 w-10" />
+                        <Skeleton className="h-6 w-16" />
+                    </div>
+                    <div className="space-y-2 text-right">
+                        <Skeleton className="h-3 w-10" />
+                        <Skeleton className="h-6 w-16" />
+                    </div>
+                </div>
+            </div>
+            <div className="p-3 bg-white/[0.02] border-t border-white/5 grid grid-cols-2 gap-2">
+                <Skeleton className="h-11 rounded-xl" />
+                <Skeleton className="h-11 rounded-xl" />
+            </div>
+        </Card>
+    );
 
     return (
         <div className="p-8 space-y-8 min-h-screen bg-black/50 text-white">
@@ -233,124 +278,148 @@ export default function CoursesAdminPage() {
             </motion.div>
 
             {/* Courses Grid */}
-            <motion.div 
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-12"
-            >
-                <AnimatePresence>
-                    {filteredCourses.map((course) => (
-                        <motion.div key={course._id} variants={itemVariants} layout>
-                            <Card className="relative border-0 bg-white/5 hover:bg-white/10 overflow-hidden group hover:shadow-2xl hover:shadow-blue-900/10 transition-all duration-300 h-full flex flex-col rounded-3xl backdrop-blur-md">
-                                {/* Gradient Border via pseudo-element - using index for variety (lighter shades) */}
-                                <div className={`absolute inset-0 rounded-3xl p-[1px] bg-gradient-to-b ${['from-purple-400', 'from-cyan-400', 'from-emerald-400', 'from-orange-400', 'from-pink-400'][filteredCourses.indexOf(course) % 5]} to-transparent opacity-40 group-hover:opacity-80 transition-opacity duration-300 pointer-events-none`} />
-                                <div className={`absolute inset-0 bg-gradient-to-b ${['from-purple-400', 'from-cyan-400', 'from-emerald-400', 'from-orange-400', 'from-pink-400'][filteredCourses.indexOf(course) % 5]} to-transparent opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none`} />
-                                
-                                <div className="p-7 flex-1 flex flex-col relative z-10">
-                                    <div className="flex items-start justify-between mb-5">
-                                        <div className="flex gap-2">
-                                            {course.isPopular && (
-                                                <Badge className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20 shadow-sm shadow-yellow-900/20">
-                                                    Popular
-                                                </Badge>
-                                            )}
-                                            {!course.isAvailable && (
-                                                <Badge variant="destructive" className="bg-red-900/20 text-red-400 border-red-500/20">
-                                                    Unavailable
-                                                </Badge>
-                                            )}
-                                        </div>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-500 hover:text-white transition-colors">
-                                                    <MoreVertical size={18} />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end" className="bg-[#111] border-white/5 shadow-xl text-gray-300 backdrop-blur-xl">
-                                                <Link href={`/admin/courses/${course._id}/edit`}>
-                                                    <DropdownMenuItem className="cursor-pointer hover:bg-white/5 focus:bg-white/5 focus:text-white">
-                                                        <Edit className="mr-2 h-4 w-4" /> Edit Details
-                                                    </DropdownMenuItem>
-                                                </Link>
-                                                <DropdownMenuItem 
-                                                    onClick={() => handleToggleAvailability(course)}
-                                                    className="cursor-pointer hover:bg-white/5 focus:bg-white/5 focus:text-white"
-                                                >
-                                                    {course.isAvailable ? <EyeOff className="mr-2 h-4 w-4" /> : <Eye className="mr-2 h-4 w-4" />}
-                                                    {course.isAvailable ? "Mark Unavailable" : "Mark Available"}
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem 
-                                                    onClick={() => handleTogglePopular(course)}
-                                                    className="cursor-pointer hover:bg-white/5 focus:bg-white/5 focus:text-white"
-                                                >
-                                                    <Star className="mr-2 h-4 w-4" fill={course.isPopular ? "currentColor" : "none"} />
-                                                    {course.isPopular ? "Remove Popular" : "Mark Popular"}
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem 
-                                                    onClick={() => handleDelete(course._id)}
-                                                    className="text-red-400 cursor-pointer hover:bg-red-900/10 focus:bg-red-900/10 focus:text-red-300"
-                                                >
-                                                    <Trash2 className="mr-2 h-4 w-4" /> Delete Course
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </div>
-
-                                    <h3 className="text-2xl font-bold text-white mb-3 leading-tight group-hover:text-blue-400 transition-colors line-clamp-2">
-                                        {course.title}
-                                    </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-12">
+                {loading ? (
+                    Array(6).fill(0).map((_, i) => <CourseSkeleton key={i} />)
+                ) : (
+                    <AnimatePresence>
+                        {filteredCourses.map((course) => (
+                            <motion.div key={course._id} variants={itemVariants} layout initial="hidden" animate="visible">
+                                <Card className="relative border-0 bg-white/5 hover:bg-white/10 overflow-hidden group hover:shadow-2xl hover:shadow-blue-900/10 transition-all duration-300 h-full flex flex-col rounded-3xl backdrop-blur-md">
+                                    {/* Gradient Border via pseudo-element - using index for variety (lighter shades) */}
+                                    <div className={`absolute inset-0 rounded-3xl p-[1px] bg-gradient-to-b ${['from-purple-400', 'from-cyan-400', 'from-emerald-400', 'from-orange-400', 'from-pink-400'][filteredCourses.indexOf(course) % 5]} to-transparent opacity-40 group-hover:opacity-80 transition-opacity duration-300 pointer-events-none`} />
+                                    <div className={`absolute inset-0 bg-gradient-to-b ${['from-purple-400', 'from-cyan-400', 'from-emerald-400', 'from-orange-400', 'from-pink-400'][filteredCourses.indexOf(course) % 5]} to-transparent opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none`} />
                                     
-                                    <p className="text-gray-400 text-sm leading-relaxed line-clamp-2 mb-6 flex-1">
-                                        {course.description}
-                                    </p>
-
-                                    <div className="flex flex-wrap gap-2 mb-6">
-                                        <Badge variant="outline" className="border-white/5 bg-white/5 text-gray-400 font-normal px-3 py-1">
-                                            {course.level}
-                                        </Badge>
-                                        <Badge variant="outline" className="border-white/5 bg-white/5 text-gray-400 font-normal px-3 py-1 flex items-center gap-1.5">
-                                            <Video size={12} />
-                                            {course.videos?.length || 0} Videos
-                                        </Badge>
-                                    </div>
-
-                                    <div className="flex items-center justify-between pt-5 border-t border-white/5">
-                                        <div className="flex flex-col">
-                                            <span className="text-xs text-gray-500 uppercase tracking-wider font-medium mb-0.5">Price</span>
-                                            <span className="text-2xl font-bold text-white tracking-tight">
-                                                ₹{course.price.toLocaleString()}
-                                            </span>
+                                    <div className="p-7 flex-1 flex flex-col relative z-10">
+                                        <div className="flex items-start justify-between mb-5">
+                                            <div className="flex gap-2">
+                                                {course.isPopular && (
+                                                    <Badge className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20 shadow-sm shadow-yellow-900/20">
+                                                        Popular
+                                                    </Badge>
+                                                )}
+                                                {!course.isAvailable && (
+                                                    <Badge variant="destructive" className="bg-red-900/20 text-red-400 border-red-500/20">
+                                                        Unavailable
+                                                    </Badge>
+                                                )}
+                                            </div>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-500 hover:text-white transition-colors">
+                                                        <MoreVertical size={18} />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end" className="bg-[#111] border-white/5 shadow-xl text-gray-300 backdrop-blur-xl">
+                                                    <Link href={`/admin/courses/${course._id}/edit`}>
+                                                        <DropdownMenuItem className="cursor-pointer hover:bg-white/5 focus:bg-white/5 focus:text-white">
+                                                            <Edit className="mr-2 h-4 w-4" /> Edit Details
+                                                        </DropdownMenuItem>
+                                                    </Link>
+                                                    <DropdownMenuItem 
+                                                        onClick={() => handleToggleAvailability(course)}
+                                                        className="cursor-pointer hover:bg-white/5 focus:bg-white/5 focus:text-white"
+                                                    >
+                                                        {course.isAvailable ? <EyeOff className="mr-2 h-4 w-4" /> : <Eye className="mr-2 h-4 w-4" />}
+                                                        {course.isAvailable ? "Mark Unavailable" : "Mark Available"}
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem 
+                                                        onClick={() => handleTogglePopular(course)}
+                                                        className="cursor-pointer hover:bg-white/5 focus:bg-white/5 focus:text-white"
+                                                    >
+                                                        <Star className="mr-2 h-4 w-4" fill={course.isPopular ? "currentColor" : "none"} />
+                                                        {course.isPopular ? "Remove Popular" : "Mark Popular"}
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem 
+                                                        onClick={() => handleDelete(course._id)}
+                                                        className="text-red-400 cursor-pointer hover:bg-red-900/10 focus:bg-red-900/10 focus:text-red-300"
+                                                    >
+                                                        <Trash2 className="mr-2 h-4 w-4" /> Delete Course
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </div>
-                                        <div className="text-right flex flex-col items-end">
-                                            <span className="text-xs text-gray-500 uppercase tracking-wider font-medium mb-0.5">Enrolled</span>
-                                            <div className="flex items-center gap-1.5 text-white bg-white/5 px-2 py-1 rounded-md">
-                                                <Users size={12} className="text-gray-400" />
-                                                <span className="font-medium">{course.studentsCount}</span>
+
+                                        <h3 className="text-2xl font-bold text-white mb-3 leading-tight group-hover:text-blue-400 transition-colors line-clamp-2">
+                                            {course.title}
+                                        </h3>
+                                        
+                                        <p className="text-gray-400 text-sm leading-relaxed line-clamp-2 mb-6 flex-1">
+                                            {course.description}
+                                        </p>
+
+                                        <div className="flex flex-wrap gap-2 mb-6">
+                                            <Badge variant="outline" className="border-white/5 bg-white/5 text-gray-400 font-normal px-3 py-1">
+                                                {course.level}
+                                            </Badge>
+                                            <Badge variant="outline" className="border-white/5 bg-white/5 text-gray-400 font-normal px-3 py-1 flex items-center gap-1.5">
+                                                <Video size={12} />
+                                                {course.videos?.length || 0} Videos
+                                            </Badge>
+                                        </div>
+
+                                        <div className="flex items-center justify-between pt-5 border-t border-white/5">
+                                            <div className="flex flex-col">
+                                                <span className="text-xs text-gray-500 uppercase tracking-wider font-medium mb-0.5">Price</span>
+                                                <span className="text-2xl font-bold text-white tracking-tight">
+                                                    ₹{course.price.toLocaleString()}
+                                                </span>
+                                            </div>
+                                            <div className="text-right flex flex-col items-end">
+                                                <span className="text-xs text-gray-500 uppercase tracking-wider font-medium mb-0.5">Enrolled</span>
+                                                <div className="flex items-center gap-1.5 text-white bg-white/5 px-2 py-1 rounded-md">
+                                                    <Users size={12} className="text-gray-400" />
+                                                    <span className="font-medium">{course.studentsCount}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                
-                                <div className="p-3 bg-white/[0.02] border-t border-white/5 grid grid-cols-2 gap-2 relative z-10">
-                                    <Link href={`/admin/courses/${course._id}/quizzes`}>
-                                        <Button variant="ghost" className="w-full justify-center gap-2 text-gray-400 hover:text-purple-300 hover:bg-purple-500/10 h-11 rounded-xl transition-all group/btn">
-                                            <ClipboardList size={18} className="text-purple-500/70 group-hover/btn:text-purple-400 transition-colors" />
-                                            <span className="font-medium">Quizzes</span>
-                                        </Button>
-                                    </Link>
-                                    <Link href={`/admin/courses/${course._id}/assignments`}>
-                                        <Button variant="ghost" className="w-full justify-center gap-2 text-gray-400 hover:text-emerald-300 hover:bg-emerald-500/10 h-11 rounded-xl transition-all group/btn">
-                                            <FileText size={18} className="text-emerald-500/70 group-hover/btn:text-emerald-400 transition-colors" />
-                                            <span className="font-medium">Assignments</span>
-                                        </Button>
-                                    </Link>
-                                </div>
-                            </Card>
-                        </motion.div>
-                    ))}
-                </AnimatePresence>
-            </motion.div>
+                                    
+                                    <div className="p-3 bg-white/[0.02] border-t border-white/5 grid grid-cols-2 gap-2 relative z-10">
+                                        <Link href={`/admin/courses/${course._id}/quizzes`}>
+                                            <Button variant="ghost" className="w-full justify-center gap-2 text-gray-400 hover:text-purple-300 hover:bg-purple-500/10 h-11 rounded-xl transition-all group/btn">
+                                                <ClipboardList size={18} className="text-purple-500/70 group-hover/btn:text-purple-400 transition-colors" />
+                                                <span className="font-medium">Quizzes</span>
+                                            </Button>
+                                        </Link>
+                                        <Link href={`/admin/courses/${course._id}/assignments`}>
+                                            <Button variant="ghost" className="w-full justify-center gap-2 text-gray-400 hover:text-emerald-300 hover:bg-emerald-500/10 h-11 rounded-xl transition-all group/btn">
+                                                <FileText size={18} className="text-emerald-500/70 group-hover/btn:text-emerald-400 transition-colors" />
+                                                <span className="font-medium">Assignments</span>
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                </Card>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
+                )}
+            </div>
+
+            {/* Pagination Controls */}
+            {pagination.totalPages > 1 && (
+                <div className="flex items-center justify-center gap-4 pb-12">
+                    <Button
+                        variant="outline"
+                        onClick={() => fetchCourses(pagination.page - 1)}
+                        disabled={pagination.page <= 1 || loading}
+                        className="border-white/10 bg-white/5 text-gray-300 hover:bg-white/10"
+                    >
+                        <ChevronLeft size={16} className="mr-2" /> Previous
+                    </Button>
+                    <div className="text-gray-400 text-sm font-medium">
+                        Page {pagination.page} of {pagination.totalPages}
+                    </div>
+                    <Button
+                        variant="outline"
+                        onClick={() => fetchCourses(pagination.page + 1)}
+                        disabled={pagination.page >= pagination.totalPages || loading}
+                        className="border-white/10 bg-white/5 text-gray-300 hover:bg-white/10"
+                    >
+                        Next <ChevronRight size={16} className="ml-2" />
+                    </Button>
+                </div>
+            )}
 
             {filteredCourses.length === 0 && !loading && (
                 <div className="flex flex-col items-center justify-center py-20 text-center">

@@ -21,8 +21,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Pencil, Loader2, Trash2 } from "lucide-react";
+import { Pencil, Loader2, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Enrollment {
     _id: string;
@@ -40,9 +41,15 @@ interface Enrollment {
 }
 
 export default function AdminEnrollmentsPage() {
-    const [enrollments, setEnrollments] = useState < Enrollment[] > ([]);
+    const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
     const [loading, setLoading] = useState(true);
-    const [editingEnrollment, setEditingEnrollment] = useState < Enrollment | null > (null);
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 20,
+        totalPages: 1,
+        totalCount: 0
+    });
+    const [editingEnrollment, setEditingEnrollment] = useState<Enrollment | null>(null);
     const [editForm, setEditForm] = useState({
         progress: 0,
         completed: false,
@@ -50,15 +57,24 @@ export default function AdminEnrollmentsPage() {
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
-        fetchEnrollments();
+        fetchEnrollments(1);
     }, []);
 
-    const fetchEnrollments = async () => {
+    const fetchEnrollments = async (page = pagination.page) => {
+        setLoading(true);
         try {
-            const res = await fetch("/api/admin/enrollments");
+            const res = await fetch(`/api/admin/enrollments?page=${page}&limit=${pagination.limit}`);
             if (res.ok) {
                 const data = await res.json();
                 setEnrollments(data.enrollments);
+                if (data.pagination) {
+                    setPagination(prev => ({
+                        ...prev,
+                        page: data.pagination.currentPage,
+                        totalPages: data.pagination.totalPages,
+                        totalCount: data.pagination.totalCount
+                    }));
+                }
             } else {
                 toast.error("Failed to fetch enrollments");
             }
@@ -125,13 +141,20 @@ export default function AdminEnrollmentsPage() {
         }
     };
 
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center h-full">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-        );
-    }
+    const TableSkeleton = () => (
+        <>
+            {[...Array(5)].map((_, i) => (
+                <TableRow key={i} className="border-gray-800">
+                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
+                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
+                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
+                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
+                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
+                    <TableCell><Skeleton className="h-10 w-10 ml-auto" /></TableCell>
+                </TableRow>
+            ))}
+        </>
+    );
 
     return (
         <div className="p-8 space-y-8">
@@ -153,7 +176,9 @@ export default function AdminEnrollmentsPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {enrollments.length === 0 ? (
+                            {loading ? (
+                                <TableSkeleton />
+                            ) : enrollments.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={6} className="text-center text-gray-500 h-24">
                                         No enrollments found
@@ -219,6 +244,31 @@ export default function AdminEnrollmentsPage() {
                     </Table>
                 </div>
             </div>
+
+            {/* Pagination Controls */}
+            {pagination.totalPages > 1 && (
+                <div className="flex items-center justify-center gap-4 py-4">
+                    <Button
+                        variant="ghost"
+                        onClick={() => fetchEnrollments(pagination.page - 1)}
+                        disabled={pagination.page <= 1 || loading}
+                        className="text-gray-400 hover:text-white"
+                    >
+                        <ChevronLeft className="h-4 w-4 mr-2" /> Previous
+                    </Button>
+                    <span className="text-sm text-gray-400">
+                        Page {pagination.page} of {pagination.totalPages}
+                    </span>
+                    <Button
+                        variant="ghost"
+                        onClick={() => fetchEnrollments(pagination.page + 1)}
+                        disabled={pagination.page >= pagination.totalPages || loading}
+                        className="text-gray-400 hover:text-white"
+                    >
+                        Next <ChevronRight className="h-4 w-4 ml-2" />
+                    </Button>
+                </div>
+            )}
 
             <Dialog open={!!editingEnrollment} onOpenChange={(open) => !open && setEditingEnrollment(null)}>
                 <DialogContent className="bg-gray-900 border-gray-800 text-white">

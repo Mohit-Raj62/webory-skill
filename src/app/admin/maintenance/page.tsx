@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Database, Trash2, RefreshCw, CheckCircle, AlertTriangle, Download, Zap, Mail } from "lucide-react";
+import { Database, Trash2, RefreshCw, CheckCircle, AlertTriangle, Download, Zap, Mail, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 
 export default function MaintenancePage() {
@@ -266,49 +266,101 @@ export default function MaintenancePage() {
 function ActivityLogsTable() {
     const [logs, setLogs] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 20,
+        totalPages: 1,
+        totalCount: 0
+    });
 
-    useEffect(() => {
-        fetch('/api/admin/maintenance/logs')
+    const fetchLogs = (page = pagination.page) => {
+        setLoading(true);
+        fetch(`/api/admin/maintenance/logs?page=${page}&limit=${pagination.limit}`)
             .then(res => res.json())
             .then(data => {
                 if(data.logs) setLogs(data.logs);
+                if(data.pagination) {
+                    setPagination(prev => ({
+                        ...prev,
+                        page: data.pagination.currentPage,
+                        totalPages: data.pagination.totalPages,
+                        totalCount: data.pagination.totalCount
+                    }));
+                }
             })
             .catch(err => console.error(err))
             .finally(() => setLoading(false));
+    };
+
+    useEffect(() => {
+        fetchLogs(1);
     }, []);
 
     if (loading) return <tbody><tr><td colSpan={5} className="text-center py-8">Loading logs...</td></tr></tbody>;
     if (logs.length === 0) return <tbody><tr><td colSpan={5} className="text-center py-8">No activity logs found.</td></tr></tbody>;
 
     return (
-        <tbody className="divide-y divide-white/5">
-            {logs.map((log: any) => (
-                <tr key={log._id} className="hover:bg-white/5 transition-colors">
-                    <td className="px-4 py-3 font-medium text-white">
-                        {log.user ? `${log.user.firstName} ${log.user.lastName}` : 'Unknown User'}
-                        <div className="text-xs text-gray-500">{log.user?.email}</div>
-                    </td>
-                    <td className="px-4 py-3">
-                        <span className={`px-2 py-1 rounded text-xs font-bold ${
-                            log.action.includes('DELETE') ? 'bg-red-500/20 text-red-400' :
-                            log.action.includes('UPDATE') ? 'bg-blue-500/20 text-blue-400' :
-                            log.action.includes('CREATE') ? 'bg-green-500/20 text-green-400' :
-                            'bg-gray-500/20 text-gray-400'
-                        }`}>
-                            {log.action}
-                        </span>
-                    </td>
-                    <td className="px-4 py-3 text-gray-300 max-w-xs truncate" title={log.details}>
-                        {log.details || '-'}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                        {new Date(log.createdAt).toLocaleString()}
-                    </td>
-                    <td className="px-4 py-3 font-mono text-xs">
-                        {log.ip}
-                    </td>
-                </tr>
-            ))}
-        </tbody>
+        <>
+            <tbody className="divide-y divide-white/5">
+                {logs.map((log: any) => (
+                    <tr key={log._id} className="hover:bg-white/5 transition-colors">
+                        <td className="px-4 py-3 font-medium text-white">
+                            {log.user ? `${log.user.firstName} ${log.user.lastName}` : 'Unknown User'}
+                            <div className="text-xs text-gray-500">{log.user?.email}</div>
+                        </td>
+                        <td className="px-4 py-3">
+                            <span className={`px-2 py-1 rounded text-xs font-bold ${
+                                log.action.includes('DELETE') ? 'bg-red-500/20 text-red-400' :
+                                log.action.includes('UPDATE') ? 'bg-blue-500/20 text-blue-400' :
+                                log.action.includes('CREATE') ? 'bg-green-500/20 text-green-400' :
+                                'bg-gray-500/20 text-gray-400'
+                            }`}>
+                                {log.action}
+                            </span>
+                        </td>
+                        <td className="px-4 py-3 text-gray-300 max-w-xs truncate" title={log.details}>
+                            {log.details || '-'}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                            {new Date(log.createdAt).toLocaleString()}
+                        </td>
+                        <td className="px-4 py-3 font-mono text-xs">
+                            {log.ip}
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+            {pagination.totalPages > 1 && (
+                <tfoot className="bg-white/5">
+                    <tr>
+                        <td colSpan={5} className="px-4 py-3">
+                            <div className="flex items-center justify-center gap-4">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => fetchLogs(pagination.page - 1)}
+                                    disabled={pagination.page <= 1 || loading}
+                                    className="text-gray-400 hover:text-white"
+                                >
+                                    <ChevronLeft className="h-4 w-4 mr-2" /> Previous
+                                </Button>
+                                <span className="text-xs text-gray-400">
+                                    Page {pagination.page} of {pagination.totalPages}
+                                </span>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => fetchLogs(pagination.page + 1)}
+                                    disabled={pagination.page >= pagination.totalPages || loading}
+                                    className="text-gray-400 hover:text-white"
+                                >
+                                    Next <ChevronRight className="h-4 w-4 ml-2" />
+                                </Button>
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
+            )}
+        </>
     );
 }

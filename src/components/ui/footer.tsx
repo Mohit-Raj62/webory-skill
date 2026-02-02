@@ -92,8 +92,8 @@ export function Footer() {
                                         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
                                     </svg>
                                 } brandColor="hover:text-white hover:bg-black hover:shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:border-white/20" />
-                                <SocialLink href="#" icon={<Linkedin size={20} />} brandColor="hover:text-white hover:bg-[#0077b5] hover:shadow-[0_0_20px_rgba(0,119,181,0.3)]" />
-                                <SocialLink href="#" icon={<Instagram size={20} />} brandColor="hover:text-white hover:bg-gradient-to-tr hover:from-[#f9ce34] hover:via-[#ee2a7b] hover:to-[#6228d7] hover:shadow-[0_0_20px_rgba(238,42,123,0.3)]" />
+                                <SocialLink href="https://www.linkedin.com/in/webory-skills-01244b3a9?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" icon={<Linkedin size={20} />} brandColor="hover:text-white hover:bg-[#0077b5] hover:shadow-[0_0_20px_rgba(0,119,181,0.3)]" />
+                                <SocialLink href="https://www.instagram.com/weboryskills?igsh=anJ2Zmc0MmdjdmEy&utm_source=qr" icon={<Instagram size={20} />} brandColor="hover:text-white hover:bg-gradient-to-tr hover:from-[#f9ce34] hover:via-[#ee2a7b] hover:to-[#6228d7] hover:shadow-[0_0_20px_rgba(238,42,123,0.3)]" />
                                 <SocialLink href="https://www.youtube.com/@WeborySkill" icon={<Youtube size={20} />} brandColor="hover:text-white hover:bg-[#ff0000] hover:shadow-[0_0_20px_rgba(255,0,0,0.3)]" />
                             </div>
                             <p className="text-xs text-gray-500 font-medium leading-relaxed max-w-[150px] text-center md:text-left">

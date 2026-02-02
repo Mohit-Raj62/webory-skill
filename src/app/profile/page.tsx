@@ -10,6 +10,8 @@ import { User, Mail, Award, Briefcase, LogOut, ExternalLink, Trophy, Calendar, V
 import { ActivityDashboard } from "@/components/dashboard/activity-dashboard";
 import { GradesDashboard } from "@/components/dashboard/grades-dashboard";
 import { PhoneCollectionModal } from "@/components/profile/phone-collection-modal";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface UserProfile {
     firstName: string;
@@ -22,11 +24,11 @@ interface UserProfile {
 }
 
 export default function ProfilePage() {
-    const [user, setUser] = useState < UserProfile | null > (null);
-    const [enrollments, setEnrollments] = useState < any[] > ([]);
-    const [applications, setApplications] = useState < any[] > ([]);
+    const [user, setUser] = useState<UserProfile | null>(null);
+    const [enrollments, setEnrollments] = useState<any[]>([]);
+    const [applications, setApplications] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState < 'courses' | 'internships' | 'grades' > ('courses');
+    const [activeTab, setActiveTab] = useState<'courses' | 'internships' | 'grades'>('courses');
     const [uploadingAppId, setUploadingAppId] = useState<string | null>(null);
     const [showPhoneModal, setShowPhoneModal] = useState(false);
     const router = useRouter();
@@ -82,13 +84,15 @@ export default function ProfilePage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Fetch auth and dashboard data in parallel
                 const [resAuth, resDash] = await Promise.all([
                     fetch("/api/auth/me"),
                     fetch("/api/user/dashboard")
                 ]);
 
-                if (!resAuth.ok) throw new Error("Not authenticated");
+                if (!resAuth.ok) {
+                    router.push("/login");
+                    return;
+                }
                 const userData = await resAuth.json();
                 setUser(userData.user);
 
@@ -98,8 +102,8 @@ export default function ProfilePage() {
 
                 if (resDash.ok) {
                     const dashData = await resDash.json();
-                    setEnrollments(dashData.enrollments);
-                    setApplications(dashData.applications);
+                    setEnrollments(dashData.enrollments || []);
+                    setApplications(dashData.applications || []);
                 }
             } catch (error) {
                 console.error("Profile fetch error:", error);
@@ -125,8 +129,29 @@ export default function ProfilePage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-background flex items-center justify-center">
-                <div className="text-white">Loading profile...</div>
+            <div className="min-h-screen bg-[#020617] text-white">
+                <Navbar />
+                <div className="pt-32 pb-20 container mx-auto px-4 max-w-6xl animate-pulse space-y-12">
+                    <div className="flex flex-col md:flex-row gap-8 items-center bg-white/5 p-8 rounded-3xl border border-white/10 backdrop-blur-xl">
+                        <Skeleton className="w-24 h-24 sm:w-32 sm:h-32 rounded-full" />
+                        <div className="flex-1 space-y-4 text-center md:text-left">
+                            <Skeleton className="h-10 w-48 mx-auto md:mx-0" />
+                            <Skeleton className="h-6 w-64 mx-auto md:mx-0" />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div className="lg:col-span-2 space-y-8">
+                            <Skeleton className="h-10 w-48" />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <Skeleton className="h-48 rounded-2xl" />
+                                <Skeleton className="h-48 rounded-2xl" />
+                            </div>
+                        </div>
+                        <div className="space-y-8">
+                            <Skeleton className="h-80 rounded-2xl" />
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }

@@ -17,13 +17,32 @@ export async function GET(req: Request) {
     if (decoded.role !== "admin")
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-    // Fetch Logs (Newest first, limit 50)
-    const logs = await ActivityLog.find()
-      .populate("user", "firstName lastName email")
-      .sort({ createdAt: -1 })
-      .limit(50);
+    const url = new URL(req.url);
+    const page = parseInt(url.searchParams.get("page") || "1");
+    const limit = parseInt(url.searchParams.get("limit") || "50");
+    const skip = (page - 1) * limit;
 
-    return NextResponse.json({ logs });
+    // Fetch Logs (Newest first)
+    const [logs, totalCount] = await Promise.all([
+      ActivityLog.find()
+        .populate("user", "firstName lastName email")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      ActivityLog.countDocuments(),
+    ]);
+
+    const totalPages = Math.ceil(totalCount / limit);
+
+    return NextResponse.json({
+      logs,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalCount,
+        hasMore: page < totalPages,
+      },
+    });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

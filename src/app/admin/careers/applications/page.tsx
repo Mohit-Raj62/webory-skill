@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CheckCircle, XCircle, Clock, Search, ExternalLink, Edit2, Save, X, Calendar, Award, Mail } from "lucide-react";
+import { CheckCircle, XCircle, Clock, Search, ExternalLink, Edit2, Save, X, Calendar, Award, Mail, ChevronLeft, ChevronRight } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -187,7 +188,29 @@ export default function AdminApplicationsPage() {
     // Client-side filtering removed in favor of Server-side
     const filteredApplications = applications;
 
-    if (loading) return <div className="p-8 text-white">Loading applications...</div>;
+    const ApplicationSkeleton = () => (
+        <div className="glass-card p-6 rounded-2xl border border-white/5 animate-pulse">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex-1 space-y-3">
+                    <div className="flex items-center gap-3">
+                        <Skeleton className="h-7 w-48" />
+                        <Skeleton className="h-5 w-24 rounded-full" />
+                    </div>
+                    <Skeleton className="h-4 w-64" />
+                    <Skeleton className="h-5 w-56" />
+                    <Skeleton className="h-4 w-40" />
+                    <div className="flex gap-4 mt-3">
+                        <Skeleton className="h-10 w-40 rounded-lg" />
+                    </div>
+                </div>
+                <div className="flex flex-col gap-2 min-w-[200px]">
+                    <Skeleton className="h-10 w-full rounded-lg" />
+                    <Skeleton className="h-10 w-full rounded-lg" />
+                    <Skeleton className="h-10 w-full rounded-lg" />
+                </div>
+            </div>
+        </div>
+    );
 
     return (
         <div className="p-8 relative min-h-screen">
@@ -231,92 +254,128 @@ export default function AdminApplicationsPage() {
                 </div>
             </div>
 
-            {/* List */}
              <div className="space-y-4">
-                {filteredApplications.map((app) => (
-                    <div key={app._id} className="glass-card p-6 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-2">
-                                    <h3 className="text-xl font-bold text-white">{app.name}</h3>
-                                     <span
-                                        className={`px-3 py-1 rounded-full text-xs capitalize ${
-                                            app.status === "pending"
-                                            ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30"
-                                            : app.status === "interview"
-                                                ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
-                                                : app.status === "selected"
-                                                    ? "bg-green-500/20 text-green-300 border border-green-500/30"
-                                                    : app.status === "rejected" 
-                                                        ? "bg-red-500/20 text-red-300 border border-red-500/30"
-                                                        : "bg-indigo-500/20 text-indigo-300"
-                                            }`}
-                                    >
-                                        {app.status}
-                                    </span>
-                                </div>
-                                <p className="text-gray-400 text-sm mb-1">{app.email} • {app.phone}</p>
-                                <p className="text-white font-medium">Applied for: {app.jobId?.title || app.position}</p>
-                                <p className="text-gray-500 text-sm mt-1">Applied on {new Date(app.appliedAt).toLocaleDateString()}</p>
-                                
-                                <div className="flex flex-wrap gap-4 mt-3">
-                                    {/* Image Preview if applicable */}
-                                    {app.resume.match(/\.(jpeg|jpg|png|gif|webp)$/i) && (
-                                        <div className="mb-2 w-full max-w-[200px] h-32 rounded-lg overflow-hidden border border-white/10 relative group">
-                                            <img
-                                                src={app.resume} 
-                                                alt="Resume Preview" 
-                                                className="w-full h-full object-cover"
-                                            />
-                                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                 <a href={app.resume} target="_blank" rel="noopener noreferrer" className="text-white text-xs bg-black/80 px-2 py-1 rounded">View Full</a>
+                {loading ? (
+                    Array(5).fill(0).map((_, i) => <ApplicationSkeleton key={i} />)
+                ) : filteredApplications.length === 0 ? (
+                    <div className="text-center py-12 glass-card rounded-2xl border border-white/5">
+                        <div className="inline-flex items-center justify-center w-16 h-16 bg-white/5 rounded-full mb-4">
+                            <Search className="text-gray-500" size={32} />
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-2">No applications found</h3>
+                        <p className="text-gray-400">Try adjusting your search or filters</p>
+                    </div>
+                ) : (
+                    filteredApplications.map((app) => (
+                        <div key={app._id} className="glass-card p-6 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <h3 className="text-xl font-bold text-white">{app.name}</h3>
+                                        <span
+                                            className={`px-3 py-1 rounded-full text-xs capitalize ${
+                                                app.status === "pending"
+                                                ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30"
+                                                : app.status === "interview"
+                                                    ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
+                                                    : app.status === "selected"
+                                                        ? "bg-green-500/20 text-green-300 border border-green-500/30"
+                                                        : app.status === "rejected" 
+                                                            ? "bg-red-500/20 text-red-300 border border-red-500/30"
+                                                            : "bg-indigo-500/20 text-indigo-300"
+                                                }`}
+                                        >
+                                            {app.status}
+                                        </span>
+                                    </div>
+                                    <p className="text-gray-400 text-sm mb-1">{app.email} • {app.phone}</p>
+                                    <p className="text-white font-medium">Applied for: {app.jobId?.title || app.position}</p>
+                                    <p className="text-gray-500 text-sm mt-1">Applied on {new Date(app.appliedAt).toLocaleDateString()}</p>
+                                    
+                                    <div className="flex flex-wrap gap-4 mt-3">
+                                        {/* Image Preview if applicable */}
+                                        {app.resume.match(/\.(jpeg|jpg|png|gif|webp)$/i) && (
+                                            <div className="mb-2 w-full max-w-[200px] h-32 rounded-lg overflow-hidden border border-white/10 relative group">
+                                                <img
+                                                    src={app.resume} 
+                                                    alt="Resume Preview" 
+                                                    className="w-full h-full object-cover"
+                                                />
+                                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                    <a href={app.resume} target="_blank" rel="noopener noreferrer" className="text-white text-xs bg-black/80 px-2 py-1 rounded">View Full</a>
+                                                </div>
                                             </div>
+                                        )}
+                                        <div className="w-full">
+                                            <a href={app.resume} target="_blank" rel="noopener noreferrer" className="text-blue-400 text-sm flex items-center hover:underline bg-white/5 px-4 py-2 rounded-lg inline-flex max-w-full truncate">
+                                                <ExternalLink size={14} className="mr-2 flex-shrink-0"/> 
+                                                <span className="truncate">{app.resume.split('/').pop()}</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    {app.coverLetter && (
+                                        <div className="mt-3 bg-white/5 p-3 rounded-lg text-sm text-gray-300">
+                                            <p className="font-semibold text-xs text-gray-500 uppercase tracking-wider mb-1">Cover Letter</p>
+                                            {app.coverLetter}
                                         </div>
                                     )}
-                                    <div className="w-full">
-                                         <a href={app.resume} target="_blank" rel="noopener noreferrer" className="text-blue-400 text-sm flex items-center hover:underline bg-white/5 px-4 py-2 rounded-lg inline-flex max-w-full truncate">
-                                            <ExternalLink size={14} className="mr-2 flex-shrink-0"/> 
-                                            <span className="truncate">{app.resume.split('/').pop()}</span>
-                                        </a>
-                                    </div>
                                 </div>
-                                {app.coverLetter && (
-                                    <div className="mt-3 bg-white/5 p-3 rounded-lg text-sm text-gray-300">
-                                        <p className="font-semibold text-xs text-gray-500 uppercase tracking-wider mb-1">Cover Letter</p>
-                                        {app.coverLetter}
-                                    </div>
-                                )}
-                            </div>
 
-                            <div className="flex flex-col gap-2 min-w-[200px]">
-                                {app.status === "pending" && (
-                                     <Button onClick={() => handleStatusChange(app._id, "reviewed")} variant="secondary" className="bg-indigo-900/50 hover:bg-indigo-900 text-indigo-200">
-                                        Mark as Reviewed
-                                    </Button>
-                                )}
+                                <div className="flex flex-col gap-2 min-w-[200px]">
+                                    {app.status === "pending" && (
+                                        <Button onClick={() => handleStatusChange(app._id, "reviewed")} variant="secondary" className="bg-indigo-900/50 hover:bg-indigo-900 text-indigo-200">
+                                            Mark as Reviewed
+                                        </Button>
+                                    )}
 
-                                {(app.status === "pending" || app.status === "reviewed") && (
-                                    <Button onClick={() => { setInterviewApp(app); setInterviewForm({...interviewForm, date: "", time: "", link: ""}); }} className="bg-purple-600 hover:bg-purple-700">
-                                        <Calendar size={16} className="mr-2" /> Schedule Interview
-                                    </Button>
-                                )}
+                                    {(app.status === "pending" || app.status === "reviewed") && (
+                                        <Button onClick={() => { setInterviewApp(app); setInterviewForm({...interviewForm, date: "", time: "", link: ""}); }} className="bg-purple-600 hover:bg-purple-700">
+                                            <Calendar size={16} className="mr-2" /> Schedule Interview
+                                        </Button>
+                                    )}
 
-                                {(app.status === "interview") && (
-                                     <Button onClick={() => { setOfferApp(app); setOfferLink(""); }} className="bg-green-600 hover:bg-green-700">
-                                        <CheckCircle size={16} className="mr-2" /> Send Offer
-                                    </Button>
-                                )}
+                                    {(app.status === "interview") && (
+                                        <Button onClick={() => { setOfferApp(app); setOfferLink(""); }} className="bg-green-600 hover:bg-green-700">
+                                            <CheckCircle size={16} className="mr-2" /> Send Offer
+                                        </Button>
+                                    )}
 
-                                {app.status !== "rejected" && app.status !== "selected" && (
-                                    <Button onClick={() => handleStatusChange(app._id, "rejected")} variant="destructive" className="bg-red-900/50 hover:bg-red-900 text-red-200">
-                                        <XCircle size={16} className="mr-2" /> Reject
-                                    </Button>
-                                )}
+                                    {app.status !== "rejected" && app.status !== "selected" && (
+                                        <Button onClick={() => handleStatusChange(app._id, "rejected")} variant="destructive" className="bg-red-900/50 hover:bg-red-900 text-red-200">
+                                            <XCircle size={16} className="mr-2" /> Reject
+                                        </Button>
+                                    )}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    ))
+                )}
             </div>
+
+            {/* Pagination Controls */}
+            {pagination.totalPages > 1 && (
+                <div className="flex items-center justify-center gap-4 py-8">
+                    <Button
+                        variant="outline"
+                        onClick={() => handlePageChange(pagination.page - 1)}
+                        disabled={pagination.page <= 1 || loading}
+                        className="bg-white/5 border-white/10 text-gray-400 hover:text-white"
+                    >
+                        <ChevronLeft className="h-4 w-4 mr-2" /> Previous
+                    </Button>
+                    <span className="text-sm text-gray-400">
+                        Page {pagination.page} of {pagination.totalPages}
+                    </span>
+                    <Button
+                        variant="outline"
+                        onClick={() => handlePageChange(pagination.page + 1)}
+                        disabled={pagination.page >= pagination.totalPages || loading}
+                        className="bg-white/5 border-white/10 text-gray-400 hover:text-white"
+                    >
+                        Next <ChevronRight className="h-4 w-4 ml-2" />
+                    </Button>
+                </div>
+            )}
 
             {/* Interview Modal */}
             {interviewApp && (
