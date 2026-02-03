@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Navbar } from "@/components/ui/navbar";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ interface Question {
     feedback?: string;
 }
 
-export default function AIPrepSessionPage() {
+function SessionContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { user, loading: authLoading } = useAuth();
@@ -457,5 +457,17 @@ export default function AIPrepSessionPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function AIPrepSessionPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-black text-white flex items-center justify-center">
+                <Loader2 className="animate-spin w-8 h-8 text-blue-500" />
+            </div>
+        }>
+            <SessionContent />
+        </Suspense>
     );
 }
