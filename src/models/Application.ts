@@ -62,10 +62,10 @@ const ApplicationSchema = new Schema({
     type: Date,
   },
   // Offer Letter fields (set when application is accepted)
-  startDate: {
+  offerStartDate: {
     type: Date,
   },
-  duration: {
+  offerDuration: {
     type: String, // e.g., "3 months", "6 months"
   },
   // Interview fields
