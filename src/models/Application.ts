@@ -15,6 +15,16 @@ const ApplicationSchema = new Schema({
     type: String,
     required: true, // URL to resume
   },
+  resumeType: {
+    type: String, // 'file' or 'link'
+    enum: ["file", "link"],
+    default: "file",
+  },
+  college: String,
+  currentYear: String,
+  startDate: Date,
+  preferredDuration: String,
+  referralCode: String,
   coverLetter: {
     type: String,
     required: true,

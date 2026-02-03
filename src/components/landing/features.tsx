@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { BookOpen, Briefcase, LayoutDashboard, ShieldCheck, Trophy, Zap, HeartHandshake ,  BriefcaseBusiness,FileUser, Users, Building2, PlayCircle } from "lucide-react";
+import { BookOpen, Briefcase, LayoutDashboard, ShieldCheck, Trophy, Zap, HeartHandshake ,  BriefcaseBusiness,FileUser, Users, Building2, PlayCircle, BrainCircuit } from "lucide-react";
 
 const features = [
     {
@@ -66,6 +66,11 @@ const features = [
                 icon: Building2,
                 title: "Internship Support",
                 description: "Unlock exclusive internship opportunities to gain work experience while you learn.",
+            },
+            {
+                icon: BrainCircuit,
+                title: "Webory AI Nexus",
+                description: "Master interviews and aptitude tests with our advanced AI-powered practice simulations.",
             }
         ],
     },

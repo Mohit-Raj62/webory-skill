@@ -3,7 +3,7 @@
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
-import { Code2, Database, Globe, Palette, Terminal, Cpu, Cloud, Shield, CheckCircle, ArrowRight, BookOpen, Users, Zap, Search, Filter } from "lucide-react";
+import { Code2, Database, Globe, Palette, Terminal, Cpu, Cloud, Shield, CheckCircle, ArrowRight, BookOpen, Users, Zap, Search, Filter, PlayCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useMemo } from "react";
@@ -23,7 +23,8 @@ export function CoursesView({ courses, enrolledCourseIds }: CoursesViewProps) {
     const [selectedLevel, setSelectedLevel] = useState("All");
 
     const filteredCourses = useMemo(() => {
-        return courses.filter(course => {
+        const safeCourses = Array.isArray(courses) ? courses : [];
+        return safeCourses.filter(course => {
             const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                                  course.description.toLowerCase().includes(searchQuery.toLowerCase());
             const matchesLevel = selectedLevel === "All" || course.level === selectedLevel;
@@ -257,8 +258,11 @@ export function CoursesView({ courses, enrolledCourseIds }: CoursesViewProps) {
                                         {/* CTA Button */}
                                         <div className="relative">
                                             {enrolledCourseIds.includes(course._id) ? (
-                                                <Button disabled className="w-full bg-slate-800/50 text-slate-500 border border-slate-700/50 h-11 rounded-xl font-black uppercase tracking-widest text-[9px] shadow-inner">
-                                                    <CheckCircle className="mr-2 h-4 w-4" /> Enrolled Successfully
+                                                <Button 
+                                                    onClick={() => router.push(`/courses/${course._id}`)}
+                                                    className="w-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 h-11 rounded-xl font-black uppercase tracking-widest text-[9px] shadow-[0_0_15px_rgba(16,185,129,0.1)] hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] transition-all"
+                                                >
+                                                    <PlayCircle className="mr-2 h-4 w-4" /> Continue Learning
                                                 </Button>
                                             ) : (
                                                 <Button

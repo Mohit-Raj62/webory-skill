@@ -28,9 +28,20 @@ const jobApplicationSchema = new mongoose.Schema({
     required: true,
   },
   resume: {
-    type: String, // Cloudinary URL
+    type: String, // Cloudinary URL or External Link
     required: true,
   },
+  resumeType: {
+    type: String, // 'file' or 'link'
+    enum: ["file", "link"],
+    default: "file",
+  },
+  linkedin: String,
+  portfolio: String,
+  currentSalary: String,
+  expectedSalary: String,
+  noticePeriod: String,
+  whyHireYou: String,
   coverLetter: {
     type: String,
   },

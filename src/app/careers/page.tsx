@@ -28,12 +28,19 @@ export default function CareersPage() {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   
   // Application Form State
+  const [resumeType, setResumeType] = useState<'file' | 'link'>('file');
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     resume: "",
     coverLetter: "",
+    linkedin: "",
+    portfolio: "",
+    currentSalary: "",
+    expectedSalary: "",
+    noticePeriod: "",
+    whyHireYou: ""
   });
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -94,8 +101,12 @@ export default function CareersPage() {
         return;
     }
 
-    if (!file) {
+    if (resumeType === 'file' && !file) {
         toast.error("Please upload your resume");
+        return;
+    }
+    if (resumeType === 'link' && !formData.resume) {
+        toast.error("Please provide your resume link");
         return;
     }
 
@@ -103,22 +114,24 @@ export default function CareersPage() {
     let resumeUrl = formData.resume;
 
     try {
-       // Upload File First
-       setUploading(true);
-       const uploadData = new FormData();
-       uploadData.append("file", file);
-       
-       const uploadRes = await fetch("/api/upload/resume", {
-           method: "POST",
-           body: uploadData
-       });
-       const uploadResult = await uploadRes.json();
-
-       if (!uploadResult.success) {
-           throw new Error(uploadResult.error || "Failed to upload resume");
+       // Only upload if resumeType is file
+       if (resumeType === 'file' && file) {
+           setUploading(true);
+           const uploadData = new FormData();
+           uploadData.append("file", file);
+           
+           const uploadRes = await fetch("/api/upload/resume", {
+               method: "POST",
+               body: uploadData
+           });
+           const uploadResult = await uploadRes.json();
+    
+           if (!uploadResult.success) {
+               throw new Error(uploadResult.error || "Failed to upload resume");
+           }
+           resumeUrl = uploadResult.url;
+           setUploading(false);
        }
-       resumeUrl = uploadResult.url;
-       setUploading(false);
 
       // Submit Application
       const response = await fetch("/api/careers/apply", {
@@ -127,7 +140,8 @@ export default function CareersPage() {
           body: JSON.stringify({
               jobId: selectedJob._id,
               ...formData,
-              resume: resumeUrl
+              resume: resumeUrl,
+              resumeType
           })
       });
       
@@ -135,7 +149,10 @@ export default function CareersPage() {
       
       if(data.success) {
           toast.success("Application submitted successfully!");
-          setFormData({ name: "", email: "", phone: "", resume: "", coverLetter: "" });
+          setFormData({ 
+              name: "", email: "", phone: "", resume: "", coverLetter: "",
+              linkedin: "", portfolio: "", currentSalary: "", expectedSalary: "", noticePeriod: "", whyHireYou: ""
+           });
           setFile(null);
           setSelectedJob(null);
       } else {
@@ -346,104 +363,217 @@ export default function CareersPage() {
 
                       {/* Application Form */}
                       <div className="bg-[#111] rounded-2xl border border-white/10 p-8">
-                          <h3 className="text-lg font-bold text-white mb-8 pb-4 border-b border-white/10">
+                          <h3 className="text-xl font-bold text-white mb-6 pb-4 border-b border-white/10">
                               Apply for this role
                           </h3>
                         <form onSubmit={handleSubmit} className="space-y-6">
+                            
+                            {/* Personal Info */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <label htmlFor="name" className="text-sm font-medium text-gray-400">Full Name</label>
+                                    <label htmlFor="name" className="text-sm font-medium text-gray-400">Full Name *</label>
                                     <input
                                     type="text"
                                     id="name"
                                     required
-                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/30 transition-all"
+                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-all placeholder:text-gray-600"
+                                    placeholder="John Doe"
                                     value={formData.name}
                                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label htmlFor="email" className="text-sm font-medium text-gray-400">Email</label>
+                                    <label htmlFor="email" className="text-sm font-medium text-gray-400">Email Address *</label>
                                     <input
                                     type="email"
                                     id="email"
                                     required
-                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/30 transition-all"
+                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-all placeholder:text-gray-600"
+                                    placeholder="john@example.com"
                                     value={formData.email}
                                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                                     />
                                 </div>
                             </div>
 
-                          <div className="space-y-2">
-                              <label htmlFor="phone" className="text-sm font-medium text-gray-400">Phone Number (10 digits)</label>
-                              <input
-                                type="tel"
-                                id="phone"
-                                required
-                                maxLength={10}
-                                placeholder="e.g. 9876543000"
-                                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/30 transition-all placeholder:text-gray-700"
-                                value={formData.phone}
-                                onChange={(e) => setFormData({...formData, phone: e.target.value.replace(/\D/g, '')})} 
-                              />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label htmlFor="phone" className="text-sm font-medium text-gray-400">Phone Number *</label>
+                                    <input
+                                        type="tel"
+                                        id="phone"
+                                        required
+                                        maxLength={10}
+                                        placeholder="9876543210"
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-all placeholder:text-gray-600"
+                                        value={formData.phone}
+                                        onChange={(e) => setFormData({...formData, phone: e.target.value.replace(/\D/g, '')})} 
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label htmlFor="linkedin" className="text-sm font-medium text-gray-400">LinkedIn Profile (URL)</label>
+                                    <input
+                                        type="url"
+                                        id="linkedin"
+                                        placeholder="https://linkedin.com/in/..."
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-all placeholder:text-gray-600"
+                                        value={formData.linkedin}
+                                        onChange={(e) => setFormData({...formData, linkedin: e.target.value})} 
+                                    />
+                                </div>
                           </div>
 
-                          <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-400">Resume / CV</label>
-                            <div className="relative">
-                              <input
-                                type="file"
-                                id="resume"
-                                accept=".pdf,image/*"
-                                required
-                                className="hidden"
-                                onChange={handleFileChange}
-                              />
-                              <label 
-                                htmlFor="resume" 
-                                className={`w-full flex flex-col items-center justify-center gap-2 bg-white/5 border border-dashed rounded-lg px-4 py-8 cursor-pointer transition-all hover:bg-white/10 ${file ? 'border-green-500/50 bg-green-500/5' : 'border-white/20'}`}
-                              >
-                                {file ? (
-                                    <>
-                                        <CheckCircle2 className="text-green-500 h-6 w-6" />
-                                        <span className="text-sm text-green-400 font-medium">{file.name}</span>
-                                        <span className="text-xs text-gray-500">Click to change</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Upload className="h-6 w-6 text-gray-500" />
-                                        <span className="text-sm text-gray-300">Upload Resume (PDF, JPG, PNG)</span>
-                                        <span className="text-xs text-gray-600">Max 5MB</span>
-                                    </>
-                                )}
-                              </label>
+                          {/* Professional Details */}
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div className="space-y-2">
+                                    <label htmlFor="currentSalary" className="text-sm font-medium text-gray-400">Current CTC</label>
+                                    <input
+                                        type="text"
+                                        id="currentSalary"
+                                        placeholder="e.g. 8 LPA"
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-all placeholder:text-gray-600"
+                                        value={formData.currentSalary}
+                                        onChange={(e) => setFormData({...formData, currentSalary: e.target.value})} 
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label htmlFor="expectedSalary" className="text-sm font-medium text-gray-400">Expected CTC</label>
+                                    <input
+                                        type="text"
+                                        id="expectedSalary"
+                                        placeholder="e.g. 12 LPA"
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-all placeholder:text-gray-600"
+                                        value={formData.expectedSalary}
+                                        onChange={(e) => setFormData({...formData, expectedSalary: e.target.value})} 
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label htmlFor="noticePeriod" className="text-sm font-medium text-gray-400">Notice Period</label>
+                                    <select
+                                        id="noticePeriod"
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-all [&>option]:text-black"
+                                        value={formData.noticePeriod}
+                                        onChange={(e) => setFormData({...formData, noticePeriod: e.target.value})}
+                                    >
+                                        <option value="">Select...</option>
+                                        <option value="Immediate">Immediate</option>
+                                        <option value="15 Days">15 Days</option>
+                                        <option value="30 Days">30 Days</option>
+                                        <option value="60+ Days">60+ Days</option>
+                                    </select>
+                                </div>
+                          </div>
+
+                          {/* Resume Section with Toggle */}
+                          <div className="space-y-4 pt-4 border-t border-white/10">
+                            <div className="flex items-center justify-between">
+                                <label className="text-sm font-medium text-gray-400">Resume / CV *</label>
+                                <div className="flex gap-2 bg-white/5 p-1 rounded-lg">
+                                    <button
+                                        type="button"
+                                        onClick={() => setResumeType('file')}
+                                        className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${resumeType === 'file' ? 'bg-green-500 text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
+                                    >
+                                        Upload File
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setResumeType('link')}
+                                        className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${resumeType === 'link' ? 'bg-green-500 text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
+                                    >
+                                        Google Drive Link
+                                    </button>
+                                </div>
                             </div>
+
+                            {resumeType === 'file' ? (
+                                <div className="relative">
+                                    <input
+                                        type="file"
+                                        id="resume"
+                                        accept=".pdf,image/*"
+                                        className="hidden"
+                                        onChange={handleFileChange}
+                                    />
+                                    <label 
+                                        htmlFor="resume" 
+                                        className={`w-full flex flex-col items-center justify-center gap-3 bg-white/5 border border-dashed rounded-xl px-4 py-8 cursor-pointer transition-all hover:bg-white/10 group ${file ? 'border-green-500/50 bg-green-500/5' : 'border-white/20'}`}
+                                    >
+                                        {file ? (
+                                            <>
+                                                <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-500">
+                                                    <CheckCircle2 size={20} />
+                                                </div>
+                                                <div className="text-center">
+                                                    <p className="text-sm text-green-400 font-medium">{file.name}</p>
+                                                    <p className="text-xs text-gray-500 mt-1">Click to replace</p>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-gray-400 group-hover:text-white group-hover:bg-white/20 transition-all">
+                                                    <Upload size={20} />
+                                                </div>
+                                                <div className="text-center">
+                                                    <p className="text-sm text-gray-300 font-medium">Click to upload or drag and drop</p>
+                                                    <p className="text-xs text-gray-600 mt-1">PDF, PNG, JPG (Max 5MB)</p>
+                                                </div>
+                                            </>
+                                        )}
+                                    </label>
+                                </div>
+                            ) : (
+                                <div className="space-y-2">
+                                    <input
+                                        type="url"
+                                        placeholder="Paste your Google Drive / Dropbox link here..."
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-all placeholder:text-gray-600"
+                                        value={formData.resume}
+                                        onChange={(e) => setFormData({...formData, resume: e.target.value})}
+                                    />
+                                    <p className="text-xs text-gray-500 flex items-center gap-1">
+                                        <Globe size={10} /> Make sure the link is publicly accessible.
+                                    </p>
+                                </div>
+                            )}
+                          </div>
+                          
+                          <div className="space-y-2">
+                             <label htmlFor="portfolio" className="text-sm font-medium text-gray-400">Portfolio / GitHub Link</label>
+                             <input
+                                 type="url"
+                                 id="portfolio"
+                                 placeholder="https://github.com/..."
+                                 className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-all placeholder:text-gray-600"
+                                 value={formData.portfolio}
+                                 onChange={(e) => setFormData({...formData, portfolio: e.target.value})} 
+                             />
                           </div>
 
                           <div className="space-y-2">
-                            <label htmlFor="coverLetter" className="text-sm font-medium text-gray-400">Cover Letter (Optional)</label>
+                            <label htmlFor="whyHireYou" className="text-sm font-medium text-gray-400">Why should we hire you?</label>
                             <textarea
-                              id="coverLetter"
+                              id="whyHireYou"
                               rows={4}
-                              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/30 transition-all resize-none"
-                              value={formData.coverLetter}
-                              onChange={(e) => setFormData({...formData, coverLetter: e.target.value})}
+                              placeholder="Tell us about your experience and why you're a good fit..."
+                              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-all resize-none placeholder:text-gray-600"
+                              value={formData.whyHireYou}
+                              onChange={(e) => setFormData({...formData, whyHireYou: e.target.value})}
                             />
                           </div>
 
                           <button
                             type="submit"
-                            disabled={submitting || uploading}
-                            className="w-full py-3.5 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            disabled={submitting || (uploading && resumeType === 'file')}
+                            className="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-black font-bold rounded-xl shadow-lg shadow-green-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform active:scale-[0.98] mt-4"
                           >
                             {uploading ? (
                               <span className="flex items-center justify-center gap-2">
-                                <Loader2 className="animate-spin h-4 w-4" /> Uploading...
+                                <Loader2 className="animate-spin h-5 w-5" /> Uploading File...
                               </span>
                             ) : submitting ? (
                               <span className="flex items-center justify-center gap-2">
-                                <Loader2 className="animate-spin h-4 w-4" /> Submitting...
+                                <Loader2 className="animate-spin h-5 w-5" /> Submitting Application...
                               </span>
                             ) : (
                               "Submit Application"

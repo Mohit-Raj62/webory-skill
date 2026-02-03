@@ -135,6 +135,10 @@ const UserSchema = new Schema({
     type: Number,
     default: 0,
   },
+  streak: {
+    count: { type: Number, default: 0 },
+    lastActiveDate: { type: Date, default: null },
+  },
 });
 
 const User = models.User || model("User", UserSchema);

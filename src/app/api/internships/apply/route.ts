@@ -24,9 +24,15 @@ export async function POST(req: Request) {
     const {
       internshipId,
       resume,
+      resumeType,
       coverLetter,
       portfolio,
       linkedin,
+      college,
+      currentYear,
+      startDate,
+      preferredDuration,
+      referralCode,
       transactionId,
       amountPaid,
     } = await req.json();
@@ -56,9 +62,15 @@ export async function POST(req: Request) {
         // Re-open/Update the application
         application.status = "pending";
         application.resume = resume;
+        application.resumeType = resumeType;
         application.coverLetter = coverLetter;
         application.portfolio = portfolio;
         application.linkedin = linkedin;
+        application.college = college;
+        application.currentYear = currentYear;
+        application.startDate = startDate;
+        application.preferredDuration = preferredDuration;
+        application.referralCode = referralCode;
         application.transactionId = transactionId;
         application.amountPaid = amountPaid;
         application.appliedAt = new Date(); // Reset applied date
@@ -75,9 +87,15 @@ export async function POST(req: Request) {
         student: decoded.userId,
         internship: internshipId,
         resume,
+        resumeType,
         coverLetter,
         portfolio,
         linkedin,
+        college,
+        currentYear,
+        startDate,
+        preferredDuration,
+        referralCode,
         transactionId,
         amountPaid,
       });

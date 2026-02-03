@@ -25,6 +25,7 @@ import { DevLabPreview } from "@/components/landing/devlab-preview";
 
 
 import { FreeExperienceHighlight } from "@/components/landing/free-experience";
+import { AINexusShowcase } from "@/components/landing/ai-nexus-showcase";
 
 
 export default async function Home() {
@@ -61,6 +62,7 @@ export default async function Home() {
             <Features />
             <AIRoadmapFlow />
             <DevLabPreview />
+            <AINexusShowcase />
 
             <EnrolledCourses />
             <AppliedInternships />

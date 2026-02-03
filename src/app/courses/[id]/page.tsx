@@ -839,6 +839,12 @@ export default function CourseDetailsPage() {
                             {isEnrolled ? (
                                 <>
                                     <div className="mb-6">
+                                        <Link href={`/courses/${id}/video/0`}>
+                                            <Button className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white h-12 font-bold mb-4 shadow-lg shadow-blue-500/20 animate-pulse">
+                                                <PlayCircle className="mr-2" size={20} />
+                                                Continue Learning
+                                            </Button>
+                                        </Link>
                                         <h3 className="text-xl font-bold text-white mb-4">Course Access</h3>
                                         <div className="space-y-3 text-gray-300">
                                             <div className="flex items-center justify-between">

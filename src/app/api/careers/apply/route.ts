@@ -8,12 +8,26 @@ export async function POST(request: NextRequest) {
   try {
     await dbConnect();
     const reqBody = await request.json();
-    const { jobId, name, email, phone, resume, coverLetter } = reqBody;
+    const {
+      jobId,
+      name,
+      email,
+      phone,
+      resume,
+      coverLetter,
+      linkedin,
+      portfolio,
+      currentSalary,
+      expectedSalary,
+      noticePeriod,
+      whyHireYou,
+      resumeType,
+    } = reqBody;
 
     if (!jobId || !name || !email || !phone || !resume) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -29,14 +43,21 @@ export async function POST(request: NextRequest) {
       phone,
       position: job.title, // Backup
       resume,
+      resumeType,
       coverLetter,
+      linkedin,
+      portfolio,
+      currentSalary,
+      expectedSalary,
+      noticePeriod,
+      whyHireYou,
     });
 
     // Send confirmation email
     await sendEmail(
       email,
       `Application Received: ${job.title}`,
-      emailTemplates.jobApplicationReceived(name, job.title)
+      emailTemplates.jobApplicationReceived(name, job.title),
     );
 
     // Send notification to Admin
@@ -49,8 +70,8 @@ export async function POST(request: NextRequest) {
           job.title,
           email,
           phone,
-          resume
-        )
+          resume,
+        ),
       );
     }
 

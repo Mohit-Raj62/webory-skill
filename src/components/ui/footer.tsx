@@ -63,6 +63,7 @@ export function Footer() {
                                 <li><Link href="/courses" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">All Courses</Link></li>
                                 <li><Link href="/internships" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">Internships <span className="text-[9px] px-1.5 py-0.5 bg-green-500/20 text-green-400 rounded border border-green-500/20">New</span></Link></li>
                                 <li><Link href="/mentorship" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">Mentorship</Link></li>
+                                <li><Link href="/ai-prep" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">Webory AI Nexus <span className="text-[9px] px-1.5 py-0.5 bg-blue-500/20 text-blue-400 rounded border border-blue-500/20">New</span></Link></li>
                                 <li><Link href="/playground" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">DevLab IDE</Link></li>
                             </ul>
                         </div>

@@ -22,12 +22,21 @@ export function InternshipsView({ internships, user, userApplications }: Interns
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedType, setSelectedType] = useState("All");
 
+    const [resumeType, setResumeType] = useState<'file' | 'link'>('file');
+    const [file, setFile] = useState<File | null>(null);
+    const [uploading, setUploading] = useState(false);
+
     const [formData, setFormData] = useState({
         resume: "",
         coverLetter: "",
         portfolio: "",
         linkedin: "",
         phone: user?.phone || "",
+        college: "",
+        currentYear: "",
+        startDate: "",
+        preferredDuration: "",
+        referralCode: ""
     });
     const [submitting, setSubmitting] = useState(false);
     const [showPayment, setShowPayment] = useState(false);
@@ -35,7 +44,8 @@ export function InternshipsView({ internships, user, userApplications }: Interns
     const [transactionData, setTransactionData] = useState<any>(null);
     const router = useRouter();
 
-    const filteredInternships = useMemo(() => {
+    // ... (filteredInternships useMemo remains same) ...
+     const filteredInternships = useMemo(() => {
         return internships.filter(job => {
             const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                                  job.company.toLowerCase().includes(searchQuery.toLowerCase());
@@ -43,6 +53,14 @@ export function InternshipsView({ internships, user, userApplications }: Interns
             return matchesSearch && matchesType;
         });
     }, [internships, searchQuery, selectedType]);
+
+    // File Handler
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files && e.target.files[0]) {
+          setFile(e.target.files[0]);
+      }
+    };
+
 
     const handleApplyClick = (id: string) => {
         if (!user) {
@@ -60,8 +78,38 @@ export function InternshipsView({ internships, user, userApplications }: Interns
         e.preventDefault();
         if (!selectedInternship) return;
         
+        if (resumeType === 'file' && !file) {
+            toast.error("Please upload your resume");
+            return;
+        }
+        if (resumeType === 'link' && !formData.resume) {
+            toast.error("Please provide a resume link");
+            return;
+        }
+
         setSubmitting(true);
+        let resumeUrl = formData.resume;
+
         try {
+             // Upload File if selected
+            if (resumeType === 'file' && file) {
+                setUploading(true);
+                const uploadData = new FormData();
+                uploadData.append("file", file);
+                
+                const uploadRes = await fetch("/api/upload/resume", {
+                    method: "POST",
+                    body: uploadData
+                });
+                const uploadResult = await uploadRes.json();
+         
+                if (!uploadResult.success) {
+                    throw new Error(uploadResult.error || "Failed to upload resume");
+                }
+                resumeUrl = uploadResult.url;
+                setUploading(false);
+            }
+
             const internshipDetails = internships.find(i => i._id === selectedInternship);
             
             const res = await fetch("/api/internships/apply", {
@@ -69,10 +117,16 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     internshipId: selectedInternship,
-                    resume: formData.resume,
+                    resume: resumeUrl,
+                    resumeType,
                     coverLetter: formData.coverLetter,
                     portfolio: formData.portfolio,
                     linkedin: formData.linkedin,
+                    college: formData.college,
+                    currentYear: formData.currentYear,
+                    startDate: formData.startDate,
+                    preferredDuration: formData.preferredDuration,
+                    referralCode: formData.referralCode,
                     transactionId: "PENDING_PAYU",
                     amountPaid: internshipDetails?.price || 0
                 }),
@@ -82,6 +136,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
             
             if (res.ok || data.error === "Already applied to this internship") {
                 setShowPayment(true);
+                setFile(null);
             } else {
                 toast.error(data.error || "Failed to submit application");
             }
@@ -90,6 +145,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
             toast.error("An error occurred");
         } finally {
             setSubmitting(false);
+            setUploading(false);
         }
     };
 
@@ -299,79 +355,298 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4"
                     >
                         <motion.div
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.9, opacity: 0 }}
-                            className="glass-card w-full max-w-lg p-8 rounded-2xl relative border-purple-500/30"
+                            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                            className="bg-[#0f1014] w-full max-w-4xl rounded-3xl overflow-hidden border border-white/10 shadow-2xl flex flex-col md:flex-row h-[90vh]"
                         >
-                            <button
-                                onClick={() => setSelectedInternship(null)}
-                                className="absolute top-4 right-4 text-gray-400 hover:text-white"
-                            >
-                                <X size={24} />
-                            </button>
-
-                            <h2 className="text-2xl font-bold text-white mb-6">Submit Application</h2>
-
-                            <form onSubmit={handleSubmit} className="space-y-4">
+                            {/* LEFT SIDE: Internship Details / Perks (Hidden on Mobile) */}
+                            <div className="hidden md:flex w-2/5 bg-gradient-to-br from-emerald-950/30 to-black p-8 relative flex-col justify-between border-r border-white/5">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-[80px]" />
+                                
                                 <div>
-                                    <label className="text-sm text-gray-300 block mb-2">Resume Link (Google Drive/Dropbox)</label>
-                                    <input
-                                        type="url"
-                                        required
-                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-purple-500/50 outline-none"
-                                        placeholder="https://..."
-                                        value={formData.resume}
-                                        onChange={(e) => setFormData({ ...formData, resume: e.target.value })}
-                                    />
-                                </div>
+                                    <h3 className="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-4">Selected Role</h3>
+                                    <h2 className="text-3xl font-black text-white mb-2 leading-tight">
+                                        {internships.find(i => i._id === selectedInternship)?.title}
+                                    </h2>
+                                    <p className="text-gray-400 font-medium text-sm mb-8">
+                                        at {internships.find(i => i._id === selectedInternship)?.company}
+                                    </p>
 
-                                <div>
-                                    <label className="text-sm text-gray-300 block mb-2">Cover Letter</label>
-                                    <textarea
-                                        required
-                                        rows={4}
-                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-purple-500/50 outline-none resize-none"
-                                        placeholder="Why should we hire you?"
-                                        value={formData.coverLetter}
-                                        onChange={(e) => setFormData({ ...formData, coverLetter: e.target.value })}
-                                    />
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="text-sm text-gray-300 block mb-2">Portfolio Link</label>
-                                        <input
-                                            type="url"
-                                            className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-purple-500/50 outline-none"
-                                            placeholder="https://..."
-                                            value={formData.portfolio}
-                                            onChange={(e) => setFormData({ ...formData, portfolio: e.target.value })}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-sm text-gray-300 block mb-2">LinkedIn Profile</label>
-                                        <input
-                                            type="url"
-                                            className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-purple-500/50 outline-none"
-                                            placeholder="https://linkedin.com/in/..."
-                                            value={formData.linkedin}
-                                            onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
-                                        />
+                                    <div className="space-y-4">
+                                        <div className="flex items-start gap-4 p-4 rounded-xl bg-white/5 border border-white/5">
+                                            <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+                                                <IndianRupee size={20} />
+                                            </div>
+                                            <div>
+                                                <h4 className="text-white font-bold text-sm">Stipend</h4>
+                                                <p className="text-gray-400 text-xs">{internships.find(i => i._id === selectedInternship)?.stipend}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start gap-4 p-4 rounded-xl bg-white/5 border border-white/5">
+                                            <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
+                                                <CheckCircle2 size={20} />
+                                            </div>
+                                            <div>
+                                                <h4 className="text-white font-bold text-sm">Certified Experience</h4>
+                                                <p className="text-gray-400 text-xs">Get industry recognized certificate & Letter of Recommendation.</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <Button
-                                    type="submit"
-                                    disabled={submitting}
-                                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 border-0 py-6 text-lg font-bold mt-4"
-                                >
-                                    {submitting ? "Processing..." : `Pay ₹${Math.round((internships.find(i => i._id === selectedInternship)?.price || 0) * (1 + (internships.find(i => i._id === selectedInternship)?.gstPercentage || 0) / 100))} & Submit`}
-                                </Button>
-                            </form>
+                                <div className="mt-8 pt-8 border-t border-white/10">
+                                    <div className="flex justify-between items-end">
+                                        <div>
+                                            <p className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">Registration Fee</p>
+                                            <p className="text-3xl font-black text-white">
+                                                ₹{internships.find(i => i._id === selectedInternship)?.price}
+                                            </p>
+                                        </div>
+                                        <div className="text-right">
+                                             <p className="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">
+                                                Refundable on Performance*
+                                             </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* RIGHT SIDE: Form */}
+                            <div className="w-full md:w-3/5 bg-[#0f1014] flex flex-col h-full overflow-hidden relative">
+                                {/* Header */}
+                                <div className="flex items-center justify-between p-6 border-b border-white/10 bg-[#0f1014] z-20 shrink-0">
+                                    <div className="md:hidden">
+                                         <h2 className="text-lg font-bold text-white truncate max-w-[200px]">
+                                           {internships.find(i => i._id === selectedInternship)?.title}
+                                        </h2>
+                                        <p className="text-xs text-gray-400">
+                                            ₹{internships.find(i => i._id === selectedInternship)?.price} • {internships.find(i => i._id === selectedInternship)?.stipend}
+                                        </p>
+                                    </div>
+                                    <h2 className="text-xl font-bold text-white hidden md:block">Student Application</h2>
+                                    <button
+                                        onClick={() => setSelectedInternship(null)}
+                                        className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all shrink-0"
+                                    >
+                                        <X size={18} />
+                                    </button>
+                                </div>
+
+                                {/* Scrollable Form Body */}
+                                <div className="flex-1 overflow-y-auto p-6 min-h-0 custom-scrollbar scroller">
+                                    <form onSubmit={handleSubmit} className="space-y-6 pb-4">
+                                        
+                                        {/* Personal & College Info */}
+                                        <div className="space-y-4">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                 <div className="w-1 h-4 bg-emerald-500 rounded-full" />
+                                                 <h3 className="text-xs font-bold text-gray-300 uppercase tracking-widest">Academic Details</h3>
+                                            </div>
+                                           
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="space-y-2">
+                                                    <label className="text-xs font-medium text-gray-400">College / University</label>
+                                                    <input
+                                                        type="text"
+                                                        required
+                                                        placeholder="e.g. IIT Bombay"
+                                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-sm text-white focus:border-emerald-500/50 outline-none transition-colors"
+                                                        value={formData.college}
+                                                        onChange={(e) => setFormData({ ...formData, college: e.target.value })}
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-xs font-medium text-gray-400">Current Year</label>
+                                                    <select
+                                                        required
+                                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-sm text-white focus:border-emerald-500/50 outline-none transition-colors [&>option]:text-black"
+                                                        value={formData.currentYear}
+                                                        onChange={(e) => setFormData({ ...formData, currentYear: e.target.value })}
+                                                    >
+                                                        <option value="">Select Year...</option>
+                                                        <option value="1st Year">1st Year</option>
+                                                        <option value="2nd Year">2nd Year</option>
+                                                        <option value="3rd Year">3rd Year</option>
+                                                        <option value="4th Year">4th Year</option>
+                                                        <option value="Final Year">Final Year</option>
+                                                        <option value="Graduated">Graduated</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Timeline */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-medium text-gray-400">When can you start?</label>
+                                                <input
+                                                    type="date"
+                                                    required
+                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-sm text-white focus:border-emerald-500/50 outline-none transition-colors [color-scheme:dark]"
+                                                    value={formData.startDate}
+                                                    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-medium text-gray-400">Preferred Duration</label>
+                                                 <select
+                                                    required
+                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-sm text-white focus:border-emerald-500/50 outline-none transition-colors [&>option]:text-black"
+                                                    value={formData.preferredDuration}
+                                                    onChange={(e) => setFormData({ ...formData, preferredDuration: e.target.value })}
+                                                >
+                                                    <option value="">Select Duration...</option>
+                                                    <option value="1 Month">1 Month</option>
+                                                    <option value="2 Months">2 Months</option>
+                                                    <option value="3 Months">3 Months</option>
+                                                    <option value="6 Months">6 Months</option>
+                                                    <option value="Flexible">Flexible</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        {/* Professional Links */}
+                                        <div className="space-y-4 pt-2">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                 <div className="w-1 h-4 bg-emerald-500 rounded-full" />
+                                                 <h3 className="text-xs font-bold text-gray-300 uppercase tracking-widest">Experience & Resume</h3>
+                                            </div>
+                                             
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="space-y-2">
+                                                    <label className="text-xs font-medium text-gray-400">LinkedIn Profile</label>
+                                                    <input
+                                                        type="url"
+                                                        placeholder="https://linkedin.com/..."
+                                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-sm text-white focus:border-emerald-500/50 outline-none transition-colors"
+                                                        value={formData.linkedin}
+                                                        onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-xs font-medium text-gray-400">Portfolio / GitHub</label>
+                                                    <input
+                                                        type="url"
+                                                        placeholder="https://github.com/..."
+                                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-sm text-white focus:border-emerald-500/50 outline-none transition-colors"
+                                                        value={formData.portfolio}
+                                                        onChange={(e) => setFormData({ ...formData, portfolio: e.target.value })}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* Resume Toggle */}
+                                            <div className="bg-white/5 rounded-2xl p-5 border border-white/5">
+                                                <div className="flex items-center justify-between mb-4">
+                                                    <label className="text-xs font-medium text-gray-300">Resume / CV</label>
+                                                    <div className="flex gap-1 bg-black/40 p-1 rounded-lg">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setResumeType('file')}
+                                                            className={`px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all ${resumeType === 'file' ? 'bg-emerald-500 text-black shadow-sm' : 'text-gray-500 hover:text-white'}`}
+                                                        >
+                                                            Upload
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setResumeType('link')}
+                                                            className={`px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all ${resumeType === 'link' ? 'bg-emerald-500 text-black shadow-sm' : 'text-gray-500 hover:text-white'}`}
+                                                        >
+                                                            Link
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                {resumeType === 'file' ? (
+                                                    <div className="relative group">
+                                                        <input
+                                                            type="file"
+                                                            id="resume-upload"
+                                                            accept=".pdf,image/*"
+                                                            className="hidden"
+                                                            onChange={handleFileChange}
+                                                        />
+                                                        <label 
+                                                            htmlFor="resume-upload" 
+                                                            className={`w-full flex flex-col items-center justify-center gap-3 border border-dashed rounded-xl px-4 py-8 cursor-pointer transition-all hover:bg-white/5 ${file ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10'}`}
+                                                        >
+                                                            {file ? (
+                                                                <>
+                                                                    <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-500">
+                                                                        <CheckCircle2 size={20} />
+                                                                    </div>
+                                                                    <p className="text-xs text-emerald-400 font-medium truncate max-w-[200px]">{file.name}</p>
+                                                                    <p className="text-[10px] text-gray-500">Click to change</p>
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-gray-400 group-hover:text-white group-hover:bg-white/20 transition-all">
+                                                                         <Search size={20} /> 
+                                                                    </div>
+                                                                    <p className="text-xs text-gray-400 font-medium">Click to browse (PDF/Image)</p>
+                                                                </>
+                                                            )}
+                                                        </label>
+                                                    </div>
+                                                ) : (
+                                                    <input
+                                                        type="url"
+                                                        placeholder="Paste Google Drive / Dropbox link..."
+                                                        className="w-full bg-black/20 border border-white/10 rounded-xl px-3 py-3 text-sm text-white focus:border-emerald-500/50 outline-none transition-colors"
+                                                        value={formData.resume}
+                                                        onChange={(e) => setFormData({ ...formData, resume: e.target.value })}
+                                                    />
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                 <div className="w-1 h-4 bg-emerald-500 rounded-full" />
+                                                 <h3 className="text-xs font-bold text-gray-300 uppercase tracking-widest">Why You?</h3>
+                                            </div>
+                                            <textarea
+                                                required
+                                                rows={3}
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-sm text-white focus:border-emerald-500/50 outline-none transition-colors resize-none"
+                                                placeholder="Briefly explain why you are a good fit..."
+                                                value={formData.coverLetter}
+                                                onChange={(e) => setFormData({ ...formData, coverLetter: e.target.value })}
+                                            />
+                                        </div>
+                                        
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-medium text-gray-400">Referral Code</label>
+                                             <input
+                                                type="text"
+                                                placeholder="Optional"
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-sm text-white focus:border-emerald-500/50 outline-none transition-colors uppercase tracking-widest"
+                                                value={formData.referralCode}
+                                                onChange={(e) => setFormData({ ...formData, referralCode: e.target.value })}
+                                            />
+                                        </div>
+                                        
+                                         <div className="h-4"></div> {/* Bottom spacer */}
+                                    </form>
+                                </div>
+
+                                <div className="p-6 border-t border-white/10 bg-[#0f1014] z-20 shrink-0 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+                                     <Button
+                                        onClick={handleSubmit}
+                                        disabled={submitting || (uploading && resumeType === 'file')}
+                                        className="w-full bg-emerald-500 hover:bg-emerald-400 text-black border-0 py-6 text-sm font-black uppercase tracking-widest rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-[0.98]"
+                                    >
+                                        {uploading ? "Uploading File..." : submitting ? "Processing Application..." : `Proceed to Payment (₹${internships.find(i => i._id === selectedInternship)?.price})`}
+                                    </Button>
+                                    <p className="text-[10px] text-center text-gray-500 mt-3">
+                                        Secure Payment via Razorpay/PhonePe • 100% Secure
+                                    </p>
+                                </div>
+                            </div>
                         </motion.div>
                     </motion.div>
                 )}

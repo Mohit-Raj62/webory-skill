@@ -18,12 +18,19 @@ interface Application {
     };
     status: string;
     resume: string;
+    resumeType?: 'file' | 'link';
     coverLetter: string;
     appliedAt: string;
     startDate?: string;
-    duration?: string;
+    duration?: string; // Official duration
     interviewDate?: string;
     interviewLink?: string;
+    college?: string;
+    currentYear?: string;
+    linkedin?: string;
+    portfolio?: string;
+    preferredDuration?: string;
+    referralCode?: string;
 }
 
 export default function ApplicationsPage() {
@@ -42,12 +49,15 @@ export default function ApplicationsPage() {
     });
 
     // Interview Modal State
-    const [interviewApp, setInterviewApp] = useState < Application | null > (null);
+    const [interviewApp, setInterviewApp] = useState<Application | null>(null);
     const [interviewForm, setInterviewForm] = useState({
         date: "",
         time: "",
         link: ""
     });
+
+    // View Details Modal State
+    const [viewApp, setViewApp] = useState<Application | null>(null);
 
     useEffect(() => {
         fetchApplications();
@@ -84,6 +94,10 @@ export default function ApplicationsPage() {
             time: "",
             link: ""
         });
+    };
+
+    const openViewModal = (app: Application) => {
+        setViewApp(app);
     };
 
     const handleUpdateApplication = async () => {
@@ -204,6 +218,15 @@ export default function ApplicationsPage() {
             case 'pending_review':
                 matchesFilter = isPendingReview;
                 break;
+            case 'interview_scheduled':
+                matchesFilter = app.status === 'interview_scheduled';
+                break;
+            case 'accepted':
+                matchesFilter = app.status === 'accepted';
+                break;
+            case 'rejected':
+                matchesFilter = app.status === 'rejected';
+                break;
             default:
                 matchesFilter = app.status === filter;
         }
@@ -272,7 +295,8 @@ export default function ApplicationsPage() {
 
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-6 gap-4 md:gap-4 mb-6">
-                <div className="glass-card p-4 rounded-xl">
+                {/* Stats cards remain same */}
+                 <div className="glass-card p-4 rounded-xl">
                     <p className="text-gray-400 text-xs mb-1">Total</p>
                     <p className="text-2xl font-bold text-white">{applications.length}</p>
                 </div>
@@ -344,40 +368,12 @@ export default function ApplicationsPage() {
                                 <p className="text-gray-500 text-sm mt-1">
                                     Applied on {new Date(app.appliedAt).toLocaleDateString()}
                                 </p>
-                                {app.interviewDate && (
-                                    <p className="text-purple-400 text-sm mt-1 font-semibold">
-                                        Interview: {new Date(app.interviewDate).toLocaleString()}
-                                        {app.interviewLink && (
-                                            <a
-                                                href={app.interviewLink}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-blue-400 ml-2 hover:underline"
-                                            >
-                                                (Link <ExternalLink size={12} className="inline-block" />)
-                                            </a>
-                                        )}
-                                    </p>
-                                )}
-                                {app.startDate && (
-                                    <p className="text-green-400 text-sm mt-1">
-                                        Start Date: {new Date(app.startDate).toLocaleDateString()} | Duration: {app.duration}
-                                    </p>
-                                )}
-                                {app.resume && app.resume !== "Pending Upload" ? (
-                                    <a
-                                        href={app.resume}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-blue-400 text-sm flex items-center gap-1 mt-2 hover:underline"
-                                    >
-                                        View Resume <ExternalLink size={12} />
-                                    </a>
-                                ) : (
-                                    <span className="text-yellow-500/70 text-sm flex items-center gap-1 mt-2 cursor-not-allowed">
-                                        Resume Pending <Clock size={12} />
-                                    </span>
-                                )}
+                                {/* Summarized Details */}
+                                <div className="flex gap-4 mt-2">
+                                     <button onClick={() => openViewModal(app)} className="text-blue-400 text-xs hover:underline flex items-center gap-1">
+                                        <ExternalLink size={12}/> View Application Details
+                                     </button>
+                                </div>
                             </div>
 
                             <div className="flex gap-2 flex-wrap justify-end">
@@ -396,7 +392,7 @@ export default function ApplicationsPage() {
                                         className="bg-purple-600 hover:bg-purple-700"
                                     >
                                         <Calendar size={18} className="mr-2" />
-                                        Schedule Interview
+                                        Schedule
                                     </Button>
                                 )}
 
@@ -425,7 +421,7 @@ export default function ApplicationsPage() {
                                         className="bg-blue-600 hover:bg-blue-700"
                                     >
                                         <Award size={18} className="mr-2" />
-                                        Mark as Completed
+                                        Mark Completed
                                     </Button>
                                 )}
                             </div>
@@ -436,6 +432,134 @@ export default function ApplicationsPage() {
 
             {filteredApplications.length === 0 && (
                 <div className="text-center py-12 text-gray-400">No applications found</div>
+            )}
+
+            {/* View Details Modal */}
+            {viewApp && (
+                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+                    <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-2xl shadow-2xl overflow-y-auto max-h-[90vh]">
+                        <div className="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
+                            <div>
+                                <h2 className="text-xl font-bold text-white mb-1">Application Details</h2>
+                                <p className="text-sm text-gray-400">{viewApp.student?.firstName} {viewApp.student?.lastName}</p>
+                            </div>
+                            <button onClick={() => setViewApp(null)} className="text-gray-400 hover:text-white">
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Academic Info */}
+                            <div className="space-y-4">
+                                <h3 className="text-emerald-400 text-xs font-bold uppercase tracking-wider">Academic Profile</h3>
+                                <div className="space-y-3">
+                                    <div className="bg-black/20 p-3 rounded-lg border border-white/5">
+                                        <p className="text-xs text-gray-500 mb-1">College/University</p>
+                                        <p className="text-white font-medium">{viewApp.college || "N/A"}</p>
+                                    </div>
+                                    <div className="bg-black/20 p-3 rounded-lg border border-white/5">
+                                        <p className="text-xs text-gray-500 mb-1">Current Year</p>
+                                        <p className="text-white font-medium">{viewApp.currentYear || "N/A"}</p>
+                                    </div>
+                                    <div className="bg-black/20 p-3 rounded-lg border border-white/5">
+                                        <p className="text-xs text-gray-500 mb-1">Applied At</p>
+                                        <p className="text-white font-medium">{new Date(viewApp.appliedAt).toLocaleString()}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Preference Info */}
+                            <div className="space-y-4">
+                                <h3 className="text-blue-400 text-xs font-bold uppercase tracking-wider">Preferences</h3>
+                                <div className="space-y-3">
+                                    <div className="bg-black/20 p-3 rounded-lg border border-white/5">
+                                        <p className="text-xs text-gray-500 mb-1">Start Date (Preferred)</p>
+                                        <p className="text-white font-medium">{viewApp.startDate ? new Date(viewApp.startDate).toLocaleDateString() : "N/A"}</p>
+                                    </div>
+                                    <div className="bg-black/20 p-3 rounded-lg border border-white/5">
+                                        <p className="text-xs text-gray-500 mb-1">Duration (Preferred)</p>
+                                        <p className="text-white font-medium">{viewApp.preferredDuration || "N/A"}</p>
+                                    </div>
+                                     <div className="bg-black/20 p-3 rounded-lg border border-white/5">
+                                        <p className="text-xs text-gray-500 mb-1">Referral Code</p>
+                                        <p className="text-white font-medium tracking-widest">{viewApp.referralCode || "NONE"}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Professional Links */}
+                            <div className="md:col-span-2 space-y-4">
+                                <h3 className="text-purple-400 text-xs font-bold uppercase tracking-wider">Professional Links & Resume</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <a 
+                                        href={viewApp.linkedin || "#"} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${viewApp.linkedin ? 'bg-blue-500/10 border-blue-500/30 hover:bg-blue-500/20' : 'bg-gray-800/50 border-gray-700 cursor-not-allowed opacity-50'}`}
+                                    >
+                                        <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                                            <ExternalLink size={14} className="text-blue-400"/>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-gray-400">LinkedIn</p>
+                                            <p className="text-sm font-medium text-white truncate max-w-[150px]">{viewApp.linkedin ? "View Profile" : "Not Provided"}</p>
+                                        </div>
+                                    </a>
+
+                                    <a 
+                                        href={viewApp.portfolio || "#"} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${viewApp.portfolio ? 'bg-purple-500/10 border-purple-500/30 hover:bg-purple-500/20' : 'bg-gray-800/50 border-gray-700 cursor-not-allowed opacity-50'}`}
+                                    >
+                                        <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                                            <ExternalLink size={14} className="text-purple-400"/>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-gray-400">Portfolio</p>
+                                            <p className="text-sm font-medium text-white truncate max-w-[150px]">{viewApp.portfolio ? "View Portfolio" : "Not Provided"}</p>
+                                        </div>
+                                    </a>
+                                </div>
+
+                                <div className="bg-black/30 p-4 rounded-xl border border-white/5 mt-2">
+                                     <div className="flex justify-between items-center mb-2">
+                                        <p className="text-xs text-gray-400">Resume / CV</p>
+                                        <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded text-gray-400 uppercase">{viewApp.resumeType || 'FILE'}</span>
+                                     </div>
+                                     {viewApp.resume ? (
+                                        <a href={viewApp.resume} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-emerald-400 hover:underline bg-emerald-500/5 p-3 rounded-lg border border-emerald-500/20">
+                                            <CheckCircle size={16}/>
+                                            <span className="text-sm font-bold">Open Resume Document</span>
+                                            <ExternalLink size={12} className="ml-auto"/>
+                                        </a>
+                                     ) : (
+                                        <div className="text-yellow-500 flex items-center gap-2 text-sm bg-yellow-500/5 p-3 rounded-lg border border-yellow-500/20">
+                                            <Clock size={16}/>
+                                            <span>No Resume Uploaded</span>
+                                        </div>
+                                     )}
+                                </div>
+                            </div>
+
+                            {/* Cover Letter */}
+                            <div className="md:col-span-2 space-y-4">
+                                <h3 className="text-orange-400 text-xs font-bold uppercase tracking-wider">Cover Letter (Why You?)</h3>
+                                <div className="bg-black/20 p-4 rounded-xl border border-white/5">
+                                    <p className="text-sm text-gray-300 leading-relaxed italic">
+                                        "{viewApp.coverLetter || "No cover letter provided."}"
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="mt-8 flex justify-end">
+                            <Button onClick={() => setViewApp(null)} className="bg-white hover:bg-gray-200 text-black">
+                                Close Details
+                            </Button>
+                        </div>
+                    </div>
+                </div>
             )}
 
             {/* Edit Modal */}
@@ -461,11 +585,12 @@ export default function ApplicationsPage() {
                                     <option value="interview_scheduled" className="bg-slate-800">Interview Scheduled</option>
                                     <option value="accepted" className="bg-slate-800">Accepted</option>
                                     <option value="rejected" className="bg-slate-800">Rejected</option>
+                                    <option value="completed" className="bg-slate-800">Completed</option>
                                 </select>
                             </div>
 
                             <div>
-                                <label className="block text-sm text-gray-400 mb-1">Start Date</label>
+                                <label className="block text-sm text-gray-400 mb-1">Official Start Date</label>
                                 <input
                                     type="date"
                                     value={editForm.startDate}
