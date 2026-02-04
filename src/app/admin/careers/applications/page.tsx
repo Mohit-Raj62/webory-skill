@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { CheckCircle, XCircle, Clock, Search, ExternalLink, Edit2, Save, X, Calendar, Award, Mail, ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { CheckCircle, XCircle, Clock, Search, ExternalLink, Edit2, Save, X, Calendar, Award, Mail, ChevronLeft, ChevronRight, Briefcase, DollarSign, Globe, Linkedin } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -19,6 +19,12 @@ interface JobApplication {
     };
     resume: string;
     coverLetter?: string;
+    linkedin?: string;
+    portfolio?: string;
+    currentSalary?: string;
+    expectedSalary?: string;
+    noticePeriod?: string;
+    whyHireYou?: string;
     status: string;
     appliedAt: string;
     interviewDate?: string;
@@ -32,7 +38,7 @@ export default function AdminApplicationsPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [pagination, setPagination] = useState({
         page: 1,
-        limit: 10,
+        limit: 5,
         totalPages: 1,
         totalCount: 0
     });
@@ -49,18 +55,24 @@ export default function AdminApplicationsPage() {
     const [offerApp, setOfferApp] = useState<JobApplication | null>(null);
     const [offerLink, setOfferLink] = useState("");
 
-    // Debounce search
+    // View Details Modal
+    const [viewApp, setViewApp] = useState<JobApplication | null>(null);
+
+    // Initial load and Debounce search
+    const isFirstRender = useRef(true);
+
     useEffect(() => {
+        if (isFirstRender.current) {
+            fetchApplications(1);
+            isFirstRender.current = false;
+            return;
+        }
+
         const timer = setTimeout(() => {
             fetchApplications(1);
         }, 500);
         return () => clearTimeout(timer);
     }, [searchTerm, filter]);
-
-    // Initial load handled by debounce effect
-    // useEffect(() => {
-    //     fetchApplications();
-    // }, []);
 
     const fetchApplications = async (page = pagination.page) => {
         setLoading(true);
@@ -185,7 +197,6 @@ export default function AdminApplicationsPage() {
         }
     };
 
-    // Client-side filtering removed in favor of Server-side
     const filteredApplications = applications;
 
     const ApplicationSkeleton = () => (
@@ -290,35 +301,47 @@ export default function AdminApplicationsPage() {
                                     </div>
                                     <p className="text-gray-400 text-sm mb-1">{app.email} • {app.phone}</p>
                                     <p className="text-white font-medium">Applied for: {app.jobId?.title || app.position}</p>
-                                    <p className="text-gray-500 text-sm mt-1">Applied on {new Date(app.appliedAt).toLocaleDateString()}</p>
+                                    <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                                         <span>Applied: {new Date(app.appliedAt).toLocaleDateString()}</span>
+                                         {app.currentSalary && <span className="flex items-center gap-1"><DollarSign size={12}/> Cur. {app.currentSalary}</span>}
+                                         {app.expectedSalary && <span className="flex items-center gap-1"><DollarSign size={12}/> Exp. {app.expectedSalary}</span>}
+                                         {app.noticePeriod && <span className="flex items-center gap-1"><Clock size={12}/> {app.noticePeriod}</span>}
+                                    </div>
+
                                     
-                                    <div className="flex flex-wrap gap-4 mt-3">
-                                        {/* Image Preview if applicable */}
-                                        {app.resume.match(/\.(jpeg|jpg|png|gif|webp)$/i) && (
-                                            <div className="mb-2 w-full max-w-[200px] h-32 rounded-lg overflow-hidden border border-white/10 relative group">
-                                                <img
-                                                    src={app.resume} 
-                                                    alt="Resume Preview" 
-                                                    className="w-full h-full object-cover"
-                                                />
-                                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                    <a href={app.resume} target="_blank" rel="noopener noreferrer" className="text-white text-xs bg-black/80 px-2 py-1 rounded">View Full</a>
-                                                </div>
-                                            </div>
-                                        )}
-                                        <div className="w-full">
-                                            <a href={app.resume} target="_blank" rel="noopener noreferrer" className="text-blue-400 text-sm flex items-center hover:underline bg-white/5 px-4 py-2 rounded-lg inline-flex max-w-full truncate">
+                                    <div className="flex flex-wrap gap-4 mt-4">
+                                        {/* Resume Link */}
+                                        <div className="max-w-xs">
+                                            <a href={app.resume} target="_blank" rel="noopener noreferrer" className="text-blue-400 text-sm flex items-center hover:underline bg-white/5 px-4 py-2 rounded-lg inline-flex max-w-full truncate border border-white/5 hover:bg-white/10">
                                                 <ExternalLink size={14} className="mr-2 flex-shrink-0"/> 
-                                                <span className="truncate">{app.resume.split('/').pop()}</span>
+                                                <span className="truncate">Resume</span>
                                             </a>
                                         </div>
+
+                                        {/* LinkedIn */}
+                                        {app.linkedin && (
+                                            <a href={app.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-400 text-sm flex items-center hover:underline bg-blue-500/10 px-4 py-2 rounded-lg inline-flex max-w-full truncate border border-blue-500/20 hover:bg-blue-500/20">
+                                                <Linkedin size={14} className="mr-2 flex-shrink-0"/> 
+                                                <span className="truncate">LinkedIn</span>
+                                            </a>
+                                        )}
+
+                                        {/* Portfolio */}
+                                        {app.portfolio && (
+                                            <a href={app.portfolio} target="_blank" rel="noopener noreferrer" className="text-purple-400 text-sm flex items-center hover:underline bg-purple-500/10 px-4 py-2 rounded-lg inline-flex max-w-full truncate border border-purple-500/20 hover:bg-purple-500/20">
+                                                <Globe size={14} className="mr-2 flex-shrink-0"/> 
+                                                <span className="truncate">Portfolio</span>
+                                            </a>
+                                        )}
+
+                                        {/* View Details Button */}
+                                         <button 
+                                            onClick={() => setViewApp(app)}
+                                            className="text-gray-300 text-sm flex items-center hover:text-white bg-white/5 px-4 py-2 rounded-lg border border-white/5 hover:bg-white/10 transition-colors"
+                                        >
+                                            <Search size={14} className="mr-2"/> View Full Details
+                                         </button>
                                     </div>
-                                    {app.coverLetter && (
-                                        <div className="mt-3 bg-white/5 p-3 rounded-lg text-sm text-gray-300">
-                                            <p className="font-semibold text-xs text-gray-500 uppercase tracking-wider mb-1">Cover Letter</p>
-                                            {app.coverLetter}
-                                        </div>
-                                    )}
                                 </div>
 
                                 <div className="flex flex-col gap-2 min-w-[200px]">
@@ -374,6 +397,102 @@ export default function AdminApplicationsPage() {
                     >
                         Next <ChevronRight className="h-4 w-4 ml-2" />
                     </Button>
+                </div>
+            )}
+
+            {/* View Details Modal */}
+            {viewApp && (
+                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+                     <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-2xl shadow-2xl overflow-y-auto max-h-[90vh]">
+                        <div className="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
+                             <div>
+                                <h2 className="text-xl font-bold text-white mb-1">Application Details</h2>
+                                <p className="text-sm text-gray-400">{viewApp.name} - {viewApp.jobId?.title || viewApp.position}</p>
+                            </div>
+                            <button onClick={() => setViewApp(null)} className="text-gray-400 hover:text-white">
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Contact Info */}
+                            <div className="space-y-4">
+                                <h3 className="text-blue-400 text-xs font-bold uppercase tracking-wider">Candidate Info</h3>
+                                <div className="space-y-3">
+                                    <div className="bg-black/20 p-3 rounded-lg border border-white/5">
+                                        <p className="text-xs text-gray-500 mb-1">Email</p>
+                                        <p className="text-white font-medium">{viewApp.email}</p>
+                                    </div>
+                                    <div className="bg-black/20 p-3 rounded-lg border border-white/5">
+                                        <p className="text-xs text-gray-500 mb-1">Phone</p>
+                                        <p className="text-white font-medium">{viewApp.phone}</p>
+                                    </div>
+                                    <div className="bg-black/20 p-3 rounded-lg border border-white/5">
+                                        <p className="text-xs text-gray-500 mb-1">Applied At</p>
+                                        <p className="text-white font-medium">{new Date(viewApp.appliedAt).toLocaleString()}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Job Info */}
+                            <div className="space-y-4">
+                                <h3 className="text-purple-400 text-xs font-bold uppercase tracking-wider">Professional Info</h3>
+                                <div className="space-y-3">
+                                     <div className="flex gap-2">
+                                        <div className="flex-1 bg-black/20 p-3 rounded-lg border border-white/5">
+                                            <p className="text-xs text-gray-500 mb-1">Current CTC</p>
+                                            <p className="text-white font-medium">{viewApp.currentSalary || "N/A"}</p>
+                                        </div>
+                                        <div className="flex-1 bg-black/20 p-3 rounded-lg border border-white/5">
+                                            <p className="text-xs text-gray-500 mb-1">Expected CTC</p>
+                                            <p className="text-white font-medium">{viewApp.expectedSalary || "N/A"}</p>
+                                        </div>
+                                     </div>
+                                    <div className="bg-black/20 p-3 rounded-lg border border-white/5">
+                                        <p className="text-xs text-gray-500 mb-1">Notice Period</p>
+                                        <p className="text-white font-medium">{viewApp.noticePeriod || "N/A"}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Links */}
+                            <div className="md:col-span-2 space-y-4">
+                                <h3 className="text-emerald-400 text-xs font-bold uppercase tracking-wider">Links & Documents</h3>
+                                <div className="flex flex-wrap gap-4">
+                                    {viewApp.linkedin && (
+                                        <a href={viewApp.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-blue-500/10 px-4 py-3 rounded-xl border border-blue-500/20 text-blue-400 hover:bg-blue-500/20 transition-colors">
+                                           <Linkedin size={18} /> LinkedIn Profile
+                                        </a>
+                                    )}
+                                     {viewApp.portfolio && (
+                                        <a href={viewApp.portfolio} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-purple-500/10 px-4 py-3 rounded-xl border border-purple-500/20 text-purple-400 hover:bg-purple-500/20 transition-colors">
+                                           <Globe size={18} /> Portfolio
+                                        </a>
+                                    )}
+                                    <a href={viewApp.resume} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-white/5 px-4 py-3 rounded-xl border border-white/10 text-white hover:bg-white/10 transition-colors">
+                                       <ExternalLink size={18} /> View Resume
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            {/* Why Hire You / Content */}
+                            <div className="md:col-span-2 space-y-4">
+                                <h3 className="text-orange-400 text-xs font-bold uppercase tracking-wider">Why Should We Hire You?</h3>
+                                <div className="bg-black/20 p-4 rounded-xl border border-white/5">
+                                    <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">
+                                        {viewApp.whyHireYou || viewApp.coverLetter || "No details provided."}
+                                    </p>
+                                </div>
+                            </div>
+
+                        </div>
+                        
+                        <div className="mt-8 flex justify-end">
+                            <Button onClick={() => setViewApp(null)} className="bg-white hover:bg-gray-200 text-black">
+                                Close Details
+                            </Button>
+                        </div>
+                     </div>
                 </div>
             )}
 
