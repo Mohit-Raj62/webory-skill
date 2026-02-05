@@ -15,9 +15,9 @@ export function Footer() {
             </div>
 
             <div className="container relative z-10 mx-auto px-6">
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-16 mb-16">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-16 mb-16">
                     {/* Brand Section */}
-                    <div className="col-span-1 md:col-span-5 lg:col-span-4 space-y-6">
+                    <div className="col-span-1 md:col-span-2 lg:col-span-4 space-y-6">
                         <Link href="/" className="inline-flex items-center space-x-3 group">
                             <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
                                 <span className="font-black text-xl text-white">W</span>
@@ -53,7 +53,7 @@ export function Footer() {
                     </div>
 
                     {/* Navigation Links */}
-                    <div className="col-span-1 md:col-span-7 lg:col-span-8 grid grid-cols-2 lg:grid-cols-3 gap-10 sm:gap-8">
+                    <div className="col-span-1 md:col-span-2 lg:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-8">
                         <div>
                             <h4 className="text-white font-semibold mb-6 flex items-center gap-2">
                                 <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
@@ -81,7 +81,7 @@ export function Footer() {
                             </ul>
                         </div>
 
-                        <div className="flex flex-col items-center md:items-start col-span-2 sm:col-span-1 md:col-span-1">
+                        <div className="flex flex-col items-center md:items-start col-span-1">
                             <h4 className="text-white font-bold mb-6 flex items-center justify-center md:justify-start gap-2 group/title">
                                 <span className="w-1.5 h-1.5 rounded-full bg-pink-500 shadow-[0_0_8px_rgba(236,72,153,0.5)] group-hover/title:scale-125 transition-transform duration-300"></span>
                                 <span className="tracking-tight text-lg">Connect</span>

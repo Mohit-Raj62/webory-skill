@@ -35,7 +35,7 @@ export function Navbar() {
                         <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                             <span className="font-black text-xl text-white">W</span>
                         </div>
-                        <span className="text-lg md:text-xl font-bold">
+                        <span className="text-base sm:text-lg xl:text-xl font-bold">
                             <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">WEBORY </span>
                             <span className="relative">
                                 <span className="absolute -top-1.5 left-[30%] -translate-x-1/2 flex gap-1">
@@ -49,7 +49,7 @@ export function Navbar() {
                     </Link>
 
                     {/* Desktop Menu */}
-                    <div className="hidden md:flex items-center space-x-8">
+                    <div className="hidden xl:flex items-center space-x-6 2xl:space-x-8">
                         <Link href="/#features" className="text-sm text-gray-300 hover:text-white transition-colors">
                             Features
                         </Link>
@@ -119,7 +119,7 @@ export function Navbar() {
 
                     {/* Mobile Menu Button */}
                     <button
-                        className="md:hidden text-gray-300 hover:text-white"
+                        className="xl:hidden text-gray-300 hover:text-white"
                         onClick={() => setIsOpen(!isOpen)}
                     >
                         {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -132,7 +132,7 @@ export function Navbar() {
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
-                        className="md:hidden absolute top-16 left-0 w-full bg-black/90 backdrop-blur-xl border-b border-white/10 p-4"
+                        className="xl:hidden absolute top-16 left-0 w-full bg-black/90 backdrop-blur-xl border-b border-white/10 p-4"
                     >
                         <div className="flex flex-col space-y-4">
                             <Link href="/#features" className="text-sm text-gray-300 hover:text-white" onClick={() => setIsOpen(false)}>
