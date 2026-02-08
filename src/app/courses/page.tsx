@@ -3,8 +3,11 @@ import dbConnect from "@/lib/db";
 import Course from "@/models/Course";
 import Enrollment from "@/models/Enrollment";
 import { CoursesView } from "@/components/courses/courses-view";
+import { unstable_cache } from "next/cache";
 
-export const dynamic = "force-dynamic";
+// Remove force-dynamic to allow caching
+// export const dynamic = "force-dynamic";
+export const revalidate = 300; // Keep revalidate for ISR
 
 // Fallback data if API fails or DB is empty
 const fallbackCourses = [
@@ -43,40 +46,47 @@ const fallbackCourses = [
     },
 ];
 
-async function getCoursesData() {
-    try {
-        await dbConnect();
-        
-        // Use aggregation to calculate student count from enrollments
-        // Logic copied from /api/courses/route.ts
-        const courses = await Course.aggregate([
-            { $match: { isAvailable: true } },
-            {
-                $lookup: {
-                    from: "enrollments",
-                    localField: "_id",
-                    foreignField: "course",
-                    as: "enrollments",
+// Cache the courses data to avoid expensive aggregations on every request
+const getCachedCoursesData = unstable_cache(
+    async () => {
+        try {
+            await dbConnect();
+            
+            // Use optimized aggregation for student count
+            const courses = await Course.aggregate([
+                { $match: { isAvailable: true } },
+                {
+                    $lookup: {
+                        from: "enrollments",
+                        let: { courseId: "$_id" },
+                        pipeline: [
+                            { $match: { $expr: { $eq: ["$course", "$$courseId"] } } },
+                            { $count: "count" }
+                        ],
+                        as: "enrollmentCount",
+                    },
                 },
-            },
-            {
-                $addFields: {
-                    studentsCount: { $size: "$enrollments" },
+                {
+                    $addFields: {
+                        studentsCount: { $ifNull: [{ $arrayElemAt: ["$enrollmentCount.count", 0] }, 0] },
+                    },
                 },
-            },
-            {
-                $project: {
-                    enrollments: 0, 
+                {
+                    $project: {
+                        enrollmentCount: 0, 
+                    },
                 },
-            },
-        ]);
+            ]);
 
-        return JSON.parse(JSON.stringify(courses));
-    } catch (error) {
-        console.error("Failed to fetch courses:", error);
-        return null;
-    }
-}
+            return JSON.parse(JSON.stringify(courses));
+        } catch (error) {
+            console.error("Failed to fetch courses:", error);
+            return null;
+        }
+    },
+    ['courses-list'],
+    { revalidate: 300, tags: ['courses'] }
+);
 
 async function getUserEnrollments(userId: string) {
     try {
@@ -90,8 +100,9 @@ async function getUserEnrollments(userId: string) {
 }
 
 export default async function CoursesPage() {
+    // User check is dynamic, but coursesData is now cached
     const user = await getUser();
-    const coursesData = await getCoursesData();
+    const coursesData = await getCachedCoursesData();
     let enrolledCourseIds: string[] = [];
 
     if (user) {

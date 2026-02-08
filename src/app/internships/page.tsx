@@ -3,8 +3,11 @@ import dbConnect from "@/lib/db";
 import Internship from "@/models/Internship";
 import Application from "@/models/Application";
 import { InternshipsView } from "@/components/internships/internships-view";
+import { unstable_cache } from "next/cache";
 
-export const dynamic = "force-dynamic";
+// Remove force-dynamic to allow caching
+// export const dynamic = "force-dynamic";
+export const revalidate = 300; // Cache for 5 minutes
 
 const fallbackInternships = [
     {
@@ -29,17 +32,25 @@ const fallbackInternships = [
     },
 ];
 
-async function getInternshipsData() {
-    try {
-        await dbConnect();
-        const internships = await Internship.find({});
-        // Serialize to plain objects
-        return JSON.parse(JSON.stringify(internships));
-    } catch (error) {
-        console.error("Failed to fetch internships:", error);
-        return null;
-    }
-}
+const getCachedInternshipsData = unstable_cache(
+    async () => {
+        try {
+            await dbConnect();
+            // Optimize query with selection, sort, and lean()
+            const internships = await Internship.find({})
+                .select("title company location type stipend tags price")
+                .sort({ createdAt: -1 })
+                .lean();
+            // Serialize to plain objects
+            return JSON.parse(JSON.stringify(internships));
+        } catch (error) {
+            console.error("Failed to fetch internships:", error);
+            return null;
+        }
+    },
+    ['internships-list'],
+    { revalidate: 300, tags: ['internships'] }
+);
 
 async function getUserApplications(userId: string) {
     try {
@@ -57,7 +68,7 @@ async function getUserApplications(userId: string) {
 
 export default async function InternshipsPage() {
     const user = await getUser();
-    const internshipsData = await getInternshipsData();
+    const internshipsData = await getCachedInternshipsData();
     let userApplications: { internshipId: string; status: string }[] = [];
 
     if (user) {

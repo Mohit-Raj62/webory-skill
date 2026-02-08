@@ -2,8 +2,9 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
+import { cache } from "react";
 
-export async function getUser() {
+export const getUser = cache(async () => {
   try {
     await dbConnect();
     const cookieStore = await cookies();
@@ -17,7 +18,7 @@ export async function getUser() {
       userId: string;
       sessionId?: string;
     };
-    const user = await User.findById(decoded.userId).select("-password");
+    const user = await User.findById(decoded.userId).select("-password").lean();
 
     if (!user) {
       return null;
@@ -28,12 +29,10 @@ export async function getUser() {
       return null;
     }
 
-    // Return plain object to avoid serialization issues with Client Components if passed directly
-    // though usually Mongoose docs need .lean() or JSON.stringify/parse for passing to client
-    // We'll rely on the caller to handle serialization if needed, or return a plain object here.
+    // Return plain object (lean already does this mostly, but ensure serialization)
     return JSON.parse(JSON.stringify(user));
   } catch (error) {
     console.error("Auth check error:", error);
     return null;
   }
-}
+});

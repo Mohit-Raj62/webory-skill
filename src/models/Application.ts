@@ -90,6 +90,12 @@ const ApplicationSchema = new Schema({
   },
 });
 
+// Performance indexes for faster queries
+ApplicationSchema.index({ student: 1 }); // For user dashboard queries
+ApplicationSchema.index({ student: 1, status: 1 }); // For filtered queries (excluding rejected)
+ApplicationSchema.index({ internship: 1 }); // For internship-related queries
+ApplicationSchema.index({ status: 1 }); // For admin panel filtering
+
 const Application =
   models.Application || model("Application", ApplicationSchema);
 

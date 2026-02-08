@@ -39,9 +39,10 @@ export default function CoursesAdminPage() {
     const [courses, setCourses] = useState<Course[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
     const [pagination, setPagination] = useState({
         page: 1,
-        limit: 9,
+        limit: 6, // Reduced from 9 for faster initial load
         totalPages: 1,
         totalCount: 0
     });
@@ -53,9 +54,18 @@ export default function CoursesAdminPage() {
         totalRevenue: courses.reduce((sum, c) => sum + c.price, 0)
     };
 
+    // Debounce search input
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchTerm);
+        }, 300); // 300ms debounce
+
+        return () => clearTimeout(timer);
+    }, [searchTerm]);
+
     useEffect(() => {
         fetchCourses(1);
-    }, [searchTerm]); // Re-fetch on search
+    }, [debouncedSearch]); // Re-fetch on debounced search
 
     const fetchCourses = async (page = pagination.page) => {
         setLoading(true);

@@ -5,13 +5,18 @@ import Internship from "@/models/Internship";
 export async function GET() {
   try {
     await dbConnect();
-    const internships = await Internship.find({});
+    const internships = await Internship.find({})
+      .select(
+        "title company location type stipend tags price description color icon",
+      )
+      .sort({ createdAt: -1 })
+      .lean();
     return NextResponse.json({ internships }, { status: 200 });
   } catch (error) {
     console.error("Fetch internships error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -26,7 +31,7 @@ export async function POST(req: Request) {
     console.error("Create internship error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -15,16 +15,22 @@ export async function GET() {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
-    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+      userId: string;
+    };
+
     // Fetch enrollments and populate course details
     const enrollments = await Enrollment.find({ student: decoded.userId })
-      .populate('course')
-      .sort({ enrolledAt: -1 });
+      .populate("course", "title thumbnail level color icon price description")
+      .sort({ enrolledAt: -1 })
+      .lean(); // Use lean() for performance
 
     return NextResponse.json({ enrollments }, { status: 200 });
   } catch (error) {
     console.error("Fetch enrollments error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

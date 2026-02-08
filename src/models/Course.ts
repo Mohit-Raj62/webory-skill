@@ -218,6 +218,11 @@ const CourseSchema = new Schema({
   },
 });
 
+// Performance indexes for faster queries
+CourseSchema.index({ isAvailable: 1 }); // For public course filtering
+CourseSchema.index({ createdAt: -1 }); // For sorting by newest
+CourseSchema.index({ isPopular: 1 }); // For filtering popular courses
+
 // Force Schema Recompile
 const Course = models.Course || model("Course", CourseSchema);
 

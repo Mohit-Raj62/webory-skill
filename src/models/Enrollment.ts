@@ -63,6 +63,10 @@ const EnrollmentSchema = new Schema({
 // Prevent duplicate enrollments
 EnrollmentSchema.index({ student: 1, course: 1 }, { unique: true });
 
+// Performance indexes for faster queries
+EnrollmentSchema.index({ student: 1 }); // For user dashboard queries
+EnrollmentSchema.index({ course: 1 }); // For course aggregations
+
 const Enrollment = models.Enrollment || model("Enrollment", EnrollmentSchema);
 
 export default Enrollment;

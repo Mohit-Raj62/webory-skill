@@ -25,9 +25,10 @@ export async function GET() {
 
     // Use lean() to get plain JavaScript objects instead of Mongoose documents
     // Run queries in parallel for better performance
+    // Field projection added to reduce data transfer and improve performance
     const [enrollments, applications] = await Promise.all([
       Enrollment.find({ student: decoded.userId })
-        .populate("course")
+        .populate("course", "title level videos thumbnail description") // Only load needed fields
         .lean()
         .then((res) => {
           console.log("Enrollments found:", res.length);
@@ -39,8 +40,8 @@ export async function GET() {
         }),
 
       Application.find({ student: decoded.userId, status: { $ne: "rejected" } })
-        .populate("internship")
-        .populate("student")
+        .populate("internship", "title company location type stipend tags") // Only load needed fields
+        .populate("student", "firstName lastName email") // Only load needed fields
         .lean()
         .then((res) => {
           console.log("Applications found:", res.length);

@@ -25,19 +25,24 @@ export async function GET(req: Request) {
         {
           $lookup: {
             from: "enrollments",
-            localField: "_id",
-            foreignField: "course",
-            as: "enrollments",
+            let: { courseId: "$_id" },
+            pipeline: [
+              { $match: { $expr: { $eq: ["$course", "$$courseId"] } } },
+              { $count: "count" },
+            ],
+            as: "enrollmentCount",
           },
         },
         {
           $addFields: {
-            studentsCount: { $size: "$enrollments" },
+            studentsCount: {
+              $ifNull: [{ $arrayElemAt: ["$enrollmentCount.count", 0] }, 0],
+            },
           },
         },
         {
           $project: {
-            enrollments: 0,
+            enrollmentCount: 0,
           },
         },
         { $sort: { createdAt: -1 } },
