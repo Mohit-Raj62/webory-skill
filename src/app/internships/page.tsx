@@ -41,7 +41,7 @@ const getCachedInternshipsData = unstable_cache(
                 .select("title company location type stipend tags price")
                 .sort({ createdAt: -1 })
                 .lean();
-            return internships;
+            return JSON.parse(JSON.stringify(internships));
         } catch (error) {
             console.error("Failed to fetch internships:", error);
             return null;

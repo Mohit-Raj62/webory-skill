@@ -82,7 +82,7 @@ const getCachedCoursesData = unstable_cache(
                 },
             ]);
 
-            return courses; // Aggregate returns plain objects
+            return JSON.parse(JSON.stringify(courses));
         } catch (error) {
             console.error("Failed to fetch courses:", error);
             return null;
