@@ -4,8 +4,9 @@ import Internship from "@/models/Internship";
 import Application from "@/models/Application";
 import { InternshipsView } from "@/components/internships/internships-view";
 import { unstable_cache } from "next/cache";
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
 
-// Remove force-dynamic to allow caching
 // export const dynamic = "force-dynamic";
 export const revalidate = 300; // Cache for 5 minutes
 
@@ -36,13 +37,11 @@ const getCachedInternshipsData = unstable_cache(
     async () => {
         try {
             await dbConnect();
-            // Optimize query with selection, sort, and lean()
             const internships = await Internship.find({})
                 .select("title company location type stipend tags price")
                 .sort({ createdAt: -1 })
                 .lean();
-            // Serialize to plain objects
-            return JSON.parse(JSON.stringify(internships));
+            return internships;
         } catch (error) {
             console.error("Failed to fetch internships:", error);
             return null;
@@ -52,30 +51,45 @@ const getCachedInternshipsData = unstable_cache(
     { revalidate: 300, tags: ['internships'] }
 );
 
-async function getUserApplications(userId: string) {
-    try {
-        await dbConnect();
-        const applications = await Application.find({ student: userId, status: { $ne: 'rejected' } }).select("internship status").lean();
-        return applications.map((a: any) => ({
-            internshipId: a.internship.toString(),
-            status: a.status
-        }));
-    } catch (error) {
-        console.error("Failed to fetch applications:", error);
-        return [];
-    }
-}
+const getCachedUserApplications = unstable_cache(
+    async (userId: string) => {
+        try {
+            await dbConnect();
+            const applications = await Application.find({ student: userId, status: { $ne: 'rejected' } })
+                .select("internship status")
+                .lean();
+            return applications.map((a: any) => ({
+                internshipId: a.internship.toString(),
+                status: a.status
+            }));
+        } catch (error) {
+            console.error("Failed to fetch applications:", error);
+            return [];
+        }
+    },
+    ['user-applications'],
+    { revalidate: 3600, tags: ['user-applications'] }
+);
 
 export default async function InternshipsPage() {
-    const user = await getUser();
-    const internshipsData = await getCachedInternshipsData();
-    let userApplications: { internshipId: string; status: string }[] = [];
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    let userId: string | null = null;
 
-    if (user) {
-        userApplications = await getUserApplications(user._id);
+    if (token) {
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+            userId = decoded.userId;
+        } catch (e) {}
     }
+
+    const [user, internshipsData, userApplications] = await Promise.all([
+        getUser(),
+        getCachedInternshipsData(),
+        userId ? getCachedUserApplications(userId) : Promise.resolve([])
+    ]);
 
     const internships = (internshipsData && internshipsData.length > 0) ? internshipsData : fallbackInternships;
 
-    return <InternshipsView internships={internships} user={user} userApplications={userApplications} />;
+    return <InternshipsView internships={internships} user={user} userApplications={userApplications as any} />;
 }

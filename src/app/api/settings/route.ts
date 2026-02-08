@@ -12,38 +12,39 @@ export async function GET() {
   try {
     await dbConnect();
 
-    // Fetch specific public settings
-    const careerSetting = await Settings.findOne({
-      key: "careerApplicationsEnabled",
-    });
-    const mentorshipSetting = await Settings.findOne({
-      key: "mentorshipEnabled",
-    });
-    const announcementSetting = await Settings.findOne({
-      key: "announcementBar",
-    });
+    // Fetch all needed public settings in a single query
+    const settingsList = await Settings.find({
+      key: {
+        $in: [
+          "careerApplicationsEnabled",
+          "mentorshipEnabled",
+          "announcementBar",
+        ],
+      },
+    }).lean();
 
-    // Default to true if not set
-    const careerApplicationsEnabled = careerSetting
-      ? careerSetting.value
-      : true;
-    const mentorshipEnabled = mentorshipSetting
-      ? mentorshipSetting.value
-      : true;
+    // Convert array to a lookup object
+    const settingsMap = settingsList.reduce((acc: any, curr: any) => {
+      acc[curr.key] = curr.value;
+      return acc;
+    }, {});
 
-    // Default announcement settings
-    const announcementBar = announcementSetting
-      ? announcementSetting.value
-      : {
-          enabled: true,
-          text: "Waitlist for January 2026 is full. February batch closing soon!",
-        };
+    const careerApplicationsEnabled =
+      settingsMap.careerApplicationsEnabled ?? true;
+    const mentorshipEnabled = settingsMap.mentorshipEnabled ?? true;
+    const announcementBar = settingsMap.announcementBar ?? {
+      enabled: true,
+      text: "Waitlist for January 2026 is full. February batch closing soon!",
+    };
 
-    return NextResponse.json({
-      careerApplicationsEnabled,
-      mentorshipEnabled,
-      announcementBar,
-    });
+    return NextResponse.json(
+      { careerApplicationsEnabled, mentorshipEnabled, announcementBar },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=300, stale-while-revalidate=150",
+        },
+      },
+    );
   } catch (error) {
     console.error("Fetch settings error:", error);
     return NextResponse.json(

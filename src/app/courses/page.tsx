@@ -4,8 +4,9 @@ import Course from "@/models/Course";
 import Enrollment from "@/models/Enrollment";
 import { CoursesView } from "@/components/courses/courses-view";
 import { unstable_cache } from "next/cache";
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
 
-// Remove force-dynamic to allow caching
 // export const dynamic = "force-dynamic";
 export const revalidate = 300; // Keep revalidate for ISR
 
@@ -33,17 +34,6 @@ const fallbackCourses = [
         price: 0,
         discountPercentage: 0
     },
-    {
-        _id: "3",
-        title: "Data Science",
-        icon: "Database",
-        level: "Advanced",
-        studentsCount: "2.5k+",
-        color: "from-blue-500 to-cyan-500",
-        description: "Master the MERN stack and build scalable web applications.",
-        price: 0,
-        discountPercentage: 0
-    },
 ];
 
 // Cache the courses data to avoid expensive aggregations on every request
@@ -55,6 +45,20 @@ const getCachedCoursesData = unstable_cache(
             // Use optimized aggregation for student count
             const courses = await Course.aggregate([
                 { $match: { isAvailable: true } },
+                // Only select fields needed for the listing cards
+                { 
+                    $project: { 
+                        title: 1, 
+                        icon: 1, 
+                        level: 1, 
+                        color: 1, 
+                        description: 1, 
+                        price: 1, 
+                        originalPrice: 1,
+                        discountPercentage: 1, 
+                        thumbnail: 1 
+                    } 
+                },
                 {
                     $lookup: {
                         from: "enrollments",
@@ -78,7 +82,7 @@ const getCachedCoursesData = unstable_cache(
                 },
             ]);
 
-            return JSON.parse(JSON.stringify(courses));
+            return courses; // Aggregate returns plain objects
         } catch (error) {
             console.error("Failed to fetch courses:", error);
             return null;
@@ -88,28 +92,46 @@ const getCachedCoursesData = unstable_cache(
     { revalidate: 300, tags: ['courses'] }
 );
 
-async function getUserEnrollments(userId: string) {
-    try {
-        await dbConnect();
-        const enrollments = await Enrollment.find({ student: userId }).select("course").lean();
-        return enrollments.map((e: any) => e.course.toString());
-    } catch (error) {
-        console.error("Failed to fetch enrollments:", error);
-        return [];
-    }
-}
+// Cache user enrollments per user ID
+const getCachedUserEnrollments = unstable_cache(
+    async (userId: string) => {
+        try {
+            await dbConnect();
+            const enrollments = await Enrollment.find({ student: userId })
+                .select("course")
+                .lean();
+            return enrollments.map((e: any) => e.course.toString());
+        } catch (error) {
+            console.error("Failed to fetch enrollments:", error);
+            return [];
+        }
+    },
+    ['user-enrollments'],
+    { revalidate: 3600, tags: ['user-enrollments'] } // Cache for 1 hour, revalidate on change
+);
 
 export default async function CoursesPage() {
-    // User check is dynamic, but coursesData is now cached
-    const user = await getUser();
-    const coursesData = await getCachedCoursesData();
-    let enrolledCourseIds: string[] = [];
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    let userId: string | null = null;
 
-    if (user) {
-        enrolledCourseIds = await getUserEnrollments(user._id);
+    if (token) {
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+            userId = decoded.userId;
+        } catch (e) {
+            // Silently fail if JWT is invalid
+        }
     }
+
+    // Parallel fetch of User, Cached Courses, and Enrollments
+    const [user, coursesData, enrolledCourseIds] = await Promise.all([
+        getUser(),
+        getCachedCoursesData(),
+        userId ? getCachedUserEnrollments(userId) : Promise.resolve([])
+    ]);
 
     const courses = (coursesData && coursesData.length > 0) ? coursesData : fallbackCourses;
 
-    return <CoursesView courses={courses} enrolledCourseIds={enrolledCourseIds} />;
+    return <CoursesView courses={courses} enrolledCourseIds={enrolledCourseIds as string[]} />;
 }
