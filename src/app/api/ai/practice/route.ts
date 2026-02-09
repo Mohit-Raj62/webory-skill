@@ -4,6 +4,8 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
+import Activity from "@/models/Activity";
+import crypto from "crypto";
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY || "",
@@ -31,12 +33,10 @@ export async function POST(req: Request) {
       );
     }
 
-    const getCompletion = async (messages: any[]) => {
-      const models = [
-        "llama-3.3-70b-versatile",
-        "llama-3.1-8b-instant",
-        "llama3-70b-8192",
-      ];
+    const getCompletion = async (messages: any[], useFastModel = false) => {
+      const models = useFastModel
+        ? ["llama-3.1-8b-instant", "llama-3.3-70b-versatile"]
+        : ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"];
 
       for (const model of models) {
         try {
@@ -44,6 +44,7 @@ export async function POST(req: Request) {
             messages,
             model: model,
             temperature: 0.7,
+            max_tokens: 1024, // Optimized limit
             response_format: { type: "json_object" },
           });
           return completion;
@@ -167,48 +168,93 @@ export async function POST(req: Request) {
 
     // --- ACTION: ANALYZE (Final Report) ---
     if (action === "analyze") {
-      const prompt = `
-            You are a Senior Mentor. Analyze this session history and provide a final report.
-            Mode: ${mode}
-            Topic: ${topic}
-            History: ${JSON.stringify(history)}
-
-            TASK: Generate a comprehensive performance report.
-
-            OUTPUT FORMAT (JSON):
-            {
-                "overallScore": number (0-100),
-                "strengths": ["point 1", "point 2"],
-                "weaknesses": ["point 1", "point 2"],
-                "tips": ["actionable tip 1", "actionable tip 2"],
-                "summary": "A friendly encouraging summary paragraph."
-            }
-            `;
-
-      const completion = await getCompletion([
-        { role: "user", content: prompt },
-      ]);
-
-      const analysis = JSON.parse(
-        completion.choices[0].message.content || "{}",
-      );
-
-      // --- XP & Streak Calculation ---
+      // --- IDEMPOTENCY CHECK ---
       await dbConnect();
       const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
       const user = await User.findById(decoded.userId);
 
       if (user) {
+        const sessionHash = crypto
+          .createHash("sha256")
+          .update(JSON.stringify(history))
+          .digest("hex");
+
+        const alreadyCompleted = user.completedSessions?.includes(sessionHash);
+
+        // Calculate raw metrics to anchor AI scoring
+        const totalQuestions = history ? history.length : 0;
+        const correctCount = history
+          ? history.filter((h: any) => h.isCorrect === true).length
+          : 0;
+        const accuracy =
+          totalQuestions > 0
+            ? Math.round((correctCount / totalQuestions) * 100)
+            : 0;
+        const avgRawScore = history
+          ? history.reduce((sum: number, h: any) => sum + (h.score || 0), 0) /
+            (totalQuestions || 1)
+          : 0;
+
+        // Strip 'feedback' from history to save tokens and time
+        const condensedHistory = history?.map((h: any) => ({
+          question: h.question,
+          userAnswer: h.userAnswer,
+          score: h.score,
+          isCorrect: h.isCorrect,
+        }));
+
+        const prompt = `
+            Analyze this session history and provide a performance report.
+            Mode: ${mode} | Topic: ${topic}
+            
+            HARD METRICS (Calculated by System):
+            - Accuracy: ${accuracy}%
+            - Average Answer Rating: ${avgRawScore.toFixed(1)}/10
+            - Total Questions: ${totalQuestions}
+
+            History: ${JSON.stringify(condensedHistory)}
+
+            TASK: Return a concise evaluation. The "overallScore" MUST be strictly grounded in the HARD METRICS provided above. 
+            For Aptitude, "overallScore" should very closely align with Accuracy.
+            For Interview, it can be a balance of Accuracy and Average Rating.
+            
+            JSON FORMAT:
+            {
+                "overallScore": 0-100,
+                "strengths": ["max 2 points"],
+                "weaknesses": ["max 2 points"],
+                "tips": ["max 2 actionable tips"],
+                "summary": "1-2 sentence encouraging summary."
+            }
+            `;
+
+        const completion = await getCompletion(
+          [{ role: "user", content: prompt }],
+          true,
+        ); // Use fast model for summary
+
+        const analysis = JSON.parse(
+          completion.choices[0].message.content || "{}",
+        );
+
+        if (alreadyCompleted) {
+          console.log(`[XP SKIP] Session already completed: ${sessionHash}`);
+          analysis.xpEarned = 0;
+          analysis.streakBonus = 0;
+          analysis.totalXp = user.xp;
+          analysis.currentStreak = user.streak?.count || 0;
+          analysis.alreadyAwarded = true;
+          return NextResponse.json(analysis);
+        }
+
         // XP Calculation Rules:
-        // Interview: Flat 100 XP for completion
-        // Aptitude: 5 XP per question answered (Max 150)
         const questionsAnswered = history ? history.length : 0;
         let xpEarned = 0;
 
         if (mode === "interview") {
           xpEarned = 50;
         } else {
-          // For Aptitude: 1 XP per CORRECT answer (Robust check)
+          // For Aptitude: 1 XP per CORRECT answer
           const correctAnswers = history
             ? history.filter((h: any) => h.isCorrect === true || h.score >= 7)
                 .length
@@ -217,59 +263,88 @@ export async function POST(req: Request) {
         }
 
         // Streak Logic
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        // --- STREAK LOGIC (Robust) ---
+        const now = new Date();
+        const today = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate(),
+        );
 
-        let lastActive = user.streak?.lastActiveDate
-          ? new Date(user.streak.lastActiveDate)
-          : null;
-        if (lastActive) lastActive.setHours(0, 0, 0, 0);
+        let lastActive = null;
+        if (user.streak?.lastActiveDate) {
+          const laDate = new Date(user.streak.lastActiveDate);
+          lastActive = new Date(
+            laDate.getFullYear(),
+            laDate.getMonth(),
+            laDate.getDate(),
+          );
+        }
 
         let newStreak = user.streak?.count || 0;
         let streakBonus = 0;
 
+        // If never active OR last active was before today
         if (!lastActive || lastActive.getTime() < today.getTime()) {
-          // Valid new day
-          if (
+          const oneDayMs = 24 * 60 * 60 * 1000;
+          // Yesterday is within ~25 hours of today's midnight
+          const isYesterday =
             lastActive &&
-            today.getTime() - lastActive.getTime() === 86400000
-          ) {
-            // Consecutive day
+            today.getTime() - lastActive.getTime() <= oneDayMs + 3600000;
+
+          if (isYesterday) {
             newStreak += 1;
           } else {
-            // Reset or Start
             newStreak = 1;
           }
 
-          // Daily Streak Bonus (e.g., 10 XP if streak > 1)
           if (newStreak > 1) streakBonus = 10;
-
-          user.streak = { count: newStreak, lastActiveDate: new Date() };
+          user.streak = { count: newStreak, lastActiveDate: now };
+          console.log(`[STREAK] Updated for ${user.email} to ${newStreak}`);
+        } else {
+          console.log(
+            `[STREAK] Already recorded today for ${user.email}. Count: ${newStreak}`,
+          );
         }
 
-        console.log(
-          `[XP UPDATE] User: ${user._id}, Current XP: ${user.xp}, XP Earned: ${xpEarned}, Streak Bonus: ${streakBonus}`,
-        );
-
         user.xp = (user.xp || 0) + xpEarned + streakBonus;
+
+        if (!user.completedSessions) user.completedSessions = [];
+        user.completedSessions.push(sessionHash);
+
+        // Record Activity for Monthly Analytics
+        // Record Activity for Monthly Analytics
+        try {
+          // Adjust by 5.5 hours for IST to ensure the dot appears on the correct local day
+          const istDate = new Date(Date.now() + 5.5 * 60 * 60 * 1000);
+
+          await Activity.create({
+            student: user._id,
+            type: "quiz_attempted",
+            category: "course",
+            date: istDate,
+            metadata: {
+              questionsCount: questionsAnswered,
+              internshipName: topic,
+            },
+          });
+          console.log(
+            `[ACTIVITY] Recorded for ${user.email} on ${istDate.toISOString()}`,
+          );
+        } catch (actErr: any) {
+          console.error(`[ACTIVITY ERROR]`, actErr.message);
+        }
+
         await user.save();
 
-        console.log(`[XP UPDATE] New XP Saved: ${user.xp}`);
-
-        // Append to response
         analysis.xpEarned = xpEarned;
         analysis.streakBonus = streakBonus;
         analysis.totalXp = user.xp;
         analysis.currentStreak = newStreak;
 
-        // Append to response
-        analysis.xpEarned = xpEarned;
-        analysis.streakBonus = streakBonus;
-        analysis.totalXp = user.xp;
-        analysis.currentStreak = newStreak;
+        return NextResponse.json(analysis);
       }
-
-      return NextResponse.json(analysis);
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });

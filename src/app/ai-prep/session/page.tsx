@@ -35,7 +35,7 @@ function SessionContent() {
     const [history, setHistory] = useState<any[]>([]);
     const [questionCount, setQuestionCount] = useState(0);
     const [timeLeft, setTimeLeft] = useState(60); // 60s per aptitude question
-    const timerRef = useRef<NodeJS.Timeout | null>(null);
+    const timerRef = useRef<any>(null);
 
     // Initial Setup
     useEffect(() => {
@@ -88,6 +88,9 @@ function SessionContent() {
         if (!topic.trim()) return toast.error("Please enter a topic");
         setStarted(true);
         setLoading(true);
+
+        // Clear previous session cache
+        localStorage.removeItem("ai_last_report");
 
         try {
             const res = await fetch("/api/ai/practice", {

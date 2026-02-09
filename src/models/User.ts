@@ -139,6 +139,10 @@ const UserSchema = new Schema({
     count: { type: Number, default: 0 },
     lastActiveDate: { type: Date, default: null },
   },
+  completedSessions: {
+    type: [String],
+    default: [],
+  },
 });
 
 const User = models.User || model("User", UserSchema);

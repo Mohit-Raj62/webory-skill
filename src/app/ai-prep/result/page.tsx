@@ -38,6 +38,19 @@ export default function AIPrepResultPage() {
 
         const data = JSON.parse(dataStr);
         setSessionData(data);
+
+        // Check for cached report
+        const cachedReport = localStorage.getItem("ai_last_report");
+        if (cachedReport) {
+            const report = JSON.parse(cachedReport);
+            // Verify if cached report matches current session topic/mode AND history
+            if (report.topic === data.topic && report.mode === data.mode && report.historyLength === data.history.length) {
+                setResult(report);
+                setLoading(false);
+                return;
+            }
+        }
+        
         generateReport(data);
     }, [router]);
 
@@ -59,7 +72,19 @@ export default function AIPrepResultPage() {
             });
             const report = await res.json();
             if (report.error) throw new Error(report.error);
-            setResult(report);
+            
+            // If backend says alreadyAwarded, we need to handle it or re-fetch from cache if possible
+            // But since we have frontend cache, this usually only happens if cache was cleared but DB has the hash
+            
+            // Attach metadata for cache validation
+            const reportWithMeta = { 
+                ...report, 
+                topic: data.topic, 
+                mode: data.mode, 
+                historyLength: data.history.length 
+            };
+            setResult(reportWithMeta);
+            localStorage.setItem("ai_last_report", JSON.stringify(reportWithMeta));
             
             // Refresh global auth state to update XP/Streak in UI
             refreshAuth();
@@ -104,9 +129,9 @@ export default function AIPrepResultPage() {
                         <div className="relative w-32 h-32 flex items-center justify-center mb-4">
                             <svg className="w-full h-full transform -rotate-90">
                                 <circle cx="64" cy="64" r="56" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-gray-800" />
-                                <circle cx="64" cy="64" r="56" stroke="currentColor" strokeWidth="8" fill="transparent" strokeDasharray={351.86} strokeDashoffset={351.86 - (351.86 * (result?.overallScore || 0)) / 100} className={`text-${result && result.overallScore >= 80 ? 'green' : result && result.overallScore >= 50 ? 'yellow' : 'red'}-500 transition-all duration-1000 ease-out`} />
+                                <circle cx="64" cy="64" r="56" stroke="currentColor" strokeWidth="8" fill="transparent" strokeDasharray={351.86} strokeDashoffset={351.86 - (351.86 * (Math.round(result?.overallScore || 0))) / 100} className={`text-${result && result.overallScore >= 80 ? 'green' : result && result.overallScore >= 50 ? 'yellow' : 'red'}-500 transition-all duration-1000 ease-out`} />
                             </svg>
-                            <span className="absolute text-3xl font-bold">{result?.overallScore}%</span>
+                            <span className="absolute text-2xl font-bold">{Math.round(result?.overallScore || 0)}%</span>
                         </div>
                         <h3 className="text-lg font-bold text-white">Overall Score</h3>
                         <p className={`text-sm mt-1 px-3 py-1 rounded-full ${
@@ -131,7 +156,7 @@ export default function AIPrepResultPage() {
                                     <CheckCircle2 className="w-4 h-4 mr-2" /> Key Strengths
                                 </h4>
                                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                    {result?.strengths.map((s, i) => (
+                                    {result?.strengths?.map((s, i) => (
                                         <li key={i} className="bg-green-500/5 border border-green-500/10 px-3 py-2 rounded-lg text-sm text-gray-300">{s}</li>
                                     ))}
                                 </ul>
@@ -142,7 +167,7 @@ export default function AIPrepResultPage() {
                                     <AlertCircle className="w-4 h-4 mr-2" /> Areas for Improvement
                                 </h4>
                                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                    {result?.weaknesses.map((w, i) => (
+                                    {result?.weaknesses?.map((w, i) => (
                                         <li key={i} className="bg-orange-500/5 border border-orange-500/10 px-3 py-2 rounded-lg text-sm text-gray-300">{w}</li>
                                     ))}
                                 </ul>
@@ -152,12 +177,13 @@ export default function AIPrepResultPage() {
                 </div>
 
                 {/* XP & Streak Rewards */}
-                {result?.xpEarned && (
+                {result?.xpEarned !== undefined && (
                     <div className="grid grid-cols-2 gap-4 mb-8">
                         <div className="glass-card p-4 rounded-2xl border border-yellow-500/20 bg-yellow-500/5 flex items-center justify-between">
                             <div>
                                 <div className="text-gray-400 text-sm">XP Earned</div>
                                 <div className="text-2xl font-bold text-yellow-400">+{result.xpEarned + (result.streakBonus || 0)}</div>
+                                {result.xpEarned === 0 && <div className="text-[10px] text-gray-500">(Already Awarded)</div>}
                             </div>
                             <div className="p-3 bg-yellow-500/20 rounded-xl text-yellow-400">
                                 <Zap className="w-6 h-6" />
@@ -179,7 +205,7 @@ export default function AIPrepResultPage() {
                 <div className="glass-card p-8 rounded-3xl border border-white/10 bg-gray-900/50 mb-8">
                      <h3 className="text-xl font-bold text-white mb-4">💡 Actionable Tips for Next Time</h3>
                      <div className="space-y-3">
-                        {result?.tips.map((tip, i) => (
+                        {result?.tips?.map((tip, i) => (
                             <div key={i} className="flex items-start">
                                 <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold mr-3 mt-0.5">{i+1}</span>
                                 <p className="text-gray-300">{tip}</p>
