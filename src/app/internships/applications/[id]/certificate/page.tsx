@@ -255,10 +255,13 @@ export default function CertificatePage() {
                         {/* Signature 2 */}
                         <div className="text-center">
                             <div className="h-12 flex items-end justify-center mb-1">
-                                <span className="font-signature text-3xl text-[#1a237e] whitespace-nowrap px-2">Mohit Sinha</span>
+                                <span className="font-signature text-3xl text-[#1a237e] whitespace-nowrap px-2">Vijay Kumar</span>
                             </div>
                             <div className="border-b border-gray-400 w-40 mx-auto mb-1"></div>
-                            <p className="text-xs text-gray-600 font-bold uppercase tracking-widest">Director</p>
+                            <div className="space-y-0.5">
+                                <p className="text-xs text-gray-600 font-bold uppercase tracking-widest">Director of Education, Webory</p>
+                                <p className="text-[10px] text-[#1a237e] font-bold">Alumnus, IIT Mandi</p>
+                            </div>
                         </div>
                     </div>
 

@@ -130,7 +130,7 @@ export default function AboutPage() {
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 relative z-10">
                             {[
                                 { label: "Students Enrolled", value: "100+", icon: Users, color: "text-blue-400" },
-                                { label: "Expert Mentors", value: "10+", icon: Target, color: "text-purple-400" },
+                                { label: "Expert Mentors (incl. IIT Faculty)", value: "10+", icon: Target, color: "text-purple-400" },
                                 { label: "Hiring Partners", value: "5+", icon: Globe, color: "text-pink-400" },
                                 { label: "Success Rate", value: "90%", icon: Heart, color: "text-green-400" }
                             ].map((stat, i) => (
@@ -425,11 +425,11 @@ export default function AboutPage() {
                                 <div className="grid grid-cols-2 gap-4 mb-6">
                                     <div className="aspect-video bg-gray-900 rounded-xl relative overflow-hidden border border-white/5 group">
                                          <div className="absolute inset-0 flex items-center justify-center">
-                                             <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">M</div>
+                                             <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">VK</div>
                                          </div>
                                          <div className="absolute bottom-3 left-3 flex items-center gap-2">
                                              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                             <span className="text-[10px] text-white font-medium">Mentor (Ex-Google)</span>
+                                             <span className="text-[10px] text-white font-medium">Vijay Kumar - IIT Mandi</span>
                                          </div>
                                          <div className="absolute top-2 right-2 flex gap-1">
                                              <div className="p-1 rounded bg-black/50 text-white"><Mic size={10} /></div>
@@ -446,7 +446,7 @@ export default function AboutPage() {
                                 {/* Chat / Review Snippet */}
                                 <div className="space-y-3">
                                     <div className="flex gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-purple-600 flex-shrink-0 flex items-center justify-center text-white text-xs font-bold">M</div>
+                                        <div className="w-8 h-8 rounded-full bg-purple-600 flex-shrink-0 flex items-center justify-center text-white text-xs font-bold">VK</div>
                                         <div className="bg-white/5 rounded-2xl rounded-tl-none p-3 text-sm text-gray-300 border border-white/5">
                                             Great work on the useEffect hook! Just one optimization: try to add the dependency array to prevent infinite loops. 🚀
                                         </div>
@@ -526,7 +526,7 @@ export default function AboutPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
                             { title: "Project-Based Learning", desc: "Learn by doing. Build real-world applications that you can showcase in your portfolio.", icon: Code2, color: "text-emerald-400", bg: "bg-emerald-500/10" },
-                            { title: "Industry Mentorship", desc: "Get guidance from engineers working at top tech companies like Google, Amazon, and Microsoft.", icon: Users, color: "text-blue-400", bg: "bg-blue-500/10" },
+                            { title: "Industry Mentorship", desc: "Get guidance from IIT faculty and engineers working at top tech companies like Google, Amazon, and Microsoft.", icon: Users, color: "text-blue-400", bg: "bg-blue-500/10" },
                             { title: "Career Support", desc: "From resume reviews to mock interviews, we are with you until you land your dream job.", icon: Shield, color: "text-orange-400", bg: "bg-orange-500/10" }
                         ].map((item, i) => (
                             <motion.div 
@@ -604,7 +604,7 @@ export default function AboutPage() {
 
                     <div className="space-y-4">
                         {[
-                            { q: "Who are the mentors?", a: "Our mentors are industry veterans from top tech companies like Google, Microsoft, Amazon, and Adobe. They bring real-world experience to your learning journey." },
+                            { q: "Who are the mentors?", a: "Our mentors include distinguished IIT Mandi faculty and industry veterans from top tech companies like Google, Microsoft, Amazon, and Adobe. They bring real-world experience and academic excellence to your learning journey." },
                             { q: "Is this suitable for beginners?", a: "Absolutely! Our curriculum is designed to take you from zero to hero. We start with the basics and progressively move to advanced topics." },
                             { q: "Do I get a certificate?", a: "Yes, you will earn a verifiable certificate upon successful completion of the course and projects, which you can add to your LinkedIn and resume." },
                             { q: "How does the placement support work?", a: "We provide dedicated career support, including resume building, mock interviews, and direct referrals to our network of hiring partners." }

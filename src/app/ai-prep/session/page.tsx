@@ -4,10 +4,16 @@ import { useEffect, useState, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Navbar } from "@/components/ui/navbar";
 import { Button } from "@/components/ui/button";
-import { Bot, Rocket, Send, Loader2, Trophy, BrainCircuit, ChevronLeft } from "lucide-react";
+import { Bot, Rocket, Send, Loader2, Trophy, BrainCircuit, ChevronLeft, Mic, MicOff, Activity } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/components/auth/session-provider";
+
+// Web Speech API Types
+interface IWindow extends Window {
+  webkitSpeechRecognition: any;
+  SpeechRecognition: any;
+}
 
 interface Question {
     question: string;
@@ -15,6 +21,7 @@ interface Question {
     intro?: string;
     score?: number;
     feedback?: string;
+    voiceAnalysis?: string; // New field for voice tone feedback
 }
 
 function SessionContent() {
@@ -37,17 +44,149 @@ function SessionContent() {
     const [timeLeft, setTimeLeft] = useState(60); // 60s per aptitude question
     const timerRef = useRef<any>(null);
 
-    // Initial Setup
-    useEffect(() => {
-        if (!mode) router.push("/ai-prep");
-    }, [mode, router]);
+    // Voice & Tone State
+    const [isRecording, setIsRecording] = useState(false);
+    const [isSpeaking, setIsSpeaking] = useState(false);
+    const recognitionRef = useRef<any>(null);
+    const startTimeRef = useRef<number>(0);
+    const [speechMetrics, setSpeechMetrics] = useState({ duration: 0, wpm: 0 });
+    const [fillerWordCount, setFillerWordCount] = useState(0);
 
-    // Auth Protection
+    const committedTextRef = useRef(""); // Stores the finalized text
+
+    // Initialize Speech Recognition
     useEffect(() => {
-        if (!authLoading && !user) {
-            router.push("/login");
+        if (typeof window !== "undefined" && mode === "interview") {
+            const { webkitSpeechRecognition, SpeechRecognition } = window as unknown as IWindow;
+            const SpeechRecognitionConstructor = SpeechRecognition || webkitSpeechRecognition;
+
+            if (SpeechRecognitionConstructor) {
+                const recognition = new SpeechRecognitionConstructor();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = "en-US";
+
+                recognition.onresult = (event: any) => {
+                    let interimTranscript = "";
+                    let finalChunk = "";
+
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        if (event.results[i].isFinal) {
+                            finalChunk += event.results[i][0].transcript;
+                        } else {
+                            interimTranscript += event.results[i][0].transcript;
+                        }
+                    }
+
+                    if (finalChunk) {
+                        // Append final chunk to our committed text
+                        committedTextRef.current += finalChunk + " ";
+                        
+                        // Count fillers in ONLY the new final chunk to avoid double counting
+                        const fillers = finalChunk.match(/\b(um|uh|like|you know|sort of|i mean)\b/gi);
+                        if (fillers) {
+                            setFillerWordCount(prev => prev + fillers.length);
+                        }
+                    }
+
+                    // Update the UI with committed text + current interim
+                    // We trim to avoid excessive spaces during updates, but ensure separation
+                    setUserAnswer(committedTextRef.current + interimTranscript);
+                };
+
+                recognition.onstart = () => {
+                   // Sync committed text with current manual edits if any
+                   committedTextRef.current = userAnswer + (userAnswer.endsWith(" ") ? "" : " ");
+                };
+
+                recognition.onerror = (event: any) => {
+                    console.error("Speech recognition error", event.error);
+                    setIsRecording(false);
+                    
+                    if (event.error === "not-allowed") {
+                        toast.error("Access blocked. Click the 'lock' icon in your URL bar and 'Allow' microphone access.", { duration: 5000 });
+                    } else if (event.error === "audio-capture") {
+                        toast.error("No microphone detected. Please plug one in and refresh.", { duration: 5000 });
+                    } else if (event.error === "no-speech") {
+                         // Ignore
+                    } else {
+                        toast.error("Voice input error: " + event.error);
+                    }
+                };
+
+                recognitionRef.current = recognition;
+            }
         }
-    }, [user, authLoading, router]);
+        
+        return () => {
+            if (recognitionRef.current) {
+                recognitionRef.current.stop();
+            }
+        };
+    }, [mode]); // Removed userAnswer dependency to avoid re-binding loop, handled via Ref
+
+    // Speak Question Logic
+    useEffect(() => {
+        if (currentQuestion?.question && mode === "interview" && typeof window !== "undefined") {
+            speakText(currentQuestion.question);
+        }
+    }, [currentQuestion, mode]);
+
+    const speakText = (text: string) => {
+        if ("speechSynthesis" in window) {
+            window.speechSynthesis.cancel(); // Stop any previous speech
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            
+            utterance.onstart = () => setIsSpeaking(true);
+            utterance.onend = () => setIsSpeaking(false);
+            
+            window.speechSynthesis.speak(utterance);
+        }
+    };
+
+    const toggleRecording = async () => {
+        if (isRecording) {
+            recognitionRef.current?.stop();
+            setIsRecording(false);
+            
+            // Calculate metrics
+            const duration = (Date.now() - startTimeRef.current) / 1000; // seconds
+            const words = userAnswer.trim().split(/\s+/).length;
+            const wpm = Math.round((words / duration) * 60) || 0;
+            
+            setSpeechMetrics({ duration, wpm });
+        } else {
+            try {
+                // Explicitly request microphone permission first to trigger prompt/check hardware
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                // If we get here, we have permission. Stop the stream immediately as SpeechRecognition manages its own.
+                stream.getTracks().forEach(track => track.stop());
+
+                setUserAnswer(""); 
+                setFillerWordCount(0); // Reset for new answer
+                committedTextRef.current = ""; // Reset committed text
+                startTimeRef.current = Date.now();
+                recognitionRef.current?.start();
+                setIsRecording(true);
+            } catch (err: any) {
+                console.error("Microphone access error:", err);
+                if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                    toast.error("Access blocked. Click the 'lock' icon in your URL bar and 'Allow' microphone access.", {
+                        duration: 5000,
+                    });
+                } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+                    toast.error("No microphone detected. Please plug one in and refresh.", {
+                        duration: 5000
+                    });
+                } else {
+                    toast.error("Microphone error: " + err.message);
+                }
+            }
+        }
+    };
 
     // Timer Logic for Aptitude
     useEffect(() => {
@@ -115,9 +254,21 @@ function SessionContent() {
         
         // Stop timer
         if (timerRef.current) clearInterval(timerRef.current);
+        // Stop recording if active
+        if (isRecording) {
+            recognitionRef.current?.stop();
+            setIsRecording(false);
+        }
 
         setLoading(true);
         const currentQ = currentQuestion?.question;
+
+        // Final metric calc in case user typed instead of used voice, or mixed
+        const words = answer.trim().split(/\s+/).length;
+        // If metrics were recorded via voice, use them, else estimate if needed or send defaults
+        // Logic: if duration is 0 (typed), we can't calc WPM accurately.
+        const finalMetrics = speechMetrics.duration > 0 ? speechMetrics : { duration: 0, wpm: 0 };
+
 
         try {
             const res = await fetch("/api/ai/practice", {
@@ -128,7 +279,9 @@ function SessionContent() {
                     action: "submit_answer",
                     currentQuestion: currentQ,
                     userAnswer: answer,
-                    history: history // Pass history to prevent repetition
+                    history: history, // Pass history to prevent repetition
+                    speechMetrics: finalMetrics,
+                    fillerWordCount: fillerWordCount // Pass filler count to backend
                 })
             });
             const data = await res.json();
@@ -139,7 +292,8 @@ function SessionContent() {
                 userAnswer: answer,
                 feedback: data.feedback,
                 score: data.score || 0,
-                isCorrect: data.isCorrect
+                isCorrect: data.isCorrect,
+                voiceAnalysis: data.voiceAnalysis
             };
             setHistory(prev => [...prev, newEntry]);
 
@@ -150,10 +304,12 @@ function SessionContent() {
                 setCurrentQuestion({
                     question: data.nextQuestion,
                     options: data.options,
-                    feedback: data.feedback // Show feedback for previous
+                    feedback: data.feedback, // Show feedback for previous
+                    voiceAnalysis: data.voiceAnalysis
                 });
                 setQuestionCount(prev => prev + 1);
                 setUserAnswer("");
+                setSpeechMetrics({ duration: 0, wpm: 0 }); // Reset metrics
             }
 
         } catch (error) {
@@ -344,12 +500,21 @@ function SessionContent() {
                                 </div>
                             )}
 
-                            <div className="p-8 md:p-10 overflow-y-auto custom-scrollbar flex-1">
+                            <div className="p-8 md:p-10 overflow-y-auto custom-scrollbar flex-1 relative">
                                 <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider mb-6 ${
                                     mode === "interview" ? "bg-purple-500/10 text-purple-400 border border-purple-500/20" : "bg-blue-500/10 text-blue-400 border border-blue-500/20"
                                 }`}>
                                    <BrainCircuit className="w-3 h-3" /> System Inquiry #{questionCount}
                                 </div>
+
+                                {/* TTS Visualizer (Simple) */}
+                                {isSpeaking && (
+                                    <div className="mb-4 flex items-center gap-1 h-4">
+                                        {[1,2,3,4,5].map(i => (
+                                            <div key={i} className="w-1 bg-purple-500 animate-bounce" style={{ height: `${Math.random() * 100}%`, animationDelay: `${i * 0.1}s` }} />
+                                        ))}
+                                    </div>
+                                )}
 
                                 {currentQuestion?.intro && (
                                     <div className="mb-6 p-4 rounded-xl bg-white/5 border-l-2 border-gray-500 text-gray-400 text-sm italic leading-relaxed">
@@ -387,14 +552,31 @@ function SessionContent() {
                              {/* Interview Input Area (Docked at bottom of card) */}
                              {mode === "interview" && (
                                 <div className="p-6 bg-black/20 border-t border-white/5">
-                                    <div className="relative bg-white/5 rounded-2xl border border-white/10 focus-within:border-purple-500/50 focus-within:bg-white/10 transition-all hover:border-white/20">
+                                    <div className={`relative bg-white/5 rounded-2xl border transition-all hover:border-white/20 ${
+                                        isRecording ? "border-purple-500/50 bg-purple-500/5" : "border-white/10 focus-within:border-purple-500/50 focus-within:bg-white/10"
+                                    }`}>
                                         <textarea
                                             value={userAnswer}
                                             onChange={(e) => setUserAnswer(e.target.value)}
-                                            placeholder="Transmission channel open. Enter response..."
+                                            placeholder={isRecording ? "Listening..." : "Transmission channel open. Enter response..."}
                                             className="w-full bg-transparent border-none text-white placeholder:text-gray-500/50 resize-none p-5 min-h-[120px] focus:ring-0 outline-none font-sans text-lg"
                                         />
-                                        <div className="absolute bottom-3 right-3">
+                                        
+                                        {/* Mic & Send Controls */}
+                                        <div className="absolute bottom-3 right-3 flex items-center gap-3">
+                                            {/* Mic Button */}
+                                            <Button
+                                                onClick={toggleRecording}
+                                                variant="ghost" 
+                                                className={`h-10 w-10 p-0 rounded-full transition-all ${
+                                                    isRecording 
+                                                    ? "bg-red-500/20 text-red-500 hover:bg-red-500/30 animate-pulse border border-red-500/50" 
+                                                    : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/10"
+                                                }`}
+                                            >
+                                                {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                                            </Button>
+
                                             <Button 
                                                 onClick={() => handleSubmitAnswer()} 
                                                 disabled={loading || !userAnswer.trim()}
@@ -404,6 +586,18 @@ function SessionContent() {
                                             </Button>
                                         </div>
                                     </div>
+                                    {isRecording && (
+                                        <div className="flex flex-col items-center mt-2 gap-1 animate-pulse">
+                                            <p className="text-[10px] text-gray-500 font-mono uppercase tracking-widest">
+                                                • Recording Audio Input •
+                                            </p>
+                                            {fillerWordCount > 0 && (
+                                                <span className={`text-[10px] font-bold ${fillerWordCount > 3 ? "text-red-400" : "text-yellow-400"}`}>
+                                                    Filler Words Detected: {fillerWordCount}
+                                                </span>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -427,6 +621,19 @@ function SessionContent() {
                                             Analysis Report
                                         </span>
                                     </div>
+                                    
+                                    {/* Tone Analysis Section */}
+                                    {currentQuestion.voiceAnalysis && (
+                                        <div className="mb-4 p-3 bg-white/5 rounded-xl border border-white/10">
+                                            <div className="flex items-center gap-2 mb-2 text-purple-400 text-xs font-bold uppercase tracking-wider">
+                                                <Activity className="w-3 h-3" /> Voice & Tone
+                                            </div>
+                                            <p className="text-gray-300 text-xs leading-relaxed">
+                                                {currentQuestion.voiceAnalysis}
+                                            </p>
+                                        </div>
+                                    )}
+
                                     <p className="text-gray-300 leading-relaxed text-sm">
                                         {currentQuestion.feedback}
                                     </p>

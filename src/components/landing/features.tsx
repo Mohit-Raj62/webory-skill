@@ -25,7 +25,7 @@ const features = [
              {
                 icon: Users,
                 title: "Mentor Support",
-                description: "Get guidance from industry experts at every stage of your learning journey.",
+                description: "Get guidance from IIT Mandi faculty and industry experts at every stage of your learning journey.",
             },
              {
                 icon: Trophy,

@@ -164,6 +164,19 @@ export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initi
                                 </span>
                             </motion.div>
 
+                            {/* IIT Faculty Badge */}
+                            <motion.div 
+                                initial={{ opacity: 0, y: -10 }} 
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.1 }}
+                                className="flex items-center gap-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 px-3 py-1.5 md:px-4 md:py-2 rounded-2xl backdrop-blur-md"
+                            >
+                                <Users className="w-3 h-3 md:w-3.5 md:h-3.5 text-purple-400" />
+                                <span className="text-purple-300 text-[10px] font-bold tracking-wide whitespace-nowrap">
+                                    Mentored by IIT Mandi Faculty
+                                </span>
+                            </motion.div>
+
                             {/* Main Title Area */}
                             <motion.span 
                                 initial={{ opacity: 0, scale: 0.9 }} 

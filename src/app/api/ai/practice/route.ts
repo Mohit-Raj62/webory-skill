@@ -20,10 +20,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET!);
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
 
-    const { mode, topic, level, action, currentQuestion, userAnswer, history } =
-      await req.json();
+    const {
+      mode,
+      topic,
+      level,
+      action,
+      currentQuestion,
+      userAnswer,
+      history,
+      speechMetrics,
+      fillerWordCount,
+    } = await req.json();
 
     // Validate inputs
     if (!mode || !topic || !action) {
@@ -67,17 +76,46 @@ export async function POST(req: Request) {
 
     // --- ACTION: START ---
     if (action === "start") {
+      // Fetch user context for personalization
+      const dbUser = await User.findById(decoded.userId).select(
+        "skills projects experience",
+      );
+
+      let resumeContext = "";
+      if (dbUser) {
+        const skills = dbUser.skills?.length
+          ? dbUser.skills.join(", ")
+          : "General Tech";
+        const projects = dbUser.projects
+          ?.map((p: any) => `${p.title}: ${p.description}`)
+          .join("; ");
+        const experience = dbUser.experience
+          ?.map((e: any) => `${e.title} at ${e.company}`)
+          .join("; ");
+
+        resumeContext = `
+          CANDIDATE BACKGROUND:
+          - Skills: ${skills}
+          - Projects: ${projects}
+          - Experience: ${experience}
+          
+          INSTRUCTION: Tailor the question to the candidate's background if possible. For example, ask about a specific project or skill listed above.
+          `;
+      }
+
       const prompt = `
             You are an expert AI Interviewer and Aptitude Trainer.
             Mode: ${mode === "interview" ? "Mock Interview" : "Aptitude Test"}
             Topic: ${topic}
             Level: ${level}
+            
+            ${mode === "interview" ? resumeContext : ""}
 
             TASK: Generate the FIRST ${mode === "interview" ? "technical interview question" : "aptitude question"} for this session.
 
             REQUIREMENTS:
             1. Question must be relevant to the topic and level.
-            2. ${mode === "interview" ? "Open-ended technical question. No Multiple Choice." : "Provide 4 options (A, B, C, D)."}
+            2. ${mode === "interview" ? "Open-ended technical question. If candidate has relevant projects, ask about them." : "Provide 4 options (A, B, C, D)."}
             3. Do not provide the answer yet.
             4. Be professional and encouraging.
 
@@ -85,7 +123,7 @@ export async function POST(req: Request) {
             {
                 "question": "The question text",
                 ${mode === "aptitude" ? '"options": ["A) ...", "B) ...", "C) ...", "D) ..."],' : ""}
-                "intro": "A short welcoming intro message."
+                "intro": "A short welcoming intro message.${mode === "interview" && resumeContext ? " Mention you reviewed their profile." : ""}"
             }
             `;
 
@@ -123,6 +161,8 @@ export async function POST(req: Request) {
         else if (questionIndex > 5) difficulty = "Medium";
       }
 
+      const usedVoice = speechMetrics?.duration > 0;
+
       const prompt = `
             You are an expert AI Interviewer.
             Mode: ${mode}
@@ -132,19 +172,31 @@ export async function POST(req: Request) {
             Current Question: ${currentQuestion}
             User Answer: ${userAnswer}
 
+            ${
+              usedVoice
+                ? `SPEECH METRICS:
+            - Duration: ${speechMetrics.duration.toFixed(1)}s
+            - Words Per Minute (WPM): ${speechMetrics.wpm}
+            - Filler Words Detected (um, uh, like): ${fillerWordCount || 0}
+            `
+                : ""
+            }
+            
             PREVIOUS QUESTIONS (DO NOT REPEAT THESE):
             - ${currentQuestion}
             - ${previousQuestions}
 
             TASK: 
             1. Evaluate the answer.
-            2. Generate the NEXT question.
-            3. The next question MUST be of ${difficulty} difficulty.
-            4. Ensure the next question is distinct and has NOT been asked before.
+            2. ${usedVoice && mode === "interview" ? "Analyze the Voice & Tone. Mention filler words if count is high (>3)." : ""}
+            3. Generate the NEXT question.
+            4. The next question MUST be of ${difficulty} difficulty.
+            5. Ensure the next question is distinct and has NOT been asked before.
             
             OUTPUT FORMAT (JSON):
             {
                 "feedback": "Brief feedback on the answer (Correct/Incorrect and why).",
+                ${usedVoice && mode === "interview" ? `"voiceAnalysis": "Feedback on tone, pace, and fluency. If filler words are high, advise on pausing instead.",` : ""}
                 "score": 0-10 (Rating for this specific answer),
                 "nextQuestion": "The next question text",
                 ${mode === "aptitude" ? '"options": ["A) ...", "B) ...", "C) ...", "D) ..."],' : ""}

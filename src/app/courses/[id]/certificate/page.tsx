@@ -289,7 +289,7 @@ export default function CertificatePage() {
                             <div className="text-center">
                                 <div className="h-12 flex items-end justify-center mb-1">
                                     <span className="font-signature text-4xl text-[#1a237e] whitespace-nowrap px-2">
-                                        {course?.signatures?.founder?.name || "Mohit Raj"}
+                                        {course?.signatures?.founder?.name || "Mohit Sinha"}
                                     </span>
                                 </div>
                                 <div className="border-b border-gray-400 w-full mb-1"></div>
@@ -300,11 +300,14 @@ export default function CertificatePage() {
                             <div className="text-center">
                                 <div className="h-12 flex items-end justify-center mb-1">
                                     <span className="font-signature text-4xl text-[#1a237e] whitespace-nowrap px-2">
-                                        {course?.signatures?.director?.name || "Webory Team"}
+                                        {course?.signatures?.director?.name || "Vijay Kumar"}
                                     </span>
                                 </div>
                                 <div className="border-b border-gray-400 w-full mb-1"></div>
-                                <p className="text-xs text-gray-600 font-bold uppercase tracking-widest">{course?.signatures?.director?.title || "Director of Education"}</p>
+                                <div className="space-y-0.5">
+                                    <p className="text-xs text-gray-600 font-bold uppercase tracking-widest">{course?.signatures?.director?.title || "Director of Education, Webory"}</p>
+                                    <p className="text-[10px] text-[#1a237e] font-bold">{course?.signatures?.director?.credential || "Alumnus, IIT Mandi"}</p>
+                                </div>
                             </div>
 
                             {/* Signature 3 (Partner) - Only if collaboration */}

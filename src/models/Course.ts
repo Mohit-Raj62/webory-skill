@@ -46,12 +46,13 @@ const CourseSchema = new Schema({
   },
   signatures: {
     founder: {
-      name: { type: String, default: "Mohit Raj" },
+      name: { type: String, default: "Mohit Sinha" },
       title: { type: String, default: "Founder & CEO" },
     },
     director: {
-      name: { type: String, default: "Webory Team" },
-      title: { type: String, default: "Director of Education" },
+      name: { type: String, default: "Vijay Kumar" },
+      title: { type: String, default: "Director of Education, Webory" },
+      credential: { type: String, default: "Alumnus, IIT Mandi" },
     },
     partner: {
       name: { type: String, default: "Partner Rep." },
