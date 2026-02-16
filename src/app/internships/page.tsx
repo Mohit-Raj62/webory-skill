@@ -38,7 +38,7 @@ const getCachedInternshipsData = unstable_cache(
         try {
             await dbConnect();
             const internships = await Internship.find({})
-                .select("title company location type stipend tags price")
+                .select("title company location type stipend tags price requirements responsibilities")
                 .sort({ createdAt: -1 })
                 .lean();
             return JSON.parse(JSON.stringify(internships));

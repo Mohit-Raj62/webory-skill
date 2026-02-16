@@ -49,6 +49,14 @@ const InternshipSchema = new Schema({
     type: String,
     required: true,
   },
+  requirements: {
+    type: [String],
+    default: [],
+  },
+  responsibilities: {
+    type: [String],
+    default: [],
+  },
   createdAt: {
     type: Date,
     default: Date.now,

@@ -7,7 +7,7 @@ export async function GET() {
     await dbConnect();
     const internships = await Internship.find({})
       .select(
-        "title company location type stipend tags price description color icon",
+        "title company location type stipend tags price description color icon requirements responsibilities",
       )
       .sort({ createdAt: -1 })
       .lean();

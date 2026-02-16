@@ -237,10 +237,10 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                              </span>
                                         </div>
 
-                                        <h3 className="text-2xl font-black text-white mb-2 tracking-tight group-hover:text-emerald-300 transition-colors duration-500">{job.title}</h3>
-                                        <div className="text-base text-slate-300 font-bold mb-4 flex items-center gap-2 opacity-90">
-                                            <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                                            {job.company}
+                                        <h3 className="text-3xl md:text-4xl font-black text-white mb-3 tracking-tight leading-tight group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-emerald-400 group-hover:to-cyan-400 transition-all duration-500">{job.title}</h3>
+                                        <div className="text-lg text-slate-400 font-semibold mb-6 flex items-center gap-2.5">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_#10b981]" />
+                                            <span className="group-hover:text-emerald-300 transition-colors duration-500">{job.company}</span>
                                         </div>
 
                                          <div className="flex flex-wrap gap-3 mb-6">
@@ -369,11 +369,12 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                 
                                 <div>
                                     <h3 className="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-4">Selected Role</h3>
-                                    <h2 className="text-3xl font-black text-white mb-2 leading-tight">
+                                    <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-emerald-100 to-white mb-3 leading-tight">
                                         {internships.find(i => i._id === selectedInternship)?.title}
                                     </h2>
-                                    <p className="text-gray-400 font-medium text-sm mb-8">
-                                        at {internships.find(i => i._id === selectedInternship)?.company}
+                                    <p className="text-emerald-400/80 font-semibold text-base mb-8 flex items-center gap-2">
+                                        <span className="text-gray-500">at</span>
+                                        <span>{internships.find(i => i._id === selectedInternship)?.company}</span>
                                     </p>
 
                                     <div className="space-y-4">
@@ -396,6 +397,36 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                             </div>
                                         </div>
                                     </div>
+
+                                    {/* Requirements Section */}
+                                    {internships.find(i => i._id === selectedInternship)?.requirements?.length > 0 && (
+                                        <div className="mt-6 pt-6 border-t border-white/10">
+                                            <h4 className="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-3">Requirements</h4>
+                                            <ul className="space-y-2">
+                                                {internships.find(i => i._id === selectedInternship)?.requirements.map((req: string, idx: number) => (
+                                                    <li key={idx} className="flex items-start gap-2 text-xs text-gray-300">
+                                                        <CheckCircle2 size={14} className="text-emerald-500 mt-0.5 shrink-0" />
+                                                        <span>{req}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+
+                                    {/* Responsibilities Section */}
+                                    {internships.find(i => i._id === selectedInternship)?.responsibilities?.length > 0 && (
+                                        <div className="mt-6 pt-6 border-t border-white/10">
+                                            <h4 className="text-xs font-bold text-blue-500 uppercase tracking-widest mb-3">Responsibilities</h4>
+                                            <ul className="space-y-2">
+                                                {internships.find(i => i._id === selectedInternship)?.responsibilities.map((resp: string, idx: number) => (
+                                                    <li key={idx} className="flex items-start gap-2 text-xs text-gray-300">
+                                                        <CheckCircle2 size={14} className="text-blue-500 mt-0.5 shrink-0" />
+                                                        <span>{resp}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="mt-8 pt-8 border-t border-white/10">
