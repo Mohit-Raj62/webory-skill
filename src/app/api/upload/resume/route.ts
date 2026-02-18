@@ -22,11 +22,12 @@ export async function POST(req: Request) {
       "image/jpeg",
       "image/png",
       "image/jpg",
+      "text/plain", // Allow txt for PDF workaround
     ];
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
         { error: "Invalid file type. Only PDF, JPG, PNG allowed." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -36,21 +37,20 @@ export async function POST(req: Request) {
       "Size:",
       file.size,
       "Type:",
-      file.type
+      file.type,
     );
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Upload to Cloudinary
-    const result = await new Promise((resolve, reject) => {
+    // Workaround: Rename to .txt, upload as raw authenticated, serve via proxy
+    const result: any = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
-          resource_type: "auto", // Auto detect image or raw (pdf)
+          resource_type: "raw",
           folder: "resumes",
-          public_id: `${Date.now()}-${file.name
-            .replace(/\.[^/.]+$/, "")
-            .replace(/\s+/g, "_")}`, // Remove ext & spaces
+          type: "authenticated",
+          public_id: `${Date.now()}-${file.name.replace(/\.[^/.]+$/, "").replace(/\s+/g, "_")}.txt`, // Force .txt extension
           use_filename: true,
           unique_filename: false,
         },
@@ -62,21 +62,41 @@ export async function POST(req: Request) {
             console.log("Upload successful:", result);
             resolve(result);
           }
-        }
+        },
       );
       uploadStream.end(buffer);
     });
 
+    // Generate Signed URL for the .txt file
+    const signedUrl = cloudinary.url(result.public_id, {
+      resource_type: "raw",
+      type: "authenticated",
+      sign_url: true,
+      version: result.version,
+    });
+
+    // Return Proxy URL
+    // Use environment variable for base URL if available, else relative path might work if client is on same domain?
+    // But email links need absolute URL.
+    // We can infer base URL from request headers if needed, but for now we assume client handles relative or we construct absolute.
+    // Determine base URL dynamically from request to support both localhost and production
+    const host = req.headers.get("host");
+    const protocol = req.headers.get("x-forwarded-proto") || "http";
+    const baseUrl = `${protocol}://${host}`;
+
+    // Include filename in proxy URL for better download experience
+    const proxyUrl = `${baseUrl}/api/view-pdf?url=${encodeURIComponent(signedUrl)}&filename=${encodeURIComponent(file.name)}`;
+
     return NextResponse.json({
-      url: (result as any).secure_url,
-      publicId: (result as any).public_id,
+      url: proxyUrl,
+      publicId: result.public_id,
       success: true,
     });
   } catch (error: any) {
     console.error("Upload error:", error);
     return NextResponse.json(
       { error: "Upload failed", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

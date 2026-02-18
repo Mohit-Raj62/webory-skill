@@ -1,0 +1,5 @@
+Full response: {
+  "url": "https://www.weboryskills.in/api/view-pdf?url=https%3A%2F%2Fres.cloudinary.com%2Fdwbctkmjb%2Fraw%2Fauthenticated%2Fs--mXEoFipG--%2Fv1771449425%2Fresumes%2F1771449422757-real_dummy.txt%3F_a%3DBAMAAAeC0",
+  "publicId": "resumes/1771449422757-real_dummy.txt",
+  "success": true
+}

@@ -8,6 +8,7 @@ import { InactivityLogout } from "@/components/auth/inactivity-logout";
 import { SessionProvider } from "@/components/auth/session-provider";
 import { Toaster } from "sonner";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import SupportChatbot from "@/components/SupportChatbot";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
@@ -95,6 +96,7 @@ export default function RootLayout({
                 </SessionProvider>
                 <Toaster position="top-right" richColors />
                 <SpeedInsights />
+                <SupportChatbot />
             </body>
         </html>
     );

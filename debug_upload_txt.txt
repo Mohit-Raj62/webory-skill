@@ -1,0 +1,3 @@
+Full response: {
+  "error": "Invalid file type. Only PDF, JPG, PNG allowed."
+}

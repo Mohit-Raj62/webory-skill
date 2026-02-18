@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { CheckCircle, XCircle, Clock, Search, ExternalLink, Edit2, Save, X, Calendar, Award, Mail, ChevronLeft, ChevronRight, Briefcase, DollarSign, Globe, Linkedin } from "lucide-react";
+import { Upload, FileText, CheckCircle, XCircle, Clock, Search, ExternalLink, Edit2, Save, X, Calendar, Award, Mail, ChevronLeft, ChevronRight, Briefcase, DollarSign, Globe, Linkedin } from "lucide-react";
+import { uploadPDFToCloudinary } from "@/lib/upload-utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -54,6 +55,8 @@ export default function AdminApplicationsPage() {
     // Offer Modal
     const [offerApp, setOfferApp] = useState<JobApplication | null>(null);
     const [offerLink, setOfferLink] = useState("");
+    const [offerFile, setOfferFile] = useState<File | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
 
     // View Details Modal
     const [viewApp, setViewApp] = useState<JobApplication | null>(null);
@@ -144,15 +147,38 @@ export default function AdminApplicationsPage() {
 
     const handleSendOffer = async () => {
         if (!offerApp) return;
+        
+        // Validation: Need either a link or a file
+        if (!offerLink && !offerFile) {
+            toast.error("Please provide an offer letter link or upload a file");
+            return;
+        }
 
         try {
+            let finalOfferLink = offerLink;
+
+            // Handle File Upload if present
+            if (offerFile) {
+                setIsUploading(true);
+                try {
+                    const uploadResult = await uploadPDFToCloudinary(offerFile);
+                    finalOfferLink = uploadResult.url;
+                    toast.success("Offer letter uploaded successfully!");
+                } catch (error) {
+                    console.error("File upload failed:", error);
+                    toast.error("Failed to upload offer letter. Please try again.");
+                    setIsUploading(false);
+                    return; // Stop execution on upload failure
+                }
+            }
+
             const res = await fetch("/api/admin/applications", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     id: offerApp._id,
                     status: "selected",
-                    offerLink: offerLink
+                    offerLink: finalOfferLink
                 })
             });
             
@@ -161,13 +187,17 @@ export default function AdminApplicationsPage() {
                 toast.success("Offer sent successfully!");
                 setOfferApp(null);
                 setOfferLink("");
+                setOfferFile(null);
+                setIsUploading(false);
                 fetchApplications();
             } else {
                  toast.error(data.error || "Failed to send offer");
+                 setIsUploading(false);
             }
         } catch (error) {
             console.error("Offer error:", error);
             toast.error("Failed to send offer");
+            setIsUploading(false);
         }
     };
 
@@ -358,7 +388,7 @@ export default function AdminApplicationsPage() {
                                     )}
 
                                     {(app.status === "interview") && (
-                                        <Button onClick={() => { setOfferApp(app); setOfferLink(""); }} className="bg-green-600 hover:bg-green-700">
+                                        <Button onClick={() => { setOfferApp(app); setOfferLink(""); setOfferFile(null); }} className="bg-green-600 hover:bg-green-700">
                                             <CheckCircle size={16} className="mr-2" /> Send Offer
                                         </Button>
                                     )}
@@ -535,11 +565,75 @@ export default function AdminApplicationsPage() {
                         </div>
                         <div className="space-y-4">
                             <p className="text-gray-300 text-sm">You are approving <strong>{offerApp.name}</strong> for <strong>{offerApp.jobId?.title}</strong>.</p>
+                             
+                             {/* File Upload Option */}
+                            <div className="bg-black/20 p-4 rounded-xl border border-white/5">
+                                <label className="block text-sm text-gray-400 mb-2">Upload Offer Letter (PDF)</label>
+                                <div className="flex items-center gap-3">
+                                    <label className="cursor-pointer flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors">
+                                        <Upload size={16} />
+                                        <span>{offerFile ? "Change File" : "Select File"}</span>
+                                        <input 
+                                            type="file" 
+                                            accept=".pdf" 
+                                            className="hidden" 
+                                            onChange={(e) => {
+                                                if(e.target.files?.[0]) {
+                                                    setOfferFile(e.target.files[0]);
+                                                    setOfferLink(""); // Clear link if file is selected to avoid confusion, though logic prioritizes file
+                                                }
+                                            }}
+                                        />
+                                    </label>
+                                    {offerFile && (
+                                        <span className="text-sm text-white flex items-center gap-1">
+                                            <FileText size={14} className="text-blue-400"/>
+                                            {offerFile.name}
+                                            <button onClick={() => setOfferFile(null)} className="ml-2 text-gray-400 hover:text-red-400">
+                                                <X size={14}/>
+                                            </button>
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+
+                             <div className="relative">
+                                <div className="absolute inset-0 flex items-center">
+                                    <div className="w-full border-t border-gray-700"></div>
+                                </div>
+                                <div className="relative flex justify-center text-xs uppercase">
+                                    <span className="bg-slate-900 px-2 text-gray-400">Or paste link</span>
+                                </div>
+                            </div>
+
                              <div>
                                 <label className="block text-sm text-gray-400 mb-1">Offer Letter Link (PDF/Doc)</label>
-                                <input type="url" value={offerLink} onChange={(e) => setOfferLink(e.target.value)} placeholder="https://..." className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-green-500 outline-none" />
+                                <input 
+                                    type="url" 
+                                    value={offerLink} 
+                                    onChange={(e) => {
+                                        setOfferLink(e.target.value);
+                                        setOfferFile(null); // Clear file if link is being typed
+                                    }}
+                                    disabled={!!offerFile}
+                                    placeholder="https://..." 
+                                    className={`w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-green-500 outline-none ${offerFile ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                />
                             </div>
-                            <Button onClick={handleSendOffer} className="w-full bg-green-600 hover:bg-green-700">Approve & Send Email</Button>
+                            <Button 
+                                onClick={handleSendOffer} 
+                                disabled={isUploading || (!offerLink && !offerFile)}
+                                className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {isUploading ? (
+                                    <>
+                                        <Clock className="mr-2 h-4 w-4 animate-spin" />
+                                        Uploading & Sending...
+                                    </>
+                                ) : (
+                                    "Approve & Send Email"
+                                )}
+                            </Button>
                         </div>
                     </div>
                 </div>

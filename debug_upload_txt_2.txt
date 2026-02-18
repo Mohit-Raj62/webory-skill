@@ -1,0 +1,5 @@
+Full response: {
+  "url": "https://res.cloudinary.com/dwbctkmjb/raw/authenticated/s--FHC2hQzm--/v1771449282/resumes/1771449279518-dummy.txt?_a=BAMAAAeC0",
+  "publicId": "resumes/1771449279518-dummy.txt",
+  "success": true
+}

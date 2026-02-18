@@ -1,0 +1,2 @@
+Auth: https://res.cloudinary.com/dwbctkmjb/image/authenticated/s--ZWEF7TCc--/v1/resumes/1771448358748-real_dummy.pdf?_a=BAMAAAeC0
+UploadSigned: https://res.cloudinary.com/dwbctkmjb/image/upload/s--ZWEF7TCc--/v1/resumes/1771448358748-real_dummy.pdf?_a=BAMAAAeC0
