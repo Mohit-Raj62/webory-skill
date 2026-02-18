@@ -65,10 +65,15 @@ export async function POST(req: Request) {
     });
 
     // Return Proxy URL
-    // Determine base URL dynamically from request to support both localhost and production
-    const host = req.headers.get("host");
-    const protocol = req.headers.get("x-forwarded-proto") || "http";
-    const baseUrl = `${protocol}://${host}`;
+    // Prioritize environment variable for base URL to ensure production links even if uploaded from local admin
+    let baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+
+    if (!baseUrl || !baseUrl.startsWith("http")) {
+      // Determine base URL dynamically from request if env var is missing
+      const host = req.headers.get("host");
+      const protocol = req.headers.get("x-forwarded-proto") || "http";
+      baseUrl = `${protocol}://${host}`;
+    }
 
     // Include filename in proxy URL
     const proxyUrl = `${baseUrl}/api/view-pdf?url=${encodeURIComponent(signedUrl)}&filename=${encodeURIComponent(file.name)}`;
