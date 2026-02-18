@@ -62,11 +62,8 @@ const ChatMessageSchema = new Schema({
 });
 
 // Update the updatedAt timestamp on save
-ChatMessageSchema.pre("save", function (next) {
+ChatMessageSchema.pre("save", function () {
   this.updatedAt = new Date();
-  if (typeof next === "function") {
-    next();
-  }
 });
 
 // Index for efficient queries
