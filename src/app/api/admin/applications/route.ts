@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import { JobApplication } from "@/models/JobApplication";
 import Job from "@/models/Job";
+
 import User from "@/models/User";
 import { getDataFromToken } from "@/helpers/getDataFromToken";
 import { sendEmail, emailTemplates } from "@/lib/mail";
+
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {
@@ -51,14 +54,27 @@ export async function GET(request: NextRequest) {
     );
 
     // Parallel execution for speed
-    const [applications, totalCount] = await Promise.all([
-      JobApplication.find(query)
-        .populate("jobId", "title type location")
-        .sort({ appliedAt: -1 })
-        .skip(skip)
-        .limit(limit),
-      JobApplication.countDocuments(query),
-    ]);
+    let applications, totalCount;
+    try {
+      [applications, totalCount] = await Promise.all([
+        JobApplication.find(query)
+          .populate({
+            path: "jobId",
+            model: Job,
+            select: "title type location",
+          })
+          .sort({ appliedAt: -1 })
+          .skip(skip)
+          .limit(limit),
+        JobApplication.countDocuments(query),
+      ]);
+    } catch (dbError: any) {
+      console.error("[JobApps API] DB Error:", dbError);
+      return NextResponse.json(
+        { error: "Database error: " + dbError.message },
+        { status: 500 },
+      );
+    }
 
     console.log(
       `[JobApps API] Found: ${applications.length} apps, Total: ${totalCount}`,
@@ -97,7 +113,10 @@ export async function PUT(request: NextRequest) {
     const reqBody = await request.json();
     const { id, status, interviewDate, interviewLink, offerLink } = reqBody;
 
-    const application = await JobApplication.findById(id).populate("jobId");
+    const application = await JobApplication.findById(id).populate({
+      path: "jobId",
+      model: Job,
+    });
     if (!application) {
       return NextResponse.json(
         { error: "Application not found" },

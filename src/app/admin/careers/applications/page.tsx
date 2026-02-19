@@ -87,7 +87,19 @@ export default function AdminApplicationsPage() {
                 filter: filter
             });
             
-            const res = await fetch(`/api/admin/applications?${params}`);
+            console.log("Fetching applications with params:", params.toString());
+            const res = await fetch(`/api/admin/applications?${params}`, {
+                cache: "no-store",
+                headers: {
+                    "Cache-Control": "no-cache"
+                }
+            });
+            
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(`API Error: ${res.status} ${errorText}`);
+            }
+
             const data = await res.json();
             
             if(data.success) {
@@ -98,10 +110,13 @@ export default function AdminApplicationsPage() {
                      totalPages: data.pagination.totalPages,
                      totalCount: data.pagination.totalCount
                  }));
+            } else {
+                console.error("API returned success: false", data);
+                if (data.error) toast.error(data.error);
             }
         } catch (error) {
             console.error("Failed to fetch applications", error);
-            toast.error("Failed to load applications");
+            toast.error("Failed to load applications. Please refresh.");
         } finally {
             setLoading(false);
         }

@@ -43,11 +43,6 @@ const jobSchema = new mongoose.Schema({
   },
 });
 
-// Delete existing model in development to avoid OverwriteModelError
-if (process.env.NODE_ENV === "development" && mongoose.models.Job) {
-  delete mongoose.models.Job;
-}
-
 const Job = mongoose.models.Job || mongoose.model("Job", jobSchema);
 
 export default Job;
