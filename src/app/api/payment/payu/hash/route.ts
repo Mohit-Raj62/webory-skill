@@ -15,13 +15,22 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { txnid, amount, productinfo, firstname, email, udf1, udf2, udf3 } =
-      body;
+    const {
+      txnid,
+      amount,
+      productinfo,
+      firstname,
+      email,
+      udf1,
+      udf2,
+      udf3,
+      udf4,
+    } = body;
 
     if (!txnid || !amount || !productinfo || !firstname || !email) {
       return NextResponse.json(
         { error: "Missing required parameters" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -36,8 +45,9 @@ export async function POST(req: Request) {
         udf1, // userId
         udf2, // type: 'course' | 'internship'
         udf3, // resourceId
+        udf4, // promo/referral code
       },
-      PAYU_SALT
+      PAYU_SALT,
     );
 
     return NextResponse.json({ hash, key: PAYU_KEY });
@@ -47,7 +57,7 @@ export async function POST(req: Request) {
       {
         error: error instanceof Error ? error.message : "Internal Server Error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

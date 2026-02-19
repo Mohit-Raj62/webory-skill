@@ -20,6 +20,8 @@ import {
     CreditCard,
     Award,
     Database,
+    Megaphone,
+    Gift,
 } from "lucide-react";
 
 const menuItems = [
@@ -42,6 +44,8 @@ const menuItems = [
     { name: "Job Applications", href: "/admin/careers/applications", icon: FileText },
     { name: "Live Interest", href: "/admin/activity", icon: Video },
     { name: "Leads", href: "/admin/leads", icon: Users },
+    { name: "Rewards", href: "/admin/rewards", icon: Gift },
+    { name: "Campus Ambassadors", href: "/admin/ambassadors", icon: Megaphone },
     { name: "Maintenance", href: "/admin/maintenance", icon: Database },
 ];
 

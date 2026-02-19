@@ -78,6 +78,7 @@ export function Footer() {
                                 <li><Link href="/careers" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">Careers</Link></li>
                                 <li><Link href="/blog" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">Blog</Link></li>
                                 <li><Link href="/contact" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">Contact</Link></li>
+                                <li><Link href="/ambassador" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent font-medium">Campus Ambassador</Link></li>
                             </ul>
                         </div>
 

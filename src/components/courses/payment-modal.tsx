@@ -237,7 +237,8 @@ export function PaymentModal({
                     email,
                     udf1: userId,
                     udf2: resourceType,
-                    udf3: resourceId
+                    udf3: resourceId,
+                    udf4: appliedPromo?.code || "" // Pass referral/promo code
                 }),
             });
 
@@ -267,7 +268,8 @@ export function PaymentModal({
                 furl,
                 udf1: userId,
                 udf2: resourceType,
-                udf3: resourceId
+                udf3: resourceId,
+                udf4: appliedPromo?.code || "" // Pass referral/promo code
             };
 
             const bolt = (window as any).bolt;

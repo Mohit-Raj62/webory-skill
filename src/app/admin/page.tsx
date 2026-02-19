@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ClipboardList, FileText, GraduationCap, Users, BookOpen, Briefcase, Star, Award, Shield } from "lucide-react";
+import { ClipboardList, FileText, GraduationCap, Users, BookOpen, Briefcase, Star, Award, Shield, Gift } from "lucide-react";
 import Link from "next/link";
 
 export default function AdminDashboard() {
@@ -53,6 +53,14 @@ export default function AdminDashboard() {
             description: "Verify, generate & manage certificates",
             link: "/admin/certificates",
             color: "from-indigo-600 to-purple-600",
+        },
+        {
+            id: "rewards",
+            name: "Rewards",
+            icon: Gift,
+            description: "Manage ambassador reward requests",
+            link: "/admin/rewards",
+            color: "from-pink-600 to-rose-600",
         },
     ];
 

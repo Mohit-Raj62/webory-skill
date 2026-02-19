@@ -2,12 +2,14 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
+import Ambassador from "@/models/Ambassador";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 
 export async function POST(req: Request) {
   try {
     await dbConnect();
-    const { firstName, lastName, email, password, phone } = await req.json();
+    const { firstName, lastName, email, password, phone, referralCode } =
+      await req.json();
 
     if (!firstName || !lastName || !email || !password) {
       return NextResponse.json(
@@ -24,6 +26,22 @@ export async function POST(req: Request) {
       );
     }
 
+    // Referral Logic
+    let validReferralCode = null;
+    if (referralCode) {
+      const ambassador = await Ambassador.findOne({ referralCode });
+      if (ambassador) {
+        validReferralCode = referralCode;
+        // Award Points (e.g., 10 points per signup)
+        ambassador.points += 10;
+        ambassador.totalSignups += 1;
+        await ambassador.save();
+        console.log(
+          `✅ Referral applied: ${referralCode} for ambassador ${ambassador._id}`,
+        );
+      }
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
@@ -32,6 +50,7 @@ export async function POST(req: Request) {
       email,
       password: hashedPassword,
       phone,
+      referredBy: validReferralCode,
     });
 
     // Send welcome email

@@ -29,14 +29,14 @@ export async function POST(req: Request) {
       console.error("Invalid PayU Hash");
       return NextResponse.redirect(
         `${APP_URL}/payment/failure?reason=tampered`,
-        303
+        303,
       );
     }
 
     if (params.status !== "success") {
       return NextResponse.redirect(
         `${APP_URL}/payment/failure?reason=failed&txnid=${params.txnid}`,
-        303
+        303,
       );
     }
 
@@ -64,15 +64,38 @@ export async function POST(req: Request) {
       await handleInternshipApplication(userId, resourceId, txnid, amount);
     }
 
+    // Process Referral Reward
+    const referralCode = params.udf4;
+    if (referralCode) {
+      try {
+        const Ambassador = (await import("@/models/Ambassador")).default;
+        const ambassador = await Ambassador.findOne({
+          referralCode: referralCode.toUpperCase(),
+        });
+
+        if (ambassador && ambassador.status === "active") {
+          // Award Points (e.g., 100 points per sale)
+          ambassador.points = (ambassador.points || 0) + 100;
+          ambassador.totalSignups = (ambassador.totalSignups || 0) + 1;
+          await ambassador.save();
+          console.log(
+            `Referral Reward: Awarded 100 points to ${ambassador.referralCode}`,
+          );
+        }
+      } catch (err) {
+        console.error("Referral Processing Error:", err);
+      }
+    }
+
     return NextResponse.redirect(
       `${APP_URL}/payment/success?txnid=${txnid}`,
-      303
+      303,
     );
   } catch (error) {
     console.error("PayU Response Processing Error:", error);
     return NextResponse.redirect(
       `${APP_URL}/payment/failure?reason=server_error`,
-      303
+      303,
     );
   }
 }
@@ -81,7 +104,7 @@ async function handleCourseEnrollment(
   userId: string,
   courseId: string,
   txnid: string,
-  amount: number
+  amount: number,
 ) {
   try {
     const existing = await Enrollment.findOne({
@@ -119,8 +142,8 @@ async function handleCourseEnrollment(
         emailTemplates.courseEnrollment(
           user.firstName,
           course.title,
-          courseLink
-        )
+          courseLink,
+        ),
       );
 
       // Check if invoice template exists or send generic
@@ -134,8 +157,8 @@ async function handleCourseEnrollment(
           amount,
           txnid,
           new Date().toISOString(),
-          "course"
-        )
+          "course",
+        ),
       );
     }
   } catch (e) {
@@ -147,7 +170,7 @@ async function handleInternshipApplication(
   userId: string,
   internshipId: string,
   txnid: string,
-  amount: number
+  amount: number,
 ) {
   try {
     // Check if application exists
@@ -191,7 +214,7 @@ async function handleInternshipApplication(
       await sendEmail(
         user.email,
         `Application Received: ${internship.title}`,
-        emailTemplates.applicationReceived(user.firstName, internship.title)
+        emailTemplates.applicationReceived(user.firstName, internship.title),
       );
     }
   } catch (e) {

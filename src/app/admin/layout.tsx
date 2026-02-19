@@ -54,7 +54,7 @@ export default function AdminLayout({
     }
 
     return (
-        <div className="flex min-h-screen bg-background">
+        <div className="flex min-h-screen bg-black">
             <AdminSidebar
                 isOpen={isSidebarOpen}
                 onClose={() => setIsSidebarOpen(false)}

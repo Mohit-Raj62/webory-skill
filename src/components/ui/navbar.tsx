@@ -16,15 +16,18 @@ export function Navbar() {
     const [announcement, setAnnouncement] = useState({ enabled: false, text: "" });
 
     useEffect(() => {
+        let mounted = true;
         // Fetch global settings
         fetch("/api/settings")
             .then(res => res.json())
             .then(data => {
-                if (data.announcementBar) {
+                if (mounted && data.announcementBar) {
                     setAnnouncement(data.announcementBar);
                 }
             })
             .catch(err => console.error("Failed to fetch settings", err));
+        
+        return () => { mounted = false; };
     }, []);
 
     return (

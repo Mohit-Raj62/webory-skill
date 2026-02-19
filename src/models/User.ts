@@ -143,6 +143,10 @@ const UserSchema = new Schema({
     type: [String],
     default: [],
   },
+  referredBy: {
+    type: String, // Referral Code of the ambassador
+    default: null,
+  },
 });
 
 const User = models.User || model("User", UserSchema);

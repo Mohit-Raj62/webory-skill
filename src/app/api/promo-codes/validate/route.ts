@@ -12,20 +12,43 @@ export async function POST(req: NextRequest) {
     if (!code) {
       return NextResponse.json(
         { error: "Promo code is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Find promo code
-    const promoCode = await PromoCode.findOne({
+    let promoCode = await PromoCode.findOne({
       code: code.toUpperCase(),
       isActive: true,
     });
 
+    // If not a regular promo code, check if it's an Ambassador Referral Code
     if (!promoCode) {
+      const Ambassador = (await import("@/models/Ambassador")).default;
+      const ambassador = await Ambassador.findOne({
+        referralCode: code.toUpperCase(),
+        status: "active",
+      });
+
+      if (ambassador) {
+        // Treat ambassador code as a 5% discount promo
+        return NextResponse.json(
+          {
+            valid: true,
+            promoCode: {
+              code: ambassador.referralCode,
+              discountType: "percentage",
+              discountValue: 5, // 5% Discount for using referral
+              isReferral: true, // Flag to identify it's a referral
+            },
+          },
+          { status: 200 },
+        );
+      }
+
       return NextResponse.json(
         { error: "Invalid promo code" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -33,7 +56,7 @@ export async function POST(req: NextRequest) {
     if (promoCode.expiresAt && new Date(promoCode.expiresAt) < new Date()) {
       return NextResponse.json(
         { error: "Promo code has expired" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -41,7 +64,7 @@ export async function POST(req: NextRequest) {
     if (promoCode.maxUses && promoCode.usedCount >= promoCode.maxUses) {
       return NextResponse.json(
         { error: "Promo code usage limit reached" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -55,7 +78,7 @@ export async function POST(req: NextRequest) {
         {
           error: `This promo code is only valid for ${promoCode.applicableTo}s`,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -64,7 +87,7 @@ export async function POST(req: NextRequest) {
       if (!promoCode.applicableIds.includes(itemId)) {
         return NextResponse.json(
           { error: "This promo code is not applicable to this item" },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -76,7 +99,7 @@ export async function POST(req: NextRequest) {
           {
             error: `This promo code requires a minimum order value of ₹${promoCode.minOrderValue}`,
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -90,13 +113,13 @@ export async function POST(req: NextRequest) {
           discountValue: promoCode.discountValue,
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error validating promo code:", error);
     return NextResponse.json(
       { error: "Failed to validate promo code" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Lock, Mail, User, Loader2, Phone } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, User, Loader2, Phone, Hash } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function SignupPage() {
@@ -16,8 +16,11 @@ export default function SignupPage() {
         email: "",
         phone: "",
         password: "",
+        confirmPassword: "",
+        referralCode: "",
     });
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [focusedField, setFocusedField] = useState<string | null>(null);
@@ -202,17 +205,28 @@ export default function SignupPage() {
                                 </div>
                             </div>
 
-                            <Button
-                                type="submit"
-                                disabled={loading}
-                                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 py-6 text-base font-semibold shadow-lg shadow-blue-500/20 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
-                            >
-                                {loading ? (
-                                    <span className="flex items-center gap-2">
-                                        <Loader2 className="animate-spin" size={18} /> Creating Account...
-                                    </span>
-                                ) : "Sign Up"}
-                            </Button>
+                            <div className="relative">
+                            <Hash className="absolute left-3 top-3 text-gray-400" size={20} />
+                            <input
+                                type="text"
+                                placeholder="Referral Code (Optional)"
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-10 py-3 text-white focus:border-blue-500 focus:outline-none transition-colors"
+                                value={formData.referralCode}
+                                onChange={(e) => setFormData({ ...formData, referralCode: e.target.value })}
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 py-6 text-base font-semibold shadow-lg shadow-blue-500/20 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] flex justify-center items-center text-white"
+                        >
+                            {loading ? (
+                                <span className="flex items-center gap-2">
+                                    <Loader2 className="animate-spin" size={18} /> Creating Account...
+                                </span>
+                            ) : "Sign Up"}
+                        </button>
                         </form>
 
                         <div className="relative my-8">
