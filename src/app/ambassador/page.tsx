@@ -7,6 +7,13 @@ import Link from "next/link";
 import { ArrowRight, Trophy, Users, Gift, Star, Rocket, Target, Zap, Globe, Sparkles, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 
+const CAMPUSES = [
+  "IIT Bombay", "BITS Pilani", "IIT Delhi", "NIT Trichy", "DTU", 
+  "VIT Vellore", "SRM University", "Manipal", "IIIT Hyderabad", 
+  "Anna University", "Jadavpur University", "Thapar University",
+  "NIT Warangal", "IIT Kharagpur", "IIIT Delhi", "NSUT"
+];
+
 export default function AmbassadorPage() {
   return (
     <main className="min-h-screen bg-black text-white selection:bg-blue-500/30 overflow-x-hidden font-sans">
@@ -298,12 +305,7 @@ function RoleItem({ title, description }: { title: string, description: string }
     )
 }
 
-const CAMPUSES = [
-    "IIT Bombay", "BITS Pilani", "IIT Delhi", "NIT Trichy", "DTU", 
-    "VIT Vellore", "SRM University", "Manipal", "IIIT Hyderabad", 
-    "Anna University", "Jadavpur University", "Thapar University",
-    "NIT Warangal", "IIT Kharagpur", "IIIT Delhi", "NSUT"
-];
+
 
 function TimelineItem({ step, title, description, align, color, bg }: any) {
     return (
