@@ -8,7 +8,7 @@ import { sendEmail, emailTemplates } from "@/lib/mail";
 // PATCH - Update application status
 export async function PATCH(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await dbConnect();
@@ -61,7 +61,7 @@ export async function PATCH(
     if (status === "completed") {
       updateData.completedAt = new Date();
       updateData.certificateId = `CERT-${Date.now()}-${Math.floor(
-        Math.random() * 1000
+        Math.random() * 1000,
       )}`;
     }
 
@@ -82,8 +82,8 @@ export async function PATCH(
             student.firstName,
             internship.title,
             interviewDate,
-            interviewLink
-          )
+            interviewLink,
+          ),
         );
       } else if (status === "accepted") {
         if (!application.offerDate) {
@@ -91,15 +91,17 @@ export async function PATCH(
             offerDate: new Date(),
           });
         }
-        const offerLink = `${process.env.NEXT_PUBLIC_APP_URL}/internships/applications/${application._id}/offer-letter`;
+        const appUrl =
+          process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in";
+        const offerLink = `${appUrl}/internships/applications/${application._id}/offer-letter`;
         await sendEmail(
           student.email,
           `Congratulations! Offer for ${internship.title}`,
           emailTemplates.applicationAccepted(
             student.firstName,
             internship.title,
-            offerLink
-          )
+            offerLink,
+          ),
         );
       } else if (status === "rejected") {
         await sendEmail(
@@ -107,8 +109,8 @@ export async function PATCH(
           `Application Update: ${internship.title}`,
           emailTemplates.applicationRejected(
             student.firstName,
-            internship.title
-          )
+            internship.title,
+          ),
         );
       }
     }
@@ -118,7 +120,7 @@ export async function PATCH(
     console.error("Update application error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
