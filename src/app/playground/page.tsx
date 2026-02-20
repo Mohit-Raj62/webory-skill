@@ -10,9 +10,21 @@ import { motion } from "framer-motion";
 import { useAuth } from "@/components/auth/session-provider";
 import { Button } from "@/components/ui/button";
 
+import { Loader2 } from "lucide-react";
+
 const CodeEditor = dynamic(
     () => import("@/components/playground/CodeEditor"),
-    { ssr: false }
+    { 
+        ssr: false,
+        loading: () => (
+            <div className="h-[75vh] w-full flex items-center justify-center bg-[#0d1117] border border-[#30363d] rounded-lg shadow-2xl">
+                <div className="flex flex-col items-center gap-4">
+                    <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
+                    <p className="text-gray-400 font-mono text-sm animate-pulse">Loading Code Editor...</p>
+                </div>
+            </div>
+        )
+    }
 );
 
 function ErrorFallback({ error, resetErrorBoundary }: any) {

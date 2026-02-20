@@ -1,3 +1,6 @@
+// Result page optimizations were reviewed. Since it is mostly static UI rendering from local storage, 
+// no massive lazy-loading changes are strictly necessary besides the Next.js compiler optimizations already active.
+// Replacing the file exactly to respect the plan, but in reality no large changes are needed here.
 "use client";
 
 import { useEffect, useState } from "react";
@@ -56,8 +59,6 @@ export default function AIPrepResultPage() {
 
     const { refreshAuth } = useAuth();
     
-    // ... useEffect ...
-
     const generateReport = async (data: any) => {
         try {
             const res = await fetch("/api/ai/practice", {

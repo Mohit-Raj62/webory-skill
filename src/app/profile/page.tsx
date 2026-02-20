@@ -7,11 +7,13 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/session-provider";
 import { User, Mail, Award, Briefcase, LogOut, ExternalLink, Trophy, Calendar, Video, FileText, Clock, Upload, ChevronRight, Zap } from "lucide-react";
-import { ActivityDashboard } from "@/components/dashboard/activity-dashboard";
-import { GradesDashboard } from "@/components/dashboard/grades-dashboard";
-import { PhoneCollectionModal } from "@/components/profile/phone-collection-modal";
+import dynamic from 'next/dynamic';
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+
+const ActivityDashboard = dynamic(() => import('@/components/dashboard/activity-dashboard').then(mod => mod.ActivityDashboard), { ssr: false });
+const GradesDashboard = dynamic(() => import('@/components/dashboard/grades-dashboard').then(mod => mod.GradesDashboard), { ssr: false });
+const PhoneCollectionModal = dynamic(() => import('@/components/profile/phone-collection-modal').then(mod => mod.PhoneCollectionModal), { ssr: false });
 
 interface UserProfile {
     firstName: string;

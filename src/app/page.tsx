@@ -1,15 +1,22 @@
 import Link from "next/link"; // Not needed but avoiding removing unused imports if any
 import { Navbar } from "@/components/ui/navbar";
 import { Hero } from "@/components/landing/hero";
-import { Features } from "@/components/landing/features";
-import { EnrolledCourses } from "@/components/landing/enrolled-courses";
-import { AppliedInternships } from "@/components/landing/applied-internships";
-import { CoursesPreview } from "@/components/landing/courses-preview";
-import { Internships } from "@/components/landing/internships";
-import { TrustProofSection } from "@/components/landing/trust-proof";
-import { TestimonialsSection } from "@/components/home/TestimonialsSection";
-import { FAQ } from "@/components/landing/faq";
-import { Footer } from "@/components/ui/footer";
+import { FreeExperienceHighlight } from "@/components/landing/free-experience";
+import dynamic from 'next/dynamic';
+
+const Features = dynamic(() => import('@/components/landing/features').then(mod => mod.Features));
+const EnrolledCourses = dynamic(() => import('@/components/landing/enrolled-courses').then(mod => mod.EnrolledCourses));
+const AppliedInternships = dynamic(() => import('@/components/landing/applied-internships').then(mod => mod.AppliedInternships));
+const CoursesPreview = dynamic(() => import('@/components/landing/courses-preview').then(mod => mod.CoursesPreview));
+const Internships = dynamic(() => import('@/components/landing/internships').then(mod => mod.Internships));
+const TrustProofSection = dynamic(() => import('@/components/landing/trust-proof').then(mod => mod.TrustProofSection));
+const TestimonialsSection = dynamic(() => import('@/components/home/TestimonialsSection').then(mod => mod.TestimonialsSection));
+const FAQ = dynamic(() => import('@/components/landing/faq').then(mod => mod.FAQ));
+const Footer = dynamic(() => import('@/components/ui/footer').then(mod => mod.Footer));
+const AIRoadmapFlow = dynamic(() => import('@/components/landing/ai-roadmap-flow').then(mod => mod.AIRoadmapFlow));
+const DevLabPreview = dynamic(() => import('@/components/landing/devlab-preview').then(mod => mod.DevLabPreview));
+const AINexusShowcase = dynamic(() => import('@/components/landing/ai-nexus-showcase').then(mod => mod.AINexusShowcase));
+
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
 import Internship from "@/models/Internship";
@@ -18,15 +25,6 @@ import Course from "@/models/Course";
 // Force dynamic rendering to ensure the user count is up-to-date
 // Alternatively we can use revalidate = 60 (seconds) for performance
 export const revalidate = 60;
-
-import { AIRoadmapFlow } from "@/components/landing/ai-roadmap-flow";
-import { DevLabPreview } from "@/components/landing/devlab-preview";
-
-
-
-import { FreeExperienceHighlight } from "@/components/landing/free-experience";
-import { AINexusShowcase } from "@/components/landing/ai-nexus-showcase";
-
 
 export default async function Home() {
     let userCount = 0;
