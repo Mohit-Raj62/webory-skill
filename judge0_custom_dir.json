@@ -1,0 +1,13 @@
+{
+  "stdout": "Collecting numpy\n  Downloading https://files.pythonhosted.org/packages/a4/9b/027bec52c633f6556dba6b722d9a0befb40498b9ceddd29cbe67a45a127c/numpy-1.24.4.tar.gz (10.9MB)\nCollecting requests\n  Downloading https://files.pythonhosted.org/packages/7c/e4/56027c4a6b4ae70ca9de302488c5ca95ad4a39e190093d6c1a8ace08341b/requests-2.32.4-py3-none-any.whl (64kB)\nCollecting certifi>=2017.4.17 (from requests)\n  Downloading https://files.pythonhosted.org/packages/e6/ad/3cc14f097111b4de0040c83a525973216457bbeeb63739ef1ed275c1c021/certifi-2026.1.4-py3-none-any.whl (152kB)\nCollecting charset_normalizer<4,>=2 (from requests)\n  Downloading https://files.pythonhosted.org/packages/0a/4c/925909008ed5a988ccbb72dcc897407e5d6d3bd72410d69e051fc0c14647/charset_normalizer-3.4.4-py3-none-any.whl (53kB)\nCollecting idna<4,>=2.5 (from requests)\n  Downloading https://files.pythonhosted.org/packages/0e/61/66938bbb5fc52dbdf84594873d5b51fb1f7c7794e9c0f5bd885f30bc507b/idna-3.11-py3-none-any.whl (71kB)\nCollecting urllib3<3,>=1.21.1 (from requests)\n  Downloading https://files.pythonhosted.org/packages/ce/d9/5f4c13cecde62396b0d3fe530a50ccea91e7dfc1ccf0e09c228841bb5ba8/urllib3-2.2.3-py3-none-any.whl (126kB)\nInstalling collected packages: certifi, charset-normalizer, idna, urllib3, requests\nSuccessfully installed certifi-2026.1.4 charset-normalizer-3.4.4 idna-3.11 requests-2.32.4 urllib3-2.2.3\nNumpy Error: Command '['/usr/local/python-3.8.1/bin/python3', '-m', 'pip', 'install', '-t', '/tmp/packages', 'numpy']' returned non-zero exit status 1.\nRequests installed: 2.32.4\n",
+  "time": "2.012",
+  "memory": 76620,
+  "stderr": "ERROR: Could not install packages due to an EnvironmentError: [Errno 27] File too large\n\nWARNING: You are using pip version 19.2.3, however version 25.0.1 is available.\nYou should consider upgrading via the 'pip install --upgrade pip' command.\nWARNING: You are using pip version 19.2.3, however version 25.0.1 is available.\nYou should consider upgrading via the 'pip install --upgrade pip' command.\n",
+  "token": "c26f8741-16a8-4592-95b7-c692f288a7f0",
+  "compile_output": null,
+  "message": null,
+  "status": {
+    "id": 3,
+    "description": "Accepted"
+  }
+}

@@ -23,6 +23,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { usePyodide } from "@/hooks/usePyodide";
 
 export const LANGUAGE_VERSIONS = {
     javascript: "18.15.0",
@@ -261,7 +262,8 @@ export default function CodeEditor() {
     const [newFileName, setNewFileName] = useState("");
     const [isNewFileOpen, setIsNewFileOpen] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-    const [activeTab, setActiveTab] = useState<"terminal" | "output" | "debug">("terminal");
+    const [activeTab, setActiveTab] = useState<"terminal" | "output" | "debug" | "preview">("terminal");
+    const { runPython, isPyodideReady } = usePyodide();
     const [terminalInput, setTerminalInput] = useState("");
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
     const [shareLink, setShareLink] = useState("");
@@ -692,6 +694,59 @@ export default function CodeEditor() {
         setActiveTab("output"); // Switch to output tab on run
 
         try {
+            if (language === "html" || language === "css") {
+                setRunOutput(["Preview mode active..."]);
+                setActiveTab("preview");
+                setIsLoading(false);
+                return;
+            }
+
+            if (language === "javascript" && (code.includes("React") || code.includes("<html") || code.includes("document."))) {
+                setRunOutput(["Preview mode active..."]);
+                setActiveTab("preview");
+                setIsLoading(false);
+                return;
+            }
+
+            if (language === "javascript") {
+                setActiveTab("output");
+                setRunOutput(["Running JavaScript locally..."]);
+                const logCat: string[] = [];
+                const originalLog = console.log;
+                const originalError = console.error;
+                console.log = (...args) => logCat.push(args.join(" "));
+                console.error = (...args) => { logCat.push("Error: " + args.join(" ")); setIsError(true); };
+                try {
+                    const func = new Function(code);
+                    func();
+                    setRunOutput(logCat.length ? logCat : ["(No output)"]);
+                } catch (err: any) {
+                    setIsError(true);
+                    setRunOutput([err.message || String(err)]);
+                } finally {
+                    console.log = originalLog;
+                    console.error = originalError;
+                }
+                setTerminalOutput(prev => [...prev, `$ node main.js`, ...logCat, ""]);
+                setIsLoading(false);
+                return;
+            }
+
+            if (language === "python" && isPyodideReady) {
+                setRunOutput(["Running Python locally (Pyodide)... Please wait."]);
+                try {
+                    const output = await runPython(code);
+                    setRunOutput(output.split("\\n"));
+                    setTerminalOutput(prev => [...prev, `$ python main.py`, ...output.split("\\n"), ""]);
+                } catch (err: any) {
+                    setIsError(true);
+                    setRunOutput([err.message]);
+                    setTerminalOutput(prev => [...prev, `$ python main.py`, err.message, ""]);
+                }
+                setIsLoading(false);
+                return;
+            }
+
             const response = await fetch("/api/code/run", {
                 method: "POST",
                 headers: {
@@ -736,7 +791,7 @@ export default function CodeEditor() {
             // 2. Update Terminal Tab (History)
             setTerminalOutput(prev => [
                 ...prev, 
-                `$ ${language} main.${language === 'python' ? 'py' : language === 'javascript' ? 'js' : language}`,
+                `$ ${language} main.${(language as string) === 'python' ? 'py' : (language as string) === 'javascript' ? 'js' : language}`,
                 ...outputLines,
                 "" // Empty line spacer
             ]);
@@ -1146,10 +1201,18 @@ export default function CodeEditor() {
                             >
                                 DEBUG CONSOLE
                             </button>
+                            <button 
+                                onClick={() => setActiveTab("preview")}
+                                className={`text-xs font-medium h-10 items-center px-1 transition-colors hidden sm:flex ${
+                                    activeTab === "preview" ? "text-gray-300 border-b-2 border-purple-500" : "text-gray-500 hover:text-gray-300"
+                                }`}
+                            >
+                                PREVIEW
+                            </button>
                         </div>
                         
                         <div className="flex items-center gap-3">
-                             {language !== "html" && (
+                             {activeTab !== "preview" && (
                                 <button
                                     onClick={() => {
                                         if (activeTab === 'terminal') setTerminalOutput([]);
@@ -1189,12 +1252,17 @@ export default function CodeEditor() {
 
                     {/* Terminal Body / Preview Area */}
                     <div className={`flex-1 overflow-auto custom-scrollbar flex flex-col bg-[#0d1117] relative ${
-                        activeTab !== "terminal" && language !== "html" ? "pb-0" : ""
+                        activeTab !== "terminal" && activeTab !== "preview" ? "pb-0" : ""
                     }`}>
-                        {language === "html" ? (
+                        {activeTab === "preview" ? (
                             <iframe 
                                 title="Preview"
-                                srcDoc={runOutput.join("\n") || code}
+                                srcDoc={
+                                    language === "html" ? code : 
+                                    language === "css" ? `<html><head><style>${code}</style></head><body><h1>CSS Applied!</h1></body></html>` :
+                                    (language === "javascript" && (code.includes("React") || code.includes("<html") || code.includes("document."))) ?
+                                    `<!DOCTYPE html><html><head><script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script><script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script><script src="https://cdn.tailwindcss.com"></script></head><body><div id="root"></div><script type="text/babel">${code}</script></body></html>` : ""
+                                }
                                 className="w-full h-full bg-white border-0"
                                 sandbox="allow-scripts allow-modals"
                             />
@@ -1247,17 +1315,38 @@ export default function CodeEditor() {
                         )}
                         
                         {/* Terminal Input (only for terminal tab and non-HTML) */}
-                        {activeTab === "terminal" && language !== "html" && (
+                        {activeTab === "terminal" && (
                             <div className="border-t border-[#30363d] bg-[#161b22] p-3 flex items-center gap-2 shrink-0">
                                 <span className="text-green-400 text-xs font-mono select-none">$</span>
                                 <input 
                                     type="text"
                                     value={terminalInput}
                                     onChange={(e) => setTerminalInput(e.target.value)}
-                                    onKeyDown={(e) => {
+                                    onKeyDown={async (e) => {
                                         if (e.key === "Enter" && terminalInput.trim()) {
-                                            setTerminalOutput(prev => [...prev, `$ ${terminalInput}`, "Command execution not yet implemented. Use 'Run Code' button to execute your code."]);
+                                            const cmd = terminalInput.trim();
                                             setTerminalInput("");
+                                            setTerminalOutput(prev => [...prev, `$ ${cmd}`]);
+
+                                            if (cmd.startsWith("pip install ") || cmd.startsWith("pip3 install ")) {
+                                                const pkg = cmd.replace(/pip3? install /, "").trim();
+                                                if (!isPyodideReady) {
+                                                    setTerminalOutput(prev => [...prev, "Python environment is initializing... Please wait."]);
+                                                    return;
+                                                }
+                                                setTerminalOutput(prev => [...prev, `Installing ${pkg} in browser memory...`]);
+                                                try {
+                                                    const installCode = `import micropip\nawait micropip.install('${pkg}')\nprint("Successfully installed ${pkg}")`;
+                                                    const output = await runPython(installCode);
+                                                    setTerminalOutput(prev => [...prev, ...output.split("\\n")]);
+                                                } catch (err: any) {
+                                                    setTerminalOutput(prev => [...prev, `Error installing ${pkg}:`, err.message]);
+                                                }
+                                            } else if (cmd.startsWith("npm install ") || cmd.startsWith("npm i ")) {
+                                                setTerminalOutput(prev => [...prev, "For JavaScript/React, just 'import' the module in your code! The browser CDN (esm.sh) will handle it automatically."]);
+                                            } else {
+                                                setTerminalOutput(prev => [...prev, "Command execution not yet implemented. Try 'pip install <package>' for Python."]);
+                                            }
                                         }
                                     }}
                                     placeholder="Type a command and press Enter..."

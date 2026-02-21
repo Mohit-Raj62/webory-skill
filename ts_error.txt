@@ -1,0 +1,2 @@
+src/components/playground/pyodide.worker.ts(30,16): error TS7006: Parameter 'msg' implicitly has an 'any' type.
+src/components/playground/pyodide.worker.ts(31,16): error TS7006: Parameter 'msg' implicitly has an 'any' type.
