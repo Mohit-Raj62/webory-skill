@@ -134,15 +134,24 @@ export default function CareersPage() {
        }
 
       // Submit Application
+      const finalFormData = new FormData();
+      finalFormData.append("jobId", selectedJob._id);
+      finalFormData.append("name", formData.name);
+      finalFormData.append("email", formData.email);
+      finalFormData.append("phone", formData.phone);
+      finalFormData.append("resume", resumeUrl);
+      finalFormData.append("resumeType", resumeType);
+      finalFormData.append("coverLetter", formData.coverLetter);
+      finalFormData.append("linkedin", formData.linkedin);
+      finalFormData.append("portfolio", formData.portfolio);
+      finalFormData.append("currentSalary", formData.currentSalary);
+      finalFormData.append("expectedSalary", formData.expectedSalary);
+      finalFormData.append("noticePeriod", formData.noticePeriod);
+      finalFormData.append("whyHireYou", formData.whyHireYou);
+
       const response = await fetch("/api/careers/apply", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-              jobId: selectedJob._id,
-              ...formData,
-              resume: resumeUrl,
-              resumeType
-          })
+          body: finalFormData
       });
       
       const data = await response.json();

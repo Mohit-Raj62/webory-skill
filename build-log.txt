@@ -1,0 +1,32 @@
+
+> skill-webory@0.1.0 build
+> next build
+
+ΓÜá Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\91620\package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * C:\Users\91620\Desktop\skill-webory\package-lock.json
+
+Γû▓ Next.js 16.1.0-canary.15 (Turbopack)
+- Environments: .env.local
+- Experiments (use with caution):
+  ┬╖ serverActions
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 73s
+  Running TypeScript ...
+Failed to compile.
+
+./src/app/api/careers/apply/route.ts:19:28
+Type error: Property 'get' does not exist on type 'FormData'.
+
+  17 |     const formData = await request.formData();
+  18 |
+> 19 |     const jobId = formData.get("jobId") as string;
+     |                            ^
+  20 |     const name = formData.get("name") as string;
+  21 |     const email = formData.get("email") as string;
+  22 |     const phone = formData.get("phone") as string;
+Next.js build worker exited with code: 1 and signal: null

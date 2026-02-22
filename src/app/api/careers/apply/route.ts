@@ -14,7 +14,7 @@ cloudinary.config({
 export async function POST(request: NextRequest) {
   try {
     await dbConnect();
-    const formData = await request.formData();
+    const formData: any = await request.formData();
 
     const jobId = formData.get("jobId") as string;
     const name = formData.get("name") as string;

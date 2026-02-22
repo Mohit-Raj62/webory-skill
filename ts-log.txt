@@ -1,0 +1,14 @@
+src/app/api/careers/apply/route.ts(19,28): error TS2339: Property 'get' does not exist on type 'FormData'.
+src/app/api/careers/apply/route.ts(20,27): error TS2339: Property 'get' does not exist on type 'FormData'.
+src/app/api/careers/apply/route.ts(21,28): error TS2339: Property 'get' does not exist on type 'FormData'.
+src/app/api/careers/apply/route.ts(22,28): error TS2339: Property 'get' does not exist on type 'FormData'.
+src/app/api/careers/apply/route.ts(23,31): error TS2339: Property 'get' does not exist on type 'FormData'.
+src/app/api/careers/apply/route.ts(24,34): error TS2339: Property 'get' does not exist on type 'FormData'.
+src/app/api/careers/apply/route.ts(26,33): error TS2339: Property 'get' does not exist on type 'FormData'.
+src/app/api/careers/apply/route.ts(29,32): error TS2339: Property 'get' does not exist on type 'FormData'.
+src/app/api/careers/apply/route.ts(30,33): error TS2339: Property 'get' does not exist on type 'FormData'.
+src/app/api/careers/apply/route.ts(31,37): error TS2339: Property 'get' does not exist on type 'FormData'.
+src/app/api/careers/apply/route.ts(32,38): error TS2339: Property 'get' does not exist on type 'FormData'.
+src/app/api/careers/apply/route.ts(33,36): error TS2339: Property 'get' does not exist on type 'FormData'.
+src/app/api/careers/apply/route.ts(34,34): error TS2339: Property 'get' does not exist on type 'FormData'.
+src/app/api/careers/apply/route.ts(35,34): error TS2339: Property 'get' does not exist on type 'FormData'.
