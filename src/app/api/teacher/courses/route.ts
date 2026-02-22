@@ -84,6 +84,14 @@ export async function POST(request: NextRequest) {
 
     const savedCourse = await newCourse.save();
 
+    const { logActivity } = await import("@/lib/logger");
+    await logActivity(
+      userId,
+      "CREATE_COURSE",
+      `Created course: ${savedCourse.title} (${savedCourse._id})`,
+      request.headers.get("x-forwarded-for") || "unknown",
+    );
+
     return NextResponse.json({
       message: "Course created successfully",
       data: savedCourse,

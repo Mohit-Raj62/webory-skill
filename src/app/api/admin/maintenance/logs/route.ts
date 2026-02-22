@@ -22,10 +22,9 @@ export async function GET(req: Request) {
     const limit = parseInt(url.searchParams.get("limit") || "50");
     const skip = (page - 1) * limit;
 
-    // Fetch Logs (Newest first)
     const [logs, totalCount] = await Promise.all([
       ActivityLog.find()
-        .populate("user", "firstName lastName email")
+        .populate("user", "firstName lastName email role")
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit),

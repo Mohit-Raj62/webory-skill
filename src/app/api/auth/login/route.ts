@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     if (!email || !password) {
       return NextResponse.json(
         { error: "Missing email or password" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     if (!user) {
       return NextResponse.json(
         { error: "Invalid credentials" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -29,29 +29,39 @@ export async function POST(req: Request) {
     if (!isMatch) {
       return NextResponse.json(
         { error: "Invalid credentials" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     // Generate session ID
     const sessionId = crypto.randomUUID();
-    
+
     // Update user with new session ID
     // Using save() to ensure schema validation and bypass potential findByIdAndUpdate caching issues
     user.currentSessionId = sessionId;
     await user.save();
-    
-    console.log(`Login: Session ID generated and saved for user ${user._id}: ${sessionId}`);
+
+    console.log(
+      `Login: Session ID generated and saved for user ${user._id}: ${sessionId}`,
+    );
 
     const token = jwt.sign(
       { userId: user._id, email: user.email, role: user.role, sessionId },
       process.env.JWT_SECRET!,
-      { expiresIn: "7d" }
+      { expiresIn: "7d" },
     );
 
     const response = NextResponse.json(
-      { message: "Login successful", user: { id: user._id, name: user.firstName, email: user.email, role: user.role } },
-      { status: 200 }
+      {
+        message: "Login successful",
+        user: {
+          id: user._id,
+          name: user.firstName,
+          email: user.email,
+          role: user.role,
+        },
+      },
+      { status: 200 },
     );
 
     response.cookies.set("token", token, {
@@ -62,12 +72,24 @@ export async function POST(req: Request) {
       path: "/",
     });
 
+    if (user.role === "admin" || user.role === "teacher") {
+      const { logActivity } = await import("@/lib/logger");
+      await logActivity(
+        user._id,
+        "LOGIN",
+        `Logged in from ${req.headers.get("user-agent") || "unknown device"}`,
+        req.headers.get("x-forwarded-for") || "unknown",
+      );
+    }
+
     return response;
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Internal server error" },
-      { status: 500 }
+      {
+        error: error instanceof Error ? error.message : "Internal server error",
+      },
+      { status: 500 },
     );
   }
 }

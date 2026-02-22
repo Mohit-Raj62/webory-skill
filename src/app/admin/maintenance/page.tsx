@@ -235,8 +235,8 @@ export default function MaintenancePage() {
             <div className="mt-8 glass-card p-6 rounded-2xl">
                 <div className="flex items-center justify-between mb-6">
                     <div>
-                        <h3 className="text-xl font-bold text-white mb-1">Admin Activity Logs</h3>
-                        <p className="text-gray-400 text-sm">Recent actions performed by admins.</p>
+                        <h3 className="text-xl font-bold text-white mb-1">Admin & Teacher Activity Logs</h3>
+                        <p className="text-gray-400 text-sm">Recent actions performed by admins and teachers.</p>
                     </div>
                     <Button onClick={() => window.location.reload()} variant="outline" className="border-white/10 hover:bg-white/5">
                         <RefreshCw className="mr-2 h-4 w-4" />
@@ -305,7 +305,18 @@ function ActivityLogsTable() {
                 {logs.map((log: any) => (
                     <tr key={log._id} className="hover:bg-white/5 transition-colors">
                         <td className="px-4 py-3 font-medium text-white">
-                            {log.user ? `${log.user.firstName} ${log.user.lastName}` : 'Unknown User'}
+                            <div className="flex items-center gap-2">
+                                <span>{log.user ? `${log.user.firstName} ${log.user.lastName}` : 'Unknown User'}</span>
+                                {log.user?.role && (
+                                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                                        log.user.role === 'admin' ? 'bg-purple-500/20 text-purple-400' :
+                                        log.user.role === 'teacher' ? 'bg-orange-500/20 text-orange-400' :
+                                        'bg-gray-500/20 text-gray-400'
+                                    }`}>
+                                        {log.user.role}
+                                    </span>
+                                )}
+                            </div>
                             <div className="text-xs text-gray-500">{log.user?.email}</div>
                         </td>
                         <td className="px-4 py-3">

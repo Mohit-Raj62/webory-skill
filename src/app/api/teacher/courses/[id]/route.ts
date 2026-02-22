@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken";
 // DELETE course
 export async function DELETE(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await dbConnect();
@@ -38,7 +38,7 @@ export async function DELETE(
         {
           error: "Course not found or you do not have permission to delete it",
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -48,12 +48,20 @@ export async function DELETE(
     // Delete course
     await Course.findByIdAndDelete(id);
 
+    const { logActivity } = await import("@/lib/logger");
+    await logActivity(
+      decoded.userId || decoded.id,
+      "DELETE_COURSE",
+      `Deleted course: ${course.title} (${id})`,
+      req.headers.get("x-forwarded-for") || "unknown",
+    );
+
     return NextResponse.json({ message: "Course deleted successfully" });
   } catch (error) {
     console.error("Delete course error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -61,7 +69,7 @@ export async function DELETE(
 // PUT - Update course
 export async function PUT(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await dbConnect();
@@ -90,7 +98,7 @@ export async function PUT(
     if (!existingCourse) {
       return NextResponse.json(
         { error: "Course not found or you do not have permission to edit it" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -105,12 +113,20 @@ export async function PUT(
 
     const course = await Course.findByIdAndUpdate(id, data, { new: true });
 
+    const { logActivity } = await import("@/lib/logger");
+    await logActivity(
+      decoded.userId || decoded.id,
+      "UPDATE_COURSE",
+      `Updated course: ${data.title || course?.title || id}`,
+      req.headers.get("x-forwarded-for") || "unknown",
+    );
+
     return NextResponse.json({ course });
   } catch (error) {
     console.error("Update course error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
