@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     const position = formData.get("position") as string;
     const coverLetter = formData.get("coverLetter") as string;
 
-    const resumeFile = formData.get("resume") as File;
+    const resumeField = formData.get("resume");
 
     // Fallback variables matching exact model names previously destructured
     const linkedin = (formData.get("linkedin") as string) || "";
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     const whyHireYou = (formData.get("whyHireYou") as string) || "";
     const resumeType = (formData.get("resumeType") as string) || "file";
 
-    if (!jobId || !name || !email || !phone || !resumeFile) {
+    if (!jobId || !name || !email || !phone || !resumeField) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 },
@@ -46,52 +46,57 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Job not found" }, { status: 404 });
     }
 
-    // Upload resume to Cloudinary
+    // Handle resume upload or URL
     let resumeUrl = "";
-    try {
-      const bytes = await resumeFile.arrayBuffer();
-      const buffer = Buffer.from(bytes);
+    if (typeof resumeField === "string") {
+      resumeUrl = resumeField;
+    } else {
+      const resumeFile = resumeField as File;
+      try {
+        const bytes = await resumeFile.arrayBuffer();
+        const buffer = Buffer.from(bytes);
 
-      const result: any = await new Promise((resolve, reject) => {
-        const uploadStream = cloudinary.uploader.upload_stream(
-          {
-            resource_type: "raw",
-            folder: "resumes/careers",
-            type: "authenticated",
-            public_id: `${Date.now()}-${resumeFile.name.replace(/\.[^/.]+$/, "").replace(/\s+/g, "_")}.txt`, // Force txt extension for security workaround
-            use_filename: true,
-            unique_filename: false,
-          },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          },
+        const result: any = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            {
+              resource_type: "raw",
+              folder: "resumes/careers",
+              type: "authenticated",
+              public_id: `${Date.now()}-${resumeFile.name.replace(/\.[^/.]+$/, "").replace(/\s+/g, "_")}.txt`, // Force txt extension for security workaround
+              use_filename: true,
+              unique_filename: false,
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            },
+          );
+          uploadStream.end(buffer);
+        });
+
+        // Generate Signed URL
+        const signedUrl = cloudinary.url(result.public_id, {
+          resource_type: "raw",
+          type: "authenticated",
+          sign_url: true,
+          version: result.version,
+        });
+
+        // Generate Proxy URL
+        let baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+        if (!baseUrl || !baseUrl.startsWith("http")) {
+          const host = request.headers.get("host");
+          const protocol = request.headers.get("x-forwarded-proto") || "http";
+          baseUrl = `${protocol}://${host}`;
+        }
+        resumeUrl = `${baseUrl}/api/view-pdf?url=${encodeURIComponent(signedUrl)}&filename=${encodeURIComponent(resumeFile.name)}`;
+      } catch (uploadError: any) {
+        console.error("Resume upload failed:", uploadError);
+        return NextResponse.json(
+          { error: "Failed to upload resume document" },
+          { status: 500 },
         );
-        uploadStream.end(buffer);
-      });
-
-      // Generate Signed URL
-      const signedUrl = cloudinary.url(result.public_id, {
-        resource_type: "raw",
-        type: "authenticated",
-        sign_url: true,
-        version: result.version,
-      });
-
-      // Generate Proxy URL
-      let baseUrl = process.env.NEXT_PUBLIC_APP_URL;
-      if (!baseUrl || !baseUrl.startsWith("http")) {
-        const host = request.headers.get("host");
-        const protocol = request.headers.get("x-forwarded-proto") || "http";
-        baseUrl = `${protocol}://${host}`;
       }
-      resumeUrl = `${baseUrl}/api/view-pdf?url=${encodeURIComponent(signedUrl)}&filename=${encodeURIComponent(resumeFile.name)}`;
-    } catch (uploadError: any) {
-      console.error("Resume upload failed:", uploadError);
-      return NextResponse.json(
-        { error: "Failed to upload resume document" },
-        { status: 500 },
-      );
     }
 
     const application = await JobApplication.create({
