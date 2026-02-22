@@ -47,7 +47,16 @@ export function JobApplicationModal({ isOpen, onClose, position }: JobApplicatio
         body: formDataToSend
       });
 
-      const data = await res.json();
+      if (res.status === 413) {
+        throw new Error("File is too large. Please upload a smaller file under 50MB.");
+      }
+
+      let data;
+      try {
+        data = await res.json();
+      } catch (e) {
+        throw new Error("Server returned an invalid response. Please try again later.");
+      }
 
       if (res.ok) {
         toast.success("Application submitted successfully!");
@@ -55,7 +64,7 @@ export function JobApplicationModal({ isOpen, onClose, position }: JobApplicatio
         setResumeFile(null);
         onClose();
       } else {
-        toast.error(data.error || "Failed to submit application");
+        toast.error(data?.error || "Failed to submit application");
       }
     } catch (error) {
       console.error("Application error:", error);

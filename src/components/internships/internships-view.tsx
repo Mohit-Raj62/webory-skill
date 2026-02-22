@@ -101,6 +101,12 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                     method: "POST",
                     body: uploadData
                 });
+                
+                if (!uploadRes.ok) {
+                    if (uploadRes.status === 413) throw new Error("File is too large. Please upload a smaller file under 50MB.");
+                    throw new Error("Failed to upload resume. Server returned an error.");
+                }
+                
                 const uploadResult = await uploadRes.json();
          
                 if (!uploadResult.success) {
