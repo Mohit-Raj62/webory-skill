@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
           job.title,
           email,
           phone,
-          resume,
+          resumeUrl,
         ),
       );
     }
