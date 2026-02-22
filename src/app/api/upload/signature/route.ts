@@ -8,14 +8,19 @@ export async function POST(req: Request) {
 
     const timestamp = Math.round(new Date().getTime() / 1000);
 
+    const signParams: Record<string, any> = {
+      timestamp,
+      folder,
+    };
+
+    if (folder === "course-videos") {
+      signParams.eager = "w_1920,h_1080,c_limit";
+      signParams.eager_async = true;
+    }
+
     const signature = cloudinary.utils.api_sign_request(
-      {
-        timestamp,
-        folder,
-        eager: "w_1920,h_1080,c_limit", // Optional: Match common video optimization
-        eager_async: true,
-      },
-      process.env.CLOUDINARY_API_SECRET!
+      signParams,
+      process.env.CLOUDINARY_API_SECRET || "",
     );
 
     return NextResponse.json({
@@ -28,7 +33,7 @@ export async function POST(req: Request) {
     console.error("Signature generation error:", error);
     return NextResponse.json(
       { error: "Failed to generate signature" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

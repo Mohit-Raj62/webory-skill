@@ -56,8 +56,16 @@ export function InternshipsView({ internships, user, userApplications }: Interns
 
     // File Handler
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (e.target.files && e.target.files[0]) {
-          setFile(e.target.files[0]);
+      const file = e.target.files?.[0];
+      if (file) {
+          if (file.size > 4 * 1024 * 1024) {
+              toast.error("File is too large! Please upload a resume under 4MB.");
+              e.target.value = '';
+              return;
+          }
+          setFile(file);
+      } else {
+          setFile(null);
       }
     };
 

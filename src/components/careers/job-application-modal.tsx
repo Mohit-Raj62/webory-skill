@@ -153,7 +153,19 @@ export function JobApplicationModal({ isOpen, onClose, position }: JobApplicatio
                 id="resume"
                 type="file"
                 accept=".pdf,.doc,.docx"
-                onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    if (file.size > 4 * 1024 * 1024) {
+                      toast.error("File is too large! Please upload a resume under 4MB.");
+                      e.target.value = '';
+                      return;
+                    }
+                    setResumeFile(file);
+                  } else {
+                    setResumeFile(null);
+                  }
+                }}
                 required
                 className="hidden"
               />
