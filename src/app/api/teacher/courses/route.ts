@@ -18,7 +18,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const courses = await Course.find({ instructor: userId }).sort({
+    const courses = await Course.find({
+      $or: [{ instructor: userId }, { coInstructors: userId }],
+    }).sort({
       createdAt: -1,
     });
 

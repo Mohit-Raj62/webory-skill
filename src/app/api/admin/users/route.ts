@@ -30,6 +30,7 @@ export async function GET(request: Request) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
     const search = searchParams.get("search") || "";
+    const roleFilter = searchParams.get("role") || "";
     const skip = (page - 1) * limit;
 
     // Build search query
@@ -40,6 +41,10 @@ export async function GET(request: Request) {
         { lastName: { $regex: search, $options: "i" } },
         { email: { $regex: search, $options: "i" } },
       ];
+    }
+
+    if (roleFilter) {
+      query.role = roleFilter;
     }
 
     // Execute queries in parallel for better performance

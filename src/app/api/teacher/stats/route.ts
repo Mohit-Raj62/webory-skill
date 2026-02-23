@@ -18,8 +18,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Get courses created by this teacher
-    const courses = await Course.find({ instructor: userId });
+    // Get courses created by this teacher or where they are a co-instructor
+    const courses = await Course.find({
+      $or: [{ instructor: userId }, { coInstructors: userId }],
+    });
 
     // Calculate total students (assuming studentsCount is stored as string "0" or number)
     let totalStudents = 0;

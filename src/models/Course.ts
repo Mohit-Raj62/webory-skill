@@ -39,6 +39,10 @@ const CourseSchema = new Schema({
     ref: "User",
     required: false, // Optional for now to support existing courses
   },
+  coInstructors: {
+    type: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    default: [], // Additional teachers assigned to the course
+  },
   collaboration: {
     // e.g. "JIBT College"
     type: String,

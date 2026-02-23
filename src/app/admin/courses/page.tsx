@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import { ManageCourseTeachersModal } from "@/components/admin/ManageCourseTeachersModal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,6 +28,8 @@ interface Course {
     isPopular?: boolean;
     isAvailable?: boolean;
     color?: string;
+    instructor?: string;
+    coInstructors?: string[];
 }
 
 interface Stats {
@@ -40,6 +43,11 @@ export default function CoursesAdminPage() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState("");
+    
+    // Modal state
+    const [isTeachersModalOpen, setIsTeachersModalOpen] = useState(false);
+    const [selectedCourseForTeachers, setSelectedCourseForTeachers] = useState<Course | null>(null);
+
     const [pagination, setPagination] = useState({
         page: 1,
         limit: 6, // Reduced from 9 for faster initial load
@@ -341,6 +349,15 @@ export default function CoursesAdminPage() {
                                                         {course.isPopular ? "Remove Popular" : "Mark Popular"}
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem 
+                                                        onClick={() => {
+                                                            setSelectedCourseForTeachers(course);
+                                                            setIsTeachersModalOpen(true);
+                                                        }}
+                                                        className="cursor-pointer hover:bg-white/5 focus:bg-white/5 focus:text-white text-blue-400"
+                                                    >
+                                                        <Users className="mr-2 h-4 w-4" /> Manage Teachers
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem 
                                                         onClick={() => handleDelete(course._id)}
                                                         className="text-red-400 cursor-pointer hover:bg-red-900/10 focus:bg-red-900/10 focus:text-red-300"
                                                     >
@@ -442,6 +459,16 @@ export default function CoursesAdminPage() {
                     </p>
                 </div>
             )}
+            
+            <ManageCourseTeachersModal
+                isOpen={isTeachersModalOpen}
+                onClose={() => {
+                    setIsTeachersModalOpen(false);
+                    setSelectedCourseForTeachers(null);
+                }}
+                course={selectedCourseForTeachers}
+                onSuccess={() => fetchCourses()}
+            />
         </div>
     );
 }

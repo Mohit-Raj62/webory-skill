@@ -31,7 +31,7 @@ export async function DELETE(
     // Verify ownership
     const course = await Course.findOne({
       _id: id,
-      instructor: decoded.userId,
+      $or: [{ instructor: decoded.userId }, { coInstructors: decoded.userId }],
     });
     if (!course) {
       return NextResponse.json(
@@ -93,7 +93,7 @@ export async function PUT(
     // Verify ownership
     const existingCourse = await Course.findOne({
       _id: id,
-      instructor: decoded.userId,
+      $or: [{ instructor: decoded.userId }, { coInstructors: decoded.userId }],
     });
     if (!existingCourse) {
       return NextResponse.json(
