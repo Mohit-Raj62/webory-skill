@@ -1,0 +1,129 @@
+@import url("https://fonts.googleapis.com/css2?family=Beau+Rivage&family=El+Messiri:wght@600&family=Poppins:wght@300;400&display=swap");
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/* font-family: 'Beau Rivage', cursive;
+font-family: 'Poppins', sans-serif;
+font-family: 'El Messiri', sans-serif; */
+.navbar {
+  font-family: "Poppins", sans-serif;
+  font-size: 20px;
+  line-height: 26px;
+  text-transform: uppercase;
+  box-shadow: 0 8px 6px -6px gray;
+  --webkit-box-shadow: 0 8px 6px gray;
+  border-bottom: 0px solid gray !important;
+}
+.nav-link {
+  font-weight: 500 !important;
+  color: #000;
+}
+.active {
+  border-bottom: 2px solid black;
+}
+.navbar-brand {
+  /* font-weight: 900; */
+  font-family: "El Messiri", sans-serif;
+  letter-spacing: 0.2px;
+  font-weight: bolder;
+  font-size: 30px;
+  color: rgb(2, 71, 71);
+  margin-left: 20px;
+}
+.navbar-brand span {
+  color: #ff1a1a;
+}
+.search {
+  margin-left: 550px;
+}
+/* ========= Page not found ========*/
+.pnf {
+  display: flex;
+  justify-content: center;
+  min-height: 65vh;
+  flex-direction: column;
+  align-items: center;
+}
+.pnf-title {
+  font-size: 100px;
+  font-weight: 100px;
+  /* background-image: url(https://img.lovepik.com/element/40021/7866.png_1200.png); */
+}
+.pnf-titley {
+  font-family: "El Messiri", sans-serif;
+  font-size: 100px;
+  font-weight: 700;
+}
+.pnf-heading {
+  font-weight: normal;
+}
+.pnf-btn {
+  color: #000;
+  border: 1px solid #000;
+  text-decoration: none;
+  padding: 10px;
+  margin-top: 10px;
+}
+.pnf-btn:hover {
+  background-color: #000;
+  color: azure;
+}
+/* ========= Footer ======== */
+.footer {
+  color: white;
+  padding: 25px;
+  background: #000;
+  background: -webkit-linear-gradient(to right, #434343, #000);
+  background: linear-gradient(to right, rgb(185, 185, 116), #111111, #c46969);
+}
+/* chrome 10-25, safari 5.1-6 */
+.footer a {
+  text-decoration: none;
+  color: aliceblue;
+  padding: 18px;
+}
+.footer a:hover {
+  color: #0777f6;
+  border-bottom: 1px solid #ffefba;
+}
+/* ===== contactus ===== */
+.contactus {
+  margin: 0;
+  padding: 0;
+  height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* product css */
+.product-link {
+  text-decoration: none !important;
+  color: rgb(0, 0, 0) !important;
+}
+/* ===================  Register page // LOGIN CSS =================== */
+
+/* ==================================End Code Line======================================== */
+.cat-btn {
+  padding: 40px 0px;
+  font-size: 24px;
+  text-transform: uppercase;
+}
+.cat-btn:hover {
+  background-color: #434343;
+  color: white;
+}
+/* ================
+====dashboard
+=================== */
+
+.dashboard {
+  margin-top: 100px !important;
+}
+
+.dashboard-menu h4 {
+  background-color: #434343 !important;
+  color: white;
+  padding: 20px 0px;
+}

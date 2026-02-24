@@ -1,0 +1,34 @@
+.c-wrapper {
+  background-color: #ffffff !important;
+  /* padding: 2rem 0; */
+  width: 100%;
+}
+
+.c-container {
+  justify-content: space-around;
+  gap: 1rem;
+}
+.c-container > img {
+  width: 9rem;
+  filter: grayscale(1);
+  transition: all 300ms ease-in;
+  /* justify-content: center; */
+}
+
+.c-container > img:hover {
+  filter: grayscale(0);
+  scale: 1.1;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .c-container {
+    margin-top: 2rem;
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+  }
+  .c-container > img {
+    width: 8rem;
+  }
+}

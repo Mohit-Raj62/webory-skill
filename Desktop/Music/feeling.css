@@ -1,0 +1,33 @@
+/* Create a block-level element for the heart */
+        #heart {
+            position: relative;
+            width: 100px;
+            height: 90px;
+            margin-top: 10px; /* Leave some space above */
+        }
+  /* Pseudo-element #heart:before creates the left half of the heart */
+        #heart:before {
+            position: absolute;
+            content: "";
+            left: 50px;
+            top: 0;
+            width: 52px;
+            height: 80px;
+            background: red; /* Assign a nice red color */
+            border-radius: 50px 50px 0 0; /* Make the top edge round */
+            transform: rotate(-45deg); /* 45 degrees rotation counter-clockwise */
+            transform-origin: 0 100%; /* Rotate it around the bottom-left corner */
+        }
+    /* Pseudo-element #heart:after creates the right half of the heart */
+        #heart:after {
+            left: 0; /* Place the right part properly */
+            transform: rotate(45deg); /* Rotate 45 degrees clockwise */
+            transform-origin: 100% 100%; /* Rotation is around the bottom-right corner */
+            content: "";
+            position: absolute;
+            width: 52px;
+            height: 80px;
+            background: red; /* Same red color as before */
+            border-radius: 50px 50px 0 0; /* Top edge round */
+        }
+   

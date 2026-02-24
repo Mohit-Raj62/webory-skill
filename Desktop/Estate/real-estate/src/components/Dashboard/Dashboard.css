@@ -1,0 +1,338 @@
+/* Dashboard Container */
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Header */
+.dashboard-header {
+  background-color: #2a41e8;
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.dashboard-nav ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 1.5rem;
+}
+
+.dashboard-nav li {
+  cursor: pointer;
+  padding: 0.5rem 0;
+  position: relative;
+  font-weight: 500;
+}
+
+.dashboard-nav li.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: white;
+  border-radius: 3px;
+}
+
+.dashboard-nav li:hover {
+  opacity: 0.8;
+}
+
+/* Main Content */
+.dashboard-content {
+  flex: 1;
+  padding: 2rem;
+  background-color: #f7f7f7;
+}
+
+/* Footer */
+.dashboard-footer {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+}
+
+/* Home Section */
+.home-section {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.featured-properties {
+  margin-top: 2rem;
+}
+
+.property-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.property-card {
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.property-card:hover {
+  transform: translateY(-5px);
+}
+
+.property-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.property-card h4 {
+  margin: 1rem;
+  font-size: 1.2rem;
+}
+
+.property-card p {
+  margin: 0.5rem 1rem;
+  color: #666;
+}
+
+.property-price {
+  font-weight: bold;
+  color: #2a41e8 !important;
+  font-size: 1.2rem;
+}
+
+.property-card button {
+  margin: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #2a41e8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.property-card button:hover {
+  background-color: #1c32c9;
+}
+
+/* Properties Section */
+.properties-section {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.property-details {
+  font-size: 0.9rem;
+}
+
+/* Login and Register Sections */
+.login-section,
+.register-section {
+  max-width: 500px;
+  margin: 0 auto;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.login-section button,
+.register-section button {
+  width: 100%;
+  padding: 0.8rem;
+  background-color: #2a41e8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login-section button:hover,
+.register-section button:hover {
+  background-color: #1c32c9;
+}
+
+.login-section p,
+.register-section p {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.link {
+  color: #2a41e8;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Profile Section */
+.profile-section {
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile-info {
+  margin-bottom: 2rem;
+}
+
+.profile-info p {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.profile-actions button {
+  padding: 0.8rem 1.5rem;
+  background-color: #2a41e8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.profile-actions button:hover {
+  background-color: #1c32c9;
+}
+
+/* Admin Section */
+.admin-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.admin-tab {
+  padding: 0.8rem 1.5rem;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.admin-tab.active {
+  background-color: #2a41e8;
+  color: white;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.admin-table th {
+  background-color: #f7f7f7;
+  font-weight: 600;
+}
+
+.admin-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.btn-edit,
+.btn-delete {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 0.5rem;
+}
+
+.btn-edit {
+  background-color: #2a41e8;
+  color: white;
+}
+
+.btn-delete {
+  background-color: #e53935;
+  color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .dashboard-nav {
+    margin-top: 1rem;
+    width: 100%;
+  }
+
+  .dashboard-nav ul {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .property-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-table {
+    display: block;
+    overflow-x: auto;
+  }
+}

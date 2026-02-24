@@ -1,0 +1,126 @@
+.f-left {
+  position: relative;
+  z-index: 1;
+}
+.f-left > h1 {
+  font-weight: 600;
+  font-size: 2.9rem;
+  line-height: 4rem;
+}
+.blue-circlee {
+  height: 4rem;
+  width: 4rem;
+  background: var(--blue);
+  border-radius: 999px;
+  position: absolute;
+  right: -10%;
+  top: -12%;
+  z-index: -1;
+}
+.r-st {
+  position: absolute;
+  right: -5%;
+  top: 38%;
+  color: goldenrod;
+  z-index: -1;
+  letter-spacing: 0.5rem;
+}
+.f-container {
+  justify-content: space-between;
+  border-top: 0.5px solid rgba(0, 0, 0, 0.148);
+}
+.f-left {
+  gap: 1rem;
+}
+.f-menu {
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  font-weight: 500;
+}
+.f-menu > span:hover {
+  cursor: pointer;
+  color: #4066ff;
+}
+/* .f-right{
+    gap: 1.5rem;
+} */
+
+@media (max-width: 768px) {
+  .f-container {
+    justify-content: center;
+  }
+  .f-container > div {
+    align-items: center !important;
+    text-align: center;
+  }
+  .f-right {
+    justify-content: center;
+  }
+}
+
+.f-admin-section {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.f-admin-section h3 {
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.f-admin-section p {
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+}
+
+.f-auth-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.f-auth-buttons button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.f-auth-buttons button:first-child {
+  background-color: transparent;
+  border: 1px solid white;
+  color: white;
+}
+
+.f-auth-buttons button:first-child:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.f-auth-buttons button:last-child {
+  background-color: white;
+  color: #1f3e72;
+}
+
+.f-auth-buttons button:last-child:hover {
+  background-color: #f0f0f0;
+}
+
+.admin-access-btn {
+  display: block;
+  margin-top: 1rem;
+  padding: 8px 16px;
+  background-color: #1f3e72;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.admin-access-btn:hover {
+  background-color: #162a4e;
+}

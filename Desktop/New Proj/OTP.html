@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Generator</title>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+        }
+        #otp-container {
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+      </style>
+</head>
+<body>
+    <h1>OTP Generator</h1>
+  <form id="phone-number-form">
+    <label for="phone-number">Enter your phone number:</label>
+    <input type="tel" id="phone-number" required>
+    <button id="verify-btn" aria-label="Verify Phone Number">Verify</button>
+  </form>
+  <div id="otp-container" aria-live="polite" aria-atomic="true"></div>
+
+  <script>
+    const phoneNumberForm = document.getElementById('phone-number-form');
+    const phoneNumberInput = document.getElementById('phone-number');
+    const verifyBtn = document.getElementById('verify-btn');
+    const otpContainer = document.getElementById('otp-container');
+
+    verifyBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const phoneNumber = phoneNumberInput.value;
+      if (!phoneNumber) {
+        alert('Please enter a phone number');
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:3000/send-otp?phoneNumber=${phoneNumber}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (!data || !data.otp) {
+          throw new Error('Invalid response from server');
+        }
+        const otp = data.otp;
+        otpContainer.innerText = `Your OTP is: ${otp}`;
+      } catch (error) {
+        otpContainer.innerText = `Error: ${error.message}`;
+        console.error(error);
+      }
+    });
+    const express = require('express');
+const app = express();
+const port = 3000;
+
+// Generate a random OTP
+function generateOtp() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+// Send OTP to phone number
+function sendOtp(phoneNumber, otp) {
+  // Replace this with your actual SMS sending logic
+  console.log(`Sending OTP ${otp} to phone number ${phoneNumber}`);
+  return true;
+}
+
+app.get('/send-otp', async (req, res) => {
+  const phoneNumber = req.query.phoneNumber;
+  if (!phoneNumber) {
+    res.status(400).send({ error: 'Phone number is required' });
+    return;
+  }
+
+  const otp = generateOtp();
+  if (!sendOtp(phoneNumber, otp)) {
+    res.status(500).send({ error: 'Failed to send OTP' });
+    return;
+  }
+
+  res.send({ otp });
+});
+
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
+  </script>
+</body>
+</html>

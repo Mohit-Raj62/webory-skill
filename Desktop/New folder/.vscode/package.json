@@ -1,0 +1,21 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "A backend study appliction",
+  "main": "main.js",
+  "scripts": {
+    
+    "start": "node main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "y"
+  },
+  "keywords": [
+    "node",
+    "backend",
+    "express"
+  ],
+  "author": "mohit raj",
+  "license": "ISC"
+}

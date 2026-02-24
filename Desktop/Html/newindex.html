@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webcam Application</title>
+    <style>
+        /* Style the video player container */
+        #video-container {
+            max-width: 640px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="video-container">
+        <video id="webcam" autoplay></video>
+        <div>
+            <button onclick="startWebcam()">Start Webcam</button>
+            <button onclick="stopWebcam()">Stop Webcam</button>
+        </div>
+    </div>
+</body>
+<Script>
+    let stream; // To store the webcam stream
+async function startWebcam() {
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const videoElement = document.getElementById('webcam');
+        videoElement.srcObject = stream;
+    } catch (error) {
+        console.error('Error accessing webcam:', error);
+    }
+}
+function stopWebcam() {
+    if (stream) {
+        const tracks = stream.getTracks();
+        tracks.forEach(track => track.stop());
+        stream = null;
+    }
+}
+</Script>
+
+
+</html>
+

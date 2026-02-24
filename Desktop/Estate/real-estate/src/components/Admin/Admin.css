@@ -1,0 +1,109 @@
+.admin-wrapper {
+  padding: 0;
+  background-color: #f5f5f5;
+  min-height: calc(100vh - 80px); /* Adjust for header height */
+  margin-top: 80px; /* Match header height */
+}
+
+.admin-container {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: white;
+  border-radius: 0;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  min-height: calc(100vh - 80px); /* Adjust for header height */
+}
+
+.admin-sidebar {
+  width: 250px;
+  background-color: #1f3e72;
+  padding: 20px;
+  color: white;
+  height: 100%;
+}
+
+.admin-sidebar h2 {
+  margin-bottom: 30px;
+  text-align: center;
+  font-size: 24px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-sidebar button {
+  padding: 12px;
+  border: none;
+  background: transparent;
+  color: white;
+  text-align: left;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.admin-sidebar button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateX(5px);
+}
+
+.admin-sidebar button.active {
+  background-color: rgba(255, 255, 255, 0.2);
+  font-weight: bold;
+}
+
+.admin-content {
+  flex: 1;
+  padding: 30px;
+  background-color: white;
+  overflow-y: auto;
+  height: 100%;
+}
+
+@media (max-width: 768px) {
+  .admin-wrapper {
+    margin-top: 60px; /* Adjust for smaller header on mobile */
+    min-height: calc(100vh - 60px);
+  }
+
+  .admin-container {
+    flex-direction: column;
+    margin: 0;
+    min-height: calc(100vh - 60px);
+  }
+
+  .admin-sidebar {
+    width: 100%;
+    min-height: 100vh;
+    padding: 15px;
+  }
+
+  .admin-sidebar h2 {
+    margin-bottom: 15px;
+    font-size: 20px;
+  }
+
+  .admin-sidebar nav {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    gap: 5px;
+  }
+
+  .admin-sidebar button {
+    padding: 10px 15px;
+    white-space: nowrap;
+  }
+
+  .admin-content {
+    padding: 15px;
+  }
+}
