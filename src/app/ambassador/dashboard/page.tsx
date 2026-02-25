@@ -34,10 +34,10 @@ interface RewardItem {
 const REWARDS: RewardItem[] = [
   { id: "cert", name: "Ambassador Certificate", cost: 50, image: "📜", type: "virtual", gradient: "from-yellow-500/20 to-orange-500/5", color: "text-yellow-400" },
   { id: "stickers", name: "Webory Sticker Pack", cost: 100, image: "✨", type: "merch", gradient: "from-pink-500/20 to-purple-500/5", color: "text-pink-400" },
-  { id: "notebook", name: "Webory Notebook", cost: 250, image: "📔", type: "merch", gradient: "from-blue-500/20 to-cyan-500/5", color: "text-blue-400" },
-  { id: "mug", name: "Webory Coffee Mug", cost: 200, image: "☕", type: "merch", gradient: "from-amber-700/20 to-orange-900/5", color: "text-amber-500" },
-  { id: "tshirt", name: "Official T-Shirt", cost: 700, image: "👕", type: "merch", gradient: "from-indigo-600/20 to-blue-500/5", color: "text-indigo-400" },
-  { id: "voucher100", name: "Amazon Voucher ₹100", cost: 550, image: "🎁", type: "virtual", gradient: "from-orange-500/20 to-yellow-500/5", color: "text-orange-400" },
+  { id: "notebook", name: "Webory Notebook", cost: 200, image: "📔", type: "merch", gradient: "from-blue-500/20 to-cyan-500/5", color: "text-blue-400" },
+  { id: "mug", name: "Webory Coffee Mug", cost: 300, image: "☕", type: "merch", gradient: "from-amber-700/20 to-orange-900/5", color: "text-amber-500" },
+  { id: "tshirt", name: "Official T-Shirt", cost: 500, image: "👕", type: "merch", gradient: "from-indigo-600/20 to-blue-500/5", color: "text-indigo-400" },
+  { id: "voucher100", name: "Amazon Voucher ₹100", cost: 700, image: "🎁", type: "virtual", gradient: "from-orange-500/20 to-yellow-500/5", color: "text-orange-400" },
   { id: "hoodie", name: "Premium Hoodie", cost: 1000, image: "🧥", type: "merch", gradient: "from-purple-600/20 to-pink-500/5", color: "text-purple-400" },
   { id: "backpack", name: "Tech Backpack", cost: 2500, image: "🎒", type: "merch", gradient: "from-emerald-600/20 to-teal-500/5", color: "text-emerald-400" },
 ];
@@ -293,7 +293,7 @@ export default function AmbassadorDashboard() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-3xl md:text-4xl font-bold mb-2">
-                        Welcome, <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">{stats?.firstName || "Ambassador"}</span> 👋
+                        Welcome, <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 uppercase">{user?.firstName || stats?.firstName || "Ambassador"}</span> 👋
                     </h1>
                     <p className="text-gray-400">Keep crushing your goals and earning rewards!</p>
                 </div>
@@ -311,23 +311,40 @@ export default function AmbassadorDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Referral Code */}
               <div className="bg-gradient-to-br from-blue-900/40 via-[#0A0A0A] to-[#0A0A0A] border border-blue-500/30 p-8 rounded-3xl relative overflow-hidden group">
-                 <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                 <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
                     <Share2 size={120} />
                  </div>
                  <div className="relative z-10">
                     <h2 className="text-gray-400 text-sm font-bold uppercase tracking-wider mb-2">Referral Code</h2>
-                    <div className="flex items-center gap-4 mb-6">
+                    <div className="flex items-center gap-4 mb-4">
                         <span className="text-4xl font-mono font-black text-white">{stats?.referralCode}</span>
-                        <button onClick={copyCode} className="p-3 bg-blue-500/20 hover:bg-blue-500/30 rounded-xl text-blue-400 transition-colors">
+                        <button onClick={copyCode} className="p-3 bg-blue-500/20 hover:bg-blue-500/30 rounded-xl text-blue-400 transition-colors" title="Copy Code">
                             <Copy size={20} />
                         </button>
                     </div>
-                    <p className="text-sm text-gray-400 mb-4">Share this code to earn points.</p>
+                    
+                    <p className="text-sm text-gray-400 mb-4 tracking-wide">
+                      Share your unique link. Anyone who signs up using this link will automatically use your code.
+                    </p>
+                    
                     <div className="flex gap-2">
-                        <Button size="sm" variant="outline" className="flex-1 border-white/10 hover:bg-white/5 text-xs h-9" onClick={() => {
-                             navigator.clipboard.writeText(`Join Webory using my code: ${stats?.referralCode}`);
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="flex-1 border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 text-xs h-10 font-bold" 
+                          onClick={() => {
+                             const link = `${window.location.origin}/signup?ref=${stats?.referralCode}`;
+                             navigator.clipboard.writeText(link);
+                             toast.success("Referral link copied to clipboard!");
+                          }}
+                        >
+                          Share Link
+                        </Button>
+                        <Button size="sm" variant="outline" className="flex-1 border-white/10 hover:bg-white/5 text-xs h-10" onClick={() => {
+                             const link = `${window.location.origin}/signup?ref=${stats?.referralCode}`;
+                             navigator.clipboard.writeText(`Hi! Join Webory to learn amazing skills. Use my link to sign up: ${link}`);
                              toast.success("Message copied to clipboard!");
-                        }}>Copy Msg</Button>
+                        }}>Copy Message</Button>
                     </div>
                  </div>
               </div>

@@ -12,9 +12,15 @@ export default function AmbassadorRegisterPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   useEffect(() => {
-    // Check if user is already an ambassador
+    // Check auth and ambassador status
     fetch("/api/ambassador/stats")
       .then((res) => {
+        if (res.status === 401) {
+          // Not logged in - redirect to login
+          toast.error("Please login to apply as Campus Ambassador");
+          router.push("/login?redirect=/ambassador/register");
+          return;
+        }
         if (res.ok) {
             toast.info("You're already an ambassador! Redirecting to dashboard...");
             router.push("/ambassador/dashboard");
