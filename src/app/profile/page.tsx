@@ -294,15 +294,15 @@ export default function ProfilePage() {
 
                         {/* Dynamic Tab Content with Animation */}
                         <div className="relative">
-                            {activeTab === 'courses' && (
+                            <div className={activeTab === 'courses' ? 'block' : 'hidden'}>
                                 <ActivityDashboard category="course" title="Courses" />
-                            )}
-                            {activeTab === 'internships' && (
+                            </div>
+                            <div className={activeTab === 'internships' ? 'block' : 'hidden'}>
                                 <ActivityDashboard category="internship" title="Internships" />
-                            )}
-                            {activeTab === 'grades' && (
+                            </div>
+                            <div className={activeTab === 'grades' ? 'block' : 'hidden'}>
                                 <GradesDashboard />
-                            )}
+                            </div>
                         </div>
                     </div>
 

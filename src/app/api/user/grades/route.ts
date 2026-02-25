@@ -37,14 +37,16 @@ export async function GET() {
         .populate("quizId", "title type totalMarks")
         .populate("courseId", "title")
         .sort({ submittedAt: -1 })
-        .limit(10),
+        .limit(10)
+        .lean(),
 
       // 2. Recent Assignment Submissions
       AssignmentSubmission.find({ userId })
         .populate("assignmentId", "title totalMarks")
         .populate("courseId", "title")
         .sort({ submittedAt: -1 })
-        .limit(10),
+        .limit(10)
+        .lean(),
 
       // 3. Stats Counts
       QuizAttempt.countDocuments({ userId }),

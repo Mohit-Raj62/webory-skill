@@ -35,7 +35,10 @@ export async function GET(req: Request) {
       };
     }
 
-    const activities = await Activity.find(query).sort({ date: -1 });
+    const activities = await Activity.find(query)
+      .select("date type metadata")
+      .sort({ date: -1 })
+      .lean();
 
     // Aggregate by date for calendar view
     const dailyStats: { [key: string]: any } = {};
