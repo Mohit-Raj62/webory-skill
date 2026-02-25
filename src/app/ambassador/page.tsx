@@ -326,23 +326,25 @@ export default function AmbassadorPage() {
       <section className="py-24 relative overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto bg-gradient-to-br from-green-900/20 to-black border border-green-500/20 rounded-3xl p-10 md:p-16 text-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-grid-white/[0.02]"></div>
-            <div className="text-5xl mb-4">💬</div>
-            <h2 className="text-3xl md:text-4xl font-black mb-4">Join Our Community</h2>
-            <p className="text-gray-400 text-lg mb-8 max-w-xl mx-auto">
-              Connect with 500+ student leaders, get early access to exclusive opportunities, and stay updated on events & rewards.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button asChild size="lg" className="h-12 px-8 rounded-full bg-green-500 hover:bg-green-600 text-white font-bold text-base transition-all hover:scale-105 shadow-[0_0_20px_rgba(34,197,94,0.3)]">
-                <a href="https://chat.whatsapp.com/D2YAvT1a6rsEZjBgktRwyC" target="_blank" rel="noopener noreferrer">
-                  Join WhatsApp Group
-                </a>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="h-12 px-8 rounded-full border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 font-bold text-base transition-all">
-                <a href="https://discord.gg/" target="_blank" rel="noopener noreferrer">
-                  Join Discord Server
-                </a>
-              </Button>
+            <div className="absolute inset-0 bg-grid-white/[0.02] pointer-events-none"></div>
+            <div className="relative z-10">
+              <div className="text-5xl mb-4">💬</div>
+              <h2 className="text-3xl md:text-4xl font-black mb-4">Join Our Community</h2>
+              <p className="text-gray-400 text-lg mb-8 max-w-xl mx-auto">
+                Connect with 500+ student leaders, get early access to exclusive opportunities, and stay updated on events & rewards.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <Button asChild size="lg" className="h-12 px-8 rounded-full bg-green-500 hover:bg-green-600 text-white font-bold text-base transition-all hover:scale-105 shadow-[0_0_20px_rgba(34,197,94,0.3)]">
+                  <a href="https://chat.whatsapp.com/D2YAvT1a6rsEZjBgktRwyC" target="_blank" rel="noopener noreferrer">
+                    Join WhatsApp Group
+                  </a>
+                </Button>
+                <Button asChild variant="outline" size="lg" className="h-12 px-8 rounded-full border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 font-bold text-base transition-all">
+                  <a href="https://discord.gg/" target="_blank" rel="noopener noreferrer">
+                    Join Discord Server
+                  </a>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
