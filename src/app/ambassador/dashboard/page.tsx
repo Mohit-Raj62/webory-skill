@@ -342,7 +342,7 @@ export default function AmbassadorDashboard() {
                         </Button>
                         <Button size="sm" variant="outline" className="flex-1 border-white/10 hover:bg-white/5 text-xs h-10" onClick={() => {
                              const link = `${window.location.origin}/signup?ref=${stats?.referralCode}`;
-                             navigator.clipboard.writeText(`Hi! Join Webory to learn amazing skills. Use my link to sign up: ${link}`);
+                             navigator.clipboard.writeText(`Hi! I'm learning some really valuable skills at Webory. If you're interested in upgrading your skills too, you can sign up using my link: ${link}`);
                              toast.success("Message copied to clipboard!");
                         }}>Copy Message</Button>
                     </div>
