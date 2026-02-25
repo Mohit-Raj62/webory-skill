@@ -9,7 +9,7 @@ import { ArrowRight, Trophy, Users, Gift, Star, Rocket, Target, Zap, Globe, Spar
 import { motion } from "framer-motion";
 
 const CAMPUSES = [
-  "IIT Bombay", "BITS Pilani", "IIT Delhi", "NIT Trichy", "DTU", 
+  "JBIT College","IIT Bombay", "BITS Pilani", "IIT Delhi", "NIT Trichy", "DTU", 
   "VIT Vellore", "SRM University", "Manipal", "IIIT Hyderabad", 
   "Anna University", "Jadavpur University", "Thapar University",
   "NIT Warangal", "IIT Kharagpur", "IIIT Delhi", "NSUT"
@@ -333,16 +333,16 @@ export default function AmbassadorPage() {
               Connect with 500+ student leaders, get early access to exclusive opportunities, and stay updated on events & rewards.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a href="https://chat.whatsapp.com/D2YAvT1a6rsEZjBgktRwyC" target="_blank" rel="noopener noreferrer">
-                <Button size="lg" className="h-12 px-8 rounded-full bg-green-500 hover:bg-green-600 text-white font-bold text-base transition-all hover:scale-105 shadow-[0_0_20px_rgba(34,197,94,0.3)]">
+              <Button asChild size="lg" className="h-12 px-8 rounded-full bg-green-500 hover:bg-green-600 text-white font-bold text-base transition-all hover:scale-105 shadow-[0_0_20px_rgba(34,197,94,0.3)]">
+                <a href="https://chat.whatsapp.com/D2YAvT1a6rsEZjBgktRwyC" target="_blank" rel="noopener noreferrer">
                   Join WhatsApp Group
-                </Button>
-              </a>
-              <a href="https://discord.gg/" target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" size="lg" className="h-12 px-8 rounded-full border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 font-bold text-base transition-all">
+                </a>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="h-12 px-8 rounded-full border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 font-bold text-base transition-all">
+                <a href="https://discord.gg/" target="_blank" rel="noopener noreferrer">
                   Join Discord Server
-                </Button>
-              </a>
+                </a>
+              </Button>
             </div>
           </div>
         </div>
