@@ -251,22 +251,22 @@ export default function AmbassadorPage() {
           <SectionHeader title="What Ambassadors Say" subtitle="Hear from the real leaders making a difference." />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <TestimonialCard
-              name="Priya Sharma"
-              college="VIT Vellore"
-              avatar="PS"
+              name="Shubham Singh"
+              college="JBIT College"
+              avatar="SS"
               quote="Being a Webory Ambassador has been the best decision of my college life. I've hosted 4 events and earned amazing rewards!"
               color="from-blue-500 to-purple-500"
             />
             <TestimonialCard
-              name="Rahul Mehta"
-              college="DTU Delhi"
-              avatar="RM"
+              name="mohit Sinha"
+              college="JBIT College"
+              avatar="MS"
               quote="The mentorship sessions are gold. I got direct guidance from IIT alumni which helped me crack my internship!"
               color="from-purple-500 to-pink-500"
             />
             <TestimonialCard
               name="Ananya Singh"
-              college="NIT Trichy"
+              college="IIT Patna"
               avatar="AS"
               quote="I referred 20+ friends and earned ₹8,000 in Amazon vouchers! The referral system is incredibly rewarding."
               color="from-pink-500 to-orange-500"
@@ -333,7 +333,7 @@ export default function AmbassadorPage() {
               Connect with 500+ student leaders, get early access to exclusive opportunities, and stay updated on events & rewards.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a href="https://chat.whatsapp.com/" target="_blank" rel="noopener noreferrer">
+              <a href="https://chat.whatsapp.com/D2YAvT1a6rsEZjBgktRwyC" target="_blank" rel="noopener noreferrer">
                 <Button size="lg" className="h-12 px-8 rounded-full bg-green-500 hover:bg-green-600 text-white font-bold text-base transition-all hover:scale-105 shadow-[0_0_20px_rgba(34,197,94,0.3)]">
                   Join WhatsApp Group
                 </Button>
