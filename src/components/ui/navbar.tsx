@@ -138,9 +138,9 @@ export function Navbar() {
                         className="xl:hidden absolute top-16 left-0 w-full bg-black/90 backdrop-blur-xl border-b border-white/10 p-4"
                     >
                         <div className="flex flex-col space-y-4">
-                            <Link href="/#features" className="text-sm text-gray-300 hover:text-white" onClick={() => setIsOpen(false)}>
+                            {/* <Link href="/#features" className="text-sm text-gray-300 hover:text-white" onClick={() => setIsOpen(false)}>
                                 Features
-                            </Link>
+                            </Link> */}
                             <Link href="/courses" className="text-sm text-gray-300 hover:text-white flex items-center justify-between" onClick={() => setIsOpen(false)}>
                                 <span>Courses</span>
                                 <span className="bg-emerald-500 text-black text-[10px] font-black px-2 py-1 rounded">FREE TRIAL</span>
