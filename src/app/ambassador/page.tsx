@@ -41,10 +41,10 @@ export default function AmbassadorPage() {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
+      <section className="relative pt-32 pb-16 md:pt-48 md:pb-32 overflow-hidden">
         {/* Background Effects */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] -z-10 opacity-50"></div>
-        <div className="absolute bottom-0 right-0 w-[800px] h-[600px] bg-purple-600/10 rounded-full blur-[100px] -z-10 opacity-30"></div>
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[1000px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] -z-10 opacity-50"></div>
+        <div className="absolute bottom-0 right-0 w-full max-w-[800px] h-[600px] bg-purple-600/10 rounded-full blur-[100px] -z-10 opacity-30"></div>
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] -z-10"></div>
 
         <div className="container mx-auto px-4 text-center z-10 relative">
@@ -56,20 +56,20 @@ export default function AmbassadorPage() {
             <span className="inline-block py-1 px-3 rounded-full bg-white/5 border border-white/10 text-blue-400 text-sm font-medium mb-6">
               🚀 Join the Elite Community
             </span>
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black mb-6 tracking-tight leading-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black mb-6 tracking-tight leading-tight">
               Lead the <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 animate-gradient-x">Future</span>
             </h1>
-            <p className="text-lg md:text-2xl text-gray-400 max-w-3xl mx-auto mb-10 leading-relaxed">
+            <p className="text-base sm:text-lg md:text-2xl text-gray-400 max-w-3xl mx-auto mb-8 sm:mb-10 leading-relaxed">
               Become the face of Webory at your campus. Gain leadership skills, earn exclusive rewards, and build a powerful network with industry experts.
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-               <Button asChild size="lg" className="h-14 px-8 rounded-full bg-white text-black hover:bg-gray-200 text-lg font-bold transition-all hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+               <Button asChild size="lg" className="w-full sm:w-auto h-14 px-8 rounded-full bg-white text-black hover:bg-gray-200 text-lg font-bold transition-all hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)]">
                   <Link href="/ambassador/register">
                       Apply Now <ArrowRight className="ml-2 w-5 h-5" />
                   </Link>
                </Button>
-               <Button asChild variant="outline" size="lg" className="h-14 px-8 rounded-full border-white/10 bg-white/5 hover:bg-white/10 text-white text-lg font-medium backdrop-blur-sm">
+               <Button asChild variant="outline" size="lg" className="w-full sm:w-auto h-14 px-8 rounded-full border-white/10 bg-white/5 hover:bg-white/10 text-white text-lg font-medium backdrop-blur-sm">
                   <Link href="#benefits">
                       Learn More
                   </Link>
@@ -80,9 +80,9 @@ export default function AmbassadorPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-10 border-y border-white/5 bg-white/[0.02]">
+      <section className="py-8 md:py-10 border-y border-white/5 bg-white/[0.02]">
         <div className="container mx-auto px-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 text-center">
                 <StatItem number="50+" label="Colleges" />
                 <StatItem number="500+" label="Ambassadors" />
                 <StatItem number="10k+" label="Students Impacted" />
@@ -106,7 +106,7 @@ export default function AmbassadorPage() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-24 relative">
+      <section className="py-16 md:py-24 relative">
          <div className="container mx-auto px-4">
             <SectionHeader title="How It Works" subtitle="Your journey from application to leadership in 4 simple steps." />
             
@@ -151,7 +151,7 @@ export default function AmbassadorPage() {
       </section>
 
       {/* Benefits Section */}
-      <section id="benefits" className="py-24 relative">
+      <section id="benefits" className="py-16 md:py-24 relative">
         <div className="container mx-auto px-4">
             <SectionHeader title="Why Join Us?" subtitle="Unlock exclusive perks tailored for your growth." />
             
@@ -197,9 +197,9 @@ export default function AmbassadorPage() {
       </section>
 
       {/* Roles & Responsibilities */}
-      <section className="py-24 bg-[#050505] relative overflow-hidden">
+      <section className="py-16 md:py-24 bg-[#050505] relative overflow-hidden">
         {/* Decorative Blob */}
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px] opacity-30"></div>
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-full max-w-sm h-96 bg-blue-600/10 rounded-full blur-[100px] opacity-30"></div>
 
         <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row gap-16 items-center">
@@ -216,26 +216,26 @@ export default function AmbassadorPage() {
                         <RoleItem title="Build Community" description="Help students learn about our courses and internships." />
                     </ul>
                 </div>
-                <div className="flex-1 relative">
-                    <div className="relative z-10 grid grid-cols-2 gap-4">
-                        <div className="space-y-4 mt-8">
-                             <div className="h-48 bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-2xl p-6 flex flex-col justify-end transform hover:-translate-y-2 transition-transform">
-                                <Users className="text-blue-500 mb-4" size={32} />
-                                <span className="font-bold text-xl">Community</span>
+                <div className="flex-1 relative w-full">
+                    <div className="relative z-10 grid grid-cols-2 gap-3 md:gap-4 mt-8 md:mt-0">
+                        <div className="space-y-3 md:space-y-4 md:mt-8">
+                             <div className="h-40 md:h-48 bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-2xl p-4 md:p-6 flex flex-col justify-end transform hover:-translate-y-2 transition-transform">
+                                <Users className="text-blue-500 mb-2 md:mb-4" size={28} />
+                                <span className="font-bold text-lg md:text-xl">Community</span>
                              </div>
-                             <div className="h-64 bg-gradient-to-br from-blue-900/20 to-black border border-blue-500/20 rounded-2xl p-6 flex flex-col justify-end transform hover:-translate-y-2 transition-transform">
-                                <Rocket className="text-purple-500 mb-4" size={32} />
-                                <span className="font-bold text-xl">Growth</span>
+                             <div className="h-56 md:h-64 bg-gradient-to-br from-blue-900/20 to-black border border-blue-500/20 rounded-2xl p-4 md:p-6 flex flex-col justify-end transform hover:-translate-y-2 transition-transform">
+                                <Rocket className="text-purple-500 mb-2 md:mb-4" size={28} />
+                                <span className="font-bold text-lg md:text-xl">Growth</span>
                              </div>
                         </div>
-                        <div className="space-y-4">
-                             <div className="h-64 bg-gradient-to-br from-purple-900/20 to-black border border-purple-500/20 rounded-2xl p-6 flex flex-col justify-end transform hover:-translate-y-2 transition-transform">
-                                <Star className="text-yellow-500 mb-4" size={32} />
-                                <span className="font-bold text-xl">Leadership</span>
+                        <div className="space-y-3 md:space-y-4">
+                             <div className="h-56 md:h-64 bg-gradient-to-br from-purple-900/20 to-black border border-purple-500/20 rounded-2xl p-4 md:p-6 flex flex-col justify-end transform hover:-translate-y-2 transition-transform">
+                                <Star className="text-yellow-500 mb-2 md:mb-4" size={28} />
+                                <span className="font-bold text-lg md:text-xl">Leadership</span>
                              </div>
-                             <div className="h-48 bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-2xl p-6 flex flex-col justify-end transform hover:-translate-y-2 transition-transform">
-                                <Sparkles className="text-pink-500 mb-4" size={32} />
-                                <span className="font-bold text-xl">Impact</span>
+                             <div className="h-40 md:h-48 bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-2xl p-4 md:p-6 flex flex-col justify-end transform hover:-translate-y-2 transition-transform">
+                                <Sparkles className="text-pink-500 mb-2 md:mb-4" size={28} />
+                                <span className="font-bold text-lg md:text-xl">Impact</span>
                              </div>
                         </div>
                     </div>
@@ -245,8 +245,8 @@ export default function AmbassadorPage() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-purple-600/10 rounded-full blur-[120px] -z-10"></div>
+      <section className="py-16 md:py-24 relative overflow-hidden">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[800px] h-[400px] bg-purple-600/10 rounded-full blur-[120px] -z-10"></div>
         <div className="container mx-auto px-4">
           <SectionHeader title="What Ambassadors Say" subtitle="Hear from the real leaders making a difference." />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -276,7 +276,7 @@ export default function AmbassadorPage() {
       </section>
 
       {/* Leaderboard Preview Section */}
-      <section className="py-24 bg-[#050505] relative overflow-hidden">
+      <section className="py-16 md:py-24 bg-[#050505] relative overflow-hidden">
         <div className="absolute left-0 top-0 w-96 h-96 bg-yellow-600/5 rounded-full blur-[100px]"></div>
         <div className="container mx-auto px-4">
           <SectionHeader title="🏆 Top Ambassadors" subtitle="Our top performers earning the biggest rewards." />
@@ -300,7 +300,7 @@ export default function AmbassadorPage() {
                     rank={index + 1} 
                     name={name} 
                     college={ambassador.college} 
-                    points={ambassador.points} 
+                    points={Math.max((ambassador.totalSignups || 0) * 10, ambassador.points || 0)} 
                     badge={badge} 
                   />
                 );
@@ -323,23 +323,23 @@ export default function AmbassadorPage() {
       </section>
 
       {/* WhatsApp Community Section */}
-      <section className="py-24 relative overflow-hidden">
+      <section className="py-16 md:py-24 relative overflow-hidden">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto bg-gradient-to-br from-green-900/20 to-black border border-green-500/20 rounded-3xl p-10 md:p-16 text-center relative overflow-hidden">
+          <div className="max-w-4xl mx-auto bg-gradient-to-br from-green-900/20 to-black border border-green-500/20 rounded-3xl p-6 sm:p-10 md:p-16 text-center relative overflow-hidden">
             <div className="absolute inset-0 bg-grid-white/[0.02] pointer-events-none"></div>
             <div className="relative z-10">
-              <div className="text-5xl mb-4">💬</div>
+              <div className="text-4xl md:text-5xl mb-4">💬</div>
               <h2 className="text-3xl md:text-4xl font-black mb-4">Join Our Community</h2>
-              <p className="text-gray-400 text-lg mb-8 max-w-xl mx-auto">
+              <p className="text-gray-400 text-sm md:text-lg mb-8 max-w-xl mx-auto">
                 Connect with 500+ student leaders, get early access to exclusive opportunities, and stay updated on events & rewards.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Button asChild size="lg" className="h-12 px-8 rounded-full bg-green-500 hover:bg-green-600 text-white font-bold text-base transition-all hover:scale-105 shadow-[0_0_20px_rgba(34,197,94,0.3)]">
+                <Button asChild size="lg" className="w-full sm:w-auto h-12 px-8 rounded-full bg-green-500 hover:bg-green-600 text-white font-bold text-base transition-all hover:scale-105 shadow-[0_0_20px_rgba(34,197,94,0.3)]">
                   <a href="https://chat.whatsapp.com/D2YAvT1a6rsEZjBgktRwyC" target="_blank" rel="noopener noreferrer">
                     Join WhatsApp Group
                   </a>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="h-12 px-8 rounded-full border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 font-bold text-base transition-all">
+                <Button asChild variant="outline" size="lg" className="w-full sm:w-auto h-12 px-8 rounded-full border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 font-bold text-base transition-all">
                   <a href="https://discord.gg/" target="_blank" rel="noopener noreferrer">
                     Join Discord Server
                   </a>
@@ -351,7 +351,7 @@ export default function AmbassadorPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-24 bg-[#050505] relative">
+      <section className="py-16 md:py-24 bg-[#050505] relative">
         <div className="container mx-auto px-4">
           <SectionHeader title="Frequently Asked Questions" subtitle="Everything you need to know before applying." />
           <div className="max-w-3xl mx-auto space-y-4">
@@ -384,20 +384,20 @@ export default function AmbassadorPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 relative overflow-hidden">
+      <section className="py-16 md:py-24 relative overflow-hidden">
         <div className="container mx-auto px-4 relative z-10 text-center">
-            <div className="max-w-4xl mx-auto bg-gradient-to-br from-blue-900/20 to-purple-900/20 border border-white/10 rounded-[3rem] p-12 md:p-20 relative overflow-hidden backdrop-blur-sm">
+            <div className="max-w-4xl mx-auto bg-gradient-to-br from-blue-900/20 to-purple-900/20 border border-white/10 rounded-[2rem] md:rounded-[3rem] p-8 sm:p-12 md:p-20 relative overflow-hidden backdrop-blur-sm">
                 
                 <div className="absolute inset-0 bg-grid-white/[0.02] [mask-image:linear-gradient(to_bottom,transparent,black)] pointer-events-none"></div>
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-gradient-to-b from-blue-500/10 to-transparent blur-3xl -z-10 pointer-events-none"></div>
 
                 <div className="relative z-20">
-                    <h2 className="text-4xl md:text-5xl font-black mb-6">Ready to Start Your Journey?</h2>
-                    <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-4 md:mb-6 leading-tight">Ready to Start Your Journey?</h2>
+                    <p className="text-base sm:text-lg md:text-xl text-gray-400 mb-8 md:mb-10 max-w-2xl mx-auto">
                         Join thousands of other student leaders. Apply now and take the first step towards a rewarding career.
                     </p>
                     
-                    <Button asChild size="lg" className="h-14 px-10 rounded-full bg-white text-black hover:bg-gray-200 text-lg font-bold shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all hover:scale-105 relative z-50">
+                    <Button asChild size="lg" className="w-full sm:w-auto h-14 px-10 rounded-full bg-white text-black hover:bg-gray-200 text-lg font-bold shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all hover:scale-105 relative z-50">
                         <Link href="/ambassador/register">
                             Apply for Free <ArrowRight className="ml-2" />
                         </Link>
@@ -427,21 +427,21 @@ function StatItem({ number, label }: { number: string, label: string }) {
 
 function SectionHeader({ title, subtitle }: { title: string, subtitle: string }) {
     return (
-        <div className="text-center mb-16">
+        <div className="text-center mb-12 md:mb-16">
             <h2 className="text-3xl md:text-5xl font-bold mb-4">{title}</h2>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto">{subtitle}</p>
+            <p className="text-base md:text-xl text-gray-400 max-w-2xl mx-auto">{subtitle}</p>
         </div>
     )
 }
 
 function BenefitCard({ icon, title, description, color }: any) {
     return (
-        <div className={`p-8 rounded-3xl border ${color} bg-black/40 backdrop-blur-sm hover:-translate-y-2 transition-all duration-300 group`}>
-            <div className="mb-6 p-4 rounded-2xl bg-white/5 w-fit group-hover:scale-110 transition-transform duration-300">
+        <div className={`p-6 md:p-8 rounded-3xl border ${color} bg-black/40 backdrop-blur-sm hover:-translate-y-2 transition-all duration-300 group`}>
+            <div className="mb-4 md:mb-6 p-4 rounded-2xl bg-white/5 w-fit group-hover:scale-110 transition-transform duration-300">
                 {icon}
             </div>
-            <h3 className="text-xl font-bold mb-3 group-hover:text-blue-400 transition-colors">{title}</h3>
-            <p className="text-gray-400 leading-relaxed">
+            <h3 className="text-lg md:text-xl font-bold mb-2 md:mb-3 group-hover:text-blue-400 transition-colors">{title}</h3>
+            <p className="text-sm md:text-base text-gray-400 leading-relaxed">
                 {description}
             </p>
         </div>
@@ -464,18 +464,18 @@ function RoleItem({ title, description }: { title: string, description: string }
 
 function TestimonialCard({ name, college, avatar, quote, color }: { name: string, college: string, avatar: string, quote: string, color: string }) {
     return (
-        <div className="p-8 rounded-3xl border border-white/10 bg-white/[0.02] hover:-translate-y-2 transition-all duration-300">
+        <div className="p-6 md:p-8 rounded-2xl md:rounded-3xl border border-white/10 bg-white/[0.02] hover:-translate-y-2 transition-all duration-300">
             <div className="flex items-center gap-3 mb-4">
-                <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${color} flex items-center justify-center text-white font-bold text-sm shrink-0`}>
+                <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br ${color} flex items-center justify-center text-white font-bold text-xs md:text-sm shrink-0`}>
                     {avatar}
                 </div>
                 <div>
-                    <div className="font-bold text-white">{name}</div>
-                    <div className="text-gray-500 text-sm">{college}</div>
+                    <div className="font-bold text-white text-sm md:text-base">{name}</div>
+                    <div className="text-gray-500 text-xs md:text-sm">{college}</div>
                 </div>
             </div>
             <div className="flex text-yellow-400 mb-3 text-sm">★★★★★</div>
-            <p className="text-gray-400 leading-relaxed italic">&ldquo;{quote}&rdquo;</p>
+            <p className="text-sm md:text-base text-gray-400 leading-relaxed italic">&ldquo;{quote}&rdquo;</p>
         </div>
     )
 }
@@ -483,13 +483,13 @@ function TestimonialCard({ name, college, avatar, quote, color }: { name: string
 function LeaderboardRow({ rank, name, college, points, badge }: { rank: number, name: string, college: string, points: number, badge: string }) {
     const isTop3 = rank <= 3;
     return (
-        <div className={`flex items-center gap-4 p-4 rounded-2xl border transition-all hover:border-white/20 ${isTop3 ? 'border-yellow-500/20 bg-yellow-500/5' : 'border-white/5 bg-white/[0.02]'}`}>
-            <span className="text-2xl w-8 text-center">{badge}</span>
-            <div className="flex-1">
-                <div className="font-bold text-white">{name}</div>
-                <div className="text-gray-500 text-sm">{college}</div>
+        <div className={`flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all hover:border-white/20 ${isTop3 ? 'border-yellow-500/20 bg-yellow-500/5' : 'border-white/5 bg-white/[0.02]'}`}>
+            <span className="text-xl sm:text-2xl w-6 sm:w-8 text-center shrink-0">{badge}</span>
+            <div className="flex-1 min-w-0">
+                <div className="font-bold text-white text-sm sm:text-base truncate">{name}</div>
+                <div className="text-gray-500 text-xs sm:text-sm truncate">{college}</div>
             </div>
-            <div className={`text-right font-black text-lg ${isTop3 ? 'text-yellow-400' : 'text-gray-400'}`}>
+            <div className={`text-right font-black text-sm sm:text-lg whitespace-nowrap ${isTop3 ? 'text-yellow-400' : 'text-gray-400'}`}>
                 {points.toLocaleString()} pts
             </div>
         </div>
@@ -499,32 +499,32 @@ function LeaderboardRow({ rank, name, college, points, badge }: { rank: number, 
 function FaqItem({ question, answer }: { question: string, answer: string }) {
     return (
         <details className="group border border-white/10 rounded-2xl bg-white/[0.02] hover:border-white/20 transition-colors">
-            <summary className="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-lg list-none">
+            <summary className="flex items-center justify-between p-4 md:p-6 cursor-pointer font-bold text-white text-base md:text-lg list-none gap-4">
                 {question}
-                <span className="text-gray-500 group-open:rotate-45 transition-transform duration-300 text-2xl leading-none">+</span>
+                <span className="text-gray-500 group-open:rotate-45 transition-transform duration-300 text-xl md:text-2xl leading-none shrink-0">+</span>
             </summary>
-            <p className="px-6 pb-6 text-gray-400 leading-relaxed">{answer}</p>
+            <p className="px-4 md:px-6 pb-4 md:pb-6 text-gray-400 text-sm md:text-base leading-relaxed">{answer}</p>
         </details>
     )
 }
 
 function TimelineItem({ step, title, description, align, color, bg }: any) {
     return (
-        <div className={`relative flex items-center justify-between md:justify-normal gap-8 mb-12 ${align === 'right' ? 'md:flex-row-reverse' : ''}`}>
+        <div className={`relative flex flex-col md:flex-row items-start md:items-center justify-between md:justify-normal gap-2 md:gap-8 mb-12 ${align === 'right' ? 'md:flex-row-reverse' : ''}`}>
              
              {/* Text Content */}
-             <div className={`flex-1 ml-12 md:ml-0 ${align === 'right' ? 'md:text-right' : 'text-left'}`}>
-                <h3 className={`text-2xl font-bold mb-2 ${color}`}>{title}</h3>
-                <p className="text-gray-400">{description}</p>
+             <div className={`relative z-20 flex-1 ml-14 md:ml-0 ${align === 'right' ? 'md:text-right' : 'text-left'}`}>
+                <h3 className={`text-xl md:text-2xl font-bold mb-1 md:mb-2 ${color}`}>{title}</h3>
+                <p className="text-sm md:text-base text-gray-400">{description}</p>
              </div>
 
              {/* Center Nob */}
-             <div className="absolute left-0 md:left-1/2 md:-translate-x-1/2 w-10 h-10 rounded-full border-4 border-[#050505] bg-[#111] flex items-center justify-center z-10 shadow-xl shadow-purple-500/20">
+             <div className="absolute left-0 md:left-1/2 md:-translate-x-1/2 w-10 h-10 rounded-full border-4 border-[#050505] bg-[#111] flex items-center justify-center z-10 shadow-xl shadow-purple-500/20 top-0 md:top-auto">
                 <div className={`w-3 h-3 rounded-full ${bg} animate-pulse`}></div>
              </div>
 
              {/* Number (Empty space for balance on desktop) */}
-             <div className="hidden md:block flex-1 text-center opacity-10 font-black text-6xl select-none">
+             <div className="hidden md:block flex-1 text-center opacity-10 font-black text-4xl lg:text-6xl select-none">
                 {step}
              </div>
         </div>

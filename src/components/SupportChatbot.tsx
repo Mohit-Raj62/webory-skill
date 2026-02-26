@@ -151,7 +151,7 @@ export default function SupportChatbot() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg hover:shadow-blue-500/30 transition-all duration-300 hover:scale-110"
+            className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg hover:shadow-blue-500/30 transition-all duration-300 hover:scale-110 print:hidden"
             aria-label="Open support chat"
           >
             <Sparkles className="h-7 w-7" />
@@ -167,7 +167,7 @@ export default function SupportChatbot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 100, scale: 0.8 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed z-50 flex flex-col overflow-hidden bg-white dark:bg-gray-900 shadow-2xl border border-gray-200 dark:border-gray-700 bottom-4 left-4 right-4 h-[80vh] rounded-2xl md:left-auto md:right-6 md:bottom-6 md:w-[380px] md:h-[600px] md:max-h-[80vh] md:rounded-2xl"
+            className="fixed z-50 flex flex-col overflow-hidden bg-white dark:bg-gray-900 shadow-2xl border border-gray-200 dark:border-gray-700 bottom-4 left-4 right-4 h-[80vh] rounded-2xl md:left-auto md:right-6 md:bottom-6 md:w-[380px] md:h-[600px] md:max-h-[80vh] md:rounded-2xl print:hidden"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md">

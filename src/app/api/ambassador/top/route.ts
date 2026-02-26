@@ -7,10 +7,10 @@ export async function GET(request: NextRequest) {
   try {
     await dbConnect();
 
-    // Fetch top 5 active ambassadors sorted by points in descending order
+    // Fetch top 5 active ambassadors sorted by totalSignups to reflect total earned points
     // Populate the userId to get the user's name
     const topAmbassadors = await Ambassador.find({ status: "active" })
-      .sort({ points: -1 })
+      .sort({ totalSignups: -1, points: -1 })
       .limit(5)
       .populate({
         path: "userId",

@@ -74,12 +74,12 @@ export async function POST(req: Request) {
         });
 
         if (ambassador && ambassador.status === "active") {
-          // Award Points (e.g., 100 points per sale)
-          ambassador.points = (ambassador.points || 0) + 100;
+          // Award Points (e.g., 50 points per sale)
+          ambassador.points = (ambassador.points || 0) + 50;
           ambassador.totalSignups = (ambassador.totalSignups || 0) + 1;
           await ambassador.save();
           console.log(
-            `Referral Reward: Awarded 100 points to ${ambassador.referralCode}`,
+            `Referral Reward: Awarded 50 points to ${ambassador.referralCode}`,
           );
         }
       } catch (err) {

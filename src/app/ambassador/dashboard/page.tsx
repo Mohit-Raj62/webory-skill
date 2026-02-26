@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/components/auth/session-provider";
-import { Copy, Loader2, Trophy, Users, ShoppingBag, Gift, AlertCircle, CheckCircle2, Share2, TrendingUp, Lock, Unlock } from "lucide-react";
+import { Copy, Loader2, Trophy, Users, ShoppingBag, Gift, AlertCircle, CheckCircle2, Share2, TrendingUp, Lock, Unlock, Award } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -18,6 +18,7 @@ interface AmbassadorStats {
   rank: number;
   college: string;
   firstName?: string;
+  lastName?: string;
   status: "active" | "suspended" | "pending" | "rejected";
 }
 
@@ -48,6 +49,31 @@ export default function AmbassadorDashboard() {
   const [dataLoading, setDataLoading] = useState(true);
   const [stats, setStats] = useState<AmbassadorStats | null>(null);
   
+  const [isMobile, setIsMobile] = useState(false);
+  const [certScale, setCertScale] = useState(1);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+      
+      // Calculate space needed for modal padding and fixed banners
+      const paddingX = window.innerWidth < 768 ? 32 : 64; 
+      const paddingY = 180; // Space for the top close button and bottom Print banner
+      
+      const availableWidth = window.innerWidth - paddingX;
+      const availableHeight = window.innerHeight - paddingY;
+      
+      const scaleX = availableWidth / 1122;
+      const scaleY = availableHeight / 794;
+      
+      // Scale down to fit the smallest dimension, but cap at 1 to prevent enlarging past native size
+      setCertScale(Math.min(scaleX, scaleY, 1));
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  
   // Registration State
   const [isRegistered, setIsRegistered] = useState(false);
   const [applicationStatus, setApplicationStatus] = useState<"none" | "pending" | "active" | "rejected" | "suspended">("none");
@@ -63,6 +89,8 @@ export default function AmbassadorDashboard() {
   const [redeeming, setRedeeming] = useState<string | null>(null);
   const [address, setAddress] = useState("");
   const [showAddressModal, setShowAddressModal] = useState<string | null>(null);
+  const [rewardsHistory, setRewardsHistory] = useState<any[]>([]);
+  const [showRewardModal, setShowRewardModal] = useState<any>(null); // For showing specific virtual rewards
 
   useEffect(() => {
     if (authLoading) return;
@@ -84,6 +112,15 @@ export default function AmbassadorDashboard() {
         setStats(data.data);
         setIsRegistered(true);
         setApplicationStatus(data.data.status);
+        
+        // Fetch history if registered and active
+        if (data.data.status === "active") {
+          const resRewards = await fetch("/api/ambassador/rewards");
+          const dataRewards = await resRewards.json();
+          if (resRewards.ok) {
+            setRewardsHistory(dataRewards.data || []);
+          }
+        }
       } else if (data.notRegistered) {
         setIsRegistered(false);
         setApplicationStatus("none");
@@ -126,7 +163,9 @@ export default function AmbassadorDashboard() {
   };
 
   const handleRedeem = async (itemId: string, cost: number) => {
-    if (!address.trim()) {
+    const isVirtual = REWARDS.find(r => r.id === itemId)?.type === "virtual";
+
+    if (!isVirtual && !address.trim()) {
         setShowAddressModal(itemId);
         return;
     }
@@ -139,17 +178,18 @@ export default function AmbassadorDashboard() {
             body: JSON.stringify({
                 item: REWARDS.find(r => r.id === itemId)?.name,
                 cost,
-                shippingAddress: address
+                shippingAddress: isVirtual ? "Virtual Delivery" : address
             })
         });
 
         const data = await res.json();
         
         if (res.ok) {
-            toast.success("Reward redeemed! We'll ship it soon. 🎁");
+            toast.success(isVirtual ? "Reward claimed successfully! 🎉" : "Reward redeemed! We'll ship it soon. 🎁");
             setStats(prev => prev ? ({ ...prev, points: data.remainingPoints }) : null);
             setShowAddressModal(null);
             setAddress("");
+            fetchStats(); // Refresh history
         } else {
             toast.error(data.error || "Redemption failed");
         }
@@ -216,10 +256,10 @@ export default function AmbassadorDashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-black text-white font-sans selection:bg-blue-500/30">
-      <Navbar />
+    <main className="min-h-screen bg-black text-white font-sans selection:bg-blue-500/30 print:bg-white print:min-h-0 relative">
+      <div className="print:hidden"><Navbar /></div>
 
-      <div className="pt-24 pb-20 container mx-auto px-4 md:px-8">
+      <div className="pt-24 pb-20 container mx-auto px-4 md:px-8 print:hidden">
         {!isRegistered ? (
           // Registration Form
           <motion.div 
@@ -358,10 +398,10 @@ export default function AmbassadorDashboard() {
                     <div className="w-12 h-12 bg-yellow-400/10 rounded-xl flex items-center justify-center text-yellow-400 mb-4">
                         <Gift size={24} />
                     </div>
-                    <h2 className="text-gray-400 text-sm font-medium mb-1">Total Points</h2>
+                    <h2 className="text-gray-400 text-sm font-medium mb-1">Available Points</h2>
                     <span className="text-5xl font-black text-white">{stats?.points}</span>
                     <div className="mt-4 flex items-center gap-2 text-sm text-yellow-400/80">
-                        <TrendingUp size={16} /> Top 5% of Ambassadors
+                        <TrendingUp size={16} /> Total Earned: {(stats?.points || 0) + rewardsHistory.filter((r: any) => r.status !== 'rejected').reduce((acc: any, curr: any) => acc + curr.pointsSpent, 0)} pts
                     </div>
                  </div>
               </div>
@@ -424,20 +464,29 @@ export default function AmbassadorDashboard() {
                                         <span className={`text-xl font-bold ${isLocked ? 'text-gray-500' : reward.color}`}>{reward.cost}</span>
                                         <span className="text-xs text-gray-500 uppercase font-bold tracking-wider">Points</span>
                                     </div>
-                                    <Button 
-                                        className={`w-full h-12 rounded-xl font-bold shadow-lg transition-all ${
-                                            isLocked 
-                                            ? 'bg-white/5 text-gray-500 hover:bg-white/10 cursor-not-allowed' 
-                                            : `bg-gradient-to-r ${reward.gradient.replace('/20', '').replace('/5', '')} text-white shadow-lg transform hover:-translate-y-1`
-                                        }`}
-                                        disabled={isLocked || redeeming === reward.id}
-                                        onClick={() => handleRedeem(reward.id, reward.cost)}
-                                    >
-                                        {redeeming === reward.id ? <Loader2 className="animate-spin" /> : isLocked ? "Locked" : "Redeem Reward"}
-                                    </Button>
+                                    {reward.type === "virtual" && rewardsHistory.some(r => r.item === reward.name) ? (
+                                        <Button 
+                                            className="w-full h-12 rounded-xl font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all"
+                                            onClick={() => setShowRewardModal(reward)}
+                                        >
+                                            Show Reward
+                                        </Button>
+                                    ) : (
+                                        <Button 
+                                            className={`w-full h-12 rounded-xl font-bold shadow-lg transition-all ${
+                                                isLocked 
+                                                ? 'bg-white/5 text-gray-500 hover:bg-white/10 cursor-not-allowed' 
+                                                : `bg-gradient-to-r ${reward.gradient.replace('/20', '').replace('/5', '')} text-white shadow-lg transform hover:-translate-y-1`
+                                            }`}
+                                            disabled={isLocked || redeeming === reward.id}
+                                            onClick={() => handleRedeem(reward.id, reward.cost)}
+                                        >
+                                            {redeeming === reward.id ? <Loader2 className="animate-spin" /> : isLocked ? "Locked" : "Redeem Reward"}
+                                        </Button>
+                                    )}
                                     
                                     {/* Locked Message */}
-                                    {isLocked && (
+                                    {isLocked && !(reward.type === "virtual" && rewardsHistory.some(r => r.item === reward.name)) && (
                                         <div className="mt-3 text-center">
                                             <span className="text-xs text-gray-500 font-medium bg-white/5 px-2 py-1 rounded-md border border-white/5">
                                                 Need {reward.cost - (stats?.points || 0)} more pts
@@ -451,38 +500,49 @@ export default function AmbassadorDashboard() {
                 </div>
             </div>
             
-            {/* Address Modal (Redesign) */}
-            {showAddressModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
-                    <div className="bg-[#111] border border-white/10 p-8 rounded-3xl max-w-md w-full shadow-2xl relative">
-                        <div className="absolute top-4 right-4 text-gray-500 hover:text-white cursor-pointer" onClick={() => { setShowAddressModal(null); setAddress(""); }}>
-                            <AlertCircle size={24} className="rotate-45" /> {/* Close icon lookalike */}
+            {/* History Section */}
+            {rewardsHistory.length > 0 && (
+                <div className="mt-16">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="p-3 rounded-2xl bg-blue-500/10 text-blue-400">
+                             <TrendingUp size={24} /> 
                         </div>
-                        <div className="mb-6">
-                            <div className="w-12 h-12 bg-purple-500/10 rounded-full flex items-center justify-center text-purple-400 mb-4">
-                                <Truck size={24} />
-                            </div>
-                            <h3 className="text-2xl font-bold mb-2">Shipping Details</h3>
-                            <p className="text-gray-400 text-sm">Where should we send your reward?</p>
+                        <div>
+                            <h2 className="text-2xl font-bold">Points & Rewards History</h2>
+                            <p className="text-sm text-gray-400">Track your earnings and redeemed items.</p>
                         </div>
-                        
-                        <textarea
-                            className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white mb-6 focus:outline-none focus:border-purple-500 transition-colors resize-none placeholder:text-gray-600"
-                            rows={4}
-                            placeholder="Full Name&#10;Street Address&#10;City, State, Zip Code&#10;Phone Number"
-                            value={address}
-                            onChange={(e) => setAddress(e.target.value)}
-                        />
-                        
-                        <div className="flex gap-3">
-                            <Button variant="ghost" className="flex-1 h-12 rounded-xl hover:bg-white/5" onClick={() => { setShowAddressModal(null); setAddress(""); }}>Cancel</Button>
-                            <Button 
-                                className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 h-12 rounded-xl font-bold"
-                                disabled={!address}
-                                onClick={() => handleRedeem(showAddressModal, REWARDS.find(r => r.id === showAddressModal)?.cost || 0)}
-                            >
-                                Confirm Order
-                            </Button>
+                    </div>
+                    <div className="bg-[#0A0A0A] border border-white/10 rounded-2xl overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left border-collapse whitespace-nowrap">
+                                <thead>
+                                    <tr className="bg-white/5 border-b border-white/10 text-sm font-bold text-gray-400 uppercase">
+                                        <th className="p-4 px-6 min-w-[200px]">Item</th>
+                                        <th className="p-4 px-6">Points Spent</th>
+                                        <th className="p-4 px-6">Date</th>
+                                        <th className="p-4 px-6">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {rewardsHistory.map((historyItem: any, i) => (
+                                        <tr key={historyItem._id || i} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                                            <td className="p-4 px-6 font-medium text-white">{historyItem.item}</td>
+                                            <td className="p-4 px-6 text-yellow-400 font-bold">-{historyItem.pointsSpent} pts</td>
+                                            <td className="p-4 px-6 text-gray-400">{new Date(historyItem.createdAt).toLocaleDateString()}</td>
+                                            <td className="p-4 px-6">
+                                                <span className={`px-3 py-1 text-xs font-bold rounded-full border ${
+                                                    historyItem.status === 'pending' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' :
+                                                    historyItem.status === 'shipped' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
+                                                    historyItem.status === 'rejected' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
+                                                    'bg-green-500/10 text-green-500 border-green-500/20'
+                                                }`}>
+                                                    {historyItem.status.toUpperCase()}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -492,7 +552,254 @@ export default function AmbassadorDashboard() {
         )}
       </div>
 
-      <Footer />
+      {/* Address Modal (Redesign) */}
+      <div className="print:hidden">
+        {showAddressModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
+                <div className="bg-[#111] border border-white/10 p-8 rounded-3xl max-w-md w-full shadow-2xl relative">
+                    <div className="absolute top-4 right-4 text-gray-500 hover:text-white cursor-pointer" onClick={() => { setShowAddressModal(null); setAddress(""); }}>
+                        <AlertCircle size={24} className="rotate-45" /> {/* Close icon lookalike */}
+                    </div>
+                    <div className="mb-6">
+                        <div className="w-12 h-12 bg-purple-500/10 rounded-full flex items-center justify-center text-purple-400 mb-4">
+                            <Truck size={24} />
+                        </div>
+                        <h3 className="text-2xl font-bold mb-2">Shipping Details</h3>
+                        <p className="text-gray-400 text-sm">Where should we send your reward?</p>
+                    </div>
+                    
+                    <textarea
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white mb-6 focus:outline-none focus:border-purple-500 transition-colors resize-none placeholder:text-gray-600"
+                        rows={4}
+                        placeholder="Full Name&#10;Street Address&#10;City, State, Zip Code&#10;Phone Number"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                    />
+                    
+                    <div className="flex gap-3">
+                        <Button variant="ghost" className="flex-1 h-12 rounded-xl hover:bg-white/5" onClick={() => { setShowAddressModal(null); setAddress(""); }}>Cancel</Button>
+                        <Button 
+                            className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 h-12 rounded-xl font-bold"
+                            disabled={!address}
+                            onClick={() => handleRedeem(showAddressModal as string, REWARDS.find(r => r.id === showAddressModal)?.cost || 0)}
+                        >
+                            Confirm Order
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        )}
+      </div>
+
+      {/* Virtual Reward / Certificate Modal */}
+      {showRewardModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200 print:absolute print:inset-auto print:p-0 print:bg-transparent print:backdrop-blur-none">
+              <div className="bg-[#111] border border-white/10 p-2 text-center rounded-3xl max-w-6xl w-full shadow-2xl relative overflow-hidden print:border-none print:shadow-none print:p-0">
+                  <div className="absolute top-4 right-4 z-20 text-gray-500 hover:text-white cursor-pointer bg-black/50 p-2 rounded-full print:hidden" onClick={() => setShowRewardModal(null)}>
+                      <AlertCircle size={24} className="rotate-45" />
+                  </div>
+                  
+                  {showRewardModal.id === "cert" ? (
+                      <div className="relative w-full overflow-hidden bg-[#111] p-0 md:p-8 flex justify-center pb-24 print:pb-0 print:p-0 print:bg-white print:overflow-visible my-12 md:my-0 print:m-0">
+                          {/* Flexible Scaling Container */}
+                          <div 
+                              className="relative mx-auto overflow-hidden shadow-2xl print:shadow-none print:overflow-visible"
+                              style={{
+                                  width: `${1122 * certScale}px`,
+                                  height: `${794 * certScale}px`,
+                                  maxWidth: '100%',
+                              }}
+                          >
+                              <div 
+                                  id="certificate-container"
+                                  style={{
+                                      width: '1122px', 
+                                      height: '794px', 
+                                      transform: `scale(${certScale})`,
+                                      transformOrigin: 'top left',
+                                  }}
+                                  className="bg-white text-black absolute top-0 left-0 print:!scale-100 print:relative print:transform-none"
+                              >
+                              {/* Outer Border */}
+                              <div className="absolute inset-0 p-[12px]">
+                                  <div className="w-full h-full border-[12px] border-double border-[#1a237e] relative">
+                                      {/* Inner Ornamental Border */}
+                                      <div className="absolute inset-1 border border-[#c5a059]"></div>
+                                      <div className="absolute inset-3 border-2 border-[#1a237e]"></div>
+
+                                      {/* Corner Ornaments */}
+                                      <div className="absolute top-0 left-0 w-24 h-24 border-t-[12px] border-l-[12px] border-[#c5a059] rounded-tl-sm"></div>
+                                      <div className="absolute top-0 right-0 w-24 h-24 border-t-[12px] border-r-[12px] border-[#c5a059] rounded-tr-sm"></div>
+                                      <div className="absolute bottom-0 left-0 w-24 h-24 border-b-[12px] border-l-[12px] border-[#c5a059] rounded-bl-sm"></div>
+                                      <div className="absolute bottom-0 right-0 w-24 h-24 border-b-[12px] border-r-[12px] border-[#c5a059] rounded-br-sm"></div>
+                                  </div>
+                              </div>
+
+                              {/* Background Watermark and Texture */}
+                              <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                                  {/* Fine Grid Pattern overlay for official document feel */}
+                                  <div className="absolute inset-0 bg-[#fdfaf5] opacity-90 blur-[1px]"></div>
+                                  
+                                  {/* Large seal watermark */}
+                                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.03]">
+                                      <Award size={650} className="text-[#1a237e]" strokeWidth={0.5} />
+                                  </div>
+                              </div>
+
+                              {/* Content */}
+                              <div className="relative z-10 h-full flex flex-col items-center justify-between pt-14 pb-8 px-24 border-[1px] border-transparent">
+                                  {/* Header */}
+                                  <div className="text-center w-full">
+                                      <div className="flex items-start justify-center gap-4 mb-2">
+                                          <Award className="text-[#c5a059] mt-1" size={40} />
+                                          <div className="text-left">
+                                              <h2 className="text-3xl font-bold text-[#1a237e] tracking-wide uppercase font-serif">
+                                                  WEBORY <span className="relative inline-block ml-2">
+                                                      <span className="absolute -top-1.5 left-[30%] -translate-x-1/2 flex gap-1">
+                                                          <span className="w-1.5 h-1.5 rounded-full bg-[#FF9933]"></span>
+                                                          <span className="w-1.5 h-1.5 rounded-full bg-white border border-gray-200"></span>
+                                                          <span className="w-1.5 h-1.5 rounded-full bg-[#138808]"></span>
+                                                      </span>
+                                                      SKILLS
+                                                  </span>
+                                              </h2>
+                                              <p className="text-sm text-[#c5a059] tracking-[0.2em] uppercase">Excellence in Education</p>
+                                              <div className="flex gap-4 mt-1">
+                                                  <div className="flex flex-col items-start border-l-2 border-[#c5a059] pl-2">
+                                                      <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wide">Govt. of India Recognized</p>
+                                                      <p className="text-[9px] text-[#c5a056] font-bold font-mono tracking-wider">MSME Reg: UDYAM-BR-26-0208472</p>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      </div>
+
+                                      <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-[#1a237e] to-transparent mb-6 opacity-30 mt-3"></div>
+
+                                      <h1 className="text-[2.8rem] leading-none font-serif font-extrabold text-[#1a237e] mb-2 tracking-tight certificate-title drop-shadow-sm">
+                                          Certificate of Excellence
+                                      </h1>
+                                      <p className="text-xl text-gray-500 italic font-serif mt-2 mb-2">This proudly certifies that</p>
+                                  </div>
+
+                                  {/* Recipient */}
+                                  <div className="text-center w-full my-0 py-0 relative z-10">
+                                      <h2 className="text-6xl font-serif font-bold text-[#1a237e] px-12 pb-2 pt-2 inline-block border-b-2 border-[#c5a059] min-w-[500px] capitalize tracking-wide shadow-black/5 drop-shadow-sm">
+                                          {`${stats?.firstName || user?.firstName || ''} ${stats?.lastName || user?.lastName || ''}`.trim() || "Campus Ambassador"}
+                                      </h2>
+                                  </div>
+
+                                  {/* Certificate Details */}
+                                  <div className="text-center w-full mt-2 relative z-10 px-8">
+                                      <p className="text-[1.3rem] text-gray-700 font-serif max-w-4xl mx-auto leading-[1.8] tracking-wide">
+                                          is a recognized <span className="font-extrabold text-[#1a237e]">Campus Ambassador</span> for Webory Skills from <br/>
+                                          <span className="font-bold text-[#1a237e] text-3xl block mt-2 mb-2 tracking-wider uppercase">{stats?.college || "their institution"}</span> 
+                                          demonstrating exceptional leadership, dedication, and community participation.
+                                      </p>
+                                  </div>
+
+                                  {/* Footer / Signatures */}
+                                  <div className="w-full flex justify-between items-end px-16 mt-4">
+                                      {/* Date */}
+                                      <div className="text-center w-64">
+                                          <div className="border-b border-gray-400 w-full mb-1 pb-3 text-2xl font-bold text-[#1a237e] font-sans">
+                                              {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                          </div>
+                                          <p className="text-sm text-gray-500 font-bold uppercase tracking-widest mt-2">Date of Issue</p>
+                                      </div>
+
+                                      {/* Official Seal */}
+                                      <div className="w-64 flex justify-center pb-2">
+                                          <div className="relative w-32 h-32 flex items-center justify-center">
+                                              <div className="absolute inset-0 border-4 border-[#c5a059] border-dashed rounded-full animate-[spin_10s_linear_infinite] opacity-30"></div>
+                                              <div className="w-28 h-28 rounded-full border-4 border-[#c5a059] flex items-center justify-center bg-yellow-50/90 shadow-inner">
+                                                  <div className="text-center">
+                                                      <Trophy className="mx-auto text-[#c5a059] mb-1" size={28} />
+                                                      <span className="text-xs font-bold uppercase text-[#c5a059] tracking-wider block leading-tight">Official<br/>Ambassador</span>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      </div>
+
+                                      {/* Signature */}
+                                      <div className="text-center w-64">
+                                          <div className="h-16 flex items-end justify-center mb-1 pb-2">
+                                              <span className="font-signature text-5xl text-[#1a237e] whitespace-nowrap px-2">
+                                                  Vijay Kumar
+                                              </span>
+                                          </div>
+                                          <div className="border-t border-gray-400 w-full pt-2">
+                                              <p className="text-sm text-gray-600 font-bold uppercase tracking-widest mt-2">Director of Education</p>
+                                              <p className="text-xs text-[#1a237e] font-bold">Webory Skills</p>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          </div>
+                      </div>
+                  ) : (
+                      <div className="p-10 text-center text-white print:hidden">
+                          <span className="text-6xl block mb-6">{showRewardModal.image}</span>
+                          <h3 className="text-2xl font-bold mb-4">Your {showRewardModal.name}</h3>
+                          <p className="text-gray-400 mb-8">This digital reward is currently active on your account.</p>
+                          <Button onClick={() => setShowRewardModal(null)} variant="outline" className="border-white/10 hover:bg-white/5">Close</Button>
+                      </div>
+                  )}
+                  
+                  {showRewardModal.id === "cert" && (
+                      <div className="absolute inset-x-0 bottom-0 bg-black/80 backdrop-blur-md p-4 flex justify-center gap-4 border-t border-white/10 z-30 print:hidden">
+                          <Button 
+                              className="bg-white text-black hover:bg-gray-200"
+                              onClick={() => window.print()}
+                          >
+                              Print / Save as PDF
+                          </Button>
+                          <Button variant="outline" className="border-white/10 hover:bg-white/5 text-white" onClick={() => setShowRewardModal(null)}>Close</Button>
+                      </div>
+                  )}
+              </div>
+          </div>
+      )}
+
+      <div className="print:hidden"><Footer /></div>
+      
+      <style jsx global>{`
+          @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Mr+De+Haviland&display=swap');
+
+          .font-serif {
+              font-family: 'Playfair Display', serif;
+          }
+          .font-signature {
+              font-family: 'Mr De Haviland', cursive;
+          }
+
+          @media print {
+              @page {
+                  size: A4 landscape;
+                  margin: 0;
+              }
+              html, body {
+                  width: 100%;
+                  height: 100%;
+                  margin: 0 !important;
+                  padding: 0 !important;
+                  overflow: hidden !important;
+                  background-color: white !important;
+                  -webkit-print-color-adjust: exact;
+                  print-color-adjust: exact;
+              }
+              #certificate-container {
+                  position: absolute !important;
+                  left: 0 !important;
+                  top: 0 !important;
+                  margin: 0 !important;
+                  padding: 0 !important;
+                  width: 1122px !important;
+                  height: 794px !important;
+                  background-color: white !important;
+              }
+          }
+      `}</style>
     </main>
   );
 }

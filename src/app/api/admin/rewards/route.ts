@@ -75,29 +75,38 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const updatedRequest = await RewardRequest.findByIdAndUpdate(
-      requestId,
-      { status },
-      { new: true },
-    );
-
-    if (!updatedRequest) {
+    const existingRequest = await RewardRequest.findById(requestId);
+    if (!existingRequest) {
       return NextResponse.json({ error: "Request not found" }, { status: 404 });
     }
 
     // specific status handling (e.g. if rejected, refund points)
-    if (status === "rejected") {
-      const ambassador = await Ambassador.findById(updatedRequest.ambassadorId);
+    if (status === "rejected" && existingRequest.status !== "rejected") {
+      const ambassador = await Ambassador.findById(
+        existingRequest.ambassadorId,
+      );
       if (ambassador) {
-        ambassador.points += updatedRequest.pointsSpent;
+        ambassador.points += existingRequest.pointsSpent;
+        await ambassador.save();
+      }
+    } else if (existingRequest.status === "rejected" && status !== "rejected") {
+      // Re-deduct points if admin changes status from rejected to approved/pending
+      const ambassador = await Ambassador.findById(
+        existingRequest.ambassadorId,
+      );
+      if (ambassador) {
+        ambassador.points -= existingRequest.pointsSpent;
         await ambassador.save();
       }
     }
 
+    existingRequest.status = status;
+    await existingRequest.save();
+
     return NextResponse.json({
       success: true,
       message: `Request marked as ${status}`,
-      data: updatedRequest,
+      data: existingRequest,
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
