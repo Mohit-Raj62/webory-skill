@@ -53,9 +53,9 @@ export function Navbar() {
 
                     {/* Desktop Menu */}
                     <div className="hidden xl:flex items-center space-x-6 2xl:space-x-8">
-                        <Link href="/#features" className="text-sm text-gray-300 hover:text-white transition-colors">
+                        {/* <Link href="/#features" className="text-sm text-gray-300 hover:text-white transition-colors">
                             Features
-                        </Link>
+                        </Link> */}
                         <Link href="/courses" className="group relative text-sm text-gray-300 hover:text-white transition-colors flex items-center gap-1.5">
                             Courses
                             <span className="relative flex h-2 w-2">
