@@ -109,7 +109,7 @@ export default function ContactPage() {
                                     title="Call Us"
                                     content={
                                         <div className="flex flex-col gap-1">
-                                            <p className="text-white font-medium">+91 62059 47359</p>
+                                            <p className="text-white font-medium">+91 94734 71153</p>
                                             <p className="text-xs text-gray-500">Mon - Sat, 10am - 6pm</p>
                                         </div>
                                     }
@@ -192,7 +192,7 @@ export default function ContactPage() {
                                                 onBlur={() => setFocusedField(null)}
                                                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                                                 className="w-full bg-transparent border-none py-3.5 pl-12 pr-4 text-white placeholder-gray-600 focus:ring-0 text-sm"
-                                                placeholder="John Doe"
+                                                placeholder="Your Name"
                                             />
                                         </div>
                                     </div>
@@ -211,7 +211,7 @@ export default function ContactPage() {
                                                 onBlur={() => setFocusedField(null)}
                                                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                                                 className="w-full bg-transparent border-none py-3.5 pl-12 pr-4 text-white placeholder-gray-600 focus:ring-0 text-sm"
-                                                placeholder="john@example.com"
+                                                placeholder="Your@email.com"
                                             />
                                         </div>
                                     </div>
