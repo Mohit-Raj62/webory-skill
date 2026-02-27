@@ -40,6 +40,7 @@ const menuItems = [
     { name: "Live Classes", href: "/admin/live-classes", icon: Video },
     { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
     { name: "Settings", href: "/admin/settings", icon: Settings },
+    { name: "Blogs", href: "/admin/blogs", icon: FileText },
     { name: "Careers (Jobs)", href: "/admin/careers/jobs", icon: Briefcase },
     { name: "Job Applications", href: "/admin/careers/applications", icon: FileText },
     { name: "Live Interest", href: "/admin/activity", icon: Video },

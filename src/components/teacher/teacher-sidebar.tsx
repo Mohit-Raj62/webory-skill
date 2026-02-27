@@ -10,11 +10,13 @@ import {
     X,
     Video,
     HelpCircle,
+    FileText,
 } from "lucide-react";
 
 const menuItems = [
     { name: "Dashboard", href: "/teacher", icon: LayoutDashboard },
     { name: "My Courses", href: "/teacher/courses", icon: BookOpen },
+    { name: "My Blogs", href: "/teacher/blogs", icon: FileText },
     { name: "Live Classes", href: "/teacher/live-classes", icon: Video },
     { name: "Create Course", href: "/teacher/courses/create", icon: PlusCircle },
     { name: "Student Doubts", href: "/teacher/doubts", icon: HelpCircle },
