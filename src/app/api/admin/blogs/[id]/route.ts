@@ -33,7 +33,7 @@ export async function PUT(
     if (body.action === "approve") {
       blog.status = "published";
       blog.publishedAt = new Date();
-      blog.rejectionReason = null;
+      blog.rejectionReason = undefined;
       await blog.save();
       return NextResponse.json({
         message: "Blog approved and published",
@@ -45,7 +45,7 @@ export async function PUT(
     if (body.action === "reject") {
       blog.status = "rejected";
       blog.rejectionReason = body.reason || "Does not meet quality standards";
-      blog.publishedAt = null;
+      blog.publishedAt = undefined;
       await blog.save();
       return NextResponse.json({
         message: "Blog rejected",
@@ -66,7 +66,7 @@ export async function PUT(
     // Action: Unpublish
     if (body.action === "unpublish") {
       blog.status = "draft";
-      blog.publishedAt = null;
+      blog.publishedAt = undefined;
       await blog.save();
       return NextResponse.json({
         message: "Blog unpublished",
