@@ -96,7 +96,7 @@ export function Footer() {
                                 } brandColor="hover:text-white hover:bg-black hover:shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:border-white/20" />
                                 <SocialLink href="https://www.linkedin.com/in/webory-skills-01244b3a9?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" icon={<Linkedin size={20} />} brandColor="hover:text-white hover:bg-[#0077b5] hover:shadow-[0_0_20px_rgba(0,119,181,0.3)]" />
                                 <SocialLink href="https://www.instagram.com/weboryskills?igsh=anJ2Zmc0MmdjdmEy&utm_source=qr" icon={<Instagram size={20} />} brandColor="hover:text-white hover:bg-gradient-to-tr hover:from-[#f9ce34] hover:via-[#ee2a7b] hover:to-[#6228d7] hover:shadow-[0_0_20px_rgba(238,42,123,0.3)]" />
-                                <SocialLink href="www.youtube.com/@CodeWithWebory" icon={<Youtube size={20} />} brandColor="hover:text-white hover:bg-[#ff0000] hover:shadow-[0_0_20px_rgba(255,0,0,0.3)]"/>
+                                <SocialLink href="https://www.youtube.com/@CodeWithWebory" icon={<Youtube size={20} />} brandColor="hover:text-white hover:bg-[#ff0000] hover:shadow-[0_0_20px_rgba(255,0,0,0.3)]"/>
                             </div>
                             <p className="text-xs text-gray-500 font-medium leading-relaxed max-w-[150px] text-center md:text-left">
                                 Join our community for latest updates & tech insights.
