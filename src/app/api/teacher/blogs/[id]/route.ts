@@ -74,7 +74,7 @@ export async function PUT(
         );
       }
       blog.status = "pending";
-      blog.rejectionReason = null;
+      (blog as any).rejectionReason = null;
       await blog.save();
       return NextResponse.json({
         message: "Blog submitted for review",
@@ -98,7 +98,7 @@ export async function PUT(
     // If blog was rejected, allow editing and keep as draft
     if (blog.status === "rejected") {
       blog.status = "draft";
-      blog.rejectionReason = null;
+      (blog as any).rejectionReason = null;
     }
 
     await blog.save();
