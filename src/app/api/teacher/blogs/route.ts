@@ -105,13 +105,12 @@ export async function POST(request: NextRequest) {
       slug,
       content,
       excerpt,
-      coverImage: coverImage || null,
+      coverImage: coverImage || undefined,
       author: userId,
       category: category || "Other",
       tags: tags || [],
       status: status === "pending" ? "pending" : "draft",
       readTime,
-      publishedAt: null,
     });
 
     return NextResponse.json({
