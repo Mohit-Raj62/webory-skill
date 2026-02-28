@@ -18,19 +18,24 @@ export async function GET() {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
     const userId = decoded.userId;
 
-    // Get current user to get their XP
-    const currentUser = await User.findById(userId).select("xp");
+    // Get current user to get their XP and createdAt
+    const currentUser = await User.findById(userId).select("xp createdAt");
     if (!currentUser) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const userXP = currentUser.xp || 0;
+    const userCreatedAt = currentUser.createdAt;
 
-    // Calculate rank: count users who have more XP than the current user
+    // Calculate rank: count users with more XP, or same XP but registered earlier (tiebreaker)
     const rank =
       (await User.countDocuments({
         role: "student",
-        xp: { $gt: userXP },
+        _id: { $ne: userId },
+        $or: [
+          { xp: { $gt: userXP } },
+          { xp: userXP, createdAt: { $lt: userCreatedAt } },
+        ],
       })) + 1;
 
     const totalStudents = await User.countDocuments({ role: "student" });

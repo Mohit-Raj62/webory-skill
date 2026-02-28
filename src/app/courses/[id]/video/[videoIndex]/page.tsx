@@ -33,6 +33,7 @@ export default function VideoPlayerPage() {
     const [showDoubtModal, setShowDoubtModal] = useState(false);
     const [doubtQuestion, setDoubtQuestion] = useState('');
     const [showSettings, setShowSettings] = useState(false);
+    const [playbackSpeed, setPlaybackSpeed] = useState(1);
     const [videoProgress, setVideoProgress] = useState(0);
     const [lastValidTime, setLastValidTime] = useState(0);
     const lastValidTimeRef = useRef(0);
@@ -643,6 +644,15 @@ export default function VideoPlayerPage() {
         setShowSettings(false);
     };
 
+    const setSpeed = (speed: number) => {
+        setPlaybackSpeed(speed);
+        if (ytPlayerRef.current && typeof ytPlayerRef.current.setPlaybackRate === 'function') {
+            ytPlayerRef.current.setPlaybackRate(speed);
+        } else if (videoRef.current) {
+            videoRef.current.playbackRate = speed;
+        }
+    };
+
     const goToPrevious = () => {
         if (currentIndex > 0) {
             router.push(`/courses/${courseId}/video/${currentIndex - 1}`);
@@ -998,6 +1008,25 @@ export default function VideoPlayerPage() {
                                             <Expand className="h-4 w-4" />
                                             {isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
                                         </button>
+                                        <div className="h-px bg-gray-700 my-1" />
+                                        <div className="px-3 py-2">
+                                            <p className="text-xs text-gray-500 mb-2 font-medium uppercase tracking-wider">Playback Speed</p>
+                                            <div className="flex items-center gap-1">
+                                                {[1, 1.5, 2, 2.5].map((speed) => (
+                                                    <button
+                                                        key={speed}
+                                                        onClick={() => { setSpeed(speed); setShowSettings(false); }}
+                                                        className={`flex-1 px-2 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 ${
+                                                            playbackSpeed === speed
+                                                                ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/20'
+                                                                : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                                                        }`}
+                                                    >
+                                                        {speed}x
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
                                         <div className="h-px bg-gray-700 my-1" />
                                         <button
                                             onClick={() => { setShowNotes(!showNotes); setShowSettings(false); }}
