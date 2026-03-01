@@ -27,6 +27,8 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { QrCode, Barcode, Map as GlobeIcon, Download } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
+import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
 
 // Document config
 const DOCUMENT_FIELDS = [
@@ -72,6 +74,38 @@ export default function TeacherProfilePage() {
   const [verificationStatus, setVerificationStatus] = useState("");
   const [loading, setLoading] = useState(true);
   const [showIdModal, setShowIdModal] = useState(false);
+  const [downloadingId, setDownloadingId] = useState(false);
+  const idCardRef = React.useRef<HTMLDivElement>(null);
+
+  const downloadAsPDF = async () => {
+    if (!idCardRef.current) return;
+    try {
+      setDownloadingId(true);
+      toast.info("Preparing ID Card...");
+      
+      const canvas = await html2canvas(idCardRef.current, {
+        scale: 2, 
+        useCORS: true,
+        backgroundColor: "#ffffff",
+      });
+      
+      const imgData = canvas.toDataURL("image/jpeg", 1.0);
+      const pdf = new jsPDF({
+        orientation: "landscape",
+        unit: "mm",
+        format: [85.6, 53.98], // CR-80 standard credit card size in mm
+      });
+      
+      pdf.addImage(imgData, "JPEG", 0, 0, 85.6, 53.98);
+      pdf.save(`${employeeId || "Employee"}_ID_Card.pdf`);
+      toast.success("ID Card downloaded successfully!");
+    } catch (error) {
+      console.error("PDF generation failed:", error);
+      toast.error("Failed to generate PDF");
+    } finally {
+      setDownloadingId(false);
+    }
+  };
 
   useEffect(() => {
     const fetchStatus = async () => {
@@ -707,8 +741,12 @@ export default function TeacherProfilePage() {
               className="relative w-full max-w-3xl rounded-3xl overflow-hidden shadow-[0_0_100px_rgba(255,255,255,0.1)] border border-white/10 pointer-events-none"
             >
               {/* ID Card Wrapper (For physical card aspect ratio & styling) */}
-              <div className="bg-gradient-to-br from-gray-200 to-gray-400 p-2 md:p-8 rounded-3xl pointer-events-auto shadow-2xl">
-                <div className="relative w-full bg-white rounded-xl overflow-hidden shadow-xl" style={{ aspectRatio: '1.586/1' }}>
+              <div className="bg-gradient-to-br from-gray-200 to-gray-400 p-2 md:p-8 rounded-3xl pointer-events-auto shadow-2xl overflow-hidden">
+                <div 
+                  ref={idCardRef}
+                  className="relative w-full bg-white rounded-xl overflow-hidden shadow-xl" 
+                  style={{ aspectRatio: '1.586/1' }}
+                >
                   
                   {/* Top Header Bar */}
                   <div className="h-[12%] w-full bg-[#1e293b] flex items-center justify-center gap-3 md:gap-4 relative overflow-hidden">
