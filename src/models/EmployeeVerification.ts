@@ -48,6 +48,14 @@ const EmployeeVerificationSchema = new Schema(
       cancelledCheque: { type: String, default: null },
       experienceLetter: { type: String, default: null },
     },
+    bankDetails: {
+      bankName: { type: String, required: [true, "Bank Name is required"] },
+      accountNumber: {
+        type: String,
+        required: [true, "Account Number is required"],
+      },
+      ifscCode: { type: String, required: [true, "IFSC Code is required"] },
+    },
     declaration: {
       type: Boolean,
       required: true,

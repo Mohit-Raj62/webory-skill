@@ -22,6 +22,7 @@ export async function POST(req: Request) {
       dateOfBirth,
       currentAddress,
       documents,
+      bankDetails,
       declaration,
     } = body;
 
@@ -43,6 +44,19 @@ export async function POST(req: Request) {
     if (!declaration) {
       return NextResponse.json(
         { error: "You must accept the declaration." },
+        { status: 400 },
+      );
+    }
+
+    // Bank Details validation
+    if (
+      !bankDetails ||
+      !bankDetails.bankName ||
+      !bankDetails.accountNumber ||
+      !bankDetails.ifscCode
+    ) {
+      return NextResponse.json(
+        { error: "Complete Bank Details are required." },
         { status: 400 },
       );
     }
@@ -122,6 +136,7 @@ export async function POST(req: Request) {
       dateOfBirth: new Date(dateOfBirth),
       currentAddress,
       documents,
+      bankDetails,
       declaration,
       currentStep: 2,
       status: "document_verification",

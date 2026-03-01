@@ -34,6 +34,11 @@ interface Verification {
   currentStep: number;
   status: string;
   createdAt: string;
+  bankDetails?: {
+    bankName: string;
+    accountNumber: string;
+    ifscCode: string;
+  };
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
@@ -277,6 +282,27 @@ export default function AdminEmployeeVerificationsPage() {
                             <p className="text-sm text-white">{v.currentAddress}</p>
                           </div>
                         </div>
+
+                        {/* Bank Details */}
+                        {v.bankDetails && (
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-white/10 pt-6">
+                            <div className="md:col-span-3">
+                              <p className="text-xs text-gray-500 mb-1 font-semibold uppercase tracking-wider">Bank Details</p>
+                            </div>
+                            <div>
+                              <p className="text-xs text-gray-500 mb-1">Bank Name</p>
+                              <p className="text-sm text-white font-medium">{v.bankDetails.bankName}</p>
+                            </div>
+                            <div>
+                              <p className="text-xs text-gray-500 mb-1">Account Number</p>
+                              <p className="text-sm text-white font-mono">{v.bankDetails.accountNumber}</p>
+                            </div>
+                            <div>
+                              <p className="text-xs text-gray-500 mb-1">IFSC Code</p>
+                              <p className="text-sm text-white font-mono">{v.bankDetails.ifscCode}</p>
+                            </div>
+                          </div>
+                        )}
 
                         {/* Progress Steps Control */}
                         <div>
