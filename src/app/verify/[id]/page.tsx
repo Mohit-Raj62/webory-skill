@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { notFound } from "next/navigation";
 import { Shield, CheckCircle2, Briefcase, Loader2 } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 export default async function VerifyEmployeePage({ params }: { params: { id: string } }) {
   await dbConnect();
   
