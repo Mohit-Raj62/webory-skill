@@ -7,11 +7,14 @@ import { Shield, CheckCircle2, Briefcase, Loader2 } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
 
-export default async function VerifyEmployeePage({ params }: { params: { id: string } }) {
+export default async function VerifyEmployeePage({ params }: { params: Promise<{ id: string }> }) {
   await dbConnect();
   
+  // Await the params explicitly (Next.js 15+ App Router requirement)
+  const { id } = await params;
+
   // Try to find the record by the dynamic [id] param.
-  const record = await EmployeeVerification.findOne({ employeeId: params.id }).lean();
+  const record = await EmployeeVerification.findOne({ employeeId: id }).lean();
 
   if (!record) {
     // If no record is found in DB, return 404 page nicely
