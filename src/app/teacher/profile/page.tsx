@@ -738,8 +738,26 @@ export default function TeacherProfilePage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-3xl rounded-3xl overflow-hidden shadow-[0_0_100px_rgba(255,255,255,0.1)] border border-white/10 pointer-events-none"
+              className="relative w-full max-w-3xl rounded-3xl overflow-hidden shadow-[0_0_100px_rgba(255,255,255,0.1)] border border-white/10"
             >
+              {/* Modal Header */}
+              <div className="absolute top-4 right-4 z-50 flex items-center gap-3">
+                <button
+                  onClick={downloadAsPDF}
+                  disabled={downloadingId}
+                  className="px-4 py-1.5 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-semibold rounded-lg text-sm transition-colors flex items-center gap-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {downloadingId ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />} 
+                  {downloadingId ? "Downloading..." : "Download"}
+                </button>
+                <button 
+                  onClick={() => setShowIdModal(false)}
+                  className="p-1.5 bg-white/10 hover:bg-white/20 active:bg-red-500/20 active:text-red-400 rounded-full text-white/70 hover:text-white transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
               {/* ID Card Wrapper (For physical card aspect ratio & styling) */}
               <div className="bg-gradient-to-br from-gray-200 to-gray-400 p-2 md:p-8 rounded-3xl pointer-events-auto shadow-2xl overflow-hidden">
                 <div 
