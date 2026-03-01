@@ -103,31 +103,46 @@ export default function AdminEmployeeVerificationsPage() {
 
   const updateStep = async (id: string, step: number) => {
     setUpdating(id);
-    const statusMap: Record<number, string> = {
-      1: "interview_cleared",
-      2: "document_verification",
-      3: "offer_letter",
-      4: "joining",
-    };
-
     try {
-      const res = await fetch(`/api/employee-verification/${id}`, {
+      const res = await fetch(`/api/admin/employee-verifications/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ currentStep: step, status: statusMap[step] }),
+        body: JSON.stringify({ currentStep: step }),
       });
-
       const data = await res.json();
-      if (data.success) {
-        toast.success("Status updated!");
-        fetchVerifications();
-      } else {
-        toast.error(data.error || "Update failed");
-      }
-    } catch (err) {
-      toast.error("Failed to update");
+      if (!data.success) throw new Error(data.error || "Update failed");
+
+      setVerifications((prev) =>
+        prev.map((v) => (v._id === id ? { ...v, currentStep: step } : v)),
+      );
+      toast.success("Progress updated successfully");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update progress");
     } finally {
       setUpdating(null);
+    }
+  };
+
+  const handleDownload = async (url: string, filename: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      toast.info(`Starting download for ${filename}...`);
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Network response was not ok");
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const tempLink = document.createElement("a");
+      tempLink.href = downloadUrl;
+      tempLink.setAttribute("download", filename);
+      document.body.appendChild(tempLink);
+      tempLink.click();
+      document.body.removeChild(tempLink);
+      window.URL.revokeObjectURL(downloadUrl);
+      toast.success("Download complete");
+    } catch (error) {
+      console.error("Download error:", error);
+      toast.error("Download failed. The file may be restricted by the host.");
     }
   };
 
@@ -368,14 +383,12 @@ export default function AdminEmployeeVerificationsPage() {
                                     >
                                       <Eye size={12} /> View
                                     </a>
-                                    <a
-                                      href={url}
-                                      download
+                                    <button
+                                      onClick={(e) => handleDownload(url, `${v.employeeId}_${DOC_LABELS[key] || key}`, e)}
                                       className="flex items-center gap-1 text-xs text-green-400 hover:text-green-300 font-medium"
-                                      onClick={(e) => e.stopPropagation()}
                                     >
                                       <Download size={12} /> Download
-                                    </a>
+                                    </button>
                                   </div>
                                 );
                               }
