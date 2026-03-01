@@ -11,6 +11,7 @@ import {
     Video,
     HelpCircle,
     FileText,
+    Shield,
 } from "lucide-react";
 
 const menuItems = [
@@ -20,6 +21,7 @@ const menuItems = [
     { name: "Live Classes", href: "/teacher/live-classes", icon: Video },
     { name: "Create Course", href: "/teacher/courses/create", icon: PlusCircle },
     { name: "Student Doubts", href: "/teacher/doubts", icon: HelpCircle },
+    { name: "My Profile / KYC", href: "/teacher/profile", icon: Shield },
 ];
 
 interface TeacherSidebarProps {

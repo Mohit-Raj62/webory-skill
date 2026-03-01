@@ -22,11 +22,13 @@ import {
     Database,
     Megaphone,
     Gift,
+    Shield,
 } from "lucide-react";
 
 const menuItems = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Users", href: "/admin/users", icon: Users },
+    { name: "Employee KYC", href: "/admin/employee-verifications", icon: Shield },
     { name: "Courses", href: "/admin/courses", icon: BookOpen },
     { name: "Internships", href: "/admin/internships", icon: Briefcase },
     { name: "Applications", href: "/admin/applications", icon: FileText },
