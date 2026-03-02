@@ -26,9 +26,9 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Get all courses created by this teacher
+    // Get all courses managed by this teacher
     const teacherCourses = await Course.find({
-      instructor: decoded.userId,
+      $or: [{ instructor: decoded.userId }, { coInstructors: decoded.userId }],
     }).select("_id");
     const courseIds = teacherCourses.map((course) => course._id);
 
@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching doubts:", error);
     return NextResponse.json(
       { error: "Failed to fetch doubts" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
