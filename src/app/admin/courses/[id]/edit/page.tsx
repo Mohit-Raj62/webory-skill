@@ -28,6 +28,7 @@ export default function EditCoursePage() {
         language: "English/Hindi",
         promoVideoUrl: "",
         promoVideoDuration: "",
+        lastUpdatedDate: "",
         color: "from-blue-500 to-purple-500",
         icon: "Globe",
         duration: "0h",
@@ -115,6 +116,7 @@ export default function EditCoursePage() {
                     language: data.course.language || "English/Hindi",
                     promoVideoUrl: data.course.promoVideoUrl || "",
                     promoVideoDuration: data.course.promoVideoDuration || "",
+                    lastUpdatedDate: data.course.lastUpdatedDate || "",
                     color: data.course.color || "from-blue-500 to-purple-500",
                     icon: data.course.icon || "Globe",
                     duration: data.course.duration || "0h",
@@ -625,6 +627,19 @@ export default function EditCoursePage() {
                                             className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder-gray-500 focus:border-blue-500/50 outline-none transition-all focus:bg-white/10"
                                             value={formData.promoVideoDuration}
                                             onChange={(e) => setFormData({ ...formData, promoVideoDuration: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label className="text-sm text-gray-400 font-medium mb-2 block">Last Updated Date (Override)</label>
+                                        <input
+                                            type="text"
+                                            placeholder="e.g. 9/12/2025"
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder-gray-500 focus:border-blue-500/50 outline-none transition-all focus:bg-white/10"
+                                            value={formData.lastUpdatedDate}
+                                            onChange={(e) => setFormData({ ...formData, lastUpdatedDate: e.target.value })}
                                         />
                                     </div>
                                 </div>

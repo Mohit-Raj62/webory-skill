@@ -18,6 +18,7 @@ export default function CreateCourse() {
         language: "English/Hindi",
         promoVideoUrl: "",
         promoVideoDuration: "",
+        lastUpdatedDate: "",
         color: "#3B82F6",
         icon: "BookOpen",
         outcome: "",
@@ -186,6 +187,20 @@ export default function CreateCourse() {
                                 onChange={handleChange}
                                 className="w-full bg-gray-800 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
                                 placeholder="e.g. 02:45 MINS"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-400">Last Updated Date (Override)</label>
+                            <input
+                                type="text"
+                                name="lastUpdatedDate"
+                                value={formData.lastUpdatedDate}
+                                onChange={handleChange}
+                                className="w-full bg-gray-800 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                                placeholder="e.g. 9/12/2025"
                             />
                         </div>
                     </div>

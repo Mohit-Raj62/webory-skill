@@ -26,6 +26,7 @@ export default function NewCoursePage() {
         language: "English/Hindi",
         promoVideoUrl: "",
         promoVideoDuration: "",
+        lastUpdatedDate: "",
         color: "from-blue-500 to-purple-500",
         icon: "Globe",
         duration: "0h",
@@ -363,6 +364,17 @@ export default function NewCoursePage() {
                                 className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
                                 value={formData.promoVideoDuration}
                                 onChange={(e) => setFormData({ ...formData, promoVideoDuration: e.target.value })}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="text-sm text-gray-300 block mb-2">Last Updated Date (Override)</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. 9/12/2025"
+                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                value={formData.lastUpdatedDate}
+                                onChange={(e) => setFormData({ ...formData, lastUpdatedDate: e.target.value })}
                             />
                         </div>
 

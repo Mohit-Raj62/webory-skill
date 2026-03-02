@@ -221,6 +221,10 @@ const CourseSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  lastUpdatedDate: {
+    type: String,
+    default: "", // Overrides the formatted createdAt date if provided
+  },
   isPopular: {
     type: Boolean,
     default: false,

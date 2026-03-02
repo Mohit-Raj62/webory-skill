@@ -63,6 +63,7 @@ export async function POST(request: NextRequest) {
       promoVideoUrl,
       promoVideoDuration,
       studentsCount,
+      lastUpdatedDate,
     } = reqBody;
 
     // Basic validation
@@ -85,6 +86,7 @@ export async function POST(request: NextRequest) {
       language: language || "English/Hindi",
       promoVideoUrl: promoVideoUrl || "",
       promoVideoDuration: promoVideoDuration || "",
+      lastUpdatedDate: lastUpdatedDate || "",
       outcome: outcome || "",
       whoIsThisFor: whoIsThisFor || [],
       projects: projects || [],

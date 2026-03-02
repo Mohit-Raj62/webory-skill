@@ -19,6 +19,7 @@ interface Course {
   language?: string;
   level?: string;
   createdAt?: string;
+  lastUpdatedDate?: string;
   promoVideoUrl?: string;
   promoVideoDuration?: string;
 }
@@ -90,7 +91,7 @@ export const CourseHeader = ({ course, safeDate }: CourseHeaderProps) => {
             <div className="flex flex-wrap gap-4">
               <div className="flex items-center gap-3 px-5 py-3 bg-white/5 border border-white/10 rounded-2xl">
                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                <span className="text-sm font-bold text-white/90">Last updated {safeDate(course.createdAt)}</span>
+                <span className="text-sm font-bold text-white/90">Last updated {course.lastUpdatedDate || safeDate(course.createdAt)}</span>
               </div>
             </div>
           </motion.div>
