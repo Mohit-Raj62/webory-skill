@@ -53,10 +53,12 @@ export async function PATCH(
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 
-    const isPrimaryInstructor = course.instructor.toString() === decoded.userId;
-    const isCoInstructor = course.coInstructors
-      ?.map((id: any) => id.toString())
-      .includes(decoded.userId);
+    const isPrimaryInstructor =
+      course.instructor?.toString() === decoded.userId;
+    const isCoInstructor =
+      course.coInstructors
+        ?.map((id: any) => id.toString())
+        .includes(decoded.userId) || false;
 
     if (!isPrimaryInstructor && !isCoInstructor) {
       return NextResponse.json(
@@ -134,10 +136,12 @@ export async function DELETE(
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 
-    const isPrimaryInstructor = course.instructor.toString() === decoded.userId;
-    const isCoInstructor = course.coInstructors
-      ?.map((id: any) => id.toString())
-      .includes(decoded.userId);
+    const isPrimaryInstructor =
+      course.instructor?.toString() === decoded.userId;
+    const isCoInstructor =
+      course.coInstructors
+        ?.map((id: any) => id.toString())
+        .includes(decoded.userId) || false;
 
     if (!isPrimaryInstructor && !isCoInstructor) {
       return NextResponse.json(
