@@ -8,7 +8,8 @@ import { InactivityLogout } from "@/components/auth/inactivity-logout";
 import { SessionProvider } from "@/components/auth/session-provider";
 import { Toaster } from "sonner";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import SupportChatbot from "@/components/SupportChatbot";
+import dynamic from "next/dynamic";
+const SupportChatbot = dynamic(() => import("@/components/SupportChatbot"), { ssr: false });
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });

@@ -12,6 +12,7 @@ import { useAuth } from "@/components/auth/session-provider";
 import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { CheckCircle, Clock, BarChart, Users, Globe, PlayCircle, Lock, ClipboardList, FileText, Calendar, Video, ChevronDown, ChevronUp, Brain } from "lucide-react";
+import { CourseHeader, Curriculum, CourseBenefits } from "@/components/courses/course-details-components";
 import Link from "next/link";
 
 // Helper for safe date parsing on iOS/Safari
@@ -262,12 +263,11 @@ export default function CourseDetailsPage() {
             <Navbar />
             <LeadCaptureModal courseId={id as string} courseName={course?.title} />
 
-            <div className="pt-24 md:pt-32 pb-20 container mx-auto px-4">
+            <CourseHeader course={course} safeDate={safeDate} />
+
+            <div className="container mx-auto px-4">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                     <div className="lg:col-span-2">
-                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">{course.title}</h1>
-                        <p className="text-xl text-blue-400 font-medium mb-6">Build real-world web applications and become job-ready.</p>
-                        <p className="text-gray-400 mb-8 leading-relaxed max-w-3xl">{course.description}</p>
 
                         <div className="flex flex-wrap gap-6 mb-12">
                             <div className="flex items-center text-gray-300">
