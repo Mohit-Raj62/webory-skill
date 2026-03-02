@@ -12,7 +12,7 @@ export async function PUT(
     params,
   }: {
     params: Promise<{ id: string; assignmentId: string; submissionId: string }>;
-  }
+  },
 ) {
   try {
     await dbConnect();
@@ -32,15 +32,15 @@ export async function PUT(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Verify ownership
+    // Verify ownership or shared access
     const course = await Course.findOne({
       _id: id,
-      instructor: decoded.userId,
+      $or: [{ instructor: decoded.userId }, { coInstructors: decoded.userId }],
     });
     if (!course) {
       return NextResponse.json(
         { error: "Course not found or you do not have permission to edit it" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -52,13 +52,13 @@ export async function PUT(
         status: "graded",
         gradedAt: new Date(),
       },
-      { new: true }
+      { new: true },
     );
 
     if (!submission) {
       return NextResponse.json(
         { error: "Submission not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -67,7 +67,7 @@ export async function PUT(
     console.error("Grade submission error:", error);
     return NextResponse.json(
       { error: "Failed to grade submission" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

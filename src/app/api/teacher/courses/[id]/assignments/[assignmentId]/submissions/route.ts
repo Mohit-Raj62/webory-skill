@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken";
 // GET - Fetch all submissions for an assignment
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ id: string; assignmentId: string }> }
+  { params }: { params: Promise<{ id: string; assignmentId: string }> },
 ) {
   try {
     await dbConnect();
@@ -27,15 +27,15 @@ export async function GET(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Verify ownership
+    // Verify ownership or shared access
     const course = await Course.findOne({
       _id: id,
-      instructor: decoded.userId,
+      $or: [{ instructor: decoded.userId }, { coInstructors: decoded.userId }],
     });
     if (!course) {
       return NextResponse.json(
         { error: "Course not found or you do not have permission to view it" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -48,7 +48,7 @@ export async function GET(
     console.error("Fetch submissions error:", error);
     return NextResponse.json(
       { error: "Failed to fetch submissions" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

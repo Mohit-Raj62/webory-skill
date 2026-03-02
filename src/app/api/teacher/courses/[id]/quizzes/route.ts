@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken";
 // GET - Fetch all quizzes for a course
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await dbConnect();
@@ -27,15 +27,15 @@ export async function GET(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Verify ownership
+    // Verify ownership or shared access
     const course = await Course.findOne({
       _id: id,
-      instructor: decoded.userId,
+      $or: [{ instructor: decoded.userId }, { coInstructors: decoded.userId }],
     });
     if (!course) {
       return NextResponse.json(
         { error: "Course not found or you do not have permission to view it" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -46,7 +46,7 @@ export async function GET(
     console.error("Fetch quizzes error:", error);
     return NextResponse.json(
       { error: "Failed to fetch quizzes" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -54,7 +54,7 @@ export async function GET(
 // POST - Create new quiz
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await dbConnect();
@@ -75,15 +75,15 @@ export async function POST(
     const { id } = await params;
     const data = await req.json();
 
-    // Verify ownership
+    // Verify ownership or shared access
     const course = await Course.findOne({
       _id: id,
-      instructor: decoded.userId,
+      $or: [{ instructor: decoded.userId }, { coInstructors: decoded.userId }],
     });
     if (!course) {
       return NextResponse.json(
         { error: "Course not found or you do not have permission to edit it" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -97,7 +97,7 @@ export async function POST(
     console.error("Create quiz error:", error);
     return NextResponse.json(
       { error: "Failed to create quiz" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

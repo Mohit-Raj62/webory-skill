@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken";
 // GET - Fetch specific quiz
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ id: string; quizId: string }> }
+  { params }: { params: Promise<{ id: string; quizId: string }> },
 ) {
   try {
     await dbConnect();
@@ -27,15 +27,15 @@ export async function GET(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Verify ownership
+    // Verify ownership or shared access
     const course = await Course.findOne({
       _id: id,
-      instructor: decoded.userId,
+      $or: [{ instructor: decoded.userId }, { coInstructors: decoded.userId }],
     });
     if (!course) {
       return NextResponse.json(
         { error: "Course not found or you do not have permission to view it" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -49,7 +49,7 @@ export async function GET(
     console.error("Fetch quiz error:", error);
     return NextResponse.json(
       { error: "Failed to fetch quiz" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -57,7 +57,7 @@ export async function GET(
 // PUT - Update specific quiz
 export async function PUT(
   req: Request,
-  { params }: { params: Promise<{ id: string; quizId: string }> }
+  { params }: { params: Promise<{ id: string; quizId: string }> },
 ) {
   try {
     await dbConnect();
@@ -77,22 +77,22 @@ export async function PUT(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Verify ownership
+    // Verify ownership or shared access
     const course = await Course.findOne({
       _id: id,
-      instructor: decoded.userId,
+      $or: [{ instructor: decoded.userId }, { coInstructors: decoded.userId }],
     });
     if (!course) {
       return NextResponse.json(
         { error: "Course not found or you do not have permission to edit it" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     const quiz = await Quiz.findOneAndUpdate(
       { _id: quizId, courseId: id },
       data,
-      { new: true }
+      { new: true },
     );
 
     if (!quiz) {
@@ -104,7 +104,7 @@ export async function PUT(
     console.error("Update quiz error:", error);
     return NextResponse.json(
       { error: "Failed to update quiz" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -112,7 +112,7 @@ export async function PUT(
 // DELETE - Delete specific quiz
 export async function DELETE(
   req: Request,
-  { params }: { params: Promise<{ id: string; quizId: string }> }
+  { params }: { params: Promise<{ id: string; quizId: string }> },
 ) {
   try {
     await dbConnect();
@@ -131,15 +131,15 @@ export async function DELETE(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Verify ownership
+    // Verify ownership or shared access
     const course = await Course.findOne({
       _id: id,
-      instructor: decoded.userId,
+      $or: [{ instructor: decoded.userId }, { coInstructors: decoded.userId }],
     });
     if (!course) {
       return NextResponse.json(
         { error: "Course not found or you do not have permission to edit it" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -154,7 +154,7 @@ export async function DELETE(
     console.error("Delete quiz error:", error);
     return NextResponse.json(
       { error: "Failed to delete quiz" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
