@@ -8,7 +8,7 @@ import Course from "@/models/Course";
 // Answer a doubt (teacher only)
 export async function PATCH(
   req: NextRequest,
-  props: { params: Promise<{ id: string }> }
+  props: { params: Promise<{ id: string }> },
 ) {
   try {
     const params = await props.params;
@@ -18,7 +18,7 @@ export async function PATCH(
     if (!answer || !answer.trim()) {
       return NextResponse.json(
         { error: "Answer is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -47,11 +47,21 @@ export async function PATCH(
     }
 
     // Verify the course belongs to this teacher
-    const course = await Course.findById(doubt.course);
-    if (!course || course.instructor.toString() !== decoded.userId) {
+    const courseId = doubt.course?._id || doubt.course;
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return NextResponse.json({ error: "Course not found" }, { status: 404 });
+    }
+
+    const isPrimaryInstructor = course.instructor.toString() === decoded.userId;
+    const isCoInstructor = course.coInstructors
+      ?.map((id: any) => id.toString())
+      .includes(decoded.userId);
+
+    if (!isPrimaryInstructor && !isCoInstructor) {
       return NextResponse.json(
-        { error: "Forbidden - Not your course" },
-        { status: 403 }
+        { error: "Forbidden - Not your course or shared course" },
+        { status: 403 },
       );
     }
 
@@ -64,7 +74,7 @@ export async function PATCH(
         status: "answered",
         answeredAt: new Date(),
       },
-      { new: true }
+      { new: true },
     )
       .populate("student", "name email")
       .populate("course", "title")
@@ -79,7 +89,7 @@ export async function PATCH(
     console.error("Error answering doubt:", error);
     return NextResponse.json(
       { error: "Failed to answer doubt" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -87,7 +97,7 @@ export async function PATCH(
 // Delete a doubt (teacher only)
 export async function DELETE(
   req: NextRequest,
-  props: { params: Promise<{ id: string }> }
+  props: { params: Promise<{ id: string }> },
 ) {
   try {
     const params = await props.params;
@@ -118,11 +128,21 @@ export async function DELETE(
     }
 
     // Verify the course belongs to this teacher
-    const course = await Course.findById(doubt.course);
-    if (!course || course.instructor.toString() !== decoded.userId) {
+    const courseId = doubt.course?._id || doubt.course;
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return NextResponse.json({ error: "Course not found" }, { status: 404 });
+    }
+
+    const isPrimaryInstructor = course.instructor.toString() === decoded.userId;
+    const isCoInstructor = course.coInstructors
+      ?.map((id: any) => id.toString())
+      .includes(decoded.userId);
+
+    if (!isPrimaryInstructor && !isCoInstructor) {
       return NextResponse.json(
-        { error: "Forbidden - Not your course" },
-        { status: 403 }
+        { error: "Forbidden - Not your course or shared course" },
+        { status: 403 },
       );
     }
 
@@ -137,7 +157,7 @@ export async function DELETE(
     console.error("Error deleting doubt:", error);
     return NextResponse.json(
       { error: "Failed to delete doubt" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

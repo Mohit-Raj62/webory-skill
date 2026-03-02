@@ -288,7 +288,7 @@ export default function CourseDetailsPage() {
                             </div>
                             <div className="flex items-center text-gray-300">
                                 <Calendar className="mr-2 text-yellow-400" size={20} />
-                                Last Updated: {safeDate(course.createdAt)}
+                                Last Updated: {course.lastUpdatedDate || safeDate(course.createdAt)}
                             </div>
                         </div>
 
