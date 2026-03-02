@@ -136,14 +136,13 @@ export default function QuizzesListPage() {
                                         <Users size={16} className="mr-1" />
                                         Results
                                     </Button>
-                                    {/* Edit functionality to be implemented later if needed */}
-                                    {/* <Button
+                                    <Button
                                         variant="outline"
                                         size="sm"
                                         onClick={() => router.push(`/teacher/courses/${courseId}/quizzes/${quiz._id}/edit`)}
                                     >
                                         <Edit size={16} />
-                                    </Button> */}
+                                    </Button>
                                     <Button
                                         variant="outline"
                                         size="sm"

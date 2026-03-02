@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus, Calendar, FileText, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Calendar, FileText, Trash2, Edit } from "lucide-react";
 import Link from "next/link";
 
 export default function AssignmentsListPage() {
@@ -28,6 +28,26 @@ export default function AssignmentsListPage() {
             console.error("Failed to fetch assignments", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const deleteAssignment = async (assignmentId: string) => {
+        if (!confirm("Are you sure you want to delete this assignment?")) return;
+
+        try {
+            const res = await fetch(`/api/teacher/courses/${courseId}/assignments/${assignmentId}`, {
+                method: "DELETE",
+            });
+
+            if (res.ok) {
+                alert("Assignment deleted successfully");
+                fetchAssignments();
+            } else {
+                alert("Failed to delete assignment");
+            }
+        } catch (error) {
+            console.error("Delete error:", error);
+            alert("Failed to delete assignment");
         }
     };
 
@@ -91,6 +111,21 @@ export default function AssignmentsListPage() {
                                         onClick={() => router.push(`/teacher/courses/${courseId}/assignments/${assignment._id}/submissions`)}
                                     >
                                         View Submissions
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => router.push(`/teacher/courses/${courseId}/assignments/${assignment._id}/edit`)}
+                                    >
+                                        <Edit size={16} />
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => deleteAssignment(assignment._id)}
+                                        className="text-red-400 hover:text-red-300"
+                                    >
+                                        <Trash2 size={16} />
                                     </Button>
                                 </div>
                             </div>

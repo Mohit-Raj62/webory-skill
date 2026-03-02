@@ -3,83 +3,151 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Save, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, X, Save } from "lucide-react";
 import Link from "next/link";
 
-export default function EditQuizPage() {
+interface Question {
+    questionText: string;
+    questionType: "mcq" | "true-false";
+    options: string[];
+    correctAnswer: number;
+    marks: number;
+    explanation: string;
+}
+
+export default function AdminEditQuizPage() {
     const router = useRouter();
     const params = useParams();
     const courseId = params.id as string;
     const quizId = params.quizId as string;
+    const [loading, setLoading] = useState(false);
+    const [fetching, setFetching] = useState(true);
 
-    const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
     const [formData, setFormData] = useState({
         title: "",
         description: "",
-        type: "quiz",
+        type: "quiz" as "quiz" | "test" | "exam",
         duration: 30,
         passingScore: 70,
         allowRetake: true,
         showAnswers: true,
         afterModule: 0,
-        questions: [] as any[],
     });
-    
+
     const [modules, setModules] = useState<any[]>([]);
 
-    useEffect(() => {
-        fetchQuiz();
-        fetchCourseModules();
-    }, []);
+    const [questions, setQuestions] = useState<Question[]>([]);
+    const [currentQuestion, setCurrentQuestion] = useState<Question>({
+        questionText: "",
+        questionType: "mcq",
+        options: ["", "", "", ""],
+        correctAnswer: 0,
+        marks: 1,
+        explanation: "",
+    });
 
-    const fetchCourseModules = async () => {
-        try {
-            const res = await fetch(`/api/courses/${courseId}?includeUnavailable=true`);
-            if (res.ok) {
-                const data = await res.json();
-                if (data.course && data.course.modules) {
-                    setModules(data.course.modules);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Fetch modules
+                const courseRes = await fetch(`/api/courses/${courseId}?includeUnavailable=true`);
+                if (courseRes.ok) {
+                    const courseData = await courseRes.json();
+                    if (courseData.course && courseData.course.modules) {
+                        setModules(courseData.course.modules);
+                    }
                 }
+
+                // Fetch existing quiz using admin API
+                const quizRes = await fetch(`/api/admin/courses/${courseId}/quizzes/${quizId}`);
+                if (quizRes.ok) {
+                    const quizData = await quizRes.json();
+                    const q = quizData.quiz;
+
+                    setFormData({
+                        title: q.title || "",
+                        description: q.description || "",
+                        type: q.type || "quiz",
+                        duration: q.duration || 30,
+                        passingScore: q.passingScore || 70,
+                        allowRetake: q.allowRetake ?? true,
+                        showAnswers: q.showAnswers ?? true,
+                        afterModule: q.afterModule || 0,
+                    });
+
+                    // Set existing questions
+                    if (q.questions && q.questions.length > 0) {
+                        setQuestions(q.questions);
+                    }
+                } else {
+                    alert("Failed to fetch quiz details.");
+                    router.push(`/admin/courses/${courseId}/quizzes`);
+                }
+            } catch (error) {
+                console.error("Fetch data error:", error);
+            } finally {
+                setFetching(false);
             }
-        } catch (error) {
-            console.error("Failed to fetch course modules", error);
+        };
+        fetchData();
+    }, [courseId, quizId, router]);
+
+    const addQuestion = () => {
+        if (!currentQuestion.questionText) {
+            alert("Please enter question text");
+            return;
         }
+
+        if (currentQuestion.questionType === "mcq") {
+            const filledOptions = currentQuestion.options.filter(opt => opt.trim());
+            if (filledOptions.length < 2) {
+                alert("Please add at least 2 options");
+                return;
+            }
+        }
+
+        setQuestions([...questions, { ...currentQuestion }]);
+        setCurrentQuestion({
+            questionText: "",
+            questionType: "mcq",
+            options: ["", "", "", ""],
+            correctAnswer: 0,
+            marks: 1,
+            explanation: "",
+        });
     };
 
-    const fetchQuiz = async () => {
-        try {
-            const res = await fetch(`/api/admin/courses/${courseId}/quizzes/${quizId}`);
-            if (res.ok) {
-                const data = await res.json();
-                setFormData({
-                    title: data.quiz.title,
-                    description: data.quiz.description || "",
-                    type: data.quiz.type,
-                    duration: data.quiz.duration,
-                    passingScore: data.quiz.passingScore,
-                    allowRetake: data.quiz.allowRetake,
-                    showAnswers: data.quiz.showAnswers,
-                    afterModule: data.quiz.afterModule || 0,
-                    questions: data.quiz.questions,
-                });
-            }
-        } catch (error) {
-            console.error("Failed to fetch quiz", error);
-        } finally {
-            setLoading(false);
-        }
+    const removeQuestion = (index: number) => {
+        setQuestions(questions.filter((_, i) => i !== index));
+    };
+
+    const updateOption = (index: number, value: string) => {
+        const newOptions = [...currentQuestion.options];
+        newOptions[index] = value;
+        setCurrentQuestion({ ...currentQuestion, options: newOptions });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setSaving(true);
+
+        if (questions.length === 0) {
+            alert("Please add at least one question");
+            return;
+        }
+
+        setLoading(true);
 
         try {
+            const totalMarks = questions.reduce((sum, q) => sum + q.marks, 0);
+
             const res = await fetch(`/api/admin/courses/${courseId}/quizzes/${quizId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({
+                    ...formData,
+                    totalMarks,
+                    questions,
+                }),
             });
 
             if (res.ok) {
@@ -89,49 +157,15 @@ export default function EditQuizPage() {
                 alert("Failed to update quiz");
             }
         } catch (error) {
-            console.error("Update error:", error);
+            console.error("Update quiz error:", error);
             alert("Failed to update quiz");
         } finally {
-            setSaving(false);
+            setLoading(false);
         }
     };
 
-    const addQuestion = () => {
-        setFormData({
-            ...formData,
-            questions: [
-                ...formData.questions,
-                {
-                    questionText: "",
-                    questionType: "mcq",
-                    options: ["", "", "", ""],
-                    correctAnswer: 0,
-                    marks: 1,
-                    explanation: "",
-                },
-            ],
-        });
-    };
-
-    const removeQuestion = (index: number) => {
-        setFormData({
-            ...formData,
-            questions: formData.questions.filter((_, i) => i !== index),
-        });
-    };
-
-    const updateQuestion = (index: number, field: string, value: any) => {
-        const updated = [...formData.questions];
-        updated[index] = { ...updated[index], [field]: value };
-        setFormData({ ...formData, questions: updated });
-    };
-
-    if (loading) {
-        return (
-            <div className="p-8">
-                <div className="text-white">Loading quiz...</div>
-            </div>
-        );
+    if (fetching) {
+        return <div className="p-8 text-white">Loading quiz data...</div>;
     }
 
     return (
@@ -143,17 +177,18 @@ export default function EditQuizPage() {
                         Back to Quizzes
                     </Button>
                 </Link>
-                <h1 className="text-4xl font-bold text-white mb-2">Edit Quiz</h1>
-                <p className="text-gray-400">Update quiz details and questions</p>
+                <h1 className="text-4xl font-bold text-white mb-2">Edit Quiz (Admin)</h1>
+                <p className="text-gray-400">Update the quiz questions and settings</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="max-w-4xl">
-                <div className="glass-card p-8 rounded-2xl mb-6">
-                    <h2 className="text-2xl font-bold text-white mb-6">Basic Information</h2>
+            <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl">
+                {/* Basic Info */}
+                <div className="glass-card p-6 rounded-2xl">
+                    <h2 className="text-2xl font-bold text-white mb-4">Basic Information</h2>
 
-                    <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="text-sm text-gray-300 block mb-2">Title <span className="text-red-500">*</span></label>
+                            <label className="text-sm text-gray-300 block mb-2">Title *</label>
                             <input
                                 type="text"
                                 required
@@ -164,40 +199,16 @@ export default function EditQuizPage() {
                         </div>
 
                         <div>
-                            <label className="text-sm text-gray-300 block mb-2">Description</label>
-                            <textarea
-                                rows={3}
+                            <label className="text-sm text-gray-300 block mb-2">Type *</label>
+                            <select
                                 className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
-                                value={formData.description}
-                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="text-sm text-gray-300 block mb-2">Duration (minutes) <span className="text-red-500">*</span></label>
-                                <input
-                                    type="number"
-                                    required
-                                    min="1"
-                                    className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
-                                    value={formData.duration}
-                                    onChange={(e) => setFormData({ ...formData, duration: Number(e.target.value) })}
-                                />
-                            </div>
-
-                            <div>
-                                <label className="text-sm text-gray-300 block mb-2">Passing Score (%) <span className="text-red-500">*</span></label>
-                                <input
-                                        type="number"
-                                        required
-                                        min="0"
-                                        onWheel={(e) => e.currentTarget.blur()}
-                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
-                                        value={formData.passingScore}
-                                        onChange={(e) => setFormData({ ...formData, passingScore: Number(e.target.value) })}
-                                    />
-                            </div>
+                                value={formData.type}
+                                onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
+                            >
+                                <option value="quiz">Quiz</option>
+                                <option value="test">Test</option>
+                                <option value="exam">Exam</option>
+                            </select>
                         </div>
                     </div>
 
@@ -216,130 +227,218 @@ export default function EditQuizPage() {
                             ))}
                         </select>
                     </div>
+
+                    <div className="mt-4">
+                        <label className="text-sm text-gray-300 block mb-2">Description</label>
+                        <textarea
+                            rows={3}
+                            className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
+                            value={formData.description}
+                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                        <div>
+                            <label className="text-sm text-gray-300 block mb-2">Duration (minutes) *</label>
+                            <input
+                                type="number"
+                                required
+                                min="1"
+                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
+                                value={formData.duration}
+                                onChange={(e) => setFormData({ ...formData, duration: Number(e.target.value) })}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="text-sm text-gray-300 block mb-2">Passing Score (%) *</label>
+                            <input
+                                type="number"
+                                min="0"
+                                onWheel={(e) => e.currentTarget.blur()}
+                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
+                                value={formData.passingScore}
+                                onChange={(e) => setFormData({ ...formData, passingScore: Number(e.target.value) })}
+                            />
+                        </div>
+
+                        <div className="flex items-center gap-4 mt-6">
+                            <label className="flex items-center gap-2 text-gray-300">
+                                <input
+                                    type="checkbox"
+                                    checked={formData.allowRetake}
+                                    onChange={(e) => setFormData({ ...formData, allowRetake: e.target.checked })}
+                                    className="w-4 h-4"
+                                />
+                                Allow Retake
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
-                <div className="glass-card p-8 rounded-2xl mb-6">
-                    <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-2xl font-bold text-white">Questions</h2>
-                        <Button type="button" onClick={addQuestion}>
-                            <Plus size={18} className="mr-2" />
-                            Add Question
-                        </Button>
-                    </div>
+                {/* Add Question */}
+                <div className="glass-card p-6 rounded-2xl">
+                    <h2 className="text-2xl font-bold text-white mb-4">Add New Question</h2>
 
                     <div className="space-y-4">
-                        {formData.questions.map((question, index) => (
-                            <div key={index} className="bg-white/5 p-6 rounded-xl">
-                                <div className="flex justify-between items-start mb-4">
-                                    <h3 className="text-lg font-semibold text-white">Question {index + 1}</h3>
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => removeQuestion(index)}
-                                    >
-                                        <Trash2 size={16} />
-                                    </Button>
-                                </div>
+                        <div>
+                            <label className="text-sm text-gray-300 block mb-2">Question Text *</label>
+                            <textarea
+                                rows={2}
+                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
+                                value={currentQuestion.questionText}
+                                onChange={(e) => setCurrentQuestion({ ...currentQuestion, questionText: e.target.value })}
+                                placeholder="Enter your question here..."
+                            />
+                        </div>
 
-                                <div className="space-y-3">
-                                    <div className="mb-4">
-                                        <label className="text-sm text-gray-300 block mb-2">Question Type</label>
-                                        <select
-                                            className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
-                                            value={question.questionType}
-                                            onChange={(e) => {
-                                                const type = e.target.value;
-                                                const updated = [...formData.questions];
-                                                updated[index] = {
-                                                    ...updated[index],
-                                                    questionType: type,
-                                                    options: type === "true-false" ? ["True", "False"] : ["", "", "", ""],
-                                                    correctAnswer: 0
-                                                };
-                                                setFormData({ ...formData, questions: updated });
-                                            }}
-                                        >
-                                            <option value="mcq">Multiple Choice</option>
-                                            <option value="true-false">True/False</option>
-                                        </select>
-                                    </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="text-sm text-gray-300 block mb-2">Question Type</label>
+                                <select
+                                    className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
+                                    value={currentQuestion.questionType}
+                                    onChange={(e) => {
+                                        const type = e.target.value as "mcq" | "true-false";
+                                        setCurrentQuestion({
+                                            ...currentQuestion,
+                                            questionType: type,
+                                            options: type === "true-false" ? ["True", "False"] : ["", "", "", ""],
+                                            correctAnswer: 0,
+                                        });
+                                    }}
+                                >
+                                    <option value="mcq">Multiple Choice</option>
+                                    <option value="true-false">True/False</option>
+                                </select>
+                            </div>
 
-                                    <input
-                                        type="text"
-                                        placeholder="Question text"
-                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
-                                        value={question.questionText}
-                                        onChange={(e) => updateQuestion(index, "questionText", e.target.value)}
-                                    />
+                            <div>
+                                <label className="text-sm text-gray-300 block mb-2">Marks</label>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
+                                    value={currentQuestion.marks}
+                                    onChange={(e) => setCurrentQuestion({ ...currentQuestion, marks: Number(e.target.value) })}
+                                />
+                            </div>
+                        </div>
 
-                                    {question.questionType === "mcq" && (
-                                        <div className="space-y-2">
-                                            {question.options.map((option: string, optIndex: number) => (
-                                                <input
-                                                    key={optIndex}
-                                                    type="text"
-                                                    placeholder={`Option ${optIndex + 1}`}
-                                                    className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
-                                                    value={option}
-                                                    onChange={(e) => {
-                                                        const newOptions = [...question.options];
-                                                        newOptions[optIndex] = e.target.value;
-                                                        updateQuestion(index, "options", newOptions);
-                                                    }}
-                                                />
-                                            ))}
+                        {/* Options */}
+                        {currentQuestion.questionType === "mcq" ? (
+                            <div>
+                                <label className="text-sm text-gray-300 block mb-2">Options (Select correct answer)</label>
+                                <div className="space-y-2">
+                                    {currentQuestion.options.map((option, index) => (
+                                        <div key={index} className="flex items-center gap-2">
+                                            <input
+                                                type="radio"
+                                                name="correctAnswer"
+                                                checked={currentQuestion.correctAnswer === index}
+                                                onChange={() => setCurrentQuestion({ ...currentQuestion, correctAnswer: index })}
+                                                className="w-4 h-4"
+                                            />
+                                            <input
+                                                type="text"
+                                                className="flex-1 bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
+                                                value={option}
+                                                onChange={(e) => updateOption(index, e.target.value)}
+                                                placeholder={`Option ${index + 1}`}
+                                            />
                                         </div>
-                                    )}
-
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <select
-                                            className="bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
-                                            value={question.correctAnswer}
-                                            onChange={(e) => updateQuestion(index, "correctAnswer", Number(e.target.value))}
-                                        >
-                                            {question.questionType === "mcq" ? (
-                                                question.options.map((_: any, i: number) => (
-                                                    <option key={i} value={i}>Correct: Option {i + 1}</option>
-                                                ))
-                                            ) : (
-                                                <>
-                                                    <option value={0}>True</option>
-                                                    <option value={1}>False</option>
-                                                </>
-                                            )}
-                                        </select>
-
-                                        <input
-                                            type="number"
-                                            placeholder="Marks"
-                                            min="1"
-                                            className="bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
-                                            value={question.marks}
-                                            onChange={(e) => updateQuestion(index, "marks", Number(e.target.value))}
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="text-sm text-gray-300 block mb-2">Explanation (Optional)</label>
-                                        <textarea
-                                            rows={2}
-                                            className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
-                                            value={question.explanation || ""}
-                                            onChange={(e) => updateQuestion(index, "explanation", e.target.value)}
-                                            placeholder="Explain the correct answer..."
-                                        />
-                                    </div>
+                                    ))}
                                 </div>
                             </div>
-                        ))}
+                        ) : (
+                            <div>
+                                <label className="text-sm text-gray-300 block mb-2">Correct Answer</label>
+                                <div className="flex gap-4">
+                                    <label className="flex items-center gap-2 text-gray-300">
+                                        <input
+                                            type="radio"
+                                            checked={currentQuestion.correctAnswer === 0}
+                                            onChange={() => setCurrentQuestion({ ...currentQuestion, correctAnswer: 0 })}
+                                            className="w-4 h-4"
+                                        />
+                                        True
+                                    </label>
+                                    <label className="flex items-center gap-2 text-gray-300">
+                                        <input
+                                            type="radio"
+                                            checked={currentQuestion.correctAnswer === 1}
+                                            onChange={() => setCurrentQuestion({ ...currentQuestion, correctAnswer: 1 })}
+                                            className="w-4 h-4"
+                                        />
+                                        False
+                                    </label>
+                                </div>
+                            </div>
+                        )}
+
+                        <div>
+                            <label className="text-sm text-gray-300 block mb-2">Explanation (Optional)</label>
+                            <textarea
+                                rows={2}
+                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none"
+                                value={currentQuestion.explanation}
+                                onChange={(e) => setCurrentQuestion({ ...currentQuestion, explanation: e.target.value })}
+                                placeholder="Explain the correct answer..."
+                            />
+                        </div>
+
+                        <Button type="button" onClick={addQuestion} className="w-full">
+                            <Plus size={20} className="mr-2" />
+                            Add Question ({questions.length + 1})
+                        </Button>
                     </div>
                 </div>
 
+                {/* Questions List */}
+                {questions.length > 0 && (
+                    <div className="glass-card p-6 rounded-2xl">
+                        <h2 className="text-2xl font-bold text-white mb-4">
+                            Current Questions ({questions.length}) - Total Marks: {questions.reduce((sum, q) => sum + q.marks, 0)}
+                        </h2>
+
+                        <div className="space-y-3">
+                            {questions.map((q, index) => (
+                                <div key={index} className="bg-white/5 p-4 rounded-lg">
+                                    <div className="flex justify-between items-start">
+                                        <div className="flex-1">
+                                            <p className="text-white font-medium">
+                                                Q{index + 1}. {q.questionText}
+                                            </p>
+                                            <p className="text-gray-400 text-sm mt-1">
+                                                Type: {q.questionType === "mcq" ? "Multiple Choice" : "True/False"} |
+                                                Marks: {q.marks} |
+                                                Correct: {q.questionType === "mcq" ? q.options[q.correctAnswer] : (q.correctAnswer === 0 ? "True" : "False")}
+                                            </p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeQuestion(index)}
+                                            className="text-red-400 hover:text-red-300 ml-4 py-1 px-2 border border-red-400/30 rounded-md bg-red-400/10"
+                                        >
+                                            <X size={16} className="inline mr-1" /> Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Submit */}
                 <div className="flex gap-4">
-                    <Button type="submit" disabled={saving} className="bg-gradient-to-r from-blue-600 to-purple-600">
-                        <Save size={18} className="mr-2" />
-                        {saving ? "Saving..." : "Save Changes"}
+                    <Button
+                        type="submit"
+                        disabled={loading}
+                        className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600"
+                    >
+                        <Save size={20} className="mr-2" />
+                        {loading ? "Updating..." : "Update Quiz"}
                     </Button>
                     <Button
                         type="button"
