@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2, PlayCircle, BookOpen, Clock, Award, Shield, Star, Users, ArrowRight, Share2, Heart, Play, Lock, ChevronDown, Check, Globe, Layout, Zap, Tablet } from "lucide-react";
+import { CheckCircle2, PlayCircle, BookOpen, Clock, Award, Shield, Star, Users, ArrowRight, Share2, Heart, Play, Lock, ChevronDown, Check, Globe, Layout, Zap, Tablet, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
