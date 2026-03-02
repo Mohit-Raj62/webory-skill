@@ -7,6 +7,21 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: "50mb",
     },
+    serverComponentsExternalPackages: [
+      "tesseract.js",
+      "pyodide",
+      "pdfjs-dist",
+      "mongoose",
+      "canvas",
+      "sharp",
+    ],
+  },
+  outputFileTracingExcludes: {
+    "api/**/*": [
+      "**/node_modules/tesseract.js/**/*",
+      "**/node_modules/pyodide/**/*",
+      "**/node_modules/pdfjs-dist/**/*",
+    ],
   },
   images: {
     remotePatterns: [
