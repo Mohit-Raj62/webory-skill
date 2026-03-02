@@ -83,11 +83,29 @@ export default function TeacherProfilePage() {
       setDownloadingId(true);
       toast.info("Preparing ID Card...");
       
-      const canvas = await html2canvas(idCardRef.current, {
-        scale: 2, 
+      const element = idCardRef.current;
+      const originalWidth = element.style.width;
+      const originalMaxWidth = element.style.maxWidth;
+      const originalHeight = element.style.height;
+
+      // Set fixed dimensions for consistent high-quality capture
+      element.style.width = "1012px"; // Fixed width at ~3x card resolution
+      element.style.maxWidth = "none";
+      element.style.height = "638px"; // Fixed height based on 1.586 ratio
+
+      const canvas = await html2canvas(element, {
+        scale: 3, 
         useCORS: true,
         backgroundColor: "#ffffff",
+        logging: false,
+        width: 1012,
+        height: 638,
       });
+
+      // Restore original styles
+      element.style.width = originalWidth;
+      element.style.maxWidth = originalMaxWidth;
+      element.style.height = originalHeight;
       
       const imgData = canvas.toDataURL("image/jpeg", 1.0);
       const pdf = new jsPDF({
@@ -766,57 +784,80 @@ export default function TeacherProfilePage() {
                   style={{ aspectRatio: '1.586/1' }}
                 >
                   
-                  {/* Top Header Bar */}
-                  <div className="h-[12%] w-full bg-[#1e293b] flex items-center justify-center gap-3 md:gap-4 relative overflow-hidden">
+                  {/* Top Header Bar with Unified SVG Logo */}
+                  <div className="h-[12%] w-full bg-[#1e293b] flex items-center justify-center relative overflow-hidden">
                     {/* Decorative reflection */}
                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
                     
-                    {/* Logo Icon */}
-                    <div className="relative w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg shadow-black/50">
-                      <span className="font-black text-sm md:text-xl text-white">W</span>
-                      <div className="absolute inset-0 rounded-lg md:rounded-xl bg-gradient-to-br from-white/20 to-transparent" />
-                    </div>
-                    
-                    {/* Brand Text */}
-                    <span className="text-sm md:text-xl font-bold tracking-tight">
-                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400 mr-1.5 md:mr-2">WEBORY</span>
-                        <span className="relative inline-block">
-                            <span className="absolute -top-1.5 md:-top-2 left-[30%] -translate-x-1/2 flex gap-0.5 md:gap-1">
-                                <span className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full bg-[#FF9933]"></span>
-                                <span className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full bg-white"></span>
-                                <span className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full bg-[#138808]"></span>
-                            </span>
-                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-500 font-extrabold pb-0.5 md:pb-1">SKILLS</span>
-                        </span>
-                    </span>
+                    <svg width="280" height="40" viewBox="0 0 280 40" className="w-auto h-8 md:h-10 overflow-visible">
+                      <defs>
+                        <linearGradient id="logoIconGrad" x1="0" y1="0" x2="1" y2="1">
+                          <stop offset="0%" stopColor="#2563eb" />
+                          <stop offset="50%" stopColor="#3b82f6" />
+                          <stop offset="100%" stopColor="#9333ea" />
+                        </linearGradient>
+                        <linearGradient id="weboryGrad" x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0%" stopColor="#60a5fa" />
+                          <stop offset="50%" stopColor="#93c5fd" />
+                          <stop offset="100%" stopColor="#c084fc" />
+                        </linearGradient>
+                        <linearGradient id="skillsGrad" x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0%" stopColor="#4ade80" />
+                          <stop offset="100%" stopColor="#10b981" />
+                        </linearGradient>
+                        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                          <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.5"/>
+                        </filter>
+                      </defs>
+                      
+                      {/* Logo Icon Box */}
+                      <g transform="translate(0, 0)" filter="url(#shadow)">
+                        <rect width="40" height="40" rx="10" fill="url(#logoIconGrad)" />
+                        <text x="20" y="28" textAnchor="middle" fill="white" style={{ fontSize: '24px', fontWeight: '900', fontFamily: 'Inter, sans-serif' }}>W</text>
+                      </g>
+                      
+                      {/* Brand Text */}
+                      <g transform="translate(55, 0)">
+                        <text x="0" y="30" fill="url(#weboryGrad)" style={{ fontSize: '24px', fontWeight: 'bold', fontFamily: 'Inter, sans-serif' }}>WEBORY</text>
+                        <g transform="translate(108, 0)">
+                          <circle cx="20" cy="6" r="3" fill="#FF9933" />
+                          <circle cx="32" cy="6" r="3" fill="white" />
+                          <circle cx="44" cy="6" r="3" fill="#138808" />
+                          <text x="0" y="30" fill="url(#skillsGrad)" style={{ fontSize: '24px', fontWeight: '900', fontFamily: 'Inter, sans-serif' }}>SKILLS</text>
+                        </g>
+                      </g>
+                    </svg>
                   </div>
 
                   {/* Card Body */}
-                  <div className="flex h-[76%] p-4 md:p-6 gap-6 md:gap-8">
+                  <div className="flex h-[76%] p-4 md:p-6 gap-6 md:gap-8 relative">
+                    <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
+                      style={{ backgroundImage: 'radial-gradient(#1e293b 0.5px, transparent 0.5px)', backgroundSize: '12px 12px' }}></div>
+
                     {/* Left Column: Photo & Name */}
                     <div className="w-[30%] h-full flex flex-col justify-start">
                       <div className="w-full aspect-[3/4] bg-gray-200 border-2 border-dashed border-gray-400 rounded-lg flex items-center justify-center mb-4 shrink-0">
                         <User size={64} className="text-gray-400" />
                       </div>
-                      <div className="flex-1 min-h-0 flex flex-col">
-                        <h3 className="text-[#1e293b] font-extrabold text-xl md:text-2xl leading-tight shrink-0 overflow-hidden">
+                      <div className="flex-1 min-h-0 flex flex-col justify-center">
+                        <h3 className="text-[#1e293b] font-extrabold text-xl md:text-2xl leading-none">
                           {formData.fullName || "YOUR NAME"}
                         </h3>
-                        <p className="text-[#334155] font-semibold text-sm md:text-base mt-1 line-clamp-2 overflow-hidden shrink-0">
+                        <p className="text-[#334155] font-semibold text-sm md:text-base mt-2">
                           {formData.positionApplied || "Job Position"}
                         </p>
                       </div>
                     </div>
 
                     {/* Center Column: Details Grid */}
-                    <div className="flex-1 flex flex-col justify-center gap-3 md:gap-4 border-l-2 border-dashed border-gray-200 pl-6 md:pl-8">
+                    <div className="flex-1 flex flex-col justify-start gap-2 md:gap-3 border-l-2 border-dashed border-gray-200 pl-6 md:pl-8 pt-6">
                       <div className="flex items-center gap-4">
-                        <Phone size={20} className="text-[#1e293b] fill-[#1e293b]" />
-                        <span className="text-sm md:text-base font-bold text-[#334155]">+91 {formData.phone || "123 456 7890"}</span>
+                        <Phone size={16} className="text-[#1e293b]" strokeWidth={2.5} />
+                        <span className="text-sm md:text-base font-bold text-[#334155] whitespace-nowrap">+91 {formData.phone || "123 456 7890"}</span>
                       </div>
                       <div className="flex items-center gap-4">
-                        <Mail size={20} className="text-[#1e293b] fill-[#1e293b]" />
-                        <span className="text-sm md:text-base font-bold text-[#334155] truncate max-w-[200px]" title={formData.email}>
+                        <Mail size={16} className="text-[#1e293b]" strokeWidth={2.5} />
+                        <span className="text-sm md:text-base font-bold text-[#334155] whitespace-nowrap">
                           {formData.email || "name@weboryskills.in"}
                         </span>
                       </div>
@@ -826,7 +867,7 @@ export default function TeacherProfilePage() {
                       </div>
                       <div className="flex items-start gap-4">
                         <MapPin size={22} className="text-[#1e293b] shrink-0 mt-0.5" />
-                        <span className="text-sm md:text-base font-bold text-[#334155] line-clamp-2 leading-snug">
+                        <span className="text-sm md:text-base font-bold text-[#334155] leading-snug">
                           {formData.currentAddress || "Company Head Office Address Line 1"}
                         </span>
                       </div>
@@ -873,19 +914,7 @@ export default function TeacherProfilePage() {
                 </div>
 
                 {/* Close Button overlaying the metallic background */}
-                <button 
-                  onClick={() => setShowIdModal(false)}
-                  className="absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 bg-black/50 hover:bg-black/80 text-white rounded-full flex items-center justify-center backdrop-blur-md transition-colors shadow-lg pointer-events-auto"
-                >
-                  <X size={20} />
-                </button>
-                
-                {/* Download Button */}
-                <button 
-                  className="absolute top-4 right-16 md:top-6 md:right-20 h-10 px-4 bg-blue-600/90 hover:bg-blue-600 text-white rounded-xl flex items-center justify-center gap-2 backdrop-blur-md transition-colors shadow-lg font-medium text-sm pointer-events-auto"
-                >
-                  <Download size={16} /> Download
-                </button>
+
               </div>
             </motion.div>
           </div>
