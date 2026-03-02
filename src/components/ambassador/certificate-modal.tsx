@@ -169,10 +169,11 @@ export const CertificateModal = ({ isOpen, onClose, reward, stats, user }: Certi
                             </div>
                         </div>
                     </div>
-                </div>
+              </div>
             </div>
           </div>
-        ) : (
+        </div>
+      ) : (
           <div className="p-10 text-center text-white print:hidden">
             <span className="text-6xl block mb-6">{reward.image}</span>
             <h3 className="text-2xl font-bold mb-4">Your {reward.name}</h3>

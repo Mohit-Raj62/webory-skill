@@ -698,5 +698,6 @@ export default function TeacherProfilePage() {
         employeeId={employeeId} 
       />
     </div>
-  );
+  </div>
+);
 }
