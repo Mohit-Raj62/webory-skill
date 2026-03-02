@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Download, Loader2, CreditCard, Trophy } from "lucide-react";
+import { X, Download, Loader2, User, Phone, Mail, MapPin, Globe, CreditCard } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { toast } from "sonner";
 import html2canvas from "html2canvas";
@@ -14,6 +14,9 @@ interface IdCardModalProps {
   formData: {
     fullName: string;
     positionApplied: string;
+    phone: string;
+    email: string;
+    currentAddress: string;
   };
   employeeId: string;
 }
@@ -113,9 +116,10 @@ export const IdCardModal = ({ isOpen, onClose, formData, employeeId }: IdCardMod
                 className="relative w-full bg-white rounded-xl overflow-hidden shadow-xl" 
                 style={{ aspectRatio: '1.586/1' }}
               >
-                {/* Top Header Bar */}
+                {/* Top Header Bar with Unified SVG Logo */}
                 <div className="h-[12%] w-full bg-[#1e293b] flex items-center justify-center relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                  
                   <svg width="280" height="40" viewBox="0 0 280 40" className="w-auto h-8 md:h-10 overflow-visible">
                     <defs>
                       <linearGradient id="logoIconGrad" x1="0" y1="0" x2="1" y2="1">
@@ -125,74 +129,119 @@ export const IdCardModal = ({ isOpen, onClose, formData, employeeId }: IdCardMod
                       </linearGradient>
                       <linearGradient id="weboryGrad" x1="0" y1="0" x2="1" y2="0">
                         <stop offset="0%" stopColor="#60a5fa" />
-                        <stop offset="100%" stopColor="#2563eb" />
+                        <stop offset="50%" stopColor="#93c5fd" />
+                        <stop offset="100%" stopColor="#c084fc" />
                       </linearGradient>
+                      <linearGradient id="skillsGrad" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor="#4ade80" />
+                        <stop offset="100%" stopColor="#10b981" />
+                      </linearGradient>
+                      <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.5"/>
+                      </filter>
                     </defs>
-                    <g transform="translate(0, 4)">
-                      <rect x="0" y="0" width="32" height="32" rx="8" fill="url(#logoIconGrad)" />
-                      <path d="M8 12 L16 24 L24 12" stroke="white" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                      <circle cx="16" cy="14" r="3" fill="white" />
-                      <text x="42" y="24" fontFamily="Inter, system-ui, sans-serif" fontWeight="900" fontSize="26" letterSpacing="-0.02em" fill="url(#weboryGrad)">WEBORY</text>
-                      <text x="162" y="24" fontFamily="Inter, system-ui, sans-serif" fontWeight="500" fontSize="24" letterSpacing="0.05em" fill="#94a3b8">SKILLS</text>
+                    
+                    <g transform="translate(0, 0)" filter="url(#shadow)">
+                      <rect width="40" height="40" rx="10" fill="url(#logoIconGrad)" />
+                      <text x="20" y="28" textAnchor="middle" fill="white" style={{ fontSize: '24px', fontWeight: '900', fontFamily: 'Inter, sans-serif' }}>W</text>
+                    </g>
+                    
+                    <g transform="translate(55, 0)">
+                      <text x="0" y="30" fill="url(#weboryGrad)" style={{ fontSize: '24px', fontWeight: 'bold', fontFamily: 'Inter, sans-serif' }}>WEBORY</text>
+                      <g transform="translate(108, 0)">
+                        <circle cx="20" cy="6" r="3" fill="#FF9933" />
+                        <circle cx="32" cy="6" r="3" fill="white" />
+                        <circle cx="44" cy="6" r="3" fill="#138808" />
+                        <text x="0" y="30" fill="url(#skillsGrad)" style={{ fontSize: '24px', fontWeight: '900', fontFamily: 'Inter, sans-serif' }}>SKILLS</text>
+                      </g>
                     </g>
                   </svg>
                 </div>
 
-                {/* Main Content Area */}
-                <div className="h-[88%] w-full flex p-[4%] gap-[4%] relative">
-                  {/* Left Column: Photo & QR */}
-                  <div className="w-[30%] flex flex-col items-center gap-[6%] pt-[2%]">
-                    <div className="w-full aspect-square rounded-lg bg-gray-50 border-2 border-gray-100 p-1 shadow-inner relative group overflow-hidden">
-                      <div className="w-full h-full rounded-md bg-gray-100 flex items-center justify-center">
-                        <span className="text-4xl font-bold text-gray-300">{formData.fullName?.[0] || 'W'}</span>
-                      </div>
-                      <div className="absolute top-0 right-0 w-4 h-16 bg-blue-500/10 -rotate-45 translate-x-4"></div>
+                {/* Card Body */}
+                <div className="flex h-[76%] p-4 md:p-6 gap-6 md:gap-8 relative">
+                  <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
+                    style={{ backgroundImage: 'radial-gradient(#1e293b 0.5px, transparent 0.5px)', backgroundSize: '12px 12px' }}></div>
+
+                  {/* Left Column: Photo & Name */}
+                  <div className="w-[30%] h-full flex flex-col justify-start">
+                    <div className="w-full aspect-[3/4] bg-gray-200 border-2 border-dashed border-gray-400 rounded-lg flex items-center justify-center mb-4 shrink-0">
+                      <User size={64} className="text-gray-400" />
+                    </div>
+                    <div className="flex-1 min-h-0 flex flex-col justify-center">
+                      <h3 className="text-[#1e293b] font-extrabold text-xl md:text-2xl leading-none">
+                        {formData.fullName || "YOUR NAME"}
+                      </h3>
+                      <p className="text-[#334155] font-semibold text-sm md:text-base mt-2">
+                        {formData.positionApplied || "Job Position"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Center Column: Details Grid */}
+                  <div className="flex-1 flex flex-col justify-start gap-2 md:gap-3 border-l-2 border-dashed border-gray-200 pl-6 md:pl-8 pt-6">
+                    <div className="flex items-center gap-4">
+                      <Phone size={16} className="text-[#1e293b]" strokeWidth={2.5} />
+                      <span className="text-sm md:text-base font-bold text-[#334155] whitespace-nowrap">+91 {formData.phone || "123 456 7890"}</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <Mail size={16} className="text-[#1e293b]" strokeWidth={2.5} />
+                      <span className="text-sm md:text-base font-bold text-[#334155] whitespace-nowrap">
+                        {formData.email || "name@weboryskills.in"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <Globe size={18} className="text-[#1e293b]" />
+                      <span className="text-sm md:text-base font-bold text-[#334155]">www.weboryskills.in</span>
+                    </div>
+                    <div className="flex items-start gap-4">
+                      <MapPin size={20} className="text-[#1e293b] shrink-0 mt-0.5" />
+                      <span className="text-sm md:text-base font-bold text-[#334155] leading-snug">
+                        {formData.currentAddress || "Company Head Office Address"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Right Column: QR & Meta */}
+                  <div className="w-[28%] flex flex-col items-end justify-between py-2 border-l-2 border-dashed border-gray-200 pl-4 md:pl-6">
+                    <div className="w-full aspect-square border-4 border-[#1e293b] p-1.5 md:p-2 bg-white flex items-center justify-center">
+                      <QRCodeSVG
+                        value={`https://www.weboryskills.in/verify/${employeeId || "pending"}`}
+                        size={256}
+                        bgColor={"#ffffff"}
+                        fgColor={"#1e293b"}
+                        level={"Q"}
+                        style={{ width: "100%", height: "auto", maxWidth: "100%" }}
+                      />
                     </div>
                     
-                    <div className="flex-1 w-full bg-gray-50 border border-gray-100 rounded-lg p-2 flex flex-col items-center justify-center gap-1">
-                      <div className="bg-white p-1 rounded-sm shadow-sm border border-gray-100">
-                        <QRCodeSVG value={`https://weboryskills.in/verify/${employeeId}`} size={60} level="H" includeMargin={false} />
+                    <div className="w-full mt-2 md:mt-auto">
+                      <div className="w-full flex h-10 md:h-12 items-center justify-center gap-[4%] overflow-hidden">
+                        {[1, 2, 3, 4, 5].map(i => (
+                          <div key={i} className="w-[10%] h-full bg-[#1e293b] flex-shrink-0" />
+                        ))}
                       </div>
-                      <span className="text-[6px] font-bold text-gray-400 uppercase tracking-tighter">Scan to Verify</span>
-                    </div>
-                  </div>
-
-                  {/* Right Column: User Data */}
-                  <div className="flex-1 flex flex-col justify-between py-[1%]">
-                    <div className="space-y-[4%]">
-                      <div className="border-l-4 border-blue-500 pl-3">
-                        <h2 className="text-[20px] font-black text-[#0f172a] leading-none uppercase tracking-tight mb-1">
-                          {formData.fullName || "TEACHER NAME"}
-                        </h2>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">{formData.positionApplied || "INSTRUCTOR"}</span>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-y-3 pt-2">
-                        <div>
-                          <p className="text-[7px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-1">Employee ID</p>
-                          <p className="text-[12px] font-mono font-bold text-gray-800 leading-none tracking-wider">{employeeId}</p>
-                        </div>
-                        <div>
-                          <p className="text-[7px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-1">Valide Since</p>
-                          <p className="text-[11px] font-bold text-gray-800 leading-none">2024 - 2025</p>
-                        </div>
-                      </div>
+                      <p className="text-[10px] md:text-[11px] text-center font-bold tracking-widest text-[#334155] mt-1 uppercase">
+                        ID: {employeeId || "WS-0000"}
+                      </p>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-2 border-t border-gray-100 pt-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 rounded-full bg-blue-50 flex items-center justify-center">
-                          <Trophy size={8} className="text-blue-500" />
-                        </div>
-                        <p className="text-[8px] font-bold text-gray-600 leading-none">Official Verified Personnel — Webory Skills Edu-Tech</p>
+                    <div className="w-full mt-4 space-y-1">
+                      <div className="flex justify-between text-[8px] md:text-[10px]">
+                        <span className="font-bold text-[#1e293b]">Employee ID</span>
+                        <span className="font-medium text-[#334155]">: {employeeId || "WS-XXXX"}</span>
+                      </div>
+                      <div className="flex justify-between text-[8px] md:text-[10px]">
+                        <span className="font-bold text-[#1e293b]">Date of Issue</span>
+                        <span className="font-medium text-[#334155]">: {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
                       </div>
                     </div>
                   </div>
+                </div>
 
-                  {/* Aesthetic backgrounds */}
-                  <div className="absolute bottom-0 right-0 w-[40%] h-[60%] bg-blue-500/5 rounded-tl-[100px] pointer-events-none -z-10"></div>
+                {/* Bottom Footer Bar */}
+                <div className="h-[12%] w-full bg-[#1e293b] flex items-center justify-center">
+                  <p className="text-white font-semibold text-sm md:text-base tracking-widest uppercase">WWW.WEBORYSKILLS.IN</p>
                 </div>
               </div>
             </div>
@@ -202,3 +251,4 @@ export const IdCardModal = ({ isOpen, onClose, formData, employeeId }: IdCardMod
     </AnimatePresence>
   );
 };
+
