@@ -14,6 +14,10 @@ export default function CreateCourse() {
         description: "",
         level: "Beginner",
         price: "",
+        studentsCount: "0",
+        language: "English/Hindi",
+        promoVideoUrl: "",
+        promoVideoDuration: "",
         color: "#3B82F6",
         icon: "BookOpen",
         outcome: "",
@@ -131,6 +135,58 @@ export default function CreateCourse() {
                                 <option value="Intermediate">Intermediate</option>
                                 <option value="Advanced">Advanced</option>
                             </select>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-400">Language</label>
+                            <input
+                                type="text"
+                                name="language"
+                                value={formData.language}
+                                onChange={handleChange}
+                                className="w-full bg-gray-800 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                                placeholder="e.g. English, Hindi"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-400">Students Enrolled (Override)</label>
+                            <input
+                                type="text"
+                                name="studentsCount"
+                                value={formData.studentsCount}
+                                onChange={handleChange}
+                                className="w-full bg-gray-800 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                                placeholder="e.g. 15,400+"
+                            />
+                        </div>
+                    </div>
+
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-400">Promo Video URL</label>
+                            <input
+                                type="text"
+                                name="promoVideoUrl"
+                                value={formData.promoVideoUrl}
+                                onChange={handleChange}
+                                className="w-full bg-gray-800 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                                placeholder="e.g. YouTube URL"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-400">Promo Video Duration</label>
+                            <input
+                                type="text"
+                                name="promoVideoDuration"
+                                value={formData.promoVideoDuration}
+                                onChange={handleChange}
+                                className="w-full bg-gray-800 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                                placeholder="e.g. 02:45 MINS"
+                            />
                         </div>
                     </div>
 

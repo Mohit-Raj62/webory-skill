@@ -15,6 +15,12 @@ interface Course {
   category: string;
   syllabus: any[];
   instructor?: any;
+  studentsCount?: string;
+  language?: string;
+  level?: string;
+  createdAt?: string;
+  promoVideoUrl?: string;
+  promoVideoDuration?: string;
 }
 
 interface CourseHeaderProps {
@@ -58,7 +64,7 @@ export const CourseHeader = ({ course, safeDate }: CourseHeaderProps) => {
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 font-bold uppercase tracking-tighter">Students</p>
-                  <p className="text-white font-bold">15,400+</p>
+                  <p className="text-white font-bold">{course.studentsCount || "0"}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -67,7 +73,7 @@ export const CourseHeader = ({ course, safeDate }: CourseHeaderProps) => {
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 font-bold uppercase tracking-tighter">Language</p>
-                  <p className="text-white font-bold">English/Hindi</p>
+                  <p className="text-white font-bold">{course.language || "English/Hindi"}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -76,7 +82,7 @@ export const CourseHeader = ({ course, safeDate }: CourseHeaderProps) => {
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 font-bold uppercase tracking-tighter">Level</p>
-                  <p className="text-white font-bold">All Levels</p>
+                  <p className="text-white font-bold">{course.level || "Beginner"}</p>
                 </div>
               </div>
             </div>
@@ -84,13 +90,19 @@ export const CourseHeader = ({ course, safeDate }: CourseHeaderProps) => {
             <div className="flex flex-wrap gap-4">
               <div className="flex items-center gap-3 px-5 py-3 bg-white/5 border border-white/10 rounded-2xl">
                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                <span className="text-sm font-bold text-white/90">Last updated March 2024</span>
+                <span className="text-sm font-bold text-white/90">Last updated {safeDate(course.createdAt)}</span>
               </div>
             </div>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="relative">
-            <div className="relative aspect-video rounded-3xl overflow-hidden border border-white/10 shadow-2xl group">
+            <a 
+              href={course.promoVideoUrl || "#"} 
+              target={course.promoVideoUrl ? "_blank" : "_self"} 
+              rel={course.promoVideoUrl ? "noopener noreferrer" : ""}
+              className="relative block aspect-video rounded-3xl overflow-hidden border border-white/10 shadow-2xl group"
+              onClick={(e) => { if (!course.promoVideoUrl) e.preventDefault(); }}
+            >
               <Image 
                 src={course.thumbnail} 
                 alt={course.title}
@@ -106,9 +118,9 @@ export const CourseHeader = ({ course, safeDate }: CourseHeaderProps) => {
                 <p className="text-white font-bold flex items-center gap-2">
                   <Zap size={18} className="text-yellow-400" /> Watch Promo
                 </p>
-                <p className="text-white/60 text-xs font-bold">02:45 MINS</p>
+                <p className="text-white/60 text-xs font-bold">{course.promoVideoDuration ? course.promoVideoDuration.toUpperCase() : "00:00 MINS"}</p>
               </div>
-            </div>
+            </a>
           </motion.div>
         </div>
       </div>

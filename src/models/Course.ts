@@ -71,6 +71,18 @@ const CourseSchema = new Schema({
     type: String,
     required: true,
   },
+  language: {
+    type: String,
+    default: "English/Hindi", // e.g. English, Hindi, English/Hindi
+  },
+  promoVideoUrl: {
+    type: String,
+    default: "", // e.g. YouTube URL for Watch Promo
+  },
+  promoVideoDuration: {
+    type: String,
+    default: "", // e.g. "02:45 MINS"
+  },
   icon: {
     type: String,
     required: true, // Store icon name as string, e.g., "Globe", "Palette"

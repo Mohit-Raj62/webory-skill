@@ -272,19 +272,19 @@ export default function CourseDetailsPage() {
                         <div className="flex flex-wrap gap-6 mb-12">
                             <div className="flex items-center text-gray-300">
                                 <BarChart className="mr-2 text-blue-400" size={20} />
-                                {course.level}
+                                {course.level || "Beginner"}
                             </div>
                             <div className="flex items-center text-gray-300">
                                 <Users className="mr-2 text-purple-400" size={20} />
-                                {course.studentsCount} Students
+                                {course.studentsCount || "0"} Students
                             </div>
                             <div className="flex items-center text-gray-300">
                                 <Globe className="mr-2 text-green-400" size={20} />
-                                English
+                                {course.language || "English/Hindi"}
                             </div>
                             <div className="flex items-center text-gray-300">
                                 <Clock className="mr-2 text-orange-400" size={20} />
-                                {course.duration}
+                                {course.duration || "0h"}
                             </div>
                             <div className="flex items-center text-gray-300">
                                 <Calendar className="mr-2 text-yellow-400" size={20} />

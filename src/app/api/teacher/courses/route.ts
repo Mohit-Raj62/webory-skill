@@ -59,6 +59,10 @@ export async function POST(request: NextRequest) {
       whoIsThisFor,
       projects,
       careerOutcomes,
+      language,
+      promoVideoUrl,
+      promoVideoDuration,
+      studentsCount,
     } = reqBody;
 
     // Basic validation
@@ -77,7 +81,10 @@ export async function POST(request: NextRequest) {
       icon,
       price: price || 0,
       instructor: userId,
-      studentsCount: "0",
+      studentsCount: studentsCount || "0",
+      language: language || "English/Hindi",
+      promoVideoUrl: promoVideoUrl || "",
+      promoVideoDuration: promoVideoDuration || "",
       outcome: outcome || "",
       whoIsThisFor: whoIsThisFor || [],
       projects: projects || [],

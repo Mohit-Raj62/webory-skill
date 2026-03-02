@@ -23,6 +23,9 @@ export default function NewCoursePage() {
         discountPercentage: 0,
         gstPercentage: 0,
         studentsCount: "0",
+        language: "English/Hindi",
+        promoVideoUrl: "",
+        promoVideoDuration: "",
         color: "from-blue-500 to-purple-500",
         icon: "Globe",
         duration: "0h",
@@ -317,6 +320,50 @@ export default function NewCoursePage() {
                                 <option value="Intermediate">Intermediate</option>
                                 <option value="Advanced">Advanced</option>
                             </select>
+                        </div>
+
+                        <div>
+                            <label className="text-sm text-gray-300 block mb-2">Language</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. English, Hindi"
+                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                value={formData.language}
+                                onChange={(e) => setFormData({ ...formData, language: e.target.value })}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="text-sm text-gray-300 block mb-2">Students Enrolled (Override)</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. 15,400+"
+                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                value={formData.studentsCount}
+                                onChange={(e) => setFormData({ ...formData, studentsCount: e.target.value })}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="text-sm text-gray-300 block mb-2">Promo Video URL</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. YouTube URL"
+                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                value={formData.promoVideoUrl}
+                                onChange={(e) => setFormData({ ...formData, promoVideoUrl: e.target.value })}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="text-sm text-gray-300 block mb-2">Promo Video Duration</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. 02:45 MINS"
+                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                value={formData.promoVideoDuration}
+                                onChange={(e) => setFormData({ ...formData, promoVideoDuration: e.target.value })}
+                            />
                         </div>
 
                         <div className="md:col-span-2">
