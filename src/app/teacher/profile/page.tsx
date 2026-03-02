@@ -689,15 +689,40 @@ export default function TeacherProfilePage() {
               Your documents are securely stored and will only be accessed by authorized personnel.
             </p>
           </motion.div>
-        </form>
+          </form>
         )}
-      <IdCardModal 
-        isOpen={showIdModal} 
-        onClose={() => setShowIdModal(false)} 
-        formData={formData} 
-        employeeId={employeeId} 
+      </div>
+
+      {submitted && (
+        <div className="max-w-4xl mx-auto px-4 py-12 text-center">
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
+            <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6 text-green-500">
+              <CheckCircle2 size={40} />
+            </div>
+            <h2 className="text-3xl font-bold mb-4">Verification Submitted!</h2>
+            <p className="text-gray-400 mb-8 max-w-md mx-auto">
+              Your documents have been successfully submitted for verification. 
+              Our team will review them and update your status within 24-48 hours.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <button 
+                onClick={() => setShowIdModal(true)}
+                className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-500/20 flex items-center gap-2"
+              >
+                <CreditCard size={20} /> View Physical ID Card
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      <IdCardModal
+        isOpen={showIdModal}
+        onClose={() => setShowIdModal(false)}
+        formData={formData}
+        employeeId={employeeId}
       />
     </div>
-  </div>
-);
+  );
 }
