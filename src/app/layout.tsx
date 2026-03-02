@@ -8,8 +8,7 @@ import { InactivityLogout } from "@/components/auth/inactivity-logout";
 import { SessionProvider } from "@/components/auth/session-provider";
 import { Toaster } from "sonner";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import dynamic from "next/dynamic";
-const SupportChatbot = dynamic(() => import("@/components/SupportChatbot"), { ssr: false });
+import SupportChatbotWrapper from "@/components/SupportChatbotWrapper";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
@@ -97,7 +96,7 @@ export default function RootLayout({
                 </SessionProvider>
                 <Toaster position="top-right" richColors />
                 <SpeedInsights />
-                <SupportChatbot />
+                <SupportChatbotWrapper />
             </body>
         </html>
     );
