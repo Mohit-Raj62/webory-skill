@@ -100,8 +100,8 @@ export default function CourseDetailsPage() {
                 }
 
                 if (quizData) setQuizzes(quizData.quizzes || []);
-                if (assignmentsPromise && assignmentData) setAssignments(assignmentData.assignments || []);
-                if (liveClassesPromise && liveClassData) setLiveClasses(liveClassData.liveClasses || []);
+                if (assignmentData) setAssignments(assignmentData.assignments || []);
+                if (liveClassData) setLiveClasses(liveClassData.liveClasses || []);
 
             } catch (error) {
                 console.error("Failed to fetch course data", error);

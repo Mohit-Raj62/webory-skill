@@ -1,0 +1,37 @@
+
+> skill-webory@0.1.0 build
+> next build
+
+ΓÜá Invalid next.config.ts options detected: 
+ΓÜá     Unrecognized key(s) in object: 'serverComponentsExternalPackages' at "experimental"
+ΓÜá See more info here: https://nextjs.org/docs/messages/invalid-next-config
+ΓÜá `experimental.serverComponentsExternalPackages` has been moved to `serverExternalPackages`. Please update your next.config.ts file accordingly.
+ΓÜá Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\91620\package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * C:\Users\91620\Desktop\skill-webory\package-lock.json
+
+Γû▓ Next.js 16.1.0-canary.15 (Turbopack)
+- Environments: .env.local
+- Experiments (use with caution):
+  ┬╖ serverActions
+  ? serverComponentsExternalPackages (invalid experimental key)
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 111s
+  Running TypeScript ...
+Failed to compile.
+
+./src/app/courses/[id]/page.tsx:103:21
+Type error: This condition will always return true since this 'Promise<any>' is always defined.
+
+  101 |
+  102 |                 if (quizData) setQuizzes(quizData.quizzes || []);
+> 103 |                 if (assignmentsPromise && assignmentData) setAssignments(assignmentData.assignments || []);
+      |                     ^
+  104 |                 if (liveClassesPromise && liveClassData) setLiveClasses(liveClassData.liveClasses || []);
+  105 |
+  106 |             } catch (error) {
+Next.js build worker exited with code: 1 and signal: null
