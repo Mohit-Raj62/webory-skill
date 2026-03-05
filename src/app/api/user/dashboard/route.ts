@@ -7,6 +7,9 @@ import "@/models/Internship"; // Ensure Internship model is registered for popul
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET() {
   try {
     await dbConnect();

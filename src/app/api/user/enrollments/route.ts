@@ -5,6 +5,9 @@ import Enrollment from "@/models/Enrollment";
 import Course from "@/models/Course"; // Ensure Course is registered
 import { cookies } from "next/headers";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET() {
   try {
     await dbConnect();

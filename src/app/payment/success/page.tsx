@@ -11,7 +11,13 @@ import { motion } from "framer-motion";
 
 function PaymentSuccessContent() {
     const searchParams = useSearchParams();
+    const router = useRouter();
     const txnid = searchParams.get("txnid");
+    
+    useEffect(() => {
+        // Clear Next.js Client Router Cache to ensure fresh state on navigation
+        router.refresh();
+    }, [router]);
     
     return (
         <motion.div 
