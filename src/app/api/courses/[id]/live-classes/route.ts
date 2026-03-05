@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 // GET - Fetch live classes for a specific course
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await dbConnect();
@@ -24,14 +24,15 @@ export async function GET(
       referenceId: id,
     })
       .sort({ date: 1 }) // Ascending order (upcoming first)
-      .populate("instructor", "firstName lastName");
+      .populate("instructor", "firstName lastName")
+      .lean();
 
     return NextResponse.json({ liveClasses });
   } catch (error) {
     console.error("Fetch course live classes error:", error);
     return NextResponse.json(
       { error: "Failed to fetch live classes" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

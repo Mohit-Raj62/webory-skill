@@ -46,8 +46,8 @@ export function EnrolledCourses() {
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.1 }}
-                            viewport={{ once: true }}
-                            className="glass-card p-4 md:p-6 rounded-2xl hover:border-blue-500/50 transition-all group"
+                            viewport={{ once: true, margin: "100px" }}
+                            className="glass-card p-4 md:p-6 rounded-2xl hover:border-blue-500/50 transition-all group will-change-transform will-change-opacity"
                         >
                             <div className="flex items-start justify-between mb-4">
                                 <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">

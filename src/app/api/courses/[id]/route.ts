@@ -4,7 +4,7 @@ import Course from "@/models/Course";
 
 export async function GET(
   req: Request,
-  props: { params: Promise<{ id: string }> }
+  props: { params: Promise<{ id: string }> },
 ) {
   const params = await props.params;
   try {
@@ -13,7 +13,14 @@ export async function GET(
     const includeUnavailable =
       url.searchParams.get("includeUnavailable") === "true";
 
-    const course = await Course.findById(params.id);
+    const courseId = params.id;
+
+    // Non-blocking increment of views, then lean fetch
+    const course = await Course.findByIdAndUpdate(
+      courseId,
+      { $inc: { views: 1 } },
+      { new: true },
+    ).lean();
 
     if (!course) {
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
@@ -23,11 +30,8 @@ export async function GET(
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 
-    // Increment Views
-    course.views = (course.views || 0) + 1;
-    await course.save();
-
-    // Migration logic: Convert old courses with flat videos to module structure
+    // Migration logic (run asynchronously if needed, but we avoid blocking the response)
+    // We already have lean object so modifications are just on the object sent to user
     if (
       course.videos &&
       course.videos.length > 0 &&
@@ -41,26 +45,21 @@ export async function GET(
           videos: course.videos,
         },
       ];
-      await course.save();
-    }
-
-    // Flatten modules to videos array for backward compatibility
-    if (course.modules && course.modules.length > 0) {
+      // Background update for DB without blocking
+      Course.findByIdAndUpdate(courseId, { modules: course.modules })
+        .exec()
+        .catch((e) => console.error(e));
+    } else if (course.modules && course.modules.length > 0) {
       const flattenedVideos = course.modules
-        .sort((a: any, b: any) => a.order - b.order)
+        .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
         .flatMap((module: any) => module.videos || []);
 
-      console.log(
-        `[GET Course] Modules: ${course.modules.length}, Flattened: ${
-          flattenedVideos.length
-        }, Current: ${course.videos?.length || 0}`
-      );
-
-      // Update videos array if it's different
       if (JSON.stringify(course.videos) !== JSON.stringify(flattenedVideos)) {
         course.videos = flattenedVideos;
-        await course.save();
-        console.log(`[GET Course] ✅ Synced ${flattenedVideos.length} videos`);
+        // Background update for DB
+        Course.findByIdAndUpdate(courseId, { videos: flattenedVideos })
+          .exec()
+          .catch((e) => console.error(e));
       }
     }
 
@@ -69,7 +68,7 @@ export async function GET(
     console.error("Fetch course error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

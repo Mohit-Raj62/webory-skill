@@ -11,8 +11,8 @@ export function AINexusShowcase() {
         <section className="py-20 relative overflow-hidden">
             {/* Background Gradients */}
             <div className="absolute inset-0 bg-black/50 pointer-events-none" />
-            <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute top-1/4 left-1/4 w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-purple-600/10 md:bg-purple-600/20 rounded-full blur-[80px] md:blur-[120px] pointer-events-none will-change-transform" />
+            <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-blue-600/10 md:bg-blue-600/20 rounded-full blur-[80px] md:blur-[120px] pointer-events-none will-change-transform" />
 
             <div className="container mx-auto px-4 relative z-10">
                 <div className="glass-card rounded-3xl border border-white/10 bg-black/40 backdrop-blur-xl overflow-hidden">
@@ -21,9 +21,9 @@ export function AINexusShowcase() {
                         <motion.div
                             initial={{ opacity: 0, x: -50 }}
                             whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
+                            viewport={{ once: true, margin: "100px" }}
                             transition={{ duration: 0.8 }}
-                            className="space-y-8"
+                            className="space-y-8 will-change-transform will-change-opacity"
                         >
                             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20">
                                 <BrainCircuit className="w-4 h-4 text-blue-400" />
@@ -72,9 +72,9 @@ export function AINexusShowcase() {
                         <motion.div
                             initial={{ opacity: 0, x: 50 }}
                             whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
+                            viewport={{ once: true, margin: "100px" }}
                             transition={{ duration: 0.8, delay: 0.2 }}
-                            className="relative"
+                            className="relative will-change-transform will-change-opacity"
                         >
                             <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10 group">
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10" />

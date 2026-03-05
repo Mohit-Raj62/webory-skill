@@ -28,27 +28,26 @@ function ShatterCard({ icon: Icon, label, value, index }: { icon: any, label: st
     const [shards, setShards] = useState<any[]>([]);
 
     useEffect(() => {
-        const generatedShards = Array.from({ length: 42 }).map((_, i) => {
+        // Reduced shards from 42 to 8 to drastically lower rendering cost on mobile
+        const generatedShards = Array.from({ length: 8 }).map((_, i) => {
             const shapes = [
                 "polygon(50% 0%, 0% 100%, 100% 100%)",
                 "polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%)",
-                "polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)",
                 "polygon(0 0, 100% 0, 100% 100%)",
                 "polygon(0 0, 100% 100%, 0 100%)",
-                "polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%)"
             ];
             
             return {
                 id: i,
-                x: (Math.random() - 0.5) * 400,
-                y: (Math.random() * 300) + 50,
-                rotate: (Math.random() - 0.5) * 1080,
+                x: (Math.random() - 0.5) * 300,
+                y: (Math.random() * 200) + 50,
+                rotate: (Math.random() - 0.5) * 720,
                 scale: Math.random() * 0.8 + 0.2,
-                duration: Math.random() * 1.5 + 1.2,
+                duration: Math.random() * 1.0 + 0.8,
                 shape: shapes[Math.floor(Math.random() * shapes.length)],
                 left: Math.random() * 100,
                 top: Math.random() * 100,
-                size: Math.random() * 20 + 10,
+                size: Math.random() * 20 + 20, // slightly larger, fewer shards
             };
         });
         setShards(generatedShards);
@@ -67,7 +66,8 @@ function ShatterCard({ icon: Icon, label, value, index }: { icon: any, label: st
                 {shards.map((shard) => (
                     <motion.div
                         key={shard.id}
-                        className="absolute bg-gradient-to-bl from-white/40 to-white/5 backdrop-blur-md border-[0.5px] border-white/60 shadow-[0_0_10px_rgba(255,255,255,0.2)]"
+                        // Removed expensive backdrop-blur-md, added will-change for GPU acceleration
+                        className="absolute bg-gradient-to-bl from-white/40 to-white/5 border-[0.5px] border-white/60 shadow-[0_0_10px_rgba(255,255,255,0.2)] will-change-transform"
                         style={{
                             left: `${shard.left}%`,
                             top: `${shard.top}%`,
@@ -129,9 +129,10 @@ export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initi
     return (
         <section className="relative pt-28 pb-16 md:pt-48 md:pb-32 overflow-hidden">
             {/* Background Elements */}
+            {/* Reduced background blur sizes on mobile to prevent excessive GPU overdraw */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl pointer-events-none">
-                <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/20 rounded-full blur-[100px]" />
-                <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/20 rounded-full blur-[100px]" />
+                <div className="absolute top-20 left-10 w-48 h-48 md:w-72 md:h-72 bg-blue-500/10 md:bg-blue-500/20 rounded-full blur-[60px] md:blur-[100px] will-change-transform" />
+                <div className="absolute bottom-20 right-10 w-48 h-48 md:w-96 md:h-96 bg-purple-500/10 md:bg-purple-500/20 rounded-full blur-[60px] md:blur-[100px] will-change-transform" />
             </div>
             
             {/* Interactive Particle Network */}
@@ -203,10 +204,10 @@ export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initi
                         <div className="flex flex-col items-center justify-center gap-6 mt-8 md:mt-12">
                             {/* The "Eye-Catcher" Component (High Visibility Emerald) */}
                             <motion.div 
-                                initial={{ opacity: 0, x: -50 }} 
+                                initial={{ opacity: 0, x: -30 }} 
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
-                                className="relative flex items-center gap-3 md:gap-4 bg-white text-black px-4 py-2.5 md:px-6 md:py-3 rounded-xl md:rounded-2xl shadow-[0_10px_30px_rgba(255,255,255,0.15)] md:shadow-[0_20px_50px_rgba(255,255,255,0.2)] border-2 border-emerald-400/50 -rotate-2 hover:rotate-0 transition-transform cursor-default max-w-[90vw]"
+                                className="relative flex items-center gap-3 md:gap-4 bg-white text-black px-4 py-2.5 md:px-6 md:py-3 rounded-xl md:rounded-2xl shadow-[0_10px_20px_rgba(255,255,255,0.1)] md:shadow-[0_20px_50px_rgba(255,255,255,0.2)] border-2 border-emerald-400/50 -rotate-2 hover:rotate-0 transition-transform cursor-default max-w-[90vw] will-change-transform"
                             >
                                 <div className="absolute -top-3 -right-3 w-6 h-6 md:w-8 md:h-8 bg-emerald-500 rounded-full flex items-center justify-center animate-bounce shadow-lg z-20">
                                     <span className="text-[8px] md:text-[10px] font-black text-white italic">HOT</span>

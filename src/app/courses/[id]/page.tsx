@@ -70,75 +70,86 @@ export default function CourseDetailsPage() {
     }, [user, isEnrolled]);
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchCourseData = async () => {
             if (fetchingRef.current) return;
             fetchingRef.current = true;
             
             try {
-                const resCourse = await fetch(`/api/courses/${id}`);
-                if (!resCourse.ok) throw new Error("Course not found");
+                // Parallel fetch for primary and secondary data
+                const coursePromise = fetch(`/api/courses/${id}`).then(r => r.ok ? r.json() : null).catch(() => null);
+                const quizzesPromise = fetch(`/api/admin/courses/${id}/quizzes`).then(r => r.ok ? r.json() : null).catch(() => null);
+                const assignmentsPromise = fetch(`/api/admin/courses/${id}/assignments`).then(r => r.ok ? r.json() : null).catch(() => null);
+                const liveClassesPromise = fetch(`/api/courses/${id}/live-classes`).then(r => r.ok ? r.json() : null).catch(() => null);
+
+                const [courseData, quizData, assignmentData, liveClassData] = await Promise.all([
+                    coursePromise,
+                    quizzesPromise,
+                    assignmentsPromise,
+                    liveClassesPromise
+                ]);
+
+                if (!courseData || !courseData.course) throw new Error("Course not found");
+
+                setCourse(courseData.course);
                 
-                const data = await resCourse.json();
-                setCourse(data.course);
-                
-                if (data.course.pdfResources) {
-                    setPdfs(data.course.pdfResources.sort((a: any, b: any) => {
+                if (courseData.course.pdfResources) {
+                    setPdfs(courseData.course.pdfResources.sort((a: any, b: any) => {
                         if (a.afterModule !== b.afterModule) return a.afterModule - b.afterModule;
-                        return a.order - b.order;
+                        return (a.order || 0) - (b.order || 0);
                     }));
                 }
 
-                // Parallel fetch for secondary data
-                const [resQuizzes, resAssignments, resLiveClasses] = await Promise.all([
-                    fetch(`/api/admin/courses/${id}/quizzes`).catch(() => null),
-                    fetch(`/api/admin/courses/${id}/assignments`).catch(() => null),
-                    fetch(`/api/courses/${id}/live-classes`).catch(() => null)
-                ]);
+                if (quizData) setQuizzes(quizData.quizzes || []);
+                if (assignmentsPromise && assignmentData) setAssignments(assignmentData.assignments || []);
+                if (liveClassesPromise && liveClassData) setLiveClasses(liveClassData.liveClasses || []);
 
-                if (resQuizzes?.ok) {
-                    const quizData = await resQuizzes.json();
-                    setQuizzes(quizData.quizzes || []);
-                }
-                if (resAssignments?.ok) {
-                    const assignmentData = await resAssignments.json();
-                    setAssignments(assignmentData.assignments || []);
-                }
-                if (resLiveClasses?.ok) {
-                    const liveClassData = await resLiveClasses.json();
-                    setLiveClasses(liveClassData.liveClasses || []);
-                }
+            } catch (error) {
+                console.error("Failed to fetch course data", error);
+            } finally {
+                setLoading(false); // Stop loading UI immediately after public data is loaded
+                fetchingRef.current = false;
+            }
+        };
 
-                // Auth is handled by hook, but we need enrollment check
-                if (user) {
-                    const resEnroll = await fetch("/api/user/enrollments");
-                    if (resEnroll.ok) {
-                        const enrollData = await resEnroll.json();
-                        const currentEnrollment = enrollData.enrollments.find(
-                            (e: any) => e.course?._id?.toString() === id
-                        );
-                        const enrolled = !!currentEnrollment;
-                        setIsEnrolled(enrolled);
-                        setEnrollmentData(currentEnrollment);
+        if (id) fetchCourseData();
+    }, [id]);
 
-                        if (enrolled) {
+    // Separate useEffect for authenticated user data that doesn't block UI rendering
+    useEffect(() => {
+        const fetchUserData = async () => {
+            // Wait for auth to initialize
+            if (authLoading || !user) return;
+            
+            try {
+                const resEnroll = await fetch("/api/user/enrollments");
+                if (resEnroll.ok) {
+                    const enrollData = await resEnroll.json();
+                    const currentEnrollment = enrollData.enrollments.find(
+                        (e: any) => e.course?._id?.toString() === id
+                    );
+                    const enrolled = !!currentEnrollment;
+                    setIsEnrolled(enrolled);
+                    setEnrollmentData(currentEnrollment);
+
+                    if (enrolled) {
+                        try {
                             const resCert = await fetch(`/api/courses/${id}/certificate-eligibility`);
                             if (resCert.ok) {
                                 const certData = await resCert.json();
                                 setCertificateData(certData);
                             }
+                        } catch (e) {
+                            console.error("Failed to fetch cert data", e);
                         }
                     }
                 }
             } catch (error) {
-                console.error("Failed to fetch data", error);
-            } finally {
-                setLoading(false);
-                fetchingRef.current = false;
+                console.error("Failed to fetch user data", error);
             }
         };
 
-        if (id) fetchData();
-    }, [id, user]); // Added user dependency to re-fetch enrollments if user loads late
+        fetchUserData();
+    }, [id, user, authLoading]);
 
 
 

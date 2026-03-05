@@ -96,9 +96,9 @@ export function CoursesPreview({ popularCourses = [] }: CoursesPreviewProps) {
                             key={index}
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
+                            viewport={{ once: true, margin: "100px" }}
                             transition={{ delay: index * 0.1 }}
-                            className="group relative bg-slate-900/40 backdrop-blur-xl p-5 rounded-[1.5rem] border border-white/5 hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-2 cursor-pointer overflow-hidden flex flex-col h-full"
+                            className="group relative bg-slate-900/40 backdrop-blur-xl p-5 rounded-[1.5rem] border border-white/5 hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-2 cursor-pointer overflow-hidden flex flex-col h-full will-change-transform will-change-opacity"
                         >
                             <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${course.color} opacity-5 blur-3xl rounded-full group-hover:opacity-10 transition-opacity`} />
 

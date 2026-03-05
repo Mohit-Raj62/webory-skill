@@ -20,8 +20,8 @@ export function Internships() {
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="relative z-10"
+                        viewport={{ once: true, margin: "100px" }}
+                        className="relative z-10 will-change-transform will-change-opacity"
                     >
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest mb-6">
                             <Zap size={12} className="fill-current" /> Career Accelerator

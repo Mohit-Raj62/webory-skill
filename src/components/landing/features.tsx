@@ -101,9 +101,9 @@ export function Features() {
                                         key={index}
                                         initial={{ opacity: 0, x: groupIndex === 0 ? -20 : 20 }}
                                         whileInView={{ opacity: 1, x: 0 }}
-                                        viewport={{ once: true }}
+                                        viewport={{ once: true, margin: "100px" }}
                                         transition={{ delay: index * 0.1 }}
-                                        className="glass-card p-4 md:p-6 rounded-xl flex items-start space-x-4"
+                                        className="glass-card p-4 md:p-6 rounded-xl flex items-start space-x-4 will-change-transform will-change-opacity"
                                     >
                                         <div className="p-3 bg-emerald-500/10 rounded-lg text-emerald-400">
                                             <feature.icon size={24} />

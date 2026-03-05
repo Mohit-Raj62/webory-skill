@@ -104,9 +104,9 @@ export function AIRoadmapFlow() {
                                     key={index}
                                     initial={{ opacity: 0, y: 20 }}
                                     whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
+                                    viewport={{ once: true, margin: "100px" }}
                                     transition={{ delay: index * 0.15 }}
-                                    className="relative z-10 group"
+                                    className="relative z-10 group will-change-transform will-change-opacity"
                                 >
                                     <div className="glass-card p-6 rounded-3xl border border-white/5 h-full bg-gradient-to-b from-white/5 to-black/40 hover:bg-white/10 transition-all duration-300 hover:-translate-y-2 hover:border-white/20 hover:shadow-[0_0_30px_rgba(59,130,246,0.1)] relative overflow-hidden">
                                         

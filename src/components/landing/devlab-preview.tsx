@@ -36,8 +36,8 @@ export function DevLabPreview() {
         <section className="py-24 relative overflow-hidden bg-black">
             {/* Background Decorative Elements */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-20">
-                <div className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] bg-blue-600/20 blur-[120px] rounded-full" />
-                <div className="absolute -bottom-[20%] -right-[10%] w-[60%] h-[60%] bg-purple-600/20 blur-[120px] rounded-full" />
+                <div className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] bg-blue-600/20 blur-[60px] md:blur-[120px] rounded-full will-change-transform" />
+                <div className="absolute -bottom-[20%] -right-[10%] w-[60%] h-[60%] bg-purple-600/20 blur-[60px] md:blur-[120px] rounded-full will-change-transform" />
             </div>
 
             <div className="container mx-auto px-4 relative z-10">
@@ -57,9 +57,9 @@ export function DevLabPreview() {
                         <motion.h2
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
+                            viewport={{ once: true, margin: "100px" }}
                             transition={{ delay: 0.1 }}
-                            className="text-4xl md:text-6xl font-extrabold text-white mb-6 leading-tight"
+                            className="text-4xl md:text-6xl font-extrabold text-white mb-6 leading-tight will-change-transform will-change-opacity"
                         >
                             Experience the Power of <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-emerald-400">
@@ -83,9 +83,9 @@ export function DevLabPreview() {
                                     key={index}
                                     initial={{ opacity: 0, x: -20 }}
                                     whileInView={{ opacity: 1, x: 0 }}
-                                    viewport={{ once: true }}
+                                    viewport={{ once: true, margin: "100px" }}
                                     transition={{ delay: 0.3 + index * 0.1 }}
-                                    className="flex items-start gap-4"
+                                    className="flex items-start gap-4 will-change-transform will-change-opacity"
                                 >
                                     <div className={`p-3 rounded-xl ${feature.bg} ${feature.color} flex-shrink-0`}>
                                         <feature.icon size={24} />
@@ -164,7 +164,7 @@ export function DevLabPreview() {
                                 <Cpu size={32} />
                             </motion.div>
                             
-                            <div className="absolute -bottom-8 -left-8 w-64 h-64 bg-blue-600/10 blur-[60px] rounded-full -z-10" />
+                            <div className="absolute -bottom-8 -left-8 w-64 h-64 bg-blue-600/10 blur-[40px] md:blur-[60px] rounded-full -z-10 will-change-transform" />
                         </motion.div>
                     </div>
                 </div>
