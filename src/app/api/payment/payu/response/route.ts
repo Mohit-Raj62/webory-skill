@@ -8,7 +8,7 @@ import Application from "@/models/Application";
 import User from "@/models/User";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 import Internship from "@/models/Internship";
-import { revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 
 const PAYU_SALT = process.env.PAYU_SALT || "your_salt";
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in";
@@ -163,8 +163,9 @@ async function handleCourseEnrollment(
       );
     }
 
-    // Invalidate global course enrollments cache
-    revalidateTag("enrollments");
+    // Invalidate paths instead of tags to avoid Next.js canary signature changes
+    revalidatePath("/courses", "layout");
+    revalidatePath("/profile", "layout");
   } catch (e) {
     console.error("Course Enrollment Error:", e);
   }
@@ -222,8 +223,9 @@ async function handleInternshipApplication(
       );
     }
 
-    // Invalidate Next.js cache for the internship page
-    revalidateTag("user-applications");
+    // Invalidate paths instead of tags to avoid Next.js canary signature changes
+    revalidatePath("/internships", "layout");
+    revalidatePath("/profile", "layout");
   } catch (e) {
     console.error("Internship Handler Error:", e);
   }
