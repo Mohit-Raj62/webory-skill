@@ -62,13 +62,15 @@ export async function GET(req: Request) {
         github: user.github || "", // Same assumption
       },
       certificates: [
-        ...enrollments.map((e: any) => ({
-          id: e._id,
-          courseTitle: e.course.title,
-          courseThumbnail: e.course.thumbnail,
-          completedAt: e.updatedAt,
-          type: "academic",
-        })),
+        ...enrollments
+          .filter((e: any) => e.course != null)
+          .map((e: any) => ({
+            id: e._id,
+            courseTitle: e.course.title,
+            courseThumbnail: e.course.thumbnail,
+            completedAt: e.updatedAt,
+            type: "academic",
+          })),
         ...(user.education || []).map((e: any) => ({
           id: e._id,
           courseTitle: `${e.degree} at ${e.institution}`,
@@ -78,15 +80,17 @@ export async function GET(req: Request) {
         })),
       ],
       internships: [
-        ...internships.map((i: any) => ({
-          id: i._id,
-          title: i.internship.title,
-          company: i.internship.company,
-          status: i.status,
-          startDate: i.startDate,
-          duration: i.duration,
-          type: "academic",
-        })),
+        ...internships
+          .filter((i: any) => i.internship != null)
+          .map((i: any) => ({
+            id: i._id,
+            title: i.internship.title,
+            company: i.internship.company,
+            status: i.status,
+            startDate: i.startDate,
+            duration: i.duration,
+            type: "academic",
+          })),
         ...(user.experience || []).map((e: any) => ({
           id: e._id,
           title: e.title,
@@ -98,15 +102,17 @@ export async function GET(req: Request) {
         })),
       ],
       projects: [
-        ...submissions.map((s: any) => ({
-          id: s._id,
-          title: s.assignmentId.title,
-          description: s.assignmentId.description,
-          courseTitle: s.courseId.title,
-          submissionUrl: s.attachments?.[0]?.url || "",
-          submissionText: s.submissionText,
-          type: "academic", // Distinguish auto-generated
-        })),
+        ...submissions
+          .filter((s: any) => s.assignmentId != null && s.courseId != null)
+          .map((s: any) => ({
+            id: s._id,
+            title: s.assignmentId.title,
+            description: s.assignmentId.description,
+            courseTitle: s.courseId.title,
+            submissionUrl: s.attachments?.[0]?.url || "",
+            submissionText: s.submissionText,
+            type: "academic",
+          })),
         ...(user.projects || []).map((p: any) => ({
           id: p._id,
           title: p.title,

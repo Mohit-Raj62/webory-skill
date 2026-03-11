@@ -49,28 +49,34 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
                 skills: user.skills,
                 avatar: user.avatar,
             },
-            certificates: enrollments.map((e: any) => ({
-                id: e._id,
-                courseTitle: e.course.title,
-                courseThumbnail: e.course.thumbnail,
-                completedAt: e.updatedAt,
-            })),
-            internships: internships.map((i: any) => ({
-                id: i._id,
-                title: i.internship.title,
-                company: i.internship.company,
-                status: i.status,
-                startDate: i.startDate,
-                duration: i.duration,
-            })),
-            projects: submissions.map((s: any) => ({
-                id: s._id,
-                title: s.assignmentId.title,
-                description: s.assignmentId.description,
-                courseTitle: s.courseId.title,
-                submissionUrl: s.attachments?.[0]?.url || "",
-                submissionText: s.submissionText,
-            }))
+            certificates: enrollments
+                .filter((e: any) => e.course != null)
+                .map((e: any) => ({
+                    id: e._id,
+                    courseTitle: e.course.title,
+                    courseThumbnail: e.course.thumbnail,
+                    completedAt: e.updatedAt,
+                })),
+            internships: internships
+                .filter((i: any) => i.internship != null)
+                .map((i: any) => ({
+                    id: i._id,
+                    title: i.internship.title,
+                    company: i.internship.company,
+                    status: i.status,
+                    startDate: i.startDate,
+                    duration: i.duration,
+                })),
+            projects: submissions
+                .filter((s: any) => s.assignmentId != null && s.courseId != null)
+                .map((s: any) => ({
+                    id: s._id,
+                    title: s.assignmentId.title,
+                    description: s.assignmentId.description,
+                    courseTitle: s.courseId.title,
+                    submissionUrl: s.attachments?.[0]?.url || "",
+                    submissionText: s.submissionText,
+                }))
         };
 
         return NextResponse.json({ portfolio: portfolioData });
