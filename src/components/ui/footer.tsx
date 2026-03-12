@@ -92,39 +92,43 @@ export function Footer() {
                             </ul>
                         </div>
 
-                        <div className="flex flex-col items-center md:items-start col-span-2 sm:col-span-1 pt-8 sm:pt-0 border-t border-white/5 sm:border-0">
-                            <h4 className="text-white font-bold mb-6 flex items-center justify-center md:justify-start gap-2 group/title">
-                                <span className="w-1.5 h-1.5 rounded-full bg-pink-500 shadow-[0_0_8px_rgba(236,72,153,0.5)] group-hover/title:scale-125 transition-transform duration-300"></span>
-                                <span className="tracking-tight text-lg">Connect</span>
-                            </h4>
-                            
-                            <div className="grid grid-cols-4 sm:grid-cols-2 lg:grid-cols-5 gap-3 w-full max-w-[280px] sm:max-w-none mb-6">
-                                <SocialLink href="#" icon={<Github size={20} />} brandColor="hover:text-white hover:bg-gray-800" />
-                                <SocialLink href="#" icon={
-                                    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[20px] w-[20px] fill-current">
-                                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
-                                    </svg>
-                                } brandColor="hover:text-white hover:bg-black" />
-                                <SocialLink href="https://www.linkedin.com/in/webory-skills-01244b3a9?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" icon={<Linkedin size={20} />} brandColor="hover:text-white hover:bg-[#0077b5]" />
-                                <SocialLink href="https://www.instagram.com/weboryskills?igsh=anJ2Zmc0MmdjdmEy&utm_source=qr" icon={<Instagram size={20} />} brandColor="hover:text-white hover:bg-gradient-to-tr hover:from-[#f9ce34] hover:via-[#ee2a7b] hover:to-[#6228d7]" />
-                                <SocialLink href="https://www.youtube.com/@CodeWithWebory" icon={<Youtube size={20} />} brandColor="hover:text-white hover:bg-[#ff0000]" />
-                            </div>
+                        <div className="flex flex-col items-center md:items-start col-span-2 sm:col-span-1 pt-8 sm:pt-0 border-t border-white/5 sm:border-0 h-full">
+                            <div className="w-full h-full p-6 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm group/connect-box hover:border-blue-500/10 transition-colors duration-500">
+                                <h4 className="text-white font-bold mb-6 flex items-center justify-center md:justify-start gap-2 group/title">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-pink-500 shadow-[0_0_8px_rgba(236,72,153,0.5)] group-hover/title:scale-125 transition-transform duration-300"></span>
+                                    <span className="tracking-tight text-lg">Connect</span>
+                                </h4>
+                                
+                                <div className="grid grid-cols-5 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 w-full mb-6">
+                                    <SocialLink href="#" icon={<Github size={18} />} brandColor="hover:text-white hover:bg-gray-800" />
+                                    <SocialLink href="#" icon={
+                                        <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[18px] w-[18px] fill-current">
+                                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+                                        </svg>
+                                    } brandColor="hover:text-white hover:bg-black" />
+                                    <SocialLink href="https://www.linkedin.com/in/webory-skills-01244b3a9?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" icon={<Linkedin size={18} />} brandColor="hover:text-white hover:bg-[#0077b5]" />
+                                    <SocialLink href="https://www.instagram.com/weboryskills?igsh=anJ2Zmc0MmdjdmEy&utm_source=qr" icon={<Instagram size={18} />} brandColor="hover:text-white hover:bg-gradient-to-tr hover:from-[#f9ce34] hover:via-[#ee2a7b] hover:to-[#6228d7]" />
+                                    <SocialLink href="https://www.youtube.com/@CodeWithWebory" icon={<Youtube size={18} />} brandColor="hover:text-white hover:bg-[#ff0000]" />
+                                </div>
 
-                            <p className="text-xs text-gray-500 font-medium leading-relaxed max-w-[180px] text-center md:text-left bg-white/5 py-2 px-4 rounded-xl border border-white/5">
-                                Join our community for latest updates & tech insights.
-                            </p>
+                                <p className="text-[10px] text-gray-500 font-medium leading-relaxed text-center md:text-left bg-white/5 py-2 px-3 rounded-lg border border-white/5">
+                                    Join our community for latest tech insights.
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
-                    <p className="text-gray-500 text-sm order-2 md:order-1">
-                        © {new Date().getFullYear()} Webory Technologies. Made with <span className="text-red-500 animate-pulse">❤</span> in India.
-                    </p>
-                    <div className="flex flex-wrap justify-center gap-3 order-1 md:order-2">
-                        <LegalLink href="/privacy" label="Privacy" />
-                        <LegalLink href="/terms" label="Terms" />
-                        <LegalLink href="/refund-policy" label="Refunds" />
+                <div className="mt-8">
+                    <div className="w-full flex flex-col md:flex-row justify-between items-center gap-6 p-6 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm">
+                        <p className="text-gray-500 text-sm order-2 md:order-1">
+                            © {new Date().getFullYear()} Webory Technologies. Made with <span className="text-red-500 animate-pulse">❤</span> in India.
+                        </p>
+                        <div className="flex flex-wrap justify-center gap-3 order-1 md:order-2">
+                            <LegalLink href="/privacy" label="Privacy" />
+                            <LegalLink href="/terms" label="Terms" />
+                            <LegalLink href="/refund-policy" label="Refunds" />
+                        </div>
                     </div>
                 </div>
             </div>
