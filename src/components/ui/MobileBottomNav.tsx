@@ -105,7 +105,7 @@ export function MobileBottomNav() {
                     />
                 <NavItem 
                     href="/playground" 
-                    icon={MessageSquare} 
+                    icon={Code} 
                     label="DevLab" 
                     isActive={pathname === "/playground"} 
                 />
