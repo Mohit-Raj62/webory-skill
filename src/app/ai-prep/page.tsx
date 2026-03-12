@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
-import { Bot, BrainCircuit, Rocket, CheckCircle2, ArrowRight } from "lucide-react";
+import { Bot, BrainCircuit, Rocket, CheckCircle2, ArrowRight, Loader2 } from "lucide-react";
 import { useAuth } from "@/components/auth/session-provider";
 
 export default function AIPrepLandingPage() {
@@ -20,7 +20,18 @@ export default function AIPrepLandingPage() {
         }
     }, [user, loading, router]);
 
-    if (loading || !user) return null;
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-black text-white flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                    <Loader2 className="w-10 h-10 text-purple-500 animate-spin" />
+                    <p className="text-gray-400 font-mono text-sm animate-pulse">Initializing AI Nexus...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!user) return null;
 
     const handleStart = (mode: "interview" | "aptitude") => {
         router.push(`/ai-prep/session?mode=${mode}`);

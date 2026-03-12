@@ -109,7 +109,18 @@ export default function AIWeboryskillsPage() {
         };
     }, [mode]);
 
-    if (authLoading || !user) return null;
+    if (authLoading) {
+        return (
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                    <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
+                    <p className="text-gray-400 font-mono text-sm animate-pulse">Authenticating Mentor Access...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!user) return null;
 
     const parseRoadmap = (text: string) => {
         const phases: RoadmapPhase[] = [];

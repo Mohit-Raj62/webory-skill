@@ -56,7 +56,18 @@ export default function PlaygroundPage() {
         }
     }, [user, loading, router]);
 
-    if (loading || !user) return null;
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-[#0d1117] flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                    <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
+                    <p className="text-gray-400 font-mono text-sm animate-pulse">Initializing DevLab...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!user) return null;
 
     return (
         <div className="min-h-screen bg-[#0d1117] text-gray-300 font-sans selection:bg-blue-500/30 pt-4 md:pt-20">
