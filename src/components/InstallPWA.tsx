@@ -17,17 +17,16 @@ export function InstallPWA({ variant = "sidebar" }: InstallPWAProps) {
     const [isInstalled, setIsInstalled] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
     const [isIOS, setIsIOS] = useState(false);
+    const [isChecking, setIsChecking] = useState(false);
+    const [message, setMessage] = useState<string | null>(null);
 
     useEffect(() => {
         console.log("PWA: Monitoring install prompt...");
         
-        // Check for iOS
         const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
         setIsIOS(isIOSDevice);
 
-        // Check if already installed
         if (window.matchMedia("(display-mode: standalone)").matches || (navigator as any).standalone) {
-            console.log("PWA: App is already installed (standalone mode)");
             setIsInstalled(true);
         }
 
@@ -35,10 +34,17 @@ export function InstallPWA({ variant = "sidebar" }: InstallPWAProps) {
             console.log("PWA: 'beforeinstallprompt' event fired!");
             e.preventDefault();
             setInstallPrompt(e as BeforeInstallPromptEvent);
+            setIsChecking(false);
         };
 
         window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
         
+        // Also check if already installed via another way
+        window.addEventListener("appinstalled", () => {
+            setIsInstalled(true);
+            setInstallPrompt(null);
+        });
+
         return () => {
             window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
         };
@@ -46,73 +52,82 @@ export function InstallPWA({ variant = "sidebar" }: InstallPWAProps) {
 
     const handleInstallClick = async () => {
         if (isIOS) {
-            alert("To install on iOS: Tap the 'Share' button in Safari and select 'Add to Home Screen' 📱");
+            setMessage("iOS: Tap 'Share' in Safari, then 'Add to Home Screen' 📱");
+            setTimeout(() => setMessage(null), 5000);
             return;
         }
 
-        if (!installPrompt) {
-            alert("To install: Use your browser's menu (3 dots) and select 'Install App' or 'Add to Home Screen'.");
-            return;
-        }
-
-        await installPrompt.prompt();
-        const { outcome } = await installPrompt.userChoice;
-        
-        if (outcome === "accepted") {
-            setInstallPrompt(null);
-            setIsInstalled(true);
+        if (installPrompt) {
+            await installPrompt.prompt();
+            const { outcome } = await installPrompt.userChoice;
+            if (outcome === "accepted") {
+                setInstallPrompt(null);
+                setIsInstalled(true);
+            }
+        } else {
+            setIsChecking(true);
+            setMessage("Checking... Please click the 3-dot menu and select 'Install App' if this button doesn't respond.");
+            setTimeout(() => {
+                setIsChecking(false);
+                setMessage(null);
+            }, 6000);
         }
     };
 
-    // If already installed or manually dismissed, hide
-    if (isInstalled || !isVisible) {
-        return null;
-    }
+    if (isInstalled || !isVisible) return null;
 
-    // On desktop, we only show if the prompt is ready (to be less intrusive)
-    // On mobile, we can show a fallback button
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
     
+    // For desktop, wait for prompt to be ready
     if (!installPrompt && !isIOS && !isMobile && variant === "navbar") {
         return null; 
     }
 
-    if (variant === "navbar") {
-        return (
-            <button
-                onClick={handleInstallClick}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-600/10 border border-blue-500/20 text-blue-400 hover:bg-blue-600 hover:text-white transition-all text-[10px] font-bold uppercase tracking-wider animate-pulse hover:animate-none shadow-lg shadow-blue-500/10"
-            >
-                <Download size={12} strokeWidth={3} />
-                <span>App</span>
-            </button>
-        );
-    }
-
     return (
-        <div className="mx-3 mb-3 p-3 rounded-lg bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-500/20 relative group overflow-hidden transition-all hover:border-blue-500/40">
-            <button 
-                onClick={() => setIsVisible(false)}
-                className="absolute top-1 right-1 text-gray-500 hover:text-white transition-colors"
-                title="Dismiss"
-            >
-                <X size={12} />
-            </button>
-            <div className="flex items-center gap-2 mb-1.5">
-                <div className="p-1.5 rounded-md bg-blue-600 text-white">
-                    <Download size={14} />
+        <div className="relative">
+            {message && (
+                <div className="fixed bottom-20 left-4 right-4 z-50 animate-in fade-in slide-in-from-bottom-5">
+                    <div className="bg-blue-600 text-white p-3 rounded-xl shadow-2xl text-xs font-semibold text-center border border-white/20">
+                        {message}
+                    </div>
                 </div>
-                <div>
-                    <h3 className="text-[11px] font-bold text-white uppercase tracking-tight">App</h3>
-                    <p className="text-[9px] text-gray-400">Better experience</p>
+            )}
+            
+            {variant === "navbar" ? (
+                <button
+                    onClick={handleInstallClick}
+                    disabled={isChecking}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-600/10 border border-blue-500/20 text-blue-400 hover:bg-blue-600 hover:text-white transition-all text-[10px] font-bold uppercase tracking-wider animate-pulse hover:animate-none disabled:opacity-50"
+                >
+                    <Download size={12} strokeWidth={isChecking ? 1 : 3} className={isChecking ? "animate-spin" : ""} />
+                    <span>{isChecking ? "..." : "App"}</span>
+                </button>
+            ) : (
+                <div className="mx-3 mb-3 p-3 rounded-lg bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-500/20 relative group overflow-hidden transition-all hover:border-blue-500/40">
+                    <button 
+                        onClick={() => setIsVisible(false)}
+                        className="absolute top-1 right-1 text-gray-500 hover:text-white transition-colors"
+                    >
+                        <X size={12} />
+                    </button>
+                    <div className="flex items-center gap-2 mb-1.5">
+                        <div className="p-1.5 rounded-md bg-blue-600 text-white">
+                            <Download size={14} className={isChecking ? "animate-spin" : ""} />
+                        </div>
+                        <div>
+                            <h3 className="text-[11px] font-bold text-white uppercase tracking-tight">App</h3>
+                            <p className="text-[9px] text-gray-400">Better experience</p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={handleInstallClick}
+                        disabled={isChecking}
+                        className="w-full py-1.5 px-3 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold transition-all transform active:scale-95 disabled:opacity-50"
+                    >
+                        {isChecking ? "Checking..." : (isIOS ? "Setup" : (installPrompt ? "Install" : "Get"))}
+                    </button>
                 </div>
-            </div>
-            <button
-                onClick={handleInstallClick}
-                className="w-full py-1.5 px-3 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold transition-all transform active:scale-95"
-            >
-                {isIOS ? "Setup" : (installPrompt ? "Install" : "Get")}
-            </button>
+            )}
         </div>
     );
 }
