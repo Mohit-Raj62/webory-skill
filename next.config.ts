@@ -17,6 +17,7 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "50mb",
     },
   },
+  turbopack: {},
   outputFileTracingExcludes: {
     "api/**/*": [
       "**/node_modules/tesseract.js/**/*",
