@@ -13,11 +13,11 @@ export function Footer() {
     }, []);
 
     return (
-        <footer className={`relative bg-[#050505] border-t border-white/5 pt-16 md:pt-20 pb-10 overflow-hidden ${isStandalone ? 'mb-20' : ''}`}>
+        <footer className={`relative bg-[#050505] border-t border-white/5 pt-12 md:pt-20 pb-10 overflow-hidden ${isStandalone ? 'mb-20' : ''}`}>
              {/* Background Effects */}
              <div className="absolute inset-0 z-0 pointer-events-none">
-                <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px] opacity-20 transform -translate-y-1/2"></div>
-                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px] opacity-20 transform translate-y-1/2"></div>
+                <div className="absolute top-0 left-1/4 w-80 h-80 bg-blue-600/5 rounded-full blur-[100px] opacity-20 transform -translate-y-1/2"></div>
+                <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-purple-600/5 rounded-full blur-[100px] opacity-20 transform translate-y-1/2"></div>
                 <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent opacity-50"></div>
                 
                 {/* Grid Pattern */}
@@ -49,7 +49,7 @@ export function Footer() {
                         </p>
                         
                         <div className="pt-2">
-                             <div className="inline-flex items-center gap-3 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:border-orange-500/30 transition-colors group/msme">
+                             <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 hover:border-orange-500/30 transition-colors group/msme">
                                 <div className="text-orange-500 font-black text-xl tracking-tighter group-hover/msme:scale-110 transition-transform">
                                     MSME
                                 </div>
@@ -63,8 +63,8 @@ export function Footer() {
                     </div>
 
                     {/* Navigation Links */}
-                    <div className="col-span-1 md:col-span-2 lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 gap-10 sm:gap-8 text-center sm:text-left">
-                        <div className="col-span-1">
+                    <div className="col-span-1 md:col-span-2 lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 gap-y-10 sm:gap-8 text-center sm:text-left">
+                        <div className="col-span-1 border-r border-white/5 sm:border-0 pr-4 sm:pr-0">
                             <h4 className="text-white font-semibold mb-6 flex items-center justify-center sm:justify-start gap-2">
                                 <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
                                 Platform
