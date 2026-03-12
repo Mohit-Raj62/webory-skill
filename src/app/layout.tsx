@@ -10,6 +10,7 @@ import { Toaster } from "sonner";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import SupportChatbotWrapper from "@/components/SupportChatbotWrapper";
 import Script from "next/script";
+import { MobileBottomNav } from "@/components/ui/MobileBottomNav";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
@@ -99,7 +100,7 @@ export default function RootLayout({
     return (
         <html lang="en" className="scroll-smooth" data-scroll-behavior="smooth">
             <body className={cn(
-                "min-h-screen bg-background font-sans antialiased",
+                "min-h-screen bg-background font-sans antialiased pb-24 lg:pb-0",
                 inter.variable,
                 outfit.variable,
                 greatVibes.variable
@@ -122,6 +123,7 @@ export default function RootLayout({
                     <InactivityLogout />
                     {children}
                 </SessionProvider>
+                <MobileBottomNav />
                 <Toaster position="top-right" richColors />
                 <SpeedInsights />
                 <SupportChatbotWrapper />
