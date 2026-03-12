@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Home, GraduationCap, Briefcase, Bot, BrainCircuit, User, MessageSquare } from "lucide-react";
 import { useAuth } from "@/components/auth/session-provider";
 import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
 
 const NavItem = ({ href, icon: Icon, label, isActive, onClick }: { 
     href?: string; 
