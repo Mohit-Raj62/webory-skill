@@ -31,7 +31,7 @@ const NavItem = ({ href, icon: Icon, label, isActive, onClick }: {
                 )}
             </div>
             <span className={cn(
-                "text-[12px] font-bold mt-2 tracking-tighter transition-colors duration-300",
+                "text-[12px] font-bold mt-1 tracking-tighter transition-colors duration-300",
                 isActive ? "text-blue-400" : "text-gray-500"
             )}>
                 {label}
