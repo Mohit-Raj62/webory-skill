@@ -21,7 +21,7 @@ const NavItem = ({ href, icon: Icon, label, isActive, onClick }: {
                 "relative p-1 rounded-xl transition-all duration-300",
                 isActive ? "text-blue-400 bg-blue-500/10" : "text-gray-500 group-hover:text-gray-300"
             )}>
-                <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+                <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
                 {isActive && (
                     <motion.div
                         layoutId="active-pill"
