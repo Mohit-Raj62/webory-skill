@@ -200,10 +200,10 @@ export function Navbar() {
                         )}
                     </div>
 
-                    {/* Mobile Menu Button */}
+                    {/* Mobile Menu Button - Hidden to favor Bottom Nav */}
                     <motion.button
                         whileTap={{ scale: 0.9 }}
-                        className="lg:hidden relative w-10 h-10 flex items-center justify-center rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-300 hover:text-white hover:border-white/20 transition-all"
+                        className="hidden relative w-10 h-10 flex items-center justify-center rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-300 hover:text-white hover:border-white/20 transition-all"
                         onClick={() => setIsOpen(!isOpen)}
                     >
                         <AnimatePresence mode="wait">
