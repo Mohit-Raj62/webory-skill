@@ -103,6 +103,12 @@ export function MobileBottomNav() {
                         label="Intern" 
                         isActive={pathname === "/internships"} 
                     />
+                <NavItem 
+                    href="/playground" 
+                    icon={MessageSquare} 
+                    label="DevLab" 
+                    isActive={pathname === "/playground"} 
+                />
 
                     <NavItem 
                         href="/ai-weboryskills" 
@@ -114,7 +120,7 @@ export function MobileBottomNav() {
                     <NavItem 
                         href="/ai-prep" 
                         icon={BrainCircuit} 
-                        label="Nexus" 
+                        label="Ai Nexus" 
                         isActive={pathname === "/ai-prep"} 
                     />
 
