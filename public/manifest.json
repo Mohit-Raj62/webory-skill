@@ -1,9 +1,12 @@
 {
+  "id": "com.webory.skills",
   "name": "Webory Skills",
   "short_name": "Webory",
   "description": "Master industry-relevant skills, build real-world projects, and launch your career with Webory.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#000000",
   "theme_color": "#000000",
   "icons": [
