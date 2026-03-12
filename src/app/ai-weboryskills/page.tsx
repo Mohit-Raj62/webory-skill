@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import { Send, Sparkles, BookOpen, Loader2, CheckCircle, Clock, Target, Zap, Awa
 import ReactMarkdown from "react-markdown";
 import { BackgroundCodeAnimation } from "@/components/ui/background-code-animation";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/components/auth/session-provider";
 import Image from "next/image";
 
 interface RoadmapPhase {
@@ -81,6 +83,15 @@ export default function AIWeboryskillsPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const chatEndRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
+    const { user, loading: authLoading } = useAuth();
+
+    // Direct Login Redirect
+    useEffect(() => {
+        if (!authLoading && !user) {
+            router.push("/login?callbackUrl=/ai-weboryskills");
+        }
+    }, [user, authLoading, router]);
 
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -97,6 +108,8 @@ export default function AIWeboryskillsPage() {
             document.body.style.overflow = "unset";
         };
     }, [mode]);
+
+    if (authLoading || !user) return null;
 
     const parseRoadmap = (text: string) => {
         const phases: RoadmapPhase[] = [];

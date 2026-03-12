@@ -15,16 +15,12 @@ export default function AIPrepLandingPage() {
 
     // Auth Protection
     useEffect(() => {
-        // Unprotected as per user request
+        if (!loading && !user) {
+            router.push("/login?callbackUrl=/ai-prep");
+        }
     }, [user, loading, router]);
 
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-black text-white flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500"></div>
-            </div>
-        );
-    }
+    if (loading || !user) return null;
 
     const handleStart = (mode: "interview" | "aptitude") => {
         router.push(`/ai-prep/session?mode=${mode}`);

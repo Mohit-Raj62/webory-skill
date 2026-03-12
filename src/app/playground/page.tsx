@@ -50,19 +50,13 @@ export default function PlaygroundPage() {
     const router = useRouter();
 
     useEffect(() => {
-        // Unprotected as per user request
+        if (!loading && !user) {
+            // Redirect to login if not authenticated
+            router.push("/login?callbackUrl=/playground");
+        }
     }, [user, loading, router]);
 
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-[#0d1117] flex items-center justify-center">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
-                    <p className="text-gray-400 font-mono text-sm animate-pulse">Initializing DevLab...</p>
-                </div>
-            </div>
-        );
-    }
+    if (loading || !user) return null;
 
     return (
         <div className="min-h-screen bg-[#0d1117] text-gray-300 font-sans selection:bg-blue-500/30 pt-4 md:pt-20">
