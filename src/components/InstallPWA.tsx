@@ -14,17 +14,27 @@ export function InstallPWA() {
     const [isVisible, setIsVisible] = useState(true);
 
     useEffect(() => {
+        console.log("PWA: Monitoring install prompt...");
         // Check if already installed
         if (window.matchMedia("(display-mode: standalone)").matches) {
+            console.log("PWA: App is already installed (standalone mode)");
             setIsInstalled(true);
         }
 
         const handleBeforeInstallPrompt = (e: Event) => {
+            console.log("PWA: 'beforeinstallprompt' event fired!");
             e.preventDefault();
             setInstallPrompt(e as BeforeInstallPromptEvent);
         };
 
         window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+        
+        // Also check if app is already installed via navigator
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.ready.then(() => {
+                console.log("PWA: Service worker ready");
+            });
+        }
 
         return () => {
             window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
