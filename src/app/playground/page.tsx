@@ -50,10 +50,7 @@ export default function PlaygroundPage() {
     const router = useRouter();
 
     useEffect(() => {
-        if (!loading && !user) {
-            // Redirect to login if not authenticated
-            router.push("/login?callbackUrl=/playground");
-        }
+        // Unprotected as per user request
     }, [user, loading, router]);
 
     if (loading) {
@@ -62,35 +59,6 @@ export default function PlaygroundPage() {
                 <div className="flex flex-col items-center gap-4">
                     <div className="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
                     <p className="text-gray-400 font-mono text-sm animate-pulse">Initializing DevLab...</p>
-                </div>
-            </div>
-        );
-    }
-
-    if (!user) {
-        return (
-             <div className="min-h-screen bg-[#0d1117] flex items-center justify-center p-4">
-                <div className="max-w-md w-full bg-[#161b22] border border-[#30363d] rounded-xl p-8 text-center shadow-2xl">
-                    <div className="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <Lock className="text-blue-400 w-8 h-8" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-white mb-2">Authentication Required</h2>
-                    <p className="text-gray-400 mb-8">Access to the Webory DevLab is restricted to registered members only. Please sign in to continue.</p>
-                    
-                    <div className="flex flex-col gap-3">
-                        <Button 
-                            onClick={() => router.push("/login?callbackUrl=/playground")}
-                            className="bg-blue-600 hover:bg-blue-500 text-white w-full py-6 text-lg"
-                        >
-                            Sign In to DevLab
-                        </Button>
-                        <Link 
-                            href="/"
-                            className="text-gray-500 hover:text-gray-400 text-sm mt-2 transition-colors"
-                        >
-                            Return Home
-                        </Link>
-                    </div>
                 </div>
             </div>
         );

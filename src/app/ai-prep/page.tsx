@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
-import { Bot, BrainCircuit, Rocket, CheckCircle2, ArrowRight, Lock, ChevronLeft, Loader2 } from "lucide-react";
+import { Bot, BrainCircuit, Rocket, CheckCircle2, ArrowRight } from "lucide-react";
 import { useAuth } from "@/components/auth/session-provider";
 
 export default function AIPrepLandingPage() {
@@ -15,56 +15,13 @@ export default function AIPrepLandingPage() {
 
     // Auth Protection
     useEffect(() => {
-        if (!loading && !user) {
-            // router.push("/login"); // Removed for Lock Screen UI
-        }
+        // Unprotected as per user request
     }, [user, loading, router]);
 
     if (loading) {
         return (
             <div className="min-h-screen bg-black text-white flex items-center justify-center">
-                <div className="flex flex-col items-center gap-4">
-                    <Loader2 className="w-10 h-10 text-purple-500 animate-spin" />
-                    <p className="text-gray-400 font-mono text-sm animate-pulse">Initializing AI Nexus...</p>
-                </div>
-            </div>
-        );
-    }
-
-    if (!user) {
-        return (
-             <div className="min-h-screen bg-[#050505] flex items-center justify-center p-4 selection:bg-purple-500/30 font-sans">
-                {/* Dynamic Background */}
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/20 via-[#050505] to-[#050505] pointer-events-none" />
-                
-                <div className="max-w-md w-full bg-gray-900/40 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-10 text-center shadow-2xl relative z-20 overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-b from-purple-500/10 to-transparent opacity-50" />
-                    
-                    <div className="relative z-10">
-                        <div className="w-16 h-16 bg-purple-500/10 rounded-2xl border border-purple-500/20 flex items-center justify-center mx-auto mb-6 shadow-[0_0_20px_rgba(168,85,247,0.1)]">
-                            <Lock className="text-purple-400 w-8 h-8" />
-                        </div>
-                        <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">Access Restricted</h2>
-                        <p className="text-gray-400 mb-8 text-sm leading-relaxed">
-                            Webory AI Nexus training modules are reserved for registered students. Please sign in to unlock your potential.
-                        </p>
-                        
-                        <div className="flex flex-col gap-3">
-                            <Button 
-                                onClick={() => router.push("/login?callbackUrl=/ai-prep")}
-                                className="w-full h-14 bg-white/5 hover:bg-purple-600 text-white border border-white/10 hover:border-purple-500/50 rounded-xl shadow-lg hover:shadow-[0_0_30px_rgba(168,85,247,0.4)] transition-all duration-300 text-lg font-bold tracking-wide uppercase"
-                            >
-                                Sign In to AI Nexus
-                            </Button>
-                            <button 
-                                onClick={() => router.push("/")}
-                                className="text-gray-500 hover:text-gray-300 text-sm mt-2 transition-colors flex items-center justify-center gap-1 font-medium"
-                            >
-                                <ChevronLeft size={14} /> Back to Website
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500"></div>
             </div>
         );
     }

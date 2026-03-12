@@ -2,15 +2,13 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
-import { Send, Sparkles, BookOpen, Loader2, CheckCircle, Clock, Target, Zap, Award, TrendingUp, Rocket, MessageCircle, Map, User, Bot, Star, Code, Terminal, Lock, ChevronLeft } from "lucide-react";
+import { Send, Sparkles, BookOpen, Loader2, CheckCircle, Clock, Target, Zap, Award, TrendingUp, Rocket, MessageCircle, Map, User, Bot, Star, Code, Terminal } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { BackgroundCodeAnimation } from "@/components/ui/background-code-animation";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useAuth } from "@/components/auth/session-provider";
 import Image from "next/image";
 
 interface RoadmapPhase {
@@ -83,15 +81,6 @@ export default function AIWeboryskillsPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const chatEndRef = useRef<HTMLDivElement>(null);
-    const router = useRouter();
-    const { user, loading: authLoading } = useAuth();
-
-    // Added Auth Protection
-    useEffect(() => {
-        if (!authLoading && !user) {
-            router.push("/login?callbackUrl=/ai-weboryskills");
-        }
-    }, [user, authLoading, router]);
 
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -108,46 +97,6 @@ export default function AIWeboryskillsPage() {
             document.body.style.overflow = "unset";
         };
     }, [mode]);
-
-    if (authLoading) {
-        return (
-            <div className="min-h-screen bg-black flex items-center justify-center">
-                <div className="flex flex-col items-center gap-4">
-                    <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
-                    <p className="text-gray-400 font-mono text-sm animate-pulse">Authenticating Mentor Access...</p>
-                </div>
-            </div>
-        );
-    }
-
-    if (!user) {
-        return (
-             <div className="min-h-screen bg-black flex items-center justify-center p-4">
-                <div className="max-w-md w-full bg-gray-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 text-center shadow-2xl relative z-50">
-                    <div className="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-blue-500/20">
-                        <Lock className="text-blue-400 w-8 h-8" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-white mb-2">Authentication Required</h2>
-                    <p className="text-gray-400 mb-8">Access to the Webory AI Mentor is restricted to registered members only. Please sign in to continue.</p>
-                    
-                    <div className="flex flex-col gap-3">
-                        <Button 
-                            onClick={() => router.push("/login?callbackUrl=/ai-weboryskills")}
-                            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white w-full py-6 text-lg rounded-2xl shadow-lg hover:shadow-blue-500/20 transition-all font-bold"
-                        >
-                            Sign In to Skills AI
-                        </Button>
-                        <button 
-                            onClick={() => router.push("/")}
-                            className="text-gray-500 hover:text-gray-300 text-sm mt-2 transition-colors flex items-center justify-center gap-1"
-                        >
-                            <ChevronLeft size={14} /> Return Home
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
-    }
 
     const parseRoadmap = (text: string) => {
         const phases: RoadmapPhase[] = [];
