@@ -120,7 +120,7 @@ export function MobileBottomNav() {
                     <NavItem 
                         href="/ai-weboryskills" 
                         icon={Bot} 
-                        label="Skills AI" 
+                        label="AI Mentor" 
                         isActive={pathname === "/ai-weboryskills"} 
                     />
 
