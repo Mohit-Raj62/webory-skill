@@ -21,7 +21,7 @@ export function InstallPWA({ variant = "sidebar" }: InstallPWAProps) {
     const [message, setMessage] = useState<string | null>(null);
 
     useEffect(() => {
-        console.log("PWA: Monitoring install prompt...");
+        console.log("PWA: Initializing InstallPWA...");
         
         const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
         setIsIOS(isIOSDevice);
@@ -30,22 +30,38 @@ export function InstallPWA({ variant = "sidebar" }: InstallPWAProps) {
             setIsInstalled(true);
         }
 
+        // Check if prompt was already captured globally
+        if ((window as any).deferredPrompt) {
+            console.log("PWA: Using globally captured prompt");
+            setInstallPrompt((window as any).deferredPrompt);
+        }
+
+        const handlePromptCaptured = () => {
+            console.log("PWA: Received global capture event");
+            if ((window as any).deferredPrompt) {
+                setInstallPrompt((window as any).deferredPrompt);
+                setIsChecking(false);
+            }
+        };
+
         const handleBeforeInstallPrompt = (e: Event) => {
-            console.log("PWA: 'beforeinstallprompt' event fired!");
+            console.log("PWA: 'beforeinstallprompt' event fired in component!");
             e.preventDefault();
             setInstallPrompt(e as BeforeInstallPromptEvent);
+            (window as any).deferredPrompt = e;
             setIsChecking(false);
         };
 
+        window.addEventListener("pwa-prompt-captured", handlePromptCaptured);
         window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-        
-        // Also check if already installed via another way
         window.addEventListener("appinstalled", () => {
             setIsInstalled(true);
             setInstallPrompt(null);
+            (window as any).deferredPrompt = null;
         });
 
         return () => {
+            window.removeEventListener("pwa-prompt-captured", handlePromptCaptured);
             window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
         };
     }, []);

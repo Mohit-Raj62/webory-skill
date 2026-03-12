@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Outfit, Great_Vibes } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
@@ -9,6 +9,7 @@ import { SessionProvider } from "@/components/auth/session-provider";
 import { Toaster } from "sonner";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import SupportChatbotWrapper from "@/components/SupportChatbotWrapper";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
@@ -17,6 +18,13 @@ const greatVibes = Great_Vibes({
     subsets: ["latin"],
     variable: "--font-great-vibes"
 });
+
+export const viewport: Viewport = {
+    themeColor: "#000000",
+    width: "device-width",
+    initialScale: 1,
+    viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
     metadataBase: new URL("https://www.weboryskills.in"),
@@ -96,6 +104,17 @@ export default function RootLayout({
                 outfit.variable,
                 greatVibes.variable
             )}>
+                <Script id="pwa-install-capture" strategy="afterInteractive">
+                    {`
+                        window.deferredPrompt = null;
+                        window.addEventListener('beforeinstallprompt', (e) => {
+                            e.preventDefault();
+                            window.deferredPrompt = e;
+                            console.log('PWA: Prompt captured globally');
+                            window.dispatchEvent(new Event('pwa-prompt-captured'));
+                        });
+                    `}
+                </Script>
                 <Suspense fallback={null}>
                     <ProgressBar />
                 </Suspense>
