@@ -43,6 +43,11 @@ const NavItem = ({ href, icon: Icon, label, isActive, onClick }: {
         return <div onClick={onClick}>{content}</div>;
     }
 
+    // Prevent navigation if already active to stop redundant re-mounting
+    if (isActive) {
+        return <div className="flex-1 h-full cursor-default">{content}</div>;
+    }
+
     return (
         <Link href={href || "#"} className="flex-1 h-full">
             {content}
