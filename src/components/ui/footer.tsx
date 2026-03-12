@@ -63,33 +63,37 @@ export function Footer() {
                     </div>
 
                     {/* Navigation Links */}
-                    <div className="col-span-1 md:col-span-2 lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 gap-y-10 sm:gap-8 text-center sm:text-left">
-                        <div className="col-span-1 border-r border-white/5 sm:border-0 pr-4 sm:pr-0">
-                            <h4 className="text-white font-semibold mb-6 flex items-center justify-center sm:justify-start gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                                Platform
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-400">
-                                <li><Link href="/courses" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">All Courses</Link></li>
-                                <li><Link href="/internships" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">Internships <span className="text-[9px] px-1.5 py-0.5 bg-green-500/20 text-green-400 rounded border border-green-500/20">New</span></Link></li>
-                                <li><Link href="/mentorship" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">Mentorship</Link></li>
-                                <li><Link href="/ai-prep" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">Webory AI Nexus <span className="text-[9px] px-1.5 py-0.5 bg-blue-500/20 text-blue-400 rounded border border-blue-500/20">New</span></Link></li>
-                                <li><Link href="/playground" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">DevLab IDE</Link></li>
-                            </ul>
+                    <div className="col-span-1 md:col-span-2 lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 gap-6 text-center sm:text-left">
+                        <div className="col-span-1 h-full">
+                            <div className="w-full h-full p-6 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm hover:border-blue-500/10 transition-colors duration-500">
+                                <h4 className="text-white font-semibold mb-6 flex items-center justify-center sm:justify-start gap-2">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                                    Platform
+                                </h4>
+                                <ul className="space-y-3 text-sm text-gray-400">
+                                    <li><Link href="/courses" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">All Courses</Link></li>
+                                    <li><Link href="/internships" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">Internships <span className="text-[9px] px-1.5 py-0.5 bg-green-500/20 text-green-400 rounded border border-green-500/20">New</span></Link></li>
+                                    <li><Link href="/mentorship" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">Mentorship</Link></li>
+                                    <li><Link href="/ai-prep" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">Webory AI Nexus <span className="text-[9px] px-1.5 py-0.5 bg-blue-500/20 text-blue-400 rounded border border-blue-500/20">New</span></Link></li>
+                                    <li><Link href="/playground" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">DevLab IDE</Link></li>
+                                </ul>
+                            </div>
                         </div>
 
-                        <div className="col-span-1">
-                            <h4 className="text-white font-semibold mb-6 flex items-center justify-center sm:justify-start gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
-                                Company
-                            </h4>
-                            <ul className="space-y-3 text-sm text-gray-400">
-                                <li><Link href="/about" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">About Us</Link></li>
-                                <li><Link href="/careers" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">Careers</Link></li>
-                                <li><Link href="/blog" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">Blog</Link></li>
-                                <li><Link href="/contact" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">Contact</Link></li>
-                                <li><Link href="/ambassador" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent font-medium">Campus Ambassador</Link></li>
-                            </ul>
+                        <div className="col-span-1 h-full">
+                            <div className="w-full h-full p-6 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm hover:border-purple-500/10 transition-colors duration-500">
+                                <h4 className="text-white font-semibold mb-6 flex items-center justify-center sm:justify-start gap-2">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                                    Company
+                                </h4>
+                                <ul className="space-y-3 text-sm text-gray-400">
+                                    <li><Link href="/about" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">About Us</Link></li>
+                                    <li><Link href="/careers" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">Careers</Link></li>
+                                    <li><Link href="/blog" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">Blog</Link></li>
+                                    <li><Link href="/contact" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">Contact</Link></li>
+                                    <li><Link href="/ambassador" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent font-medium">Campus Ambassador</Link></li>
+                                </ul>
+                            </div>
                         </div>
 
                         <div className="flex flex-col items-center md:items-start col-span-2 sm:col-span-1 pt-8 sm:pt-0 border-t border-white/5 sm:border-0 h-full">
