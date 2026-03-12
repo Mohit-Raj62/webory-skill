@@ -18,10 +18,10 @@ const NavItem = ({ href, icon: Icon, label, isActive, onClick }: {
     const content = (
         <div className="flex flex-col items-center justify-center flex-1 h-full relative group cursor-pointer">
             <div className={cn(
-                "relative p-1.5 rounded-xl transition-all duration-300",
+                "relative p-1 rounded-xl transition-all duration-300",
                 isActive ? "text-blue-400 bg-blue-500/10" : "text-gray-500 group-hover:text-gray-300"
             )}>
-                <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
+                <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
                 {isActive && (
                     <motion.div
                         layoutId="active-pill"
@@ -31,7 +31,7 @@ const NavItem = ({ href, icon: Icon, label, isActive, onClick }: {
                 )}
             </div>
             <span className={cn(
-                "text-[8px] font-bold mt-1 tracking-tighter transition-colors duration-300",
+                "text-[9px] font-bold mt-1 tracking-tighter transition-colors duration-300",
                 isActive ? "text-blue-400" : "text-gray-500"
             )}>
                 {label}
