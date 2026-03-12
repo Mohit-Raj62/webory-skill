@@ -22,11 +22,20 @@ export async function GET(req: Request) {
 
     const fileBuffer = await response.arrayBuffer();
 
-    // Return as PDF
+    // Determine proper content type based on filename extension
+    let contentType = "application/pdf";
+    const lowerFilename = filename.toLowerCase();
+    if (lowerFilename.endsWith(".jpg") || lowerFilename.endsWith(".jpeg")) {
+      contentType = "image/jpeg";
+    } else if (lowerFilename.endsWith(".png")) {
+      contentType = "image/png";
+    }
+
+    // Return as file with inline disposition to view in browser
     return new NextResponse(fileBuffer, {
       headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="${filename}"`,
+        "Content-Type": contentType,
+        "Content-Disposition": `inline; filename="${filename}"`,
         "Cache-Control": "public, max-age=3600",
       },
     });

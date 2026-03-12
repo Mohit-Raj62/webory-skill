@@ -402,14 +402,38 @@ export default function ProfilePage() {
 
                                                 <div className="flex flex-wrap gap-2 items-center">
                                                     {app.resume && app.resume !== "Pending Upload" ? (
-                                                        <a href={app.resume} target="_blank" rel="noopener noreferrer" className="h-8 px-4 flex items-center gap-2 bg-white/5 hover:bg-white/10 rounded-lg text-[10px] font-black uppercase tracking-widest text-slate-300 transition-all border border-white/5 shadow-sm">
-                                                            <FileText size={12} className="text-blue-400" /> Resume
-                                                        </a>
+                                                        <>
+                                                            <a href={app.resume} target="_blank" rel="noopener noreferrer" className="h-8 px-4 flex items-center gap-2 bg-white/5 hover:bg-white/10 rounded-lg text-[10px] font-black uppercase tracking-widest text-slate-300 transition-all border border-white/5 shadow-sm">
+                                                                <FileText size={12} className="text-blue-400" /> Resume
+                                                            </a>
+                                                            <input 
+                                                                type="file" 
+                                                                id={`resume-reupload-${app._id}`} 
+                                                                className="hidden" 
+                                                                accept=".pdf,.doc,.docx"
+                                                                onChange={(e) => handleFileUpload(e, app._id)}
+                                                                disabled={uploadingAppId === app._id}
+                                                            />
+                                                            <label htmlFor={`resume-reupload-${app._id}`} className="h-8 px-4 flex items-center gap-2 bg-orange-500/10 hover:bg-orange-500/20 rounded-lg text-[10px] font-black uppercase tracking-widest text-orange-400 transition-all border border-orange-500/20 cursor-pointer">
+                                                                {uploadingAppId === app._id ? <Clock size={12} className="animate-spin" /> : <Upload size={12} />} 
+                                                                {uploadingAppId === app._id ? "Uploading..." : "Re-upload"}
+                                                            </label>
+                                                        </>
                                                     ) : (
-                                                        <label htmlFor={`resume-upload-${app._id}`} className="h-8 px-4 flex items-center gap-2 bg-blue-500/10 hover:bg-blue-500/20 rounded-lg text-[10px] font-black uppercase tracking-widest text-blue-400 transition-all border border-blue-500/20 cursor-pointer">
-                                                            {uploadingAppId === app._id ? <Clock size={12} className="animate-spin" /> : <Upload size={12} />} 
-                                                            {uploadingAppId === app._id ? "Uploading..." : "Upload CV"}
-                                                        </label>
+                                                        <>
+                                                            <input 
+                                                                type="file" 
+                                                                id={`resume-upload-${app._id}`} 
+                                                                className="hidden" 
+                                                                accept=".pdf,.doc,.docx"
+                                                                onChange={(e) => handleFileUpload(e, app._id)}
+                                                                disabled={uploadingAppId === app._id}
+                                                            />
+                                                            <label htmlFor={`resume-upload-${app._id}`} className="h-8 px-4 flex items-center gap-2 bg-blue-500/10 hover:bg-blue-500/20 rounded-lg text-[10px] font-black uppercase tracking-widest text-blue-400 transition-all border border-blue-500/20 cursor-pointer">
+                                                                {uploadingAppId === app._id ? <Clock size={12} className="animate-spin" /> : <Upload size={12} />} 
+                                                                {uploadingAppId === app._id ? "Uploading..." : "Upload CV"}
+                                                            </label>
+                                                        </>
                                                     )}
 
                                                     {(app.status === 'accepted' || app.status === 'completed' || app.status === 'interview_scheduled') && (
