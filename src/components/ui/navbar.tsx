@@ -200,6 +200,30 @@ export function Navbar() {
                         )}
                     </div>
 
+                    {/* Mobile Quick Actions (Feedback & Profile) */}
+                    <div className="lg:hidden flex items-center gap-2">
+                        <button
+                            onClick={() => setIsFeedbackOpen(true)}
+                            className="p-2 rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-400 hover:text-white transition-all active:scale-90"
+                        >
+                            <MessageSquare size={18} />
+                        </button>
+                        
+                        {user ? (
+                            <Link href={user.role === 'admin' ? "/admin" : "/profile"}>
+                                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white shadow-lg border border-white/10 active:scale-95 transition-transform">
+                                    {user.firstName[0]}
+                                </div>
+                            </Link>
+                        ) : (
+                            <Link href="/login">
+                                <div className="p-2 rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-400 hover:text-white transition-all active:scale-90">
+                                    <User size={18} />
+                                </div>
+                            </Link>
+                        )}
+                    </div>
+
                     {/* Mobile Menu Button - Hidden to favor Bottom Nav */}
                     <motion.button
                         whileTap={{ scale: 0.9 }}

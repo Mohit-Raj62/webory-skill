@@ -6,8 +6,6 @@ import { motion } from "framer-motion";
 import { Home, GraduationCap, Briefcase, Bot, BrainCircuit, User, MessageSquare } from "lucide-react";
 import { useAuth } from "@/components/auth/session-provider";
 import { cn } from "@/lib/utils";
-import { FeedbackForm } from "@/components/feedback/FeedbackForm";
-import { useState } from "react";
 
 const NavItem = ({ href, icon: Icon, label, isActive, onClick }: { 
     href?: string; 
@@ -54,7 +52,6 @@ const NavItem = ({ href, icon: Icon, label, isActive, onClick }: {
 export function MobileBottomNav() {
     const pathname = usePathname();
     const { user } = useAuth();
-    const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
 
     // Only show on mobile
     return (
@@ -103,21 +100,8 @@ export function MobileBottomNav() {
                         isActive={pathname === "/ai-prep"} 
                     />
 
-                    <NavItem 
-                        onClick={() => setIsFeedbackOpen(true)}
-                        icon={MessageSquare} 
-                        label="Help" 
-                    />
-
-                    <NavItem 
-                        href={user ? (user.role === 'admin' ? "/admin" : "/profile") : "/login"} 
-                        icon={User} 
-                        label={user ? (user.role === 'admin' ? "Admin" : "Me") : "Log In"} 
-                        isActive={pathname === "/profile" || pathname === "/admin" || pathname === "/login"} 
-                    />
                 </motion.nav>
             </div>
-            <FeedbackForm isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} />
         </>
     );
 }
