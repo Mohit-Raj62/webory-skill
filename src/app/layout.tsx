@@ -100,7 +100,7 @@ export default function RootLayout({
     return (
         <html lang="en" className="scroll-smooth" data-scroll-behavior="smooth">
             <body className={cn(
-                "min-h-screen bg-background font-sans antialiased pb-24 lg:pb-0",
+                "min-h-screen bg-background font-sans antialiased",
                 inter.variable,
                 outfit.variable,
                 greatVibes.variable

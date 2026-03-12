@@ -52,8 +52,25 @@ const NavItem = ({ href, icon: Icon, label, isActive, onClick }: {
 export function MobileBottomNav() {
     const pathname = usePathname();
     const { user } = useAuth();
+    const [isStandalone, setIsStandalone] = useState(false);
 
-    // Only show on mobile
+    useEffect(() => {
+        const isApp = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone;
+        setIsStandalone(isApp);
+        
+        if (isApp) {
+            document.body.classList.add('pb-24');
+        } else {
+            document.body.classList.remove('pb-24');
+        }
+
+        return () => {
+            document.body.classList.remove('pb-24');
+        };
+    }, []);
+
+    // Only show on mobile AND in standalone mode
+    if (!isStandalone) return null;
     return (
         <>
             <div className="lg:hidden fixed bottom-4 left-2 right-2 z-[100] h-16 pointer-events-none">
@@ -75,7 +92,7 @@ export function MobileBottomNav() {
                     <NavItem 
                         href="/courses" 
                         icon={GraduationCap} 
-                        label="Learn" 
+                        label="Courses" 
                         isActive={pathname === "/courses"} 
                     />
 

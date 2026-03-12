@@ -80,6 +80,11 @@ export function Navbar() {
     const { user } = useAuth();
 
     const [announcement, setAnnouncement] = useState({ enabled: false, text: "" });
+    const [isStandalone, setIsStandalone] = useState(false);
+
+    useEffect(() => {
+        setIsStandalone(window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone);
+    }, []);
 
     useEffect(() => {
         let mounted = true;
@@ -200,48 +205,52 @@ export function Navbar() {
                         )}
                     </div>
 
-                    {/* Mobile Quick Actions (Feedback & Profile) */}
-                    <div className="lg:hidden flex items-center gap-2">
-                        <button
-                            onClick={() => setIsFeedbackOpen(true)}
-                            className="p-2 rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-400 hover:text-white transition-all active:scale-90"
-                        >
-                            <MessageSquare size={18} />
-                        </button>
-                        
-                        {user ? (
-                            <Link href={user.role === 'admin' ? "/admin" : "/profile"}>
-                                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white shadow-lg border border-white/10 active:scale-95 transition-transform">
-                                    {user.firstName[0]}
-                                </div>
-                            </Link>
-                        ) : (
-                            <Link href="/login">
-                                <div className="p-2 rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-400 hover:text-white transition-all active:scale-90">
-                                    <User size={18} />
-                                </div>
-                            </Link>
-                        )}
-                    </div>
-
-                    {/* Mobile Menu Button - Hidden to favor Bottom Nav */}
-                    <motion.button
-                        whileTap={{ scale: 0.9 }}
-                        className="hidden relative w-10 h-10 flex items-center justify-center rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-300 hover:text-white hover:border-white/20 transition-all"
-                        onClick={() => setIsOpen(!isOpen)}
-                    >
-                        <AnimatePresence mode="wait">
-                            {isOpen ? (
-                                <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                                    <X size={20} />
-                                </motion.div>
+                    {/* Mobile Quick Actions (Feedback & Profile) - Only in Standalone/App */}
+                    {isStandalone && (
+                        <div className="lg:hidden flex items-center gap-2">
+                            <button
+                                onClick={() => setIsFeedbackOpen(true)}
+                                className="p-2 rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-400 hover:text-white transition-all active:scale-90"
+                            >
+                                <MessageSquare size={18} />
+                            </button>
+                            
+                            {user ? (
+                                <Link href={user.role === 'admin' ? "/admin" : "/profile"}>
+                                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white shadow-lg border border-white/10 active:scale-95 transition-transform">
+                                        {user.firstName[0]}
+                                    </div>
+                                </Link>
                             ) : (
-                                <motion.div key="menu" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                                    <Menu size={20} />
-                                </motion.div>
+                                <Link href="/login">
+                                    <div className="p-2 rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-400 hover:text-white transition-all active:scale-90">
+                                        <User size={18} />
+                                    </div>
+                                </Link>
                             )}
-                        </AnimatePresence>
-                    </motion.button>
+                        </div>
+                    )}
+
+                    {/* Mobile Menu Button - Shown only in Browser/Non-Standalone */}
+                    {!isStandalone && (
+                        <motion.button
+                            whileTap={{ scale: 0.9 }}
+                            className="lg:hidden relative w-10 h-10 flex items-center justify-center rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-300 hover:text-white hover:border-white/20 transition-all"
+                            onClick={() => setIsOpen(!isOpen)}
+                        >
+                            <AnimatePresence mode="wait">
+                                {isOpen ? (
+                                    <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                                        <X size={20} />
+                                    </motion.div>
+                                ) : (
+                                    <motion.div key="menu" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                                        <Menu size={20} />
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </motion.button>
+                    )}
                 </div>
 
                 {/* Mobile Menu */}
