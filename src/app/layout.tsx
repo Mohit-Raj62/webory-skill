@@ -50,13 +50,13 @@ export const metadata: Metadata = {
         images: ["/og-image.png"],
     },
     icons: {
-        icon: "/favicon.svg",
+        icon: "/favicon.png?v=3",
     },
-    manifest: "/manifest.json",
+    manifest: "/manifest.json?v=3",
     appleWebApp: {
         capable: true,
-        statusBarStyle: "default",
-        title: "Webory Skills",
+        statusBarStyle: "black-translucent",
+        title: "WeborySkills",
     },
     formatDetection: {
         telephone: false,

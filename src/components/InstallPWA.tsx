@@ -90,28 +90,28 @@ export function InstallPWA({ variant = "sidebar" }: InstallPWAProps) {
     }
 
     return (
-        <div className="mx-4 mb-4 p-4 rounded-xl bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-500/20 relative group overflow-hidden transition-all hover:border-blue-500/40">
+        <div className="mx-3 mb-3 p-3 rounded-lg bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-500/20 relative group overflow-hidden transition-all hover:border-blue-500/40">
             <button 
                 onClick={() => setIsVisible(false)}
-                className="absolute top-2 right-2 text-gray-500 hover:text-white transition-colors"
+                className="absolute top-1 right-1 text-gray-500 hover:text-white transition-colors"
                 title="Dismiss"
             >
-                <X size={14} />
+                <X size={12} />
             </button>
-            <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 rounded-lg bg-blue-600 text-white">
-                    <Download size={16} />
+            <div className="flex items-center gap-2 mb-1.5">
+                <div className="p-1.5 rounded-md bg-blue-600 text-white">
+                    <Download size={14} />
                 </div>
                 <div>
-                    <h3 className="text-sm font-semibold text-white">Webory Skills App</h3>
-                    <p className="text-xs text-gray-400">{isIOS ? "Add to Home Screen" : "Install for better experience"}</p>
+                    <h3 className="text-[11px] font-bold text-white uppercase tracking-tight">App</h3>
+                    <p className="text-[9px] text-gray-400">Better experience</p>
                 </div>
             </div>
             <button
                 onClick={handleInstallClick}
-                className="w-full py-2 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium transition-all transform active:scale-95"
+                className="w-full py-1.5 px-3 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold transition-all transform active:scale-95"
             >
-                {isIOS ? "How to Install" : (installPrompt ? "Install Now" : "Get App")}
+                {isIOS ? "Setup" : (installPrompt ? "Install" : "Get")}
             </button>
         </div>
     );
