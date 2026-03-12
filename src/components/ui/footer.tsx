@@ -92,23 +92,25 @@ export function Footer() {
                             </ul>
                         </div>
 
-                        <div className="flex flex-col items-center md:items-start col-span-2 sm:col-span-1 pt-6 sm:pt-0 border-t border-white/5 sm:border-0">
+                        <div className="flex flex-col items-center md:items-start col-span-2 sm:col-span-1 pt-8 sm:pt-0 border-t border-white/5 sm:border-0">
                             <h4 className="text-white font-bold mb-6 flex items-center justify-center md:justify-start gap-2 group/title">
                                 <span className="w-1.5 h-1.5 rounded-full bg-pink-500 shadow-[0_0_8px_rgba(236,72,153,0.5)] group-hover/title:scale-125 transition-transform duration-300"></span>
                                 <span className="tracking-tight text-lg">Connect</span>
                             </h4>
-                            <div className="flex flex-wrap justify-center md:justify-start gap-4 mb-6">
-                                <SocialLink href="#" icon={<Github size={20} />} brandColor="hover:text-[#fafafa] hover:bg-gray-800 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]" />
+                            
+                            <div className="grid grid-cols-4 sm:grid-cols-2 lg:grid-cols-5 gap-3 w-full max-w-[280px] sm:max-w-none mb-6">
+                                <SocialLink href="#" icon={<Github size={20} />} brandColor="hover:text-white hover:bg-gray-800" />
                                 <SocialLink href="#" icon={
                                     <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[20px] w-[20px] fill-current">
                                         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
                                     </svg>
-                                } brandColor="hover:text-white hover:bg-black hover:shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:border-white/20" />
-                                <SocialLink href="https://www.linkedin.com/in/webory-skills-01244b3a9?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" icon={<Linkedin size={20} />} brandColor="hover:text-white hover:bg-[#0077b5] hover:shadow-[0_0_20px_rgba(0,119,181,0.3)]" />
-                                <SocialLink href="https://www.instagram.com/weboryskills?igsh=anJ2Zmc0MmdjdmEy&utm_source=qr" icon={<Instagram size={20} />} brandColor="hover:text-white hover:bg-gradient-to-tr hover:from-[#f9ce34] hover:via-[#ee2a7b] hover:to-[#6228d7] hover:shadow-[0_0_20px_rgba(238,42,123,0.3)]" />
-                                <SocialLink href="https://www.youtube.com/@CodeWithWebory" icon={<Youtube size={20} />} brandColor="hover:text-white hover:bg-[#ff0000] hover:shadow-[0_0_20px_rgba(255,0,0,0.3)]"/>
+                                } brandColor="hover:text-white hover:bg-black" />
+                                <SocialLink href="https://www.linkedin.com/in/webory-skills-01244b3a9?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" icon={<Linkedin size={20} />} brandColor="hover:text-white hover:bg-[#0077b5]" />
+                                <SocialLink href="https://www.instagram.com/weboryskills?igsh=anJ2Zmc0MmdjdmEy&utm_source=qr" icon={<Instagram size={20} />} brandColor="hover:text-white hover:bg-gradient-to-tr hover:from-[#f9ce34] hover:via-[#ee2a7b] hover:to-[#6228d7]" />
+                                <SocialLink href="https://www.youtube.com/@CodeWithWebory" icon={<Youtube size={20} />} brandColor="hover:text-white hover:bg-[#ff0000]" />
                             </div>
-                            <p className="text-xs text-gray-500 font-medium leading-relaxed max-w-[150px] text-center md:text-left">
+
+                            <p className="text-xs text-gray-500 font-medium leading-relaxed max-w-[180px] text-center md:text-left bg-white/5 py-2 px-4 rounded-xl border border-white/5">
                                 Join our community for latest updates & tech insights.
                             </p>
                         </div>
@@ -134,12 +136,15 @@ function SocialLink({ href, icon, brandColor }: { href: string; icon: React.Reac
     return (
         <Link 
             href={href} 
-            className={`w-11 h-11 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-center text-gray-400 transition-all duration-500 hover:scale-110 hover:-translate-y-1.5 ${brandColor} group/icon overflow-hidden relative`}
+            className={`aspect-square sm:w-12 sm:h-12 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-gray-400 transition-all duration-300 hover:scale-105 active:scale-95 ${brandColor} group/icon overflow-hidden relative shadow-lg shadow-black/20`}
         >
-            <div className="absolute inset-0 bg-white/20 opacity-0 group-hover/icon:opacity-100 blur-xl transition-opacity duration-500"></div>
-            <div className="relative z-10 transition-transform duration-300 group-hover/icon:rotate-[5deg]">
+            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/icon:opacity-20 blur-xl transition-opacity duration-300"></div>
+            <div className="relative z-10 transition-transform duration-300 group-hover/icon:scale-110">
                 {icon}
             </div>
+            
+            {/* Corner Decorative Element */}
+            <div className="absolute top-0 right-0 w-4 h-4 bg-white/5 rounded-bl-lg transform translate-x-1 -translate-y-1 group-hover/icon:translate-x-0 group-hover/icon:translate-y-0 transition-transform duration-300" />
         </Link>
     );
 }
