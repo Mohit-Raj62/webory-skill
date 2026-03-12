@@ -118,24 +118,24 @@ export default function AIPrepResultPage() {
         <div className="min-h-screen bg-black text-white flex flex-col">
             <Navbar />
             
-            <div className="flex-1 max-w-4xl mx-auto w-full p-4 pt-24 pb-12">
-                <div className="text-center mb-12">
-                     <h1 className="text-3xl font-bold text-white mb-2">Practice Session Complete!</h1>
-                     <p className="text-gray-400">Here is how you performed in your {sessionData?.mode} session on {sessionData?.topic}.</p>
+            <div className="flex-1 max-w-4xl mx-auto w-full p-4 pt-20 md:pt-24 pb-8 md:pb-12">
+                <div className="text-center mb-8 md:mb-12">
+                     <h1 className="text-xl md:text-3xl font-bold text-white mb-2 px-2">Practice Session Complete!</h1>
+                     <p className="text-xs md:text-gray-400 px-4">Performance analysis for your {sessionData?.mode} session on {sessionData?.topic}.</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-6 md:mb-8">
                     {/* Score Card */}
-                    <div className="glass-card p-6 rounded-3xl border border-white/10 md:col-span-1 flex flex-col items-center justify-center text-center bg-gray-900/50">
-                        <div className="relative w-32 h-32 flex items-center justify-center mb-4">
+                    <div className="glass-card p-6 md:p-6 rounded-2xl md:rounded-3xl border border-white/10 md:col-span-1 flex flex-col items-center justify-center text-center bg-gray-900/50">
+                        <div className="relative w-28 h-28 md:w-32 md:h-32 flex items-center justify-center mb-3 md:mb-4">
                             <svg className="w-full h-full transform -rotate-90">
-                                <circle cx="64" cy="64" r="56" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-gray-800" />
-                                <circle cx="64" cy="64" r="56" stroke="currentColor" strokeWidth="8" fill="transparent" strokeDasharray={351.86} strokeDashoffset={351.86 - (351.86 * (Math.round(result?.overallScore || 0))) / 100} className={`text-${result && result.overallScore >= 80 ? 'green' : result && result.overallScore >= 50 ? 'yellow' : 'red'}-500 transition-all duration-1000 ease-out`} />
+                                <circle cx="56" cy="56" r="48" stroke="currentColor" strokeWidth="6" fill="transparent" className="text-gray-800 md:cx-[64] md:cy-[64] md:r-[56] md:stroke-[8]" />
+                                <circle cx="56" cy="56" r="48" stroke="currentColor" strokeWidth="6" fill="transparent" strokeDasharray={301.59} strokeDashoffset={301.59 - (301.59 * (Math.round(result?.overallScore || 0))) / 100} className={`text-${result && result.overallScore >= 80 ? 'green' : result && result.overallScore >= 50 ? 'yellow' : 'red'}-500 transition-all duration-1000 ease-out md:cx-[64] md:cy-[64] md:r-[56] md:stroke-[8]`} />
                             </svg>
-                            <span className="absolute text-2xl font-bold">{Math.round(result?.overallScore || 0)}%</span>
+                            <span className="absolute text-xl md:text-2xl font-bold">{Math.round(result?.overallScore || 0)}%</span>
                         </div>
-                        <h3 className="text-lg font-bold text-white">Overall Score</h3>
-                        <p className={`text-sm mt-1 px-3 py-1 rounded-full ${
+                        <h3 className="text-base md:text-lg font-bold text-white">Overall Score</h3>
+                        <p className={`text-[10px] md:text-sm mt-1 px-3 py-1 rounded-full ${
                              result && result.overallScore >= 80 ? 'bg-green-500/20 text-green-400' :
                              result && result.overallScore >= 50 ? 'bg-yellow-500/20 text-yellow-400' :
                              'bg-red-500/20 text-red-500'
@@ -145,31 +145,31 @@ export default function AIPrepResultPage() {
                     </div>
 
                     {/* Report Summary */}
-                    <div className="glass-card p-8 rounded-3xl border border-white/10 md:col-span-2 bg-gray-900/50">
-                        <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                            <TrendingUp className="w-5 h-5 mr-2 text-blue-500" /> Mentor's Summary
+                    <div className="glass-card p-6 md:p-8 rounded-2xl md:rounded-3xl border border-white/10 md:col-span-2 bg-gray-900/50">
+                        <h3 className="text-lg md:text-xl font-bold text-white mb-3 md:mb-4 flex items-center">
+                            <TrendingUp className="w-4 h-4 md:w-5 md:h-5 mr-2 text-blue-500" /> Mentor's Summary
                         </h3>
-                        <p className="text-gray-300 leading-relaxed mb-6">{result?.summary}</p>
+                        <p className="text-xs md:text-gray-300 leading-relaxed mb-6">{result?.summary}</p>
                         
-                        <div className="space-y-4">
+                        <div className="space-y-4 md:space-y-4">
                             <div>
-                                <h4 className="flex items-center text-green-400 font-medium mb-2">
+                                <h4 className="flex items-center text-green-400 font-medium mb-3 text-sm md:text-base">
                                     <CheckCircle2 className="w-4 h-4 mr-2" /> Key Strengths
                                 </h4>
                                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                     {result?.strengths?.map((s, i) => (
-                                        <li key={i} className="bg-green-500/5 border border-green-500/10 px-3 py-2 rounded-lg text-sm text-gray-300">{s}</li>
+                                        <li key={i} className="bg-green-500/5 border border-green-500/10 px-3 py-2 rounded-lg text-[11px] md:text-sm text-gray-300">{s}</li>
                                     ))}
                                 </ul>
                             </div>
                             
                             <div>
-                                <h4 className="flex items-center text-orange-400 font-medium mb-2">
+                                <h4 className="flex items-center text-orange-400 font-medium mb-3 text-sm md:text-base">
                                     <AlertCircle className="w-4 h-4 mr-2" /> Areas for Improvement
                                 </h4>
                                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                     {result?.weaknesses?.map((w, i) => (
-                                        <li key={i} className="bg-orange-500/5 border border-orange-500/10 px-3 py-2 rounded-lg text-sm text-gray-300">{w}</li>
+                                        <li key={i} className="bg-orange-500/5 border border-orange-500/10 px-3 py-2 rounded-lg text-[11px] md:text-sm text-gray-300">{w}</li>
                                     ))}
                                 </ul>
                             </div>
@@ -203,13 +203,13 @@ export default function AIPrepResultPage() {
                 )}
 
                 {/* Additional Tips */}
-                <div className="glass-card p-8 rounded-3xl border border-white/10 bg-gray-900/50 mb-8">
-                     <h3 className="text-xl font-bold text-white mb-4">💡 Actionable Tips for Next Time</h3>
-                     <div className="space-y-3">
+                <div className="glass-card p-6 md:p-8 rounded-2xl md:rounded-3xl border border-white/10 bg-gray-900/50 mb-8">
+                     <h3 className="text-lg md:text-xl font-bold text-white mb-4">💡 Actionable Tips</h3>
+                     <div className="space-y-4 md:space-y-3">
                         {result?.tips?.map((tip, i) => (
                             <div key={i} className="flex items-start">
-                                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold mr-3 mt-0.5">{i+1}</span>
-                                <p className="text-gray-300">{tip}</p>
+                                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-[10px] md:text-xs font-bold mr-3 mt-0.5">{i+1}</span>
+                                <p className="text-xs md:text-gray-300">{tip}</p>
                             </div>
                         ))}
                      </div>

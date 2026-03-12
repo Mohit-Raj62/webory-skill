@@ -344,30 +344,30 @@ export function SessionContent() {
                 <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none animate-pulse" />
                 <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none" />
 
-                <div className="flex-1 flex items-center justify-center p-4 min-h-[90vh]">
+                <div className="flex-1 flex items-center justify-center p-3 md:p-4 min-h-[90vh]">
                     <div className="relative w-full max-w-lg">
-                        <div className="bg-[#09090b] p-8 md:p-10 rounded-3xl border border-zinc-800 shadow-xl max-w-lg w-full relative">
+                        <div className="bg-[#09090b] p-6 md:p-10 rounded-2xl md:rounded-3xl border border-zinc-800 shadow-xl max-w-lg w-full relative">
                              <Button 
                                 variant="ghost" 
                                 size="icon"
-                                className="absolute top-6 left-6 text-gray-500 hover:text-white hover:bg-zinc-800 rounded-full"
+                                className="absolute top-4 left-4 md:top-6 md:left-6 text-gray-500 hover:text-white hover:bg-zinc-800 rounded-full w-8 h-8 md:w-10 md:h-10"
                                 onClick={() => router.push("/ai-prep")}
                             >
-                                <ChevronLeft className="w-5 h-5" />
+                                <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
                             </Button>
 
-                            <div className="text-center mb-10 mt-2">
-                                <div className={`inline-flex p-4 rounded-2xl mb-6 bg-zinc-900 border border-zinc-800 text-white shadow-sm`}>
+                            <div className="text-center mb-8 md:mb-10 mt-6 md:mt-2">
+                                <div className={`inline-flex p-3 md:p-4 rounded-xl md:rounded-2xl mb-4 md:mb-6 bg-zinc-900 border border-zinc-800 text-white shadow-sm`}>
                                     {mode === "interview" ? (
-                                        <Bot className="w-10 h-10" />
+                                        <Bot className="w-8 h-8 md:w-10 md:h-10" />
                                     ) : (
-                                        <BrainCircuit className="w-10 h-10" />
+                                        <BrainCircuit className="w-8 h-8 md:w-10 md:h-10" />
                                     )}
                                 </div>
-                                <h1 className="text-2xl font-bold text-white uppercase tracking-tight">
+                                <h1 className="text-xl md:text-2xl font-bold text-white uppercase tracking-tight">
                                     {mode} Setup
                                 </h1>
-                                <p className="text-gray-500 text-sm mt-2 font-medium">Configure session details</p>
+                                <p className="text-gray-500 text-[10px] md:text-sm mt-1 md:mt-2 font-medium">Configure session details</p>
                             </div>
 
                             <div className="space-y-6">
@@ -432,23 +432,23 @@ export function SessionContent() {
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(17,24,39,0)_0%,rgba(5,5,5,0.8)_100%)]" />
             </div>
 
-            <div className="flex-1 max-w-6xl mx-auto w-full p-4 pt-28 pb-10 flex flex-col relative z-10 h-screen">
+            <div className="flex-1 max-w-6xl mx-auto w-full p-3 md:p-4 pt-20 md:pt-28 pb-6 md:pb-10 flex flex-col relative z-10 h-screen overflow-y-auto md:overflow-hidden">
                 {/* HUD Header */}
-                <header className="flex justify-between items-center mb-8 px-2">
-                    <div className="flex items-center gap-4">
+                <header className="flex justify-between items-center mb-6 md:mb-8 px-1 md:px-2">
+                    <div className="flex items-center gap-3 md:gap-4">
                         <Button 
                             variant="ghost" 
-                            className="bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white rounded-xl h-10 w-10 p-0 border border-white/5" 
+                            className="bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white rounded-lg md:rounded-xl h-8 w-8 md:h-10 md:w-10 p-0 border border-white/5" 
                             onClick={handleExit}
                         >
-                            <ChevronLeft className="w-5 h-5" />
+                            <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
                         </Button>
                         <div>
-                            <div className="flex items-center gap-2 mb-1">
-                                <span className={`w-2 h-2 rounded-full ${mode === "interview" ? "bg-purple-500 animate-pulse" : "bg-blue-500 animate-pulse"}`} />
-                                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em]">Live Session</span>
+                            <div className="flex items-center gap-1.5 md:gap-2 mb-0.5 md:mb-1">
+                                <span className={`w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${mode === "interview" ? "bg-purple-500 animate-pulse" : "bg-blue-500 animate-pulse"}`} />
+                                <span className="text-[8px] md:text-[10px] font-bold text-gray-500 uppercase tracking-widest">Live Session</span>
                             </div>
-                            <h2 className="text-xl font-black text-white uppercase tracking-tight leading-none">{topic}</h2>
+                            <h2 className="text-base md:text-xl font-black text-white uppercase tracking-tight leading-none">{topic}</h2>
                         </div>
                     </div>
 
@@ -471,11 +471,11 @@ export function SessionContent() {
                          </div>
 
                         {mode === "aptitude" && (
-                            <div className="bg-[#0f1115] border border-white/10 rounded-xl px-5 py-2.5 flex items-center gap-3 shadow-lg">
-                                <div className={`text-2xl font-mono font-bold tracking-widest ${timeLeft < 10 ? "text-red-500 animate-pulse" : "text-blue-400"}`}>
+                            <div className="bg-[#0f1115] border border-white/10 rounded-lg md:rounded-xl px-3 py-1.5 md:px-5 md:py-2.5 flex items-center gap-2 md:gap-3 shadow-lg">
+                                <div className={`text-lg md:text-2xl font-mono font-bold tracking-widest ${timeLeft < 10 ? "text-red-500 animate-pulse" : "text-blue-400"}`}>
                                     {timeLeft < 10 ? `0${timeLeft}` : timeLeft}
                                 </div>
-                                <span className="text-[10px] font-bold text-gray-600 uppercase -rotate-90 origin-center">SEC</span>
+                                <span className="text-[8px] md:text-[10px] font-bold text-gray-600 uppercase -rotate-90 origin-center">SEC</span>
                             </div>
                         )}
                     </div>
@@ -500,8 +500,8 @@ export function SessionContent() {
                                 </div>
                             )}
 
-                            <div className="p-8 md:p-10 overflow-y-auto custom-scrollbar flex-1 relative">
-                                <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider mb-6 ${
+                            <div className="p-5 md:p-10 overflow-y-auto custom-scrollbar flex-1 relative">
+                                <div className={`inline-flex items-center gap-1.5 md:gap-2 px-2.5 py-1 rounded-lg text-[8px] md:text-[10px] font-bold uppercase tracking-wider mb-4 md:mb-6 ${
                                     mode === "interview" ? "bg-purple-500/10 text-purple-400 border border-purple-500/20" : "bg-blue-500/10 text-blue-400 border border-blue-500/20"
                                 }`}>
                                    <BrainCircuit className="w-3 h-3" /> System Inquiry #{questionCount}
@@ -522,7 +522,7 @@ export function SessionContent() {
                                     </div>
                                 )}
 
-                                <h3 className="text-2xl md:text-3xl font-medium text-white leading-normal tracking-tight">
+                                <h3 className="text-lg md:text-3xl font-medium text-white leading-relaxed md:leading-normal tracking-tight">
                                     {currentQuestion?.question}
                                 </h3>
 

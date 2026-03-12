@@ -87,7 +87,7 @@ export default function PlaygroundPage() {
                     className="mb-2 md:mb-6 flex flex-row items-center justify-between gap-4 border-b border-[#30363d] pb-2 md:pb-6"
                 >
                     <div className="flex items-center gap-3 md:gap-4">
-                         <div className="h-8 w-8 md:h-12 md:w-12 rounded-lg bg-blue-600/10 border border-blue-500/20 flex items-center justify-center">
+                        <div className="h-8 w-8 md:h-12 md:w-12 rounded-lg bg-blue-600/10 border border-blue-500/20 flex items-center justify-center">
                             <Code2 className="text-blue-400 h-4 w-4 md:h-6 md:w-6" />
                         </div>
                         <div>
@@ -97,7 +97,7 @@ export default function PlaygroundPage() {
                                     v1.0
                                 </span>
                             </h1>
-                            <p className="text-gray-400 text-xs md:text-sm font-mono mt-0.5 md:mt-1 hidden sm:flex items-center gap-2">
+                            <p className="text-gray-400 text-[10px] md:text-sm font-mono mt-0.5 md:mt-1 hidden sm:flex items-center gap-2">
                                 <Cpu size={12} /> Cloud Runtime
                                 <span className="text-gray-600">|</span>
                                 <Globe size={12} /> Global CDN

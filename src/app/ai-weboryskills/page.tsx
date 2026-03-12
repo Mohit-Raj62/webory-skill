@@ -288,16 +288,16 @@ export default function AIWeboryskillsPage() {
                 <BackgroundCodeAnimation />
             </div>
 
-            <div className="container mx-auto px-4 pt-32 sm:pt-36 pb-8 sm:pb-12 max-w-7xl relative z-10">
-                <div className="text-center mb-8 sm:mb-12">
-                    <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 px-4 py-2 rounded-full mb-4 border border-white/10 backdrop-blur-sm">
-                        <Sparkles className="text-blue-400 animate-pulse" size={18} />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 font-semibold text-sm">AI-Powered Learning</span>
+            <div className="container mx-auto px-4 pt-24 md:pt-36 pb-8 md:pb-12 max-w-7xl relative z-10">
+                <div className="text-center mb-8 md:mb-12">
+                    <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 px-3 py-1.5 md:px-4 md:py-2 rounded-full mb-4 border border-white/10 backdrop-blur-sm">
+                        <Sparkles className="text-blue-400 animate-pulse" size={16} />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 font-semibold text-[10px] md:text-sm">AI-Powered Learning</span>
                     </div>
-                    <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-5 px-2">
+                    <h1 className="text-3xl md:text-6xl font-bold mb-4 md:mb-5 px-2">
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">AI Mentor</span>
                     </h1>
-                    <p className="text-gray-400 text-sm sm:text-base md:text-lg max-w-2xl mx-auto px-4 leading-relaxed mb-6">
+                    <p className="text-gray-400 text-xs md:text-lg max-w-2xl mx-auto px-4 leading-relaxed mb-6">
                         Transform your learning journey with AI-powered personalized roadmaps and instant answers.
                     </p>
 
@@ -325,25 +325,25 @@ export default function AIWeboryskillsPage() {
 
                 {/* Chat Mode Overlay */}
                 {mode === "chat" && (
-                    <div className="fixed inset-0 z-40 bg-gray-900/95 backdrop-blur-md pt-28 pb-4 px-4 sm:px-6 flex flex-col animate-fadeIn">
+                    <div className="fixed inset-0 z-40 bg-gray-900/95 backdrop-blur-md pt-20 md:pt-28 pb-4 px-3 sm:px-6 flex flex-col animate-fadeIn">
                         <div className="max-w-5xl mx-auto w-full flex-1 flex flex-col min-h-0 relative z-50">
                         {/* Enhanced Header for Chat Mode */}
-                        <div className="flex items-center justify-between mb-4 flex-shrink-0 glass-card p-4 rounded-xl border border-white/10">
-                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
-                                    <Bot className="text-white" size={20} />
+                        <div className="flex items-center justify-between mb-3 md:mb-4 flex-shrink-0 glass-card p-3 md:p-4 rounded-xl border border-white/10">
+                             <div className="flex items-center gap-2 md:gap-3">
+                                <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+                                    <Bot className="text-white w-4 h-4 md:w-5 md:h-5" />
                                 </div>
                                 <div>
-                                    <h2 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">AI Mentor Chat</h2>
-                                    <p className="text-xs text-gray-400">Ask anything about coding & tech</p>
+                                    <h2 className="text-sm md:text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">AI Mentor Chat</h2>
+                                    <p className="text-[10px] text-gray-400">Ask about coding & tech</p>
                                 </div>
                              </div>
                              <button 
                                 onClick={() => setMode("roadmap")} 
-                                className="group flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-500/10 to-orange-500/10 hover:from-red-500/20 hover:to-orange-500/20 border border-red-500/20 hover:border-red-500/40 rounded-lg transition-all duration-300 hover:scale-105"
+                                className="group flex items-center gap-1.5 md:gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-gradient-to-r from-red-500/10 to-orange-500/10 hover:from-red-500/20 hover:to-orange-500/20 border border-red-500/20 hover:border-red-500/40 rounded-lg transition-all duration-300 hover:scale-105"
                              >
-                                <span className="text-sm font-semibold text-red-400 group-hover:text-red-300">Exit</span>
-                                <svg className="w-4 h-4 text-red-400 group-hover:text-red-300 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <span className="text-xs md:text-sm font-semibold text-red-400 group-hover:text-red-300">Exit</span>
+                                <svg className="w-3 h-3 md:w-4 md:h-4 text-red-400 group-hover:text-red-300 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                              </button>
