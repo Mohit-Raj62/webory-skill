@@ -71,7 +71,9 @@ export function MobileBottomNav() {
     }, []);
 
     // Only show on mobile AND in standalone mode
-    if (!isStandalone) return null;
+    // Hide on admin and teacher pages
+    const isRestrictedPage = pathname?.startsWith('/admin') || pathname?.startsWith('/teacher');
+    if (!isStandalone || isRestrictedPage) return null;
     return (
         <>
             <div className="lg:hidden fixed bottom-4 left-2 right-2 z-[100] h-16 pointer-events-none">

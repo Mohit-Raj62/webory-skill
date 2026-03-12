@@ -23,10 +23,11 @@ import {
     Megaphone,
     Gift,
     Shield,
+    Home,
 } from "lucide-react";
-import { InstallPWA } from "@/components/InstallPWA";
 
 const menuItems = [
+    { name: "Back to Website", href: "/", icon: Home },
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Users", href: "/admin/users", icon: Users },
     { name: "Employee KYC", href: "/admin/employee-verifications", icon: Shield },
@@ -113,8 +114,6 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
                     })}
                 </nav>
 
-                {/* PWA Install Button */}
-                <InstallPWA />
 
                 {/* Logout */}
                 <div className="p-4 border-t border-white/10">
