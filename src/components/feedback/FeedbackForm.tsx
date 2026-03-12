@@ -74,7 +74,7 @@ export function FeedbackForm({ isOpen, onClose }: FeedbackFormProps) {
                         {/* Glow Effects */}
                         <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-3xl blur opacity-30 animate-pulse"></div>
                         
-                        <div className="relative bg-[#050510]/90 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 shadow-2xl overflow-hidden">
+                        <div className="relative bg-[#050510]/90 backdrop-blur-2xl border border-white/10 rounded-3xl p-5 sm:p-8 shadow-2xl overflow-hidden">
                             {/* Decorative Elements */}
                             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
                             <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/10 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
@@ -86,9 +86,9 @@ export function FeedbackForm({ isOpen, onClose }: FeedbackFormProps) {
                                         <div className="p-2 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl border border-blue-500/20">
                                             <Sparkles className="text-blue-400" size={20} />
                                         </div>
-                                        <h2 className="text-2xl font-bold text-white tracking-tight">Your Feedback Matters</h2>
+                                        <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">Your Feedback Matters</h2>
                                     </div>
-                                    <p className="text-slate-400 text-sm">Help us improve your experience on Webory.</p>
+                                    <p className="text-slate-400 text-[13px] sm:text-sm">Help us improve your experience on Webory.</p>
                                 </div>
                                 <button
                                     onClick={onClose}
@@ -98,10 +98,10 @@ export function FeedbackForm({ isOpen, onClose }: FeedbackFormProps) {
                                 </button>
                             </div>
 
-                            <form onSubmit={handleSubmit} className="space-y-8 relative z-10">
+                            <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-8 relative z-10">
                                 {/* Category Selection */}
                                 <div className="space-y-3">
-                                    <label className="text-xs font-semibold uppercase tracking-wider text-slate-500 ml-1">What is this about?</label>
+                                    <label className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 ml-1">What is this about?</label>
                                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                                         {['general', 'course', 'internship', 'interface'].map((cat) => (
                                             <button
@@ -122,9 +122,9 @@ export function FeedbackForm({ isOpen, onClose }: FeedbackFormProps) {
 
                                 {/* Rating */}
                                 <div className="space-y-3 text-center">
-                                    <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">Rate your experience</label>
-                                    <div className="flex justify-center p-6 bg-gradient-to-b from-white/5 to-transparent rounded-2xl border border-white/5">
-                                        <StarRating rating={rating} setRating={setRating} size={36} />
+                                    <label className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500">Rate your experience</label>
+                                    <div className="flex justify-center p-4 sm:p-6 bg-gradient-to-b from-white/5 to-transparent rounded-2xl border border-white/5">
+                                        <StarRating rating={rating} setRating={setRating} size={30} />
                                     </div>
                                 </div>
 
@@ -149,7 +149,7 @@ export function FeedbackForm({ isOpen, onClose }: FeedbackFormProps) {
                                 <Button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white py-6 rounded-xl font-bold shadow-lg shadow-blue-500/20 transform transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border-0"
+                                    className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white py-5 sm:py-6 rounded-xl font-bold shadow-lg shadow-blue-500/20 transform transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border-0"
                                 >
                                     {loading ? (
                                         <span className="flex items-center gap-2">
