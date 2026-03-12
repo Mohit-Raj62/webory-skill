@@ -50,7 +50,7 @@ export const metadata: Metadata = {
         images: ["/og-image.png"],
     },
     icons: {
-        icon: "/favicon.png?v=3",
+        icon: "/favicon.png",
     },
     manifest: "/manifest.json",
     appleWebApp: {

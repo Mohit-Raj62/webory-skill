@@ -52,8 +52,8 @@ export function InstallPWA({ variant = "sidebar" }: InstallPWAProps) {
 
     const handleInstallClick = async () => {
         if (isIOS) {
-            setMessage("iOS: Tap 'Share' in Safari, then 'Add to Home Screen' 📱");
-            setTimeout(() => setMessage(null), 5000);
+            setMessage("📲 Steps to Install on iPhone:\n1. Tap 'Share' (box with arrow)\n2. Scroll down & tap 'Add to Home Screen'\n3. Tap 'Add'");
+            setTimeout(() => setMessage(null), 8000);
             return;
         }
 
@@ -66,11 +66,11 @@ export function InstallPWA({ variant = "sidebar" }: InstallPWAProps) {
             }
         } else {
             setIsChecking(true);
-            setMessage("Checking... Please click the 3-dot menu and select 'Install App' if this button doesn't respond.");
+            setMessage("📲 Download Steps:\n1. Click Browser Menu (3 dots ⋮)\n2. Select 'Install App' or 'Add to Home Screen'\n3. Tap 'Install'");
             setTimeout(() => {
                 setIsChecking(false);
                 setMessage(null);
-            }, 6000);
+            }, 8000);
         }
     };
 
@@ -86,9 +86,22 @@ export function InstallPWA({ variant = "sidebar" }: InstallPWAProps) {
     return (
         <div className="relative">
             {message && (
-                <div className="fixed bottom-20 left-4 right-4 z-50 animate-in fade-in slide-in-from-bottom-5">
-                    <div className="bg-blue-600 text-white p-3 rounded-xl shadow-2xl text-xs font-semibold text-center border border-white/20">
-                        {message}
+                <div className="fixed inset-x-4 bottom-24 z-[9999] animate-in fade-in slide-in-from-bottom-10 duration-500">
+                    <div className="bg-slate-900/95 backdrop-blur-md text-white p-5 rounded-2xl shadow-2xl border border-blue-500/30 ring-1 ring-white/10">
+                        <div className="flex justify-between items-start mb-3">
+                            <span className="text-blue-400 font-bold uppercase tracking-wider text-[10px]">Easy Setup Guide</span>
+                            <button onClick={() => setMessage(null)} className="text-gray-500 hover:text-white transition-colors">
+                                <X size={16} />
+                            </button>
+                        </div>
+                        <div className="space-y-2 whitespace-pre-line leading-relaxed text-sm font-medium">
+                            {message}
+                        </div>
+                        <div className="mt-4 pt-3 border-t border-white/5 flex justify-center">
+                            <div className="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-[10px] uppercase font-bold tracking-tighter animate-pulse">
+                                Try it now
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
@@ -97,10 +110,10 @@ export function InstallPWA({ variant = "sidebar" }: InstallPWAProps) {
                 <button
                     onClick={handleInstallClick}
                     disabled={isChecking}
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-600/10 border border-blue-500/20 text-blue-400 hover:bg-blue-600 hover:text-white transition-all text-[10px] font-bold uppercase tracking-wider animate-pulse hover:animate-none disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-600/10 border border-blue-500/20 text-blue-400 hover:bg-blue-600 hover:text-white transition-all text-[11px] font-bold uppercase tracking-wider shadow-lg shadow-blue-500/10 hover:shadow-blue-500/30 active:scale-95 disabled:opacity-50"
                 >
-                    <Download size={12} strokeWidth={isChecking ? 1 : 3} className={isChecking ? "animate-spin" : ""} />
-                    <span>{isChecking ? "..." : "App"}</span>
+                    <Download size={13} strokeWidth={isChecking ? 1 : 3} className={isChecking ? "animate-spin" : ""} />
+                    <span>{isChecking ? "..." : "Get App"}</span>
                 </button>
             ) : (
                 <div className="mx-3 mb-3 p-3 rounded-lg bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-500/20 relative group overflow-hidden transition-all hover:border-blue-500/40">
@@ -111,20 +124,20 @@ export function InstallPWA({ variant = "sidebar" }: InstallPWAProps) {
                         <X size={12} />
                     </button>
                     <div className="flex items-center gap-2 mb-1.5">
-                        <div className="p-1.5 rounded-md bg-blue-600 text-white">
+                        <div className="p-1.5 rounded-md bg-blue-600 text-white shadow-lg shadow-blue-600/30">
                             <Download size={14} className={isChecking ? "animate-spin" : ""} />
                         </div>
                         <div>
                             <h3 className="text-[11px] font-bold text-white uppercase tracking-tight">App</h3>
-                            <p className="text-[9px] text-gray-400">Better experience</p>
+                            <p className="text-[9px] text-gray-400">Superior Experience</p>
                         </div>
                     </div>
                     <button
                         onClick={handleInstallClick}
                         disabled={isChecking}
-                        className="w-full py-1.5 px-3 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold transition-all transform active:scale-95 disabled:opacity-50"
+                        className="w-full py-2 px-3 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-extrabold transition-all transform active:scale-95 disabled:opacity-50 shadow-md shadow-blue-600/20"
                     >
-                        {isChecking ? "Checking..." : (isIOS ? "Setup" : (installPrompt ? "Install" : "Get"))}
+                        {isChecking ? "Loading..." : (isIOS ? "Setup" : (installPrompt ? "Install Now" : "Get App"))}
                     </button>
                 </div>
             )}
