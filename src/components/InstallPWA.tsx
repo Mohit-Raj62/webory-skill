@@ -81,10 +81,10 @@ export function InstallPWA({ variant = "sidebar" }: InstallPWAProps) {
         return (
             <button
                 onClick={handleInstallClick}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-blue-600/10 border border-blue-500/20 text-blue-400 hover:bg-blue-600 hover:text-white transition-all text-xs font-medium animate-pulse hover:animate-none"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-600/10 border border-blue-500/20 text-blue-400 hover:bg-blue-600 hover:text-white transition-all text-[10px] font-bold uppercase tracking-wider animate-pulse hover:animate-none shadow-lg shadow-blue-500/10"
             >
-                <Download size={14} />
-                <span>Get App</span>
+                <Download size={12} strokeWidth={3} />
+                <span>App</span>
             </button>
         );
     }
