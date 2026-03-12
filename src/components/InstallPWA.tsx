@@ -16,11 +16,17 @@ export function InstallPWA({ variant = "sidebar" }: InstallPWAProps) {
     const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
     const [isInstalled, setIsInstalled] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
+    const [isIOS, setIsIOS] = useState(false);
 
     useEffect(() => {
         console.log("PWA: Monitoring install prompt...");
+        
+        // Check for iOS
+        const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+        setIsIOS(isIOSDevice);
+
         // Check if already installed
-        if (window.matchMedia("(display-mode: standalone)").matches) {
+        if (window.matchMedia("(display-mode: standalone)").matches || (navigator as any).standalone) {
             console.log("PWA: App is already installed (standalone mode)");
             setIsInstalled(true);
         }
@@ -33,20 +39,21 @@ export function InstallPWA({ variant = "sidebar" }: InstallPWAProps) {
 
         window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
         
-        // Also check if app is already installed via navigator
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.ready.then(() => {
-                console.log("PWA: Service worker ready");
-            });
-        }
-
         return () => {
             window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
         };
     }, []);
 
     const handleInstallClick = async () => {
-        if (!installPrompt) return;
+        if (isIOS) {
+            alert("To install on iOS: Tap the 'Share' button in Safari and select 'Add to Home Screen' 📱");
+            return;
+        }
+
+        if (!installPrompt) {
+            alert("To install: Use your browser's menu (3 dots) and select 'Install App' or 'Add to Home Screen'.");
+            return;
+        }
 
         await installPrompt.prompt();
         const { outcome } = await installPrompt.userChoice;
@@ -57,8 +64,17 @@ export function InstallPWA({ variant = "sidebar" }: InstallPWAProps) {
         }
     };
 
-    if (isInstalled || !installPrompt || !isVisible) {
+    // If already installed or manually dismissed, hide
+    if (isInstalled || !isVisible) {
         return null;
+    }
+
+    // On desktop, we only show if the prompt is ready (to be less intrusive)
+    // On mobile, we can show a fallback button
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
+    
+    if (!installPrompt && !isIOS && !isMobile && variant === "navbar") {
+        return null; 
     }
 
     if (variant === "navbar") {
@@ -87,15 +103,15 @@ export function InstallPWA({ variant = "sidebar" }: InstallPWAProps) {
                     <Download size={16} />
                 </div>
                 <div>
-                    <h3 className="text-sm font-semibold text-white">Install App</h3>
-                    <p className="text-xs text-gray-400">Better experience on app</p>
+                    <h3 className="text-sm font-semibold text-white">Webory Skills App</h3>
+                    <p className="text-xs text-gray-400">{isIOS ? "Add to Home Screen" : "Install for better experience"}</p>
                 </div>
             </div>
             <button
                 onClick={handleInstallClick}
                 className="w-full py-2 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium transition-all transform active:scale-95"
             >
-                Download Now
+                {isIOS ? "How to Install" : (installPrompt ? "Install Now" : "Get App")}
             </button>
         </div>
     );
