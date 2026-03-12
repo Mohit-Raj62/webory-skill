@@ -122,7 +122,7 @@ export function MobileBottomNav() {
                     <NavItem 
                         href="/ai-prep" 
                         icon={BrainCircuit} 
-                        label="Ai Nexus" 
+                        label="AI Nexus" 
                         isActive={pathname === "/ai-prep"} 
                     />
 

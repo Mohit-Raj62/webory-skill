@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import { Send, Sparkles, BookOpen, Loader2, CheckCircle, Clock, Target, Zap, Awa
 import ReactMarkdown from "react-markdown";
 import { BackgroundCodeAnimation } from "@/components/ui/background-code-animation";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/components/auth/session-provider";
 import Image from "next/image";
 
 interface RoadmapPhase {
@@ -81,6 +83,15 @@ export default function AIWeboryskillsPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const chatEndRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
+    const { user, loading: authLoading } = useAuth();
+
+    // Added Auth Protection
+    useEffect(() => {
+        if (!authLoading && !user) {
+            router.push("/login?callbackUrl=/ai-weboryskills");
+        }
+    }, [user, authLoading, router]);
 
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -97,6 +108,19 @@ export default function AIWeboryskillsPage() {
             document.body.style.overflow = "unset";
         };
     }, [mode]);
+
+    if (authLoading) {
+        return (
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                    <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
+                    <p className="text-gray-400 font-mono text-sm animate-pulse">Authenticating Mentor Access...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!user) return null;
 
     const parseRoadmap = (text: string) => {
         const phases: RoadmapPhase[] = [];
