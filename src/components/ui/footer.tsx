@@ -117,14 +117,14 @@ export function Footer() {
                     </div>
                 </div>
 
-                <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p className="text-gray-500 text-sm">
+                <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <p className="text-gray-500 text-sm order-2 md:order-1">
                         © {new Date().getFullYear()} Webory Technologies. Made with <span className="text-red-500 animate-pulse">❤</span> in India.
                     </p>
-                    <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-500">
-                        <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-                        <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
-                        <Link href="/refund-policy" className="hover:text-white transition-colors">Refunds</Link>
+                    <div className="flex flex-wrap justify-center gap-3 order-1 md:order-2">
+                        <LegalLink href="/privacy" label="Privacy" />
+                        <LegalLink href="/terms" label="Terms" />
+                        <LegalLink href="/refund-policy" label="Refunds" />
                     </div>
                 </div>
             </div>
@@ -145,6 +145,18 @@ function SocialLink({ href, icon, brandColor }: { href: string; icon: React.Reac
             
             {/* Corner Decorative Element */}
             <div className="absolute top-0 right-0 w-4 h-4 bg-white/5 rounded-bl-lg transform translate-x-1 -translate-y-1 group-hover/icon:translate-x-0 group-hover/icon:translate-y-0 transition-transform duration-300" />
+        </Link>
+    );
+}
+
+function LegalLink({ href, label }: { href: string; label: string }) {
+    return (
+        <Link 
+            href={href}
+            className="px-4 py-1.5 rounded-lg bg-white/[0.03] border border-white/5 text-[11px] font-bold text-gray-500 hover:text-white hover:border-blue-500/30 hover:bg-blue-500/5 transition-all duration-300 relative overflow-hidden group/legal"
+        >
+            <span className="relative z-10">{label}</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10 opacity-0 group-hover/legal:opacity-100 transition-opacity duration-300" />
         </Link>
     );
 }
