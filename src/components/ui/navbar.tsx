@@ -7,6 +7,7 @@ import { Menu, X, User, Code2, Sparkles, MessageSquare, GraduationCap, Briefcase
 import { useState, useEffect } from "react";
 import { FeedbackForm } from "@/components/feedback/FeedbackForm";
 import { useAuth } from "@/components/auth/session-provider";
+import { InstallPWA } from "@/components/InstallPWA";
 
 const NavLink = ({ href, children, onClick, badge, icon: Icon }: {
     href: string;
@@ -266,8 +267,13 @@ export function Navbar() {
                                     </motion.div>
                                 )}
 
+                                 {/* PWA Install for Mobile Menu */}
+                                <div onClick={() => setIsOpen(false)}>
+                                    <InstallPWA />
+                                </div>
+
                                 {/* Divider */}
-                                <div className="my-3 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                                <div className="my-1 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
                                 {/* Auth Section */}
                                 <motion.div
