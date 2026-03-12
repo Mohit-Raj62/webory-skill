@@ -156,7 +156,12 @@ export function Navbar() {
                                 <span className="absolute -bottom-0.5 left-0 w-0 h-[2px] bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-300 group-hover:w-full" />
                             </button>
                         )}
-
+                        
+                        {/* PWA Get App for Desktop */}
+                        <div className="mx-1">
+                            <InstallPWA variant="navbar" />
+                        </div>
+                        
                         <div className="w-px h-6 bg-white/10 mx-2" />
 
                         {user ? (

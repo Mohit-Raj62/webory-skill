@@ -8,7 +8,11 @@ interface BeforeInstallPromptEvent extends Event {
     userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
-export function InstallPWA() {
+interface InstallPWAProps {
+    variant?: "sidebar" | "navbar";
+}
+
+export function InstallPWA({ variant = "sidebar" }: InstallPWAProps) {
     const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
     const [isInstalled, setIsInstalled] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
@@ -55,6 +59,18 @@ export function InstallPWA() {
 
     if (isInstalled || !installPrompt || !isVisible) {
         return null;
+    }
+
+    if (variant === "navbar") {
+        return (
+            <button
+                onClick={handleInstallClick}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-blue-600/10 border border-blue-500/20 text-blue-400 hover:bg-blue-600 hover:text-white transition-all text-xs font-medium animate-pulse hover:animate-none"
+            >
+                <Download size={14} />
+                <span>Get App</span>
+            </button>
+        );
     }
 
     return (
