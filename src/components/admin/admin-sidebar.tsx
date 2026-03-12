@@ -24,6 +24,7 @@ import {
     Gift,
     Shield,
 } from "lucide-react";
+import { InstallPWA } from "@/components/InstallPWA";
 
 const menuItems = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -111,6 +112,9 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
                         );
                     })}
                 </nav>
+
+                {/* PWA Install Button */}
+                <InstallPWA />
 
                 {/* Logout */}
                 <div className="p-4 border-t border-white/10">

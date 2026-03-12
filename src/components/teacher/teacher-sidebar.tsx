@@ -13,6 +13,7 @@ import {
     FileText,
     Shield,
 } from "lucide-react";
+import { InstallPWA } from "@/components/InstallPWA";
 
 const menuItems = [
     { name: "Dashboard", href: "/teacher", icon: LayoutDashboard },
@@ -83,6 +84,9 @@ export function TeacherSidebar({ isOpen, onClose }: TeacherSidebarProps) {
                         );
                     })}
                 </nav>
+
+                {/* PWA Install Button */}
+                <InstallPWA />
 
                 {/* Logout */}
                 <div className="p-4 border-t border-white/10">

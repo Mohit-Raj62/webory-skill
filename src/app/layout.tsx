@@ -52,6 +52,15 @@ export const metadata: Metadata = {
     icons: {
         icon: "/favicon.svg",
     },
+    manifest: "/manifest.json",
+    appleWebApp: {
+        capable: true,
+        statusBarStyle: "default",
+        title: "Webory Skills",
+    },
+    formatDetection: {
+        telephone: false,
+    },
     alternates: {
         canonical: "/",
     },
