@@ -37,6 +37,7 @@ const nextConfig: NextConfig = {
 
 export default withPWA({
   dest: "public",
+  register: true,
   cacheOnFrontEndNav: true,
   aggressiveFrontEndNavCaching: true,
   reloadOnOnline: true,
@@ -44,6 +45,5 @@ export default withPWA({
   workboxOptions: {
     disableDevLogs: true,
     skipWaiting: true,
-    clientsClaim: true,
   },
 })(nextConfig);
