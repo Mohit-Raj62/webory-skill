@@ -65,28 +65,28 @@ export function Footer() {
                     {/* Navigation Links */}
                     <div className="col-span-1 md:col-span-2 lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 gap-6 text-center sm:text-left">
                         <div className="col-span-1 h-full">
-                            <div className="w-full h-full p-6 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm hover:border-blue-500/10 transition-colors duration-500">
-                                <h4 className="text-white font-semibold mb-6 flex items-center justify-center sm:justify-start gap-2">
+                            <div className="w-full h-full p-4 sm:p-6 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm hover:border-blue-500/10 transition-colors duration-500">
+                                <h4 className="text-white font-semibold mb-5 sm:mb-6 flex items-center justify-center sm:justify-start gap-2">
                                     <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
                                     Platform
                                 </h4>
-                                <ul className="space-y-3 text-sm text-gray-400">
+                                <ul className="space-y-2.5 sm:space-y-3 text-[13px] sm:text-sm text-gray-400">
                                     <li><Link href="/courses" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">All Courses</Link></li>
-                                    <li><Link href="/internships" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">Internships <span className="text-[9px] px-1.5 py-0.5 bg-green-500/20 text-green-400 rounded border border-green-500/20">New</span></Link></li>
+                                    <li><Link href="/internships" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">Internships <span className="text-[9px] px-1.2 py-0.5 bg-green-500/20 text-green-400 rounded border border-green-500/20">New</span></Link></li>
                                     <li><Link href="/mentorship" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">Mentorship</Link></li>
-                                    <li><Link href="/ai-prep" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">Webory AI Nexus <span className="text-[9px] px-1.5 py-0.5 bg-blue-500/20 text-blue-400 rounded border border-blue-500/20">New</span></Link></li>
+                                    <li><Link href="/ai-prep" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1 leading-tight">Webory AI Nexus <span className="text-[9px] px-1.2 py-0.5 bg-blue-500/20 text-blue-400 rounded border border-blue-500/20">New</span></Link></li>
                                     <li><Link href="/playground" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">DevLab IDE</Link></li>
                                 </ul>
                             </div>
                         </div>
 
                         <div className="col-span-1 h-full">
-                            <div className="w-full h-full p-6 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm hover:border-purple-500/10 transition-colors duration-500">
-                                <h4 className="text-white font-semibold mb-6 flex items-center justify-center sm:justify-start gap-2">
+                            <div className="w-full h-full p-4 sm:p-6 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm hover:border-purple-500/10 transition-colors duration-500">
+                                <h4 className="text-white font-semibold mb-5 sm:mb-6 flex items-center justify-center sm:justify-start gap-2">
                                     <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
                                     Company
                                 </h4>
-                                <ul className="space-y-3 text-sm text-gray-400">
+                                <ul className="space-y-2.5 sm:space-y-3 text-[13px] sm:text-sm text-gray-400">
                                     <li><Link href="/about" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">About Us</Link></li>
                                     <li><Link href="/careers" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">Careers</Link></li>
                                     <li><Link href="/blog" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">Blog</Link></li>
@@ -97,8 +97,8 @@ export function Footer() {
                         </div>
 
                         <div className="flex flex-col items-center md:items-start col-span-2 sm:col-span-1 pt-8 sm:pt-0 border-t border-white/5 sm:border-0 h-full">
-                            <div className="w-full h-full p-6 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm group/connect-box hover:border-blue-500/10 transition-colors duration-500">
-                                <h4 className="text-white font-bold mb-6 flex items-center justify-center md:justify-start gap-2 group/title">
+                            <div className="w-full h-full p-4 sm:p-6 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm group/connect-box hover:border-blue-500/10 transition-colors duration-500">
+                                <h4 className="text-white font-bold mb-5 sm:mb-6 flex items-center justify-center md:justify-start gap-2 group/title">
                                     <span className="w-1.5 h-1.5 rounded-full bg-pink-500 shadow-[0_0_8px_rgba(236,72,153,0.5)] group-hover/title:scale-125 transition-transform duration-300"></span>
                                     <span className="tracking-tight text-lg">Connect</span>
                                 </h4>
@@ -115,7 +115,7 @@ export function Footer() {
                                     <SocialLink href="https://www.youtube.com/@CodeWithWebory" icon={<Youtube size={18} />} brandColor="hover:text-white hover:bg-[#ff0000]" />
                                 </div>
 
-                                <p className="text-[10px] text-gray-500 font-medium leading-relaxed text-center md:text-left bg-white/5 py-2 px-3 rounded-lg border border-white/5">
+                                <p className="text-[10px] text-gray-400 font-medium leading-relaxed text-center md:text-left bg-white/5 py-2 px-3 rounded-lg border border-white/5">
                                     Join our community for latest tech insights.
                                 </p>
                             </div>
