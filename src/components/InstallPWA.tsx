@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Download, X } from "lucide-react";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -19,6 +20,9 @@ export function InstallPWA({ variant = "sidebar" }: InstallPWAProps) {
     const [isIOS, setIsIOS] = useState(false);
     const [isChecking, setIsChecking] = useState(false);
     const [message, setMessage] = useState<string | null>(null);
+    const pathname = usePathname();
+
+    const isRestrictedPage = pathname?.startsWith('/admin') || pathname?.startsWith('/teacher');
 
     useEffect(() => {
         console.log("PWA: Initializing InstallPWA...");
@@ -90,7 +94,7 @@ export function InstallPWA({ variant = "sidebar" }: InstallPWAProps) {
         }
     };
 
-    if (isInstalled || !isVisible) return null;
+    if (isInstalled || !isVisible || isRestrictedPage) return null;
 
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
     
