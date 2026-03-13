@@ -81,11 +81,11 @@ export function MobileBottomNav() {
     if (!isStandalone || isRestrictedPage) return null;
     return (
         <>
-            <div className="lg:hidden fixed bottom-4 left-2 right-2 z-[100] h-16 pointer-events-none">
+            <div className="lg:hidden fixed bottom-[calc(1rem+var(--sab))] left-2 right-2 z-[100] h-16 pointer-events-none">
                 <motion.nav 
                     initial={{ y: 100, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    className="w-full h-full bg-black/80 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl pointer-events-auto flex items-center justify-between px-1 relative overflow-hidden"
+                    className="w-full h-full bg-black/80 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl pointer-events-auto flex items-center justify-between px-1 pb-safe relative overflow-hidden"
                 >
                     {/* Background Glow */}
                     <div className="absolute inset-0 bg-gradient-to-t from-blue-500/10 to-transparent pointer-events-none" />

@@ -24,6 +24,12 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
     --radius: 0.5rem;
+
+    /* Safe Area Variables */
+    --sab: env(safe-area-inset-bottom);
+    --sat: env(safe-area-inset-top);
+    --sal: env(safe-area-inset-left);
+    --sar: env(safe-area-inset-right);
   }
 }
 
@@ -33,6 +39,15 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Prevent elastic scrolling and enhance app feel */
+    overscroll-behavior-y: none;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  /* Allow text selection in specific areas if needed */
+  input, textarea, [contenteditable="true"], .selectable {
+    user-select: text;
   }
 }
 
@@ -80,6 +95,20 @@
 
   .animate-scroll {
     animation: scroll 40s linear infinite;
+  }
+
+  /* Safe Area Padding Utilities */
+  .pt-safe {
+    padding-top: var(--sat);
+  }
+  .pb-safe {
+    padding-bottom: var(--sab);
+  }
+  .mt-safe {
+    margin-top: var(--sat);
+  }
+  .mb-safe {
+    margin-bottom: var(--sab);
   }
 }
 /* Force CSS Rebuild for Chunk Sync */
