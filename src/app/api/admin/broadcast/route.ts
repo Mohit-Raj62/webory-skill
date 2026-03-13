@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
+import PushSubscription from "@/models/PushSubscription";
 import { sendEmail } from "@/lib/mail";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
@@ -84,10 +85,8 @@ export async function POST(req: Request) {
     }
 
     // Send Push Notifications
-    const usersWithPush = await User.find(
-      { "pushSubscriptions.0": { $exists: true } },
-      "pushSubscriptions firstName"
-    );
+    const allPushSubs = await PushSubscription.find({});
+    console.log(`Push: Found ${allPushSubs.length} total push subscriptions.`);
 
     let pushSentCount = 0;
     let pushFailedCount = 0;
@@ -100,18 +99,26 @@ export async function POST(req: Request) {
       url: "/",
     });
 
-    for (const user of usersWithPush) {
-      for (const sub of user.pushSubscriptions) {
-        try {
-          await webpush.sendNotification(sub, pushPayload);
-          pushSentCount++;
-        } catch (error: any) {
-          console.error(`Failed to send push to user ${user._id}:`, error);
-          pushFailedCount++;
-          // If 410 or 404, subscription is expired/invalid, should remove it
-          if (error.statusCode === 410 || error.statusCode === 404) {
-             // Optional: remove expired subscription
-          }
+    for (const sub of allPushSubs) {
+      try {
+        await webpush.sendNotification(
+          {
+            endpoint: sub.endpoint,
+            keys: {
+              p256dh: sub.keys.p256dh,
+              auth: sub.keys.auth
+            }
+          }, 
+          pushPayload
+        );
+        pushSentCount++;
+      } catch (error: any) {
+        console.error(`Failed to send push to sub ${sub._id}:`, error);
+        pushFailedCount++;
+        // If 410 or 404, subscription is expired/invalid, should remove it
+        if (error.statusCode === 410 || error.statusCode === 404) {
+           await PushSubscription.findByIdAndDelete(sub._id);
+           console.log(`Push: Removed expired subscription ${sub._id}`);
         }
       }
     }

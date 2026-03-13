@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
+import PushSubscription from "@/models/PushSubscription";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
@@ -28,11 +29,26 @@ export async function POST(req: Request) {
       }
     }
 
-    // Update user's push subscriptions if userId exists
+    // Save or update subscription in the new model (handles anonymous users)
+    const existingSub = await PushSubscription.findOne({ endpoint: subscription.endpoint });
+    
+    if (existingSub) {
+      // Update userId if it's now known but wasn't before
+      if (userId && !existingSub.userId) {
+        existingSub.userId = userId;
+        await existingSub.save();
+      }
+    } else {
+      await PushSubscription.create({
+        ...subscription,
+        userId: userId || null
+      });
+    }
+
+    // Also keep sync with User model if userId exists (optional but keeps backward compatibility)
     if (userId) {
       const user = await User.findById(userId);
       if (user) {
-        // Check if subscription already exists to avoid duplicates
         const exists = user.pushSubscriptions.some(
           (sub: any) => sub.endpoint === subscription.endpoint
         );
@@ -42,10 +58,6 @@ export async function POST(req: Request) {
         }
       }
     }
-
-    // Note: In a more robust system, we might want a separate PushSubscription model
-    // to handle anonymous users or users on multiple devices before they log in.
-    // For now, we associate it with the logged-in user.
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
