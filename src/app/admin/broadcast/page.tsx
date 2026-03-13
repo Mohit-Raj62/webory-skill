@@ -408,6 +408,8 @@ const PUSH_TEMPLATES = [
 export default function BroadcastPage() {
     const [subject, setSubject] = useState("");
     const [message, setMessage] = useState("");
+    const [pushImage, setPushImage] = useState("");
+    const [isPushImageAuto, setIsPushImageAuto] = useState(true);
     const [loading, setLoading] = useState<string | null>(null); // 'email', 'push', 'both' or null
     const [uploadedImages, setUploadedImages] = useState<string[]>([]);
     const [copiedEmailTemplate, setCopiedEmailTemplate] = useState<number | null>(null);
@@ -418,11 +420,13 @@ export default function BroadcastPage() {
         setLoading(mode);
         setStatus(null);
 
+        const finalPushImage = pushImage || (isPushImageAuto && uploadedImages.length > 0 ? uploadedImages[0] : "");
+
         try {
             const res = await fetch("/api/admin/broadcast", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ subject, message, mode }),
+                body: JSON.stringify({ subject, message, mode, pushImage: finalPushImage }),
             });
 
             const data = await res.json();
@@ -433,6 +437,7 @@ export default function BroadcastPage() {
             setSubject("");
             setMessage("");
             setUploadedImages([]);
+            setPushImage("");
         } catch (error: any) {
             setStatus({ type: "error", message: error.message });
         } finally {
@@ -444,14 +449,22 @@ export default function BroadcastPage() {
         const imageUrl = result.info.secure_url;
         setUploadedImages([...uploadedImages, imageUrl]);
         
+        if (uploadedImages.length === 0 && isPushImageAuto) {
+            setPushImage(imageUrl);
+        }
+
         // Insert image HTML with email-safe attributes
         const imageHtml = `\n<div style="text-align: center; margin: 20px 0;">\n  <img src="${imageUrl}" alt="Image" style="max-width: 600px; width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 8px;" />\n</div>\n`;
         setMessage(message + imageHtml);
     };
 
     const removeImage = (index: number) => {
+        const removedImage = uploadedImages[index];
         const newImages = uploadedImages.filter((_, i) => i !== index);
         setUploadedImages(newImages);
+        if (pushImage === removedImage) {
+            setPushImage("");
+        }
     };
 
     const copyEmailTemplate = (index: number) => {
@@ -584,11 +597,76 @@ export default function BroadcastPage() {
                             </div>
                         </div>
 
-                        {/* Image Upload for Email */}
+                        {/* Push Notification Image Support */}
+                        <div className="bg-purple-900/10 p-4 rounded-xl border border-purple-500/20">
+                            <Label className="text-purple-400 mb-2 flex items-center gap-2">
+                                <Bell className="w-4 h-4" />
+                                Push Notification Image (Large View)
+                            </Label>
+                            <div className="space-y-4">
+                                <div className="flex flex-wrap gap-3">
+                                    {uploadedImages.map((img, index) => (
+                                        <div 
+                                            key={index} 
+                                            onClick={() => {
+                                                setPushImage(img);
+                                                setIsPushImageAuto(false);
+                                            }}
+                                            className={`relative cursor-pointer group rounded-lg overflow-hidden border-2 transition-all ${pushImage === img ? 'border-purple-500 ring-2 ring-purple-500/20' : 'border-white/5 hover:border-white/20'}`}
+                                        >
+                                            <img src={img} className="w-16 h-16 object-cover" />
+                                            {pushImage === img && (
+                                                <div className="absolute inset-0 bg-purple-600/20 flex items-center justify-center">
+                                                    <Check className="w-6 h-6 text-white drop-shadow-md" />
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                    
+                                    <div className="flex flex-col justify-center gap-2">
+                                        <Button
+                                            onClick={() => {
+                                                setPushImage("");
+                                                setIsPushImageAuto(false);
+                                            }}
+                                            variant="ghost"
+                                            size="sm"
+                                            className={`text-[10px] h-7 ${!pushImage ? 'bg-purple-500/20 text-purple-400' : 'text-gray-500'}`}
+                                        >
+                                            No Image
+                                        </Button>
+                                        <div className="flex items-center gap-2 px-2">
+                                            <input 
+                                                type="checkbox" 
+                                                id="auto-push" 
+                                                checked={isPushImageAuto} 
+                                                onChange={(e) => setIsPushImageAuto(e.target.checked)}
+                                                className="w-3 h-3 accent-purple-600"
+                                            />
+                                            <label htmlFor="auto-push" className="text-[10px] text-gray-400 cursor-pointer">Auto Use 1st Image</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                {pushImage && (
+                                    <div className="bg-gray-900/50 p-2 rounded-lg border border-white/5 flex items-center gap-3">
+                                        <img src={pushImage} className="w-12 h-12 rounded object-cover" />
+                                        <div className="flex-1 overflow-hidden">
+                                            <p className="text-[10px] text-gray-300 font-medium truncate">Selected for Push</p>
+                                            <p className="text-[8px] text-gray-500 truncate">{pushImage}</p>
+                                        </div>
+                                        <Button variant="ghost" size="sm" onClick={() => setPushImage("")} className="text-red-400 hover:text-red-300">
+                                            <X className="w-4 h-4" />
+                                        </Button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Image Upload for Email Assets */}
                         <div className="bg-gray-800/50 p-4 rounded-xl border border-white/5">
                             <Label className="text-amber-400 mb-2 flex items-center gap-2">
                                 <Upload className="w-4 h-4" />
-                                Email Assets (Images)
+                                Email & Push Assets (Images)
                             </Label>
                             <input
                                 type="file"
