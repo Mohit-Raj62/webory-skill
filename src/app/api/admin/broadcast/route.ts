@@ -93,12 +93,13 @@ export async function POST(req: Request) {
       const allPushSubs = await PushSubscription.find({});
       console.log(`Push: Found ${allPushSubs.length} total push subscriptions.`);
 
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.weboryskills.in";
       const pushPayload = JSON.stringify({
         title: subject,
         body: message.replace(/<[^>]*>?/gm, '').substring(0, 200), // Plain text snippet
-        icon: "/icons/icon-192x192.png",
-        badge: "/icons/icon-192x192.png",
-        url: "/",
+        icon: `${baseUrl}/icons/icon-192x192.png`,
+        badge: `${baseUrl}/favicon.png`,
+        url: `${baseUrl}/`,
       });
 
       for (const sub of allPushSubs) {

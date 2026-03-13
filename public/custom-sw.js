@@ -6,11 +6,14 @@ self.addEventListener('push', function(event) {
       const options = {
         body: data.body || 'New message from Webory Skills',
         icon: data.icon || '/icons/icon-192x192.png',
-        badge: data.badge || '/icons/icon-192x192.png',
+        badge: data.badge || '/favicon.png',
+        timestamp: Date.now(),
         data: {
           url: data.url || '/'
         },
         vibrate: [100, 50, 100],
+        tag: 'webory-broadcast',
+        renotify: true,
         actions: [
           { action: 'open', title: 'Open App' }
         ]
