@@ -1,10 +1,5 @@
-// Custom Service Worker - v2.2
-console.log('PWA: custom-sw.js v2.2 loaded');
-
-// Helper to normalize URLs for comparison
-function normalizeUrl(url) {
-  return new URL(url, self.location.origin).href.replace(/\/$/, "");
-}
+// Custom Service Worker - v2.3
+console.log('PWA: custom-sw.js v2.3 loaded');
 
 self.addEventListener('push', function(event) {
   console.log('PWA: Push event received');
@@ -12,22 +7,21 @@ self.addEventListener('push', function(event) {
     try {
       const data = event.data.json();
       console.log('PWA: Push data:', data);
-      const baseUrl = self.location.origin;
       
       const options = {
         body: data.body || 'New message from Webory Skills',
-        icon: data.icon || `${baseUrl}/icons/icon-512x512.png`,
-        badge: data.badge || `${baseUrl}/favicon.png`,
+        icon: data.icon || '/icons/icon-192x192.png',
+        badge: '/favicon.png', // Try simple badge
         timestamp: Date.now(),
         data: {
-          url: data.url || baseUrl
+          url: data.url || '/'
         },
         vibrate: [200, 100, 200],
         tag: 'webory-broadcast',
         renotify: true,
         requireInteraction: true,
         actions: [
-          { action: 'open', title: 'Open App' }
+          { action: 'open', title: 'Open Webory App' }
         ]
       };
       
@@ -35,11 +29,11 @@ self.addEventListener('push', function(event) {
         self.registration.showNotification(data.title || 'Webory Skills', options)
       );
     } catch (e) {
-      console.error('PWA: Push JSON error:', e);
+      console.error('PWA: Push error:', e);
       event.waitUntil(
         self.registration.showNotification('Webory Skills', {
           body: event.data.text(),
-          icon: '/icons/icon-512x512.png'
+          icon: '/icons/icon-192x192.png'
         })
       );
     }
@@ -47,44 +41,30 @@ self.addEventListener('push', function(event) {
 });
 
 self.addEventListener('notificationclick', function(event) {
-  console.log('PWA: Notification clicked', event.action);
+  console.log('PWA: Notification clicked');
   event.notification.close();
 
   const baseUrl = self.location.origin;
-  let targetUrl = baseUrl;
-  if (event.notification.data && event.notification.data.url) {
-    targetUrl = event.notification.data.url;
-  }
-
-  const normalizedTarget = normalizeUrl(targetUrl);
+  const targetPath = event.notification.data.url || '/';
+  const targetUrl = new URL(targetPath, baseUrl).href;
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
-      console.log('PWA: Open clients found:', windowClients.length);
-      
-      // 1. Try to find a window that matches the target URL exactly
-      for (const client of windowClients) {
-        if (normalizeUrl(client.url) === normalizedTarget && 'focus' in client) {
-          console.log('PWA: Focusing exact match:', client.url);
-          return client.focus();
-        }
-      }
-      
-      // 2. Otherwise, find any window for our app and navigate it
+      // 1. Try to find any existing window of our app
       for (const client of windowClients) {
         if (client.url.startsWith(baseUrl) && 'focus' in client) {
-          console.log('PWA: Focusing app window and navigating:', client.url);
+          console.log('PWA: Found app window, focusing and navigating');
           client.focus();
-          if ('navigate' in client) {
+          if (client.url !== targetUrl && 'navigate' in client) {
             return client.navigate(targetUrl);
           }
           return;
         }
       }
       
-      // 3. If no window is open, open a new one
+      // 2. If no window is open, open a new one (OS should handle PWA redirect)
       if (clients.openWindow) {
-        console.log('PWA: Opening new window for:', targetUrl);
+        console.log('PWA: Opening new window');
         return clients.openWindow(targetUrl);
       }
     })
