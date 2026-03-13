@@ -6,18 +6,23 @@ import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import webpush from "web-push";
 
-// VAPID keys should ideally be in env variables
-const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "BM4PSdCG1LJdwXFU7CV7BLNKvhelTFXZGgs_yhpu4yH_kJKpVXt4FDIzznjLW5lLmU1vxXlaOcdYLQDikgM1CMbs";
-const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || "fAfI3sv3_nrtoxYg2PNstRKNTl_6bJvzJJeg0MIV6j4";
-
-webpush.setVapidDetails(
-  "mailto:admin@weboryskills.in",
-  VAPID_PUBLIC_KEY,
-  VAPID_PRIVATE_KEY
-);
+// VAPID keys configuration
+const getVapidDetails = () => {
+  const public_key = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "BCxEvdZ2iQZcPB7fKRvQk6JauiuMracpAnA3Tc5L6zHKKPE9I7WAPPyQMCUdzYwTH5pQb1ixCm-TWJbbyVHIlJfk";
+  const private_key = process.env.VAPID_PRIVATE_KEY || "dUBbhU-y8nntz_Db09Bl8QVzIh8-MayjpmvSLSRWozc";
+  
+  return {
+    publicKey: public_key,
+    privateKey: private_key,
+    subject: "mailto:admin@weboryskills.in"
+  };
+};
 
 export async function POST(req: Request) {
   try {
+    const vapid = getVapidDetails();
+    webpush.setVapidDetails(vapid.subject, vapid.publicKey, vapid.privateKey);
+
     await dbConnect();
 
     // Auth Check

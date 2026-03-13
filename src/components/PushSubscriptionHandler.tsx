@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "BM4PSdCG1LJdwXFU7CV7BLNKvhelTFXZGgs_yhpu4yH_kJKpVXt4FDIzznjLW5lLmU1vxXlaOcdYLQDikgM1CMbs";
+const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "BCxEvdZ2iQZcPB7fKRvQk6JauiuMracpAnA3Tc5L6zHKKPE9I7WAPPyQMCUdzYwTH5pQb1ixCm-TWJbbyVHIlJfk";
 
 function urlBase64ToUint8Array(base64String: any) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
