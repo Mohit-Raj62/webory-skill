@@ -65,13 +65,13 @@ export function MobileBottomNav() {
         setIsStandalone(isApp);
         
         if (isApp) {
-            document.body.classList.add('pb-24');
+            document.body.classList.add('pb-32');
         } else {
-            document.body.classList.remove('pb-24');
+            document.body.classList.remove('pb-32');
         }
 
         return () => {
-            document.body.classList.remove('pb-24');
+            document.body.classList.remove('pb-32');
         };
     }, []);
 
@@ -85,7 +85,7 @@ export function MobileBottomNav() {
                 <motion.nav 
                     initial={{ y: 100, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    className="w-full h-full bg-black/80 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl pointer-events-auto flex items-center justify-between px-1 pb-safe relative overflow-hidden"
+                    className="w-full h-full bg-black/80 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl pointer-events-auto flex items-center justify-between px-1 relative overflow-hidden"
                 >
                     {/* Background Glow */}
                     <div className="absolute inset-0 bg-gradient-to-t from-blue-500/10 to-transparent pointer-events-none" />
