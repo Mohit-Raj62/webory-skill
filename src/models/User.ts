@@ -147,6 +147,17 @@ const UserSchema = new Schema({
     type: String, // Referral Code of the ambassador
     default: null,
   },
+  pushSubscriptions: {
+    type: [{
+      endpoint: String,
+      expirationTime: Number,
+      keys: {
+        p256dh: String,
+        auth: String
+      }
+    }],
+    default: [],
+  },
 });
 
 const User = models.User || model("User", UserSchema);

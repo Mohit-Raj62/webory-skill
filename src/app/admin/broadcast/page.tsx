@@ -441,7 +441,7 @@ export default function BroadcastPage() {
 
     return (
         <div className="p-6 space-y-6">
-            <h1 className="text-2xl font-bold text-white">Broadcast Emails</h1>
+            <h1 className="text-2xl font-bold text-white">Broadcast (Email & Push Notifications)</h1>
             
             {/* Email Templates */}
             <Card className="bg-gray-900 border-white/10 text-white">
@@ -484,9 +484,9 @@ export default function BroadcastPage() {
             {/* Broadcast Form */}
             <Card className="bg-gray-900 border-white/10 text-white">
                 <CardHeader>
-                    <CardTitle>Send Email to All Users</CardTitle>
+                    <CardTitle>Send Broadcast to All Users</CardTitle>
                     <CardDescription>
-                        Send announcements, offers, or updates to all registered users.
+                        Send announcements, offers, or updates to all registered users via Email and Push Notification.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -514,9 +514,9 @@ export default function BroadcastPage() {
                                 className="w-full min-h-[300px] rounded-md border border-white/10 bg-gray-800 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-white font-mono"
                             />
                             <p className="text-xs text-gray-400">
-                                You can use HTML tags for formatting. Inline styles are recommended for email compatibility.
+                                💡 <strong>Tip:</strong> Use <code className="bg-gray-700 px-1 rounded">{"{{name}}"}</code> to personalize the email. 
                                 <br/>
-                                💡 <strong>Tip:</strong> Use <code className="bg-gray-700 px-1 rounded">{"{{name}}"}</code> to personalize with user's first name (e.g., "Hi {"{{name}}"}, ..." becomes "Hi Mohit, ...")
+                                📱 <strong>Push Notification:</strong> A plain-text snippet of your message will be sent as a phone notification.
                             </p>
                         </div>
 
@@ -593,7 +593,7 @@ export default function BroadcastPage() {
                             ) : (
                                 <>
                                     <Send className="mr-2 h-4 w-4" />
-                                    Send Broadcast
+                                    Send Broadcast (Email + Push)
                                 </>
                             )}
                         </Button>
