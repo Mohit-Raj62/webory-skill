@@ -40,7 +40,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const { subject, message, mode = "both" } = await req.json();
+    const { subject, message, mode = "both", pushImage } = await req.json();
 
     if (!subject || !message) {
       return NextResponse.json(
@@ -98,6 +98,7 @@ export async function POST(req: Request) {
         title: subject,
         body: message.replace(/<[^>]*>?/gm, '').substring(0, 200),
         icon: `/icons/icon-192x192.png`,
+        image: pushImage || null,
         url: `/`,
         tag: 'webory-broadcast'
       });
