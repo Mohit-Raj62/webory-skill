@@ -125,9 +125,13 @@ export async function POST(req: Request) {
       pushFailedCount
     });
   } catch (error: any) {
-    console.error("Broadcast error:", error);
+    console.error("Broadcast error detail:", error);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { 
+        error: "Internal Server Error", 
+        message: error.message,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      },
       { status: 500 }
     );
   }
