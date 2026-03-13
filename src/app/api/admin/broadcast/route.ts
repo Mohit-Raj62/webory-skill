@@ -8,8 +8,8 @@ import webpush from "web-push";
 
 // VAPID keys configuration
 const getVapidDetails = () => {
-  const public_key = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "BCxEvdZ2iQZcPB7fKRvQk6JauiuMracpAnA3Tc5L6zHKKPE9I7WAPPyQMCUdzYwTH5pQb1ixCm-TWJbbyVHIlJfk";
-  const private_key = process.env.VAPID_PRIVATE_KEY || "dUBbhU-y8nntz_Db09Bl8QVzIh8-MayjpmvSLSRWozc";
+  const public_key = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "BPCR1FOsyB5_iI2SCgndkhgzd8AIdRsaUFx-Bi-22bf8bzxIeSVT9IY_W6TSiWLLx5qmzRb0B21QI0RraQe1lAE";
+  const private_key = process.env.VAPID_PRIVATE_KEY || "hRgo74UgwT3rPkJlzlbkMro-IEZE6wMdVOqLdPYuvIs";
   
   return {
     publicKey: public_key,
