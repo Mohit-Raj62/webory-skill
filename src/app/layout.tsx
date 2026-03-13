@@ -12,6 +12,8 @@ import SupportChatbotWrapper from "@/components/SupportChatbotWrapper";
 import Script from "next/script";
 import { MobileBottomNav } from "@/components/ui/MobileBottomNav";
 import { PWAUpdater } from "@/components/PWAUpdater";
+import { PushSubscriptionHandler } from "@/components/PushSubscriptionHandler";
+import { PushNotificationBanner } from "@/components/PushNotificationBanner";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
@@ -129,6 +131,8 @@ export default function RootLayout({
                 <SpeedInsights />
                 <SupportChatbotWrapper />
                 <PWAUpdater />
+                <PushSubscriptionHandler />
+                <PushNotificationBanner />
             </body>
         </html>
     );
