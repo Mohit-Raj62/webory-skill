@@ -118,7 +118,7 @@ export function Navbar() {
                 {/* Subtle top gradient line */}
                 <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
 
-                <div className="container mx-auto px-4 sm:px-6 h-16 md:h-20 flex items-center justify-between">
+                <div className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
                     {/* Logo */}
                     <Link href="/" className="flex items-center space-x-2.5 group">
                         <motion.div
