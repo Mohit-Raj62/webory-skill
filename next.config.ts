@@ -45,5 +45,7 @@ export default withPWA({
   workboxOptions: {
     disableDevLogs: true,
     skipWaiting: true,
+    clientsClaim: true,
+    cleanupOutdatedCaches: true,
   },
 })(nextConfig);
