@@ -47,5 +47,6 @@ export default withPWA({
     skipWaiting: true,
     clientsClaim: true,
     cleanupOutdatedCaches: true,
+    importScripts: ["/custom-sw.js"],
   },
 })(nextConfig);
