@@ -60,9 +60,9 @@ export const metadata: Metadata = {
         images: ["/og-image.png"],
     },
     icons: {
-        icon: "/favicon.png?v=3",
+        icon: "/favicon.png?v=4",
     },
-    manifest: "/manifest.json?v=3",
+    manifest: "/manifest.json?v=4",
     appleWebApp: {
         capable: true,
         statusBarStyle: "black-translucent",
