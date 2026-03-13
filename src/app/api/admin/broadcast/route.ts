@@ -96,10 +96,11 @@ export async function POST(req: Request) {
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.weboryskills.in";
       const pushPayload = JSON.stringify({
         title: subject,
-        body: message.replace(/<[^>]*>?/gm, '').substring(0, 200), // Plain text snippet
+        body: message.replace(/<[^>]*>?/gm, '').substring(0, 200),
         icon: `${baseUrl}/icons/icon-192x192.png`,
         badge: `${baseUrl}/favicon.png`,
         url: `${baseUrl}/`,
+        tag: 'webory-broadcast'
       });
 
       for (const sub of allPushSubs) {
