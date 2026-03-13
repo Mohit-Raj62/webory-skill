@@ -97,7 +97,7 @@ export async function POST(req: Request) {
       const pushPayload = JSON.stringify({
         title: subject,
         body: message.replace(/<[^>]*>?/gm, '').substring(0, 200),
-        icon: `${baseUrl}/icons/icon-192x192.png`,
+        icon: `${baseUrl}/icons/icon-512x512.png`,
         badge: `${baseUrl}/favicon.png`,
         url: `${baseUrl}/`,
         tag: 'webory-broadcast'
