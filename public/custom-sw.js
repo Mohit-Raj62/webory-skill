@@ -1,5 +1,5 @@
-// Custom Service Worker - v2.4
-console.log('PWA: custom-sw.js v2.4 loaded');
+// Custom Service Worker - v2.5
+console.log('PWA: custom-sw.js v2.5 loaded');
 
 self.addEventListener('push', function(event) {
   console.log('PWA: Push event received');
@@ -11,7 +11,6 @@ self.addEventListener('push', function(event) {
       const options = {
         body: data.body || 'New message from Webory Skills',
         icon: data.icon || '/icons/icon-192x192.png',
-        image: data.image || null, // ADDED: Support for large image
         badge: '/favicon.png',
         timestamp: Date.now(),
         data: {
@@ -25,6 +24,10 @@ self.addEventListener('push', function(event) {
           { action: 'open', title: 'Open Webory App' }
         ]
       };
+
+      if (data.image) {
+        options.image = data.image; // Safe assignment
+      }
       
       event.waitUntil(
         self.registration.showNotification(data.title || 'Webory Skills', options)

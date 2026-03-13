@@ -94,14 +94,17 @@ export async function POST(req: Request) {
       console.log(`Push: Found ${allPushSubs.length} total push subscriptions.`);
 
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.weboryskills.in";
-      const pushPayload = JSON.stringify({
+      const payloadObj: any = {
         title: subject,
         body: message.replace(/<[^>]*>?/gm, '').substring(0, 200),
         icon: `/icons/icon-192x192.png`,
-        image: pushImage || null,
         url: `/`,
         tag: 'webory-broadcast'
-      });
+      };
+      if (pushImage) {
+        payloadObj.image = pushImage;
+      }
+      const pushPayload = JSON.stringify(payloadObj);
 
       for (const sub of allPushSubs) {
         try {
