@@ -5,12 +5,12 @@ import { toast } from "sonner";
 
 export function PWAUpdater() {
   useEffect(() => {
-    if (
-      typeof window !== "undefined" &&
-      "serviceWorker" in navigator &&
-      window["workbox"] !== undefined
-    ) {
-      const wb = window["workbox"];
+    if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
+
+    // @ts-ignore - workbox is added to window by next-pwa
+    const wb = window.workbox;
+    
+    if (wb) {
 
       // Add event listener to handle updates
       const showSkipWaitingPrompt = () => {
