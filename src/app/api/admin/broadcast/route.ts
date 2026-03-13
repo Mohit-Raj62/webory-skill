@@ -40,7 +40,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const { subject, message } = await req.json();
+    const { subject, message, mode = "both" } = await req.json();
 
     if (!subject || !message) {
       return NextResponse.json(
@@ -49,83 +49,91 @@ export async function POST(req: Request) {
       );
     }
 
-    // Fetch all users with valid emails
-    const users = await User.find(
-      { email: { $exists: true, $ne: null } },
-      "email firstName"
-    );
-
-    console.log(`Found ${users.length} users to broadcast to.`);
-
     let sentCount = 0;
     const errors = [];
-
-    // Send emails
-    for (const user of users) {
-      let personalizedMessage = message;
-      if (message.includes("{{name}}")) {
-        personalizedMessage = message.replace(
-          "{{name}}",
-          user.firstName || "User"
-        );
-      }
-
-      try {
-        const success = await sendEmail(
-          user.email,
-          subject,
-          personalizedMessage
-        );
-        if (success) sentCount++;
-        else errors.push(user.email);
-      } catch (error: any) {
-        console.error(`Failed to email ${user.email}:`, error);
-        errors.push(user.email);
-      }
-    }
-
-    // Send Push Notifications
-    const allPushSubs = await PushSubscription.find({});
-    console.log(`Push: Found ${allPushSubs.length} total push subscriptions.`);
-
     let pushSentCount = 0;
     let pushFailedCount = 0;
 
-    const pushPayload = JSON.stringify({
-      title: subject,
-      body: message.replace(/<[^>]*>?/gm, '').substring(0, 200), // Plain text snippet
-      icon: "/icons/icon-192x192.png",
-      badge: "/icons/icon-192x192.png",
-      url: "/",
-    });
+    // Send emails IF mode is 'email' or 'both'
+    if (mode === "email" || mode === "both") {
+      // Fetch all users with valid emails
+      const users = await User.find(
+        { email: { $exists: true, $ne: null } },
+        "email firstName"
+      );
 
-    for (const sub of allPushSubs) {
-      try {
-        await webpush.sendNotification(
-          {
-            endpoint: sub.endpoint,
-            keys: {
-              p256dh: sub.keys.p256dh,
-              auth: sub.keys.auth
-            }
-          }, 
-          pushPayload
-        );
-        pushSentCount++;
-      } catch (error: any) {
-        console.error(`Failed to send push to sub ${sub._id}:`, error);
-        pushFailedCount++;
-        // If 410 or 404, subscription is expired/invalid, should remove it
-        if (error.statusCode === 410 || error.statusCode === 404) {
-           await PushSubscription.findByIdAndDelete(sub._id);
-           console.log(`Push: Removed expired subscription ${sub._id}`);
+      console.log(`Found ${users.length} users for email broadcast.`);
+
+      for (const user of users) {
+        let personalizedMessage = message;
+        if (message.includes("{{name}}")) {
+          personalizedMessage = message.replace(
+            "{{name}}",
+            user.firstName || "User"
+          );
+        }
+
+        try {
+          const success = await sendEmail(
+            user.email,
+            subject,
+            personalizedMessage
+          );
+          if (success) sentCount++;
+          else errors.push(user.email);
+        } catch (error: any) {
+          console.error(`Failed to email ${user.email}:`, error);
+          errors.push(user.email);
         }
       }
     }
 
+    // Send Push Notifications IF mode is 'push' or 'both'
+    if (mode === "push" || mode === "both") {
+      const allPushSubs = await PushSubscription.find({});
+      console.log(`Push: Found ${allPushSubs.length} total push subscriptions.`);
+
+      const pushPayload = JSON.stringify({
+        title: subject,
+        body: message.replace(/<[^>]*>?/gm, '').substring(0, 200), // Plain text snippet
+        icon: "/icons/icon-192x192.png",
+        badge: "/icons/icon-192x192.png",
+        url: "/",
+      });
+
+      for (const sub of allPushSubs) {
+        try {
+          await webpush.sendNotification(
+            {
+              endpoint: sub.endpoint,
+              keys: {
+                p256dh: sub.keys.p256dh,
+                auth: sub.keys.auth
+              }
+            }, 
+            pushPayload
+          );
+          pushSentCount++;
+        } catch (error: any) {
+          console.error(`Failed to send push to sub ${sub._id}:`, error);
+          pushFailedCount++;
+          // If 410 or 404, subscription is expired/invalid, should remove it
+          if (error.statusCode === 410 || error.statusCode === 404) {
+             await PushSubscription.findByIdAndDelete(sub._id);
+             console.log(`Push: Removed expired subscription ${sub._id}`);
+          }
+        }
+      }
+    }
+
+    let resultMessage = "";
+    if (mode === "email") resultMessage = `Emails: ${sentCount} sent, ${errors.length} failed.`;
+    else if (mode === "push") resultMessage = `Push: ${pushSentCount} sent, ${pushFailedCount} failed.`;
+    else resultMessage = `Emails: ${sentCount} sent, ${errors.length} failed. Push: ${pushSentCount} sent, ${pushFailedCount} failed.`;
+
     return NextResponse.json({
       success: true,
-      message: `Emails: ${sentCount} sent, ${errors.length} failed. Push: ${pushSentCount} sent, ${pushFailedCount} failed.`,
+      message: resultMessage,
       sentCount,
       failedCount: errors.length,
       pushSentCount,
