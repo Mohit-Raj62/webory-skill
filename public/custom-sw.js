@@ -12,6 +12,7 @@ self.addEventListener('push', function(event) {
         body: data.body || 'New message from Webory Skills',
         icon: data.icon || '/icons/icon-192x192.png',
         badge: '/badge.png',
+        sound: data.sound || '/sounds/notification.mp3',
         timestamp: Date.now(),
         data: {
           url: data.url || '/'
