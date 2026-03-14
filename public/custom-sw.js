@@ -17,10 +17,11 @@ self.addEventListener('push', function(event) {
         data: {
           url: data.url || '/'
         },
-        vibrate: [200, 100, 200],
-        tag: 'webory-broadcast',
+        vibrate: [500, 200, 500, 200, 500], // Stronger vibration pattern
+        tag: 'webory-broadcast-' + Date.now(), // Unique tag so notifications don't overwrite each other
         renotify: true,
         requireInteraction: true,
+        silent: false, // Explicitly tell the OS not to silence this
         actions: [
           { action: 'open', title: 'Open Webory App' }
         ]
