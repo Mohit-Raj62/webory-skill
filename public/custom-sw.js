@@ -11,7 +11,7 @@ self.addEventListener('push', function(event) {
       const options = {
         body: data.body || 'New message from Webory Skills',
         icon: data.icon || '/icons/icon-192x192.png',
-        badge: '/favicon.png',
+        badge: '/badge.png',
         timestamp: Date.now(),
         data: {
           url: data.url || '/'
