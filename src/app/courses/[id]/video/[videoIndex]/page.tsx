@@ -631,15 +631,74 @@ export default function VideoPlayerPage() {
         };
     }, [hasMarkedAsWatched, currentIndex, loading, lastValidTime]);
 
-    const toggleFullscreen = () => {
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            const isFull = !!document.fullscreenElement;
+            setIsFullscreen(isFull);
+            if (!isFull) {
+                if (window.screen && screen.orientation && screen.orientation.unlock) {
+                    try {
+                        screen.orientation.unlock();
+                    } catch (e) {
+                        console.error('Orientation unlock failed:', e);
+                    }
+                }
+            }
+        };
+
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        
+        return () => {
+            document.removeEventListener('fullscreenchange', handleFullscreenChange);
+            document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+        };
+    }, []);
+
+    const toggleFullscreen = async () => {
         if (!playerContainerRef.current) return;
 
-        if (!document.fullscreenElement) {
-            playerContainerRef.current.requestFullscreen();
-            setIsFullscreen(true);
+        if (!document.fullscreenElement && !(document as any).webkitFullscreenElement) {
+            try {
+                if (playerContainerRef.current.requestFullscreen) {
+                    await playerContainerRef.current.requestFullscreen();
+                } else if ((playerContainerRef.current as any).webkitRequestFullscreen) {
+                    await (playerContainerRef.current as any).webkitRequestFullscreen();
+                }
+                
+                setIsFullscreen(true);
+                
+                // Try to lock to landscape on mobile
+                if (window.screen && screen.orientation && screen.orientation.lock) {
+                    try {
+                        await screen.orientation.lock('landscape');
+                    } catch (err) {
+                        console.log('Orientation lock failed:', err);
+                    }
+                }
+            } catch (err) {
+                console.error("Fullscreen request failed", err);
+            }
         } else {
-            document.exitFullscreen();
-            setIsFullscreen(false);
+            try {
+                if (document.exitFullscreen) {
+                    await document.exitFullscreen();
+                } else if ((document as any).webkitExitFullscreen) {
+                    await (document as any).webkitExitFullscreen();
+                }
+                
+                setIsFullscreen(false);
+                
+                if (window.screen && screen.orientation && screen.orientation.unlock) {
+                    try {
+                        screen.orientation.unlock();
+                    } catch (err) {
+                        console.log('Orientation unlock failed:', err);
+                    }
+                }
+            } catch (err) {
+                console.error("Exit fullscreen failed", err);
+            }
         }
         setShowSettings(false);
     };
@@ -766,9 +825,7 @@ export default function VideoPlayerPage() {
                                     </div>
 
                                     {/* Additional Logo/Interaction Masks */}
-                                    <div className="absolute bottom-0 right-4 w-40 h-16 bg-black z-[10] pointer-events-none" />
                                     <div className="absolute top-0 right-0 w-full h-20 bg-gradient-to-b from-black to-transparent z-[10] pointer-events-none" />
-                                    <div className="absolute top-0 left-0 w-40 h-16 bg-black z-[10] pointer-events-none" />
                                     {/* Moving Watermark for YouTube */}
                                     {userEmail && (
                                         <div 
