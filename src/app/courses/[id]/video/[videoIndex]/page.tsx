@@ -636,9 +636,9 @@ export default function VideoPlayerPage() {
             const isFull = !!document.fullscreenElement;
             setIsFullscreen(isFull);
             if (!isFull) {
-                if (window.screen && screen.orientation && screen.orientation.unlock) {
+                if (window.screen && screen.orientation && (screen.orientation as any).unlock) {
                     try {
-                        screen.orientation.unlock();
+                        (screen.orientation as any).unlock();
                     } catch (e) {
                         console.error('Orientation unlock failed:', e);
                     }
@@ -669,9 +669,9 @@ export default function VideoPlayerPage() {
                 setIsFullscreen(true);
                 
                 // Try to lock to landscape on mobile
-                if (window.screen && screen.orientation && screen.orientation.lock) {
+                if (window.screen && screen.orientation && (screen.orientation as any).lock) {
                     try {
-                        await screen.orientation.lock('landscape');
+                        await (screen.orientation as any).lock('landscape');
                     } catch (err) {
                         console.log('Orientation lock failed:', err);
                     }
@@ -689,9 +689,9 @@ export default function VideoPlayerPage() {
                 
                 setIsFullscreen(false);
                 
-                if (window.screen && screen.orientation && screen.orientation.unlock) {
+                if (window.screen && screen.orientation && (screen.orientation as any).unlock) {
                     try {
-                        screen.orientation.unlock();
+                        (screen.orientation as any).unlock();
                     } catch (err) {
                         console.log('Orientation unlock failed:', err);
                     }
