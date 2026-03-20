@@ -1,6 +1,8 @@
-// Import pyodide from CDN as ES module
+// Use importScripts for better compatibility across subdomains and older browsers
 // @ts-ignore
-import { loadPyodide } from "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.mjs";
+importScripts("https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js");
+
+declare var loadPyodide: any;
 
 let pyodide: any = null;
 let isInitializing = false;
