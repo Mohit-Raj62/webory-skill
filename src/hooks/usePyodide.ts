@@ -10,14 +10,8 @@ export function usePyodide() {
   >({});
 
   useEffect(() => {
-    // Initialize Web Worker
-    const workerUrl = new URL(
-      "../components/playground/pyodide.worker.ts",
-      import.meta.url,
-    );
-    console.log("[usePyodide] Creating Web Worker from:", workerUrl.href);
-
-    workerRef.current = new Worker(workerUrl);
+    // Use stable public path for wildcard subdomain support
+    workerRef.current = new Worker("/pyodide.worker.js");
 
     workerRef.current.onerror = (e) => {
       console.error("[usePyodide] Web Worker execution error:", e.message, e);
