@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
-import { Play, RotateCcw, Loader2, AlertCircle, Terminal, Copy, Check, Info, Save, FilePlus, FolderOpen, Trash2, FileCode, ChevronRight, ChevronDown, Share2, Code2, Folder } from "lucide-react";
+import { Rocket, Play, RotateCcw, Loader2, AlertCircle, Terminal, Copy, Check, Info, Save, FilePlus, FolderOpen, Trash2, FileCode, ChevronRight, ChevronDown, Share2, Code2, Folder, CheckCircle, ExternalLink } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -269,6 +269,12 @@ export default function CodeEditor() {
     const [shareLink, setShareLink] = useState("");
     const [isSharing, setIsSharing] = useState(false);
     const [isCopied, setIsCopied] = useState(false);
+    
+    // Deployment Progress
+    const [isDeploying, setIsDeploying] = useState(false);
+    const [deploymentStep, setDeploymentStep] = useState<"idle" | "deploying" | "case-study" | "success">("idle");
+    const [deploymentResult, setDeploymentResult] = useState<{ url: string, caseStudy: string } | null>(null);
+    const [isDeploymentModalOpen, setIsDeploymentModalOpen] = useState(false);
     
     // Resizable Layout State
     // Resizable Layout State
@@ -629,6 +635,65 @@ export default function CodeEditor() {
         }
     };
 
+    const handleDeploy = async () => {
+        if (!currentFile) {
+            toast.error("Please save your code first before deploying");
+            return;
+        }
+
+        setIsDeploymentModalOpen(true);
+        setDeploymentStep("deploying");
+        setIsDeploying(true);
+
+        try {
+            // Step 1: Deploy
+            const deployRes = await fetch("/api/deployment/deploy", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    codeId: currentFile._id,
+                    title: currentFile.title,
+                    code: code,
+                    language: language
+                })
+            });
+
+            const deployData = await deployRes.json();
+            if (!deployRes.ok) throw new Error(deployData.error || "Deployment failed");
+
+            // Step 2: Generate Case Study
+            setDeploymentStep("case-study");
+            const caseStudyRes = await fetch("/api/deployment/case-study", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    codeId: currentFile._id,
+                    title: currentFile.title,
+                    code: code,
+                    language: language
+                })
+            });
+
+            const caseStudyData = await caseStudyRes.json();
+            if (!caseStudyRes.ok) throw new Error(caseStudyData.error || "Case study generation failed");
+
+            setDeploymentResult({
+                url: deployData.deploymentUrl,
+                caseStudy: caseStudyData.caseStudy
+            });
+            setDeploymentStep("success");
+            toast.success("One-Click PoW Deployment Successful! 🚀");
+
+        } catch (error: any) {
+            console.error("Deployment Flow Error:", error);
+            setDeploymentStep("idle");
+            setIsDeploymentModalOpen(false);
+            toast.error(error.message || "Failed to deploy project");
+        } finally {
+            setIsDeploying(false);
+        }
+    };
+
     const handleShare = async () => {
         if (!currentFile) {
             toast.error("Please save your code first before sharing");
@@ -978,6 +1043,17 @@ export default function CodeEditor() {
                                 >
                                     {isSaving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
                                     <span className="text-xs hidden sm:inline">Save</span>
+                                </Button>
+                                <Button 
+                                    size="sm" 
+                                    variant="ghost" 
+                                    onClick={handleDeploy}
+                                    disabled={isDeploying || !currentFile}
+                                    className="h-7 px-3 bg-blue-600/20 text-blue-400 hover:text-white hover:bg-blue-600 rounded-sm gap-2 border border-blue-500/30"
+                                    title="Deploy & Add to Portfolio"
+                                >
+                                    {isDeploying ? <Loader2 size={14} className="animate-spin" /> : <Rocket size={14} />}
+                                    <span className="text-xs font-bold">Deploy PoW</span>
                                 </Button>
                                 <Button 
                                     size="sm" 
@@ -1462,6 +1538,82 @@ export default function CodeEditor() {
                     </div>
                 </div>
             )}
+            {/* Deployment Progress Modal */}
+            <Dialog open={isDeploymentModalOpen} onOpenChange={setIsDeploymentModalOpen}>
+                <DialogContent className="bg-[#161b22] border-[#30363d] text-white sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-3">
+                            <Rocket className="text-blue-400" />
+                            One-Click PoW Deployment
+                        </DialogTitle>
+                    </DialogHeader>
+                    
+                    <div className="py-6 space-y-6">
+                        {/* Steps */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-4">
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center border ${deploymentStep === 'deploying' ? 'border-blue-500 bg-blue-500/10 text-blue-400' : (deploymentStep !== 'idle' ? 'border-green-500 bg-green-500/10 text-green-400' : 'border-gray-700 text-gray-500')}`}>
+                                    {deploymentStep === 'deploying' ? <Loader2 className="animate-spin" size={16} /> : (deploymentStep !== 'idle' ? <Check size={16} /> : "1")}
+                                </div>
+                                <div>
+                                    <p className={`text-sm font-semibold ${deploymentStep === 'deploying' ? 'text-white' : 'text-gray-400'}`}>Deploying Live Website</p>
+                                    <p className="text-xs text-gray-500 font-mono">Setting up subdomain & hosting...</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-4">
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center border ${deploymentStep === 'case-study' ? 'border-blue-500 bg-blue-500/10 text-blue-400' : (deploymentStep === 'success' ? 'border-green-500 bg-green-500/10 text-green-400' : 'border-gray-700 text-gray-500')}`}>
+                                    {deploymentStep === 'case-study' ? <Loader2 className="animate-spin" size={16} /> : (deploymentStep === 'success' ? <Check size={16} /> : "2")}
+                                </div>
+                                <div>
+                                    <p className={`text-sm font-semibold ${deploymentStep === 'case-study' ? 'text-white' : 'text-gray-400'}`}>Generating AI Case Study</p>
+                                    <p className="text-xs text-gray-500 font-mono">Gemini is analyzing your code...</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-4">
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center border ${deploymentStep === 'success' ? 'border-green-500 bg-green-500/10 text-green-400' : 'border-gray-700 text-gray-500'}`}>
+                                    {deploymentStep === 'success' ? <CheckCircle size={16} /> : "3"}
+                                </div>
+                                <div>
+                                    <p className={`text-sm font-semibold ${deploymentStep === 'success' ? 'text-white' : 'text-gray-400'}`}>Portfolio Integration</p>
+                                    <p className="text-xs text-gray-500 font-mono">Syncing with your public profile...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {deploymentStep === 'success' && deploymentResult && (
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="p-4 rounded-xl bg-green-500/10 border border-green-500/20 text-center"
+                            >
+                                <p className="text-green-400 font-bold mb-2">Project is Live!</p>
+                                <a 
+                                    href={deploymentResult.url} 
+                                    target="_blank" 
+                                    rel="noreferrer"
+                                    className="text-white underline font-mono text-xs flex items-center justify-center gap-2"
+                                >
+                                    {deploymentResult.url} <ExternalLink size={12} />
+                                </a>
+                            </motion.div>
+                        )}
+                    </div>
+
+                    <DialogFooter>
+                        {deploymentStep === 'success' ? (
+                            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" onClick={() => setIsDeploymentModalOpen(false)}>
+                                Done
+                            </Button>
+                        ) : (
+                            <Button disabled className="w-full bg-slate-800 text-gray-500">
+                                {deploymentStep === 'deploying' ? 'Deploying...' : 'Working...'}
+                            </Button>
+                        )}
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

@@ -7,6 +7,7 @@ import AssignmentSubmission from "@/models/AssignmentSubmission";
 import "@/models/Assignment"; // Register Assignment model
 import "@/models/Course"; // Register Course model
 import "@/models/Internship"; // Register Internship model
+import CodeSnippet from "@/models/CodeSnippet";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
@@ -40,11 +41,17 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
             select: "title description"
         }).populate("courseId", "title");
 
+        // 5. Fetch Proof of Work (Live Deployed Projects)
+        const proofOfWork = await CodeSnippet.find({
+            user: id,
+            isDeployed: true
+        });
+
         const portfolioData = {
             user: {
                 firstName: user.firstName,
                 lastName: user.lastName,
-                email: user.email, // Maybe hide email for public? keeping for now
+                email: user.email, 
                 bio: user.bio,
                 skills: user.skills,
                 avatar: user.avatar,
@@ -76,7 +83,15 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
                     courseTitle: s.courseId.title,
                     submissionUrl: s.attachments?.[0]?.url || "",
                     submissionText: s.submissionText,
-                }))
+                })),
+            proofOfWork: proofOfWork.map((pow: any) => ({
+                id: pow._id,
+                title: pow.title,
+                language: pow.language,
+                subdomain: pow.subdomain,
+                deploymentUrl: pow.deploymentUrl,
+                caseStudy: pow.caseStudy
+            }))
         };
 
         return NextResponse.json({ portfolio: portfolioData });

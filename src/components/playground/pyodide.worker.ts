@@ -1,5 +1,6 @@
-declare var importScripts: (...urls: string[]) => void;
-declare var loadPyodide: any;
+// Import pyodide from CDN as ES module
+// @ts-ignore
+import { loadPyodide } from "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.mjs";
 
 let pyodide: any = null;
 let isInitializing = false;
@@ -7,10 +8,7 @@ let isInitializing = false;
 // Custom stdout/stderr buffer
 let outputBuffer: string[] = [];
 
-console.log("[Pyodide Worker] Web Worker parsed and started.");
-
-// Import pyodide from CDN directly to avoid Next.js bundling issues
-importScripts("https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js");
+console.log("[Pyodide Worker] Web Worker parsed and started as Module.");
 
 async function initPyodide() {
   if (pyodide) return pyodide;

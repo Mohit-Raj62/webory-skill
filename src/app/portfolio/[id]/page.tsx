@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Loader2, Github, Linkedin, Mail, Award, Briefcase, Code, ExternalLink } from "lucide-react";
+import { Loader2, Github, Linkedin, Mail, Award, Briefcase, Code, ExternalLink, Rocket, FileText, ChevronRight, Globe, Sparkles } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 
 interface PortfolioData {
@@ -37,6 +39,14 @@ interface PortfolioData {
         courseTitle: string;
         submissionUrl: string;
         submissionText: string;
+    }[];
+    proofOfWork: {
+        id: string;
+        title: string;
+        language: string;
+        subdomain: string;
+        deploymentUrl: string;
+        caseStudy: string;
     }[];
 }
 
@@ -141,6 +151,84 @@ export default function PortfolioPage() {
                                 >
                                     {skill}
                                 </span>
+                            ))}
+                        </div>
+                    </section>
+                )}
+
+                {/* Proof of Work (Live Projects) Section */}
+                {data.proofOfWork && data.proofOfWork.length > 0 && (
+                    <section>
+                        <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
+                            <Rocket className="text-blue-500" /> Proof of Work
+                        </h2>
+                        <div className="grid md:grid-cols-2 gap-8">
+                            {data.proofOfWork.map((pow) => (
+                                <div key={pow.id} className="group relative bg-[#111] border border-white/5 rounded-3xl overflow-hidden hover:border-blue-500/30 transition-all hover:shadow-2xl hover:shadow-blue-500/10">
+                                    <div className="p-8">
+                                        <div className="flex justify-between items-start mb-6">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                                    <Globe size={24} className="text-blue-400 group-hover:text-white" />
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors uppercase tracking-tight">
+                                                        {pow.title}
+                                                    </h3>
+                                                    <span className="text-[10px] font-mono text-gray-400 uppercase tracking-widest">{pow.language}</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="flex items-center gap-2">
+                                                <a 
+                                                    href={pow.deploymentUrl} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer" 
+                                                    className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-gray-400 hover:text-white"
+                                                    title="View Live Site"
+                                                >
+                                                    <ExternalLink size={20} />
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <p className="text-gray-400 text-sm leading-relaxed mb-8 line-clamp-3 italic">
+                                            Live project deployed via Webory DevLab on <span className="text-blue-500 font-mono">{pow.subdomain}.weboryskills.in</span>
+                                        </p>
+
+                                        <div className="flex items-center gap-4">
+                                            <Dialog>
+                                                <DialogTrigger asChild>
+                                                    <Button variant="outline" className="flex-1 rounded-xl border-white/10 hover:bg-white/5 text-xs font-bold gap-2">
+                                                        <FileText size={14} /> View Case Study
+                                                    </Button>
+                                                </DialogTrigger>
+                                                <DialogContent className="bg-[#0d1117] border-[#30363d] text-white max-w-3xl max-h-[80vh] overflow-y-auto scrollbar-hide">
+                                                    <DialogHeader>
+                                                        <DialogTitle className="flex items-center gap-3 text-2xl">
+                                                            <Sparkles className="text-yellow-500" /> AI Generated Case Study
+                                                        </DialogTitle>
+                                                    </DialogHeader>
+                                                    <div className="prose prose-invert prose-blue max-w-none mt-6">
+                                                        <ReactMarkdown>{pow.caseStudy}</ReactMarkdown>
+                                                    </div>
+                                                </DialogContent>
+                                            </Dialog>
+                                            
+                                            <a 
+                                                href={pow.deploymentUrl} 
+                                                target="_blank" 
+                                                rel="noreferrer"
+                                                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-all shadow-lg shadow-blue-500/20"
+                                            >
+                                                Visit App <ChevronRight size={14} />
+                                            </a>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Accent line */}
+                                    <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 to-indigo-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500" />
+                                </div>
                             ))}
                         </div>
                     </section>

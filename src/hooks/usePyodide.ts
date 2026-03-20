@@ -17,7 +17,7 @@ export function usePyodide() {
     );
     console.log("[usePyodide] Creating Web Worker from:", workerUrl.href);
 
-    workerRef.current = new Worker(workerUrl);
+    workerRef.current = new Worker(workerUrl, { type: "module" });
 
     workerRef.current.onerror = (e) => {
       console.error("[usePyodide] Web Worker execution error:", e.message, e);

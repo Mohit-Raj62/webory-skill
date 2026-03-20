@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, User, Code2, Sparkles, MessageSquare, GraduationCap, Briefcase, BrainCircuit, Bot } from "lucide-react";
+import { Menu, X, User, Code2, Sparkles, MessageSquare, GraduationCap, Briefcase, BrainCircuit, Bot, FileText, Terminal } from "lucide-react";
 import { useState, useEffect } from "react";
 import { FeedbackForm } from "@/components/feedback/FeedbackForm";
 import { useAuth } from "@/components/auth/session-provider";
@@ -261,7 +261,6 @@ export function Navbar() {
                             animate={{ opacity: 1, height: "auto" }}
                             exit={{ opacity: 0, height: 0 }}
                             transition={{ duration: 0.3, ease: "easeInOut" }}
-                            className="lg:hidden overflow-hidden"
                         >
                             <div className="bg-black/90 backdrop-blur-2xl border-t border-white/[0.06] px-4 py-4 space-y-1">
                                 <MobileNavLink href="/courses" icon={GraduationCap} badge="FREE" onClick={() => setIsOpen(false)} index={0}>
@@ -282,8 +281,8 @@ export function Navbar() {
                                     </MobileNavLink>
                                 )}
                                 {user && (
-                                    <MobileNavLink href="/ai-prep" icon={BrainCircuit} onClick={() => setIsOpen(false)} index={4}>
-                                        Webory AI Nexus
+                                    <MobileNavLink href="/ai-prep" icon={BrainCircuit} badge="PRO" onClick={() => setIsOpen(false)} index={4}>
+                                        AI Nexus
                                     </MobileNavLink>
                                 )}
 

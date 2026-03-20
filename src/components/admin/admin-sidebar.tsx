@@ -24,6 +24,7 @@ import {
     Gift,
     Shield,
     Home,
+    Terminal,
 } from "lucide-react";
 
 const menuItems = [
@@ -50,6 +51,7 @@ const menuItems = [
     { name: "Live Interest", href: "/admin/activity", icon: Video },
     { name: "Leads", href: "/admin/leads", icon: Users },
     { name: "Rewards", href: "/admin/rewards", icon: Gift },
+    { name: "WeboryOS", href: "/admin/simulators", icon: Terminal },
     { name: "Campus Ambassadors", href: "/admin/ambassadors", icon: Megaphone },
     { name: "Maintenance", href: "/admin/maintenance", icon: Database },
 ];
