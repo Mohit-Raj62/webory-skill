@@ -16,12 +16,12 @@ const NavItem = ({ href, icon: Icon, label, isActive, onClick }: {
     onClick?: () => void;
 }) => {
     const content = (
-        <div className="flex flex-col items-center justify-center flex-1 h-full relative group cursor-pointer">
+        <div className="flex flex-col items-center justify-center flex-1 h-full relative group cursor-pointer pt-1">
             <div className={cn(
                 "relative p-1 rounded-xl transition-all duration-300",
                 isActive ? "text-blue-400 bg-blue-500/10" : "text-gray-500 group-hover:text-gray-300"
             )}>
-                <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+                <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
                 {isActive && (
                     <motion.div
                         layoutId="active-pill"
@@ -31,7 +31,7 @@ const NavItem = ({ href, icon: Icon, label, isActive, onClick }: {
                 )}
             </div>
             <span className={cn(
-                "text-[10.5px] font-bold mt-1 tracking-tight transition-colors duration-300",
+                "text-[9px] sm:text-[10px] whitespace-nowrap font-bold mt-0.5 tracking-tight transition-colors duration-300",
                 isActive ? "text-blue-400" : "text-gray-500"
             )}>
                 {label}
@@ -81,11 +81,11 @@ export function MobileBottomNav() {
     if (!isStandalone || isRestrictedPage) return null;
     return (
         <>
-            <div className="lg:hidden fixed bottom-[calc(1rem+var(--sab))] left-2 right-2 z-[100] h-16 pointer-events-none">
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[100] pointer-events-none">
                 <motion.nav 
                     initial={{ y: 100, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    className="w-full h-full bg-black/80 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl pointer-events-auto flex items-center justify-between px-1 relative overflow-hidden"
+                    className="w-full bg-black/90 backdrop-blur-3xl border-t border-white/10 shadow-2xl pointer-events-auto flex items-center justify-between px-1 pb-[env(safe-area-inset-bottom,0px)] h-[calc(4.5rem+env(safe-area-inset-bottom,0px))] relative overflow-hidden"
                 >
                     {/* Background Glow */}
                     <div className="absolute inset-0 bg-gradient-to-t from-blue-500/10 to-transparent pointer-events-none" />
