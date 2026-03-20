@@ -151,10 +151,10 @@ export default function SupportChatbot() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] right-4 md:bottom-6 md:right-6 z-[999] flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg hover:shadow-blue-500/30 transition-all duration-300 hover:scale-110 print:hidden"
+            className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] right-4 md:bottom-6 md:right-6 z-[999] flex h-12 w-12 md:h-14 md:w-14 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg hover:shadow-blue-500/30 transition-all duration-300 hover:scale-110 print:hidden"
             aria-label="Open support chat"
           >
-            <Sparkles className="h-7 w-7" />
+            <Sparkles className="h-6 w-6 md:h-7 md:w-7" />
           </motion.button>
         )}
       </AnimatePresence>
@@ -167,7 +167,7 @@ export default function SupportChatbot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 100, scale: 0.8 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed z-[999] flex flex-col overflow-hidden bg-white dark:bg-gray-900 shadow-2xl border border-gray-200 dark:border-gray-700 bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] left-4 right-4 h-[75vh] max-h-[calc(100svh-6rem-env(safe-area-inset-bottom,0px))] rounded-2xl md:left-auto md:right-6 md:bottom-6 md:w-[380px] md:h-[600px] md:max-h-[80vh] md:rounded-2xl print:hidden"
+            className="fixed z-[999] flex flex-col overflow-hidden bg-white dark:bg-gray-900 shadow-2xl border border-gray-200 dark:border-gray-700 bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] left-4 right-4 h-[65vh] max-h-[500px] md:max-h-[80vh] rounded-2xl md:left-auto md:right-6 md:bottom-6 md:w-[380px] md:h-[600px] print:hidden"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md">
