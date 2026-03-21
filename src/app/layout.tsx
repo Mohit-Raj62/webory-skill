@@ -108,6 +108,29 @@ export default function RootLayout({
                 outfit.variable,
                 greatVibes.variable
             )}>
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify({
+                            "@context": "https://schema.org",
+                            "@type": "Organization",
+                            "name": "Webory",
+                            "alternateName": "Webory Skills",
+                            "url": "https://www.weboryskills.in",
+                            "logo": "https://www.weboryskills.in/favicon.png",
+                            "founder": {
+                                "@type": "Person",
+                                "name": "Mohit Sinha",
+                                "jobTitle": "CEO"
+                            },
+                            "sameAs": [
+                                "https://www.linkedin.com/in/webory-skills-01244b3a9",
+                                "https://www.instagram.com/weboryskills",
+                                "https://www.youtube.com/@CodeWithWebory"
+                            ]
+                        })
+                    }}
+                />
                 <Script id="pwa-install-capture" strategy="afterInteractive">
                     {`
                         window.deferredPrompt = null;
