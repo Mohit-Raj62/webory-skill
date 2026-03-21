@@ -37,6 +37,9 @@
   * {
     @apply border-border;
   }
+  html {
+    overscroll-behavior-y: none;
+  }
   body {
     @apply bg-background text-foreground;
     /* Prevent elastic scrolling and enhance app feel */

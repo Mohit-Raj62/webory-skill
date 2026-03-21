@@ -81,7 +81,10 @@ export function MobileBottomNav() {
     if (!isStandalone || isRestrictedPage) return null;
     return (
         <>
-            <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[100] pointer-events-none">
+            <div 
+                className="lg:hidden fixed bottom-0 left-0 right-0 z-[100] pointer-events-none origin-bottom"
+                style={{ WebkitTransform: 'translateZ(0)', transform: 'translateZ(0)' }}
+            >
                 <motion.nav 
                     initial={{ y: 100, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
