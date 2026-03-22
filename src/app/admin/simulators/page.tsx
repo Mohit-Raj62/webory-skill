@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Trash2, Mail, CheckSquare, Code, Save, Loader2, ChevronLeft, AlertCircle, Briefcase } from "lucide-react";
+import { Plus, Trash2, Mail, CheckSquare, Code, Save, Loader2, ChevronLeft, AlertCircle, Briefcase, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
