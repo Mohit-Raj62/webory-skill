@@ -1,0 +1,27 @@
+import mongoose, { Document, Schema } from 'mongoose';
+
+export interface ISimulatorSession extends Document {
+    userId: mongoose.Types.ObjectId;
+    scenarioId: mongoose.Types.ObjectId;
+    timeTakenSeconds: number;
+    passed: boolean;
+    playback: {
+        offsetSeconds: number;
+        code: string;
+    }[];
+    createdAt: Date;
+}
+
+const SimulatorSessionSchema = new Schema<ISimulatorSession>({
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    scenarioId: { type: Schema.Types.ObjectId, ref: 'Simulator', required: true },
+    timeTakenSeconds: { type: Number, required: true },
+    passed: { type: Boolean, required: true },
+    playback: [{
+        offsetSeconds: { type: Number, required: true },
+        code: { type: String, required: true }
+    }],
+    createdAt: { type: Date, default: Date.now }
+});
+
+export default mongoose.models.SimulatorSession || mongoose.model<ISimulatorSession>('SimulatorSession', SimulatorSessionSchema);

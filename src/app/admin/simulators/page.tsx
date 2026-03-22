@@ -11,6 +11,7 @@ export default function AdminSimulators() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [isAdding, setIsAdding] = useState(false);
+    const [editId, setEditId] = useState<string | null>(null);
 
     // Form State
     const [formData, setFormData] = useState({
@@ -21,6 +22,8 @@ export default function AdminSimulators() {
         tasks: [{ id: "WEB-101", title: "Fix Button Padding", desc: "Decrease padding to 20px.", reporter: "Alex", priority: "High" }],
         initialCode: ".cta-button {\n  padding: 40px;\n}",
         expectedRegex: "/padding:\\s*20px\\s*;/",
+        timeLimit: 30,
+        hints: ["Check the CSS padding property."],
     });
 
     useEffect(() => {
@@ -60,19 +63,51 @@ export default function AdminSimulators() {
         }
     };
 
+    const handleEdit = (sim: any) => {
+        setFormData({
+            role: sim.role || "",
+            company: sim.company || "",
+            difficulty: sim.difficulty || "Beginner",
+            emails: sim.emails?.length > 0 ? sim.emails : [{ sender: "", email: "", subject: "", body: "", time: "" }],
+            tasks: sim.tasks?.length > 0 ? sim.tasks : [{ id: "", title: "", desc: "", reporter: "", priority: "" }],
+            initialCode: sim.initialCode || "",
+            expectedRegex: sim.expectedRegex || "",
+            timeLimit: sim.timeLimit || 30,
+            hints: sim.hints?.length > 0 ? sim.hints : [""],
+        });
+        setEditId(sim._id);
+        setIsAdding(true);
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!confirm("Are you sure you want to delete this scenario?")) return;
+        try {
+            const res = await fetch(`/api/admin/simulators/${id}`, { method: "DELETE" });
+            const json = await res.json();
+            if (json.success) {
+                fetchSimulators();
+            } else {
+                alert("Error: " + json.error);
+            }
+        } catch (error) {
+            alert("Failed to delete.");
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
         try {
-            const res = await fetch("/api/admin/simulators", {
-                method: "POST",
+            const res = await fetch(editId ? `/api/admin/simulators/${editId}` : "/api/admin/simulators", {
+                method: editId ? "PUT" : "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
             });
             const json = await res.json();
             if (json.success) {
-                alert("Scenario created successfully!");
+                alert(editId ? "Scenario updated successfully!" : "Scenario created successfully!");
                 setIsAdding(false);
+                setEditId(null);
                 fetchSimulators();
             } else {
                 alert("Error: " + json.error);
@@ -95,7 +130,21 @@ export default function AdminSimulators() {
                         <p className="text-slate-400 text-lg">Create and edit interactive career simulations for WeboryOS.</p>
                     </div>
                     {!isAdding && (
-                        <Button onClick={() => setIsAdding(true)} className="bg-blue-600 hover:bg-blue-700 h-11 px-6">
+                        <Button onClick={() => {
+                            setEditId(null);
+                            setFormData({
+                                role: "Frontend Developer",
+                                company: "TechNova Inc.",
+                                difficulty: "Beginner",
+                                emails: [{ sender: "Alex (Tech Lead)", email: "alex@technova.inc", subject: "URGENT: Button fix", body: "Hey, fix the button padding please.", time: "10:00 AM" }],
+                                tasks: [{ id: "WEB-101", title: "Fix Button Padding", desc: "Decrease padding to 20px.", reporter: "Alex", priority: "High" }],
+                                initialCode: ".cta-button {\n  padding: 40px;\n}",
+                                expectedRegex: "/padding:\\s*20px\\s*;/",
+                                timeLimit: 30,
+                                hints: ["Check the CSS padding property."],
+                            });
+                            setIsAdding(true);
+                        }} className="bg-blue-600 hover:bg-blue-700 h-11 px-6">
                             <Plus className="mr-2" size={20} /> New Scenario
                         </Button>
                     )}
@@ -103,7 +152,7 @@ export default function AdminSimulators() {
 
                 {isAdding ? (
                     <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-8 animate-in fade-in slide-in-from-top-4">
-                        <Button variant="ghost" onClick={() => setIsAdding(false)} className="mb-6 -ml-2 text-slate-400 hover:text-white">
+                        <Button variant="ghost" onClick={() => { setIsAdding(false); setEditId(null); }} className="mb-6 -ml-2 text-slate-400 hover:text-white">
                             <ChevronLeft className="mr-1" size={18} /> Back to list
                         </Button>
                         
@@ -148,10 +197,36 @@ export default function AdminSimulators() {
                                         <p className="text-xs text-slate-500">The simulator will check if the student's code matches this pattern to win.</p>
                                     </div>
                                 </div>
+                                
+                                <div className="space-y-3 mt-6">
+                                    <h4 className="text-sm font-bold text-slate-400 flex justify-between items-center">
+                                        Target Hints
+                                        <Button type="button" variant="outline" size="sm" className="h-8 border-slate-700 hover:bg-slate-800 text-xs" onClick={() => setFormData({...formData, hints: [...formData.hints, ""]})}>
+                                            <Plus size={14} className="mr-1" /> Add Hint
+                                        </Button>
+                                    </h4>
+                                    {formData.hints.map((hint, idx) => (
+                                        <div key={idx} className="flex gap-2 relative">
+                                            <Input value={hint} onChange={(e) => {
+                                                const newHints = [...formData.hints];
+                                                newHints[idx] = e.target.value;
+                                                setFormData({...formData, hints: newHints});
+                                            }} placeholder={`Hint ${idx + 1}`} className="bg-slate-950 border-slate-800" required />
+                                            {formData.hints.length > 1 && (
+                                                <Button type="button" variant="ghost" className="px-3 text-slate-500 hover:text-red-400 hover:bg-red-500/10" onClick={() => {
+                                                    const newHints = formData.hints.filter((_, i) => i !== idx);
+                                                    setFormData({...formData, hints: newHints});
+                                                }}>
+                                                    <X size={16} />
+                                                </Button>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
 
                             <Button type="submit" disabled={saving} className="w-full bg-blue-600 hover:bg-blue-700 h-12 text-lg">
-                                {saving ? <><Loader2 className="animate-spin mr-2" /> Saving...</> : <><Save className="mr-2" /> Create Simulator scenario</>}
+                                {saving ? <><Loader2 className="animate-spin mr-2" /> Saving...</> : <><Save className="mr-2" /> {editId ? "Update" : "Create"} Simulator scenario</>}
                             </Button>
                         </form>
                     </div>
@@ -175,9 +250,12 @@ export default function AdminSimulators() {
                                     <div className="text-xs font-bold text-blue-400 uppercase mb-2 tracking-widest">{sim.difficulty}</div>
                                     <h3 className="text-xl font-bold mb-1">{sim.role}</h3>
                                     <p className="text-slate-500 text-sm mb-6 flex-1">{sim.company}</p>
-                                    <div className="flex gap-2">
-                                        <Button variant="outline" className="flex-1 border-slate-800 hover:bg-slate-800" onClick={() => window.open('/simulator', '_blank')}>View Live</Button>
-                                        <Button variant="outline" className="text-red-400 border-slate-800 hover:bg-red-500/10 hover:text-red-500">
+                                    <div className="flex gap-2 mt-4">
+                                        <Button variant="outline" className="flex-1 border-slate-800 hover:bg-slate-800" onClick={() => window.open(`/simulator?id=${sim._id}`, '_blank')}>View Live</Button>
+                                        <Button variant="outline" className="text-blue-400 border-slate-800 hover:bg-blue-500/10 hover:text-blue-500" onClick={() => handleEdit(sim)}>
+                                            Edit
+                                        </Button>
+                                        <Button variant="outline" className="text-red-400 border-slate-800 hover:bg-red-500/10 hover:text-red-500" onClick={() => handleDelete(sim._id)}>
                                             <Trash2 size={18} />
                                         </Button>
                                     </div>

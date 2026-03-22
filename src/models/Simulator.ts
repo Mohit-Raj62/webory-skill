@@ -37,6 +37,14 @@ const SimulatorSchema = new Schema({
     type: String,
     required: true, // String representation of regex like "/padding:\s*20px\s*;/"
   },
+  timeLimit: {
+    type: Number,
+    default: 30,
+  },
+  hints: {
+    type: [String],
+    default: [],
+  },
   difficulty: {
     type: String,
     enum: ["Beginner", "Intermediate", "Advanced"],
