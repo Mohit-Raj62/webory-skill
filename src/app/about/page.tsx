@@ -591,6 +591,33 @@ export default function AboutPage() {
                 </div>
             </section>
 
+            {/* Leadership Section */}
+            <section className="py-20 px-4 md:px-8 relative z-10 border-t border-white/5">
+                <div className="max-w-7xl mx-auto text-center">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-wider mb-4">
+                        <Users size={12} />
+                        <span>Leadership</span>
+                    </div>
+                    <h2 className="text-3xl md:text-5xl font-bold text-white mb-12">Meet Our <span className="text-blue-500">Founder</span></h2>
+                    
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-4xl mx-auto glass-card p-8 md:p-12 rounded-3xl border border-white/5 bg-white/[0.02]">
+                        <div className="w-32 h-32 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-blue-500/20 bg-gray-800 flex-shrink-0 relative">
+                             <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/20 to-purple-600/20 z-10 pointer-events-none"></div>
+                             <div className="w-full h-full flex items-center justify-center text-gray-400 text-4xl font-bold bg-[#111]">
+                                MS
+                             </div>
+                        </div>
+                        <div className="text-center md:text-left">
+                            <h3 className="text-2xl md:text-4xl font-bold text-white mb-2">Mohit Sinha</h3>
+                            <p className="text-blue-400 font-semibold text-lg mb-4">Founder & CEO, Webory Skills</p>
+                            <p className="text-gray-400 text-base md:text-lg leading-relaxed">
+                                Mohit Sinha is the Founder and CEO of Webory (Webory Skills). With a deep passion for technology and education, he established Webory to bridge the gap between academic learning and industry demands. Under his leadership as CEO, Webory has grown into a recognized MSME startup that empowers the next generation of developers with hands-on learning, real-world projects, and expert mentorship.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* FAQ Section */}
             <section className="py-20 px-4 md:px-8 relative z-10 border-t border-white/5 bg-white/[0.02]">
                 <div className="max-w-3xl mx-auto">
