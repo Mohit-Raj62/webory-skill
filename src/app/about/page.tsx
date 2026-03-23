@@ -636,7 +636,7 @@ export default function AboutPage() {
                                 <div className="w-56 h-56 md:w-80 md:h-80 rounded-[2.5rem] overflow-hidden border border-white/10 bg-[#111] flex flex-col items-center justify-center relative z-10 shadow-2xl transform transition-transform duration-500 group-hover:scale-[1.02]">
                                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 z-10 pointer-events-none mix-blend-overlay"></div>
                                      <div className="w-full h-full flex flex-col items-center justify-center relative z-20">
-                                        <span className="text-gray-200 text-6xl md:text-8xl font-black tracking-tighter drop-shadow-2xl">MS</span>
+                                        <span className="text-gray-200 text-6xl md:text-8xl font-black tracking-tighter drop-shadow-2xl">🧑🏻‍🏫</span>
                                      </div>
                                 </div>
                                 
@@ -666,7 +666,7 @@ export default function AboutPage() {
                                 </div>
                                 <h3 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-3 tracking-tight">Mohit Sinha</h3>
                                 <p className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 font-bold text-xl md:text-2xl mb-8">
-                                    Founder & CEO, Webory Skills
+                                    Founder & CEO, Webory Skills & Webory
                                 </p>
                                 
                                 <blockquote className="relative my-8 px-6 py-4 border-l-4 border-blue-500/50 bg-white/[0.02] text-left">
