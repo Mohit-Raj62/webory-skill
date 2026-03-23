@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
-import { Users, Target, Heart, Globe, Zap, Shield, Rocket, ArrowRight, Code2, Cpu, Database, Server, Smartphone, Layout, Cloud, FileJson, Container, GitBranch, ChevronDown, HelpCircle, Award, MessageSquare, Video, Mic, Calendar } from "lucide-react";
+import { Users, Target, Heart, Globe, Zap, Shield, Rocket, ArrowRight, Code2, Cpu, Database, Server, Smartphone, Layout, Cloud, FileJson, Container, GitBranch, ChevronDown, HelpCircle, Award, MessageSquare, Video, Mic, Calendar, Linkedin, Instagram, Github } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -592,27 +592,107 @@ export default function AboutPage() {
             </section>
 
             {/* Leadership Section */}
-            <section className="py-20 px-4 md:px-8 relative z-10 border-t border-white/5">
-                <div className="max-w-7xl mx-auto text-center">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-wider mb-4">
-                        <Users size={12} />
-                        <span>Leadership</span>
+            <section className="py-24 px-4 md:px-8 relative z-10 border-t border-white/5 overflow-hidden">
+                {/* Abstract Background Effects */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-5xl h-[600px] bg-blue-600/5 blur-[120px] rounded-full pointer-events-none"></div>
+                <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-purple-600/10 blur-[100px] rounded-full pointer-events-none"></div>
+                
+                <div className="max-w-7xl mx-auto">
+                    <div className="text-center mb-16 relative z-10">
+                        <motion.div 
+                            initial={{ opacity: 0, y: -20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-wider mb-4"
+                        >
+                            <Users size={12} />
+                            <span>Leadership</span>
+                        </motion.div>
+                        <motion.h2 
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="text-4xl md:text-6xl font-bold text-white mb-6"
+                        >
+                            Meet Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Founder</span>
+                        </motion.h2>
                     </div>
-                    <h2 className="text-3xl md:text-5xl font-bold text-white mb-12">Meet Our <span className="text-blue-500">Founder</span></h2>
                     
-                    <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-4xl mx-auto glass-card p-8 md:p-12 rounded-3xl border border-white/5 bg-white/[0.02]">
-                        <div className="w-32 h-32 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-blue-500/20 bg-gray-800 flex-shrink-0 relative">
-                             <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/20 to-purple-600/20 z-10 pointer-events-none"></div>
-                             <div className="w-full h-full flex items-center justify-center text-gray-400 text-4xl font-bold bg-[#111]">
-                                MS
-                             </div>
-                        </div>
-                        <div className="text-center md:text-left">
-                            <h3 className="text-2xl md:text-4xl font-bold text-white mb-2">Mohit Sinha</h3>
-                            <p className="text-blue-400 font-semibold text-lg mb-4">Founder & CEO, Webory Skills</p>
-                            <p className="text-gray-400 text-base md:text-lg leading-relaxed">
-                                Mohit Sinha is the Founder and CEO of Webory (Webory Skills). With a deep passion for technology and education, he established Webory to bridge the gap between academic learning and industry demands. Under his leadership as CEO, Webory has grown into a recognized MSME startup that empowers the next generation of developers with hands-on learning, real-world projects, and expert mentorship.
-                            </p>
+                    <div className="max-w-6xl mx-auto glass-card rounded-[2.5rem] border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-xl relative overflow-hidden shadow-2xl shadow-blue-900/10 group/card">
+                        {/* Decorative Gradient Line */}
+                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-80 group-hover/card:opacity-100 transition-opacity duration-500"></div>
+                        
+                        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20 p-8 md:p-12 lg:p-16">
+                            {/* Image / Monogram Side */}
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.9, rotate: -5 }}
+                                whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                                className="relative flex-shrink-0 group perspective-1000"
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-[2.5rem] blur-2xl opacity-30 group-hover:opacity-60 transition-opacity duration-500"></div>
+                                <div className="w-56 h-56 md:w-80 md:h-80 rounded-[2.5rem] overflow-hidden border border-white/10 bg-[#111] flex flex-col items-center justify-center relative z-10 shadow-2xl transform transition-transform duration-500 group-hover:scale-[1.02]">
+                                     <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 z-10 pointer-events-none mix-blend-overlay"></div>
+                                     <div className="w-full h-full flex flex-col items-center justify-center relative z-20">
+                                        <span className="text-gray-200 text-6xl md:text-8xl font-black tracking-tighter drop-shadow-2xl">MS</span>
+                                     </div>
+                                </div>
+                                
+                                {/* Floating Badge */}
+                                <div className="absolute -bottom-6 -right-6 md:-bottom-8 md:-right-8 p-4 md:p-5 text-left rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl flex items-center gap-4 z-30 transform group-hover:-translate-y-3 transition-transform duration-500 delay-100">
+                                    <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
+                                        <Shield size={24} className="animate-pulse" />
+                                    </div>
+                                    <div>
+                                        <div className="text-xs text-gray-400 font-medium">Verified</div>
+                                        <div className="text-base font-bold text-white leading-none">MSME Leader</div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                            
+                            {/* Content Side */}
+                            <motion.div 
+                                initial={{ opacity: 0, x: 30 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.2 }}
+                                className="text-center lg:text-left flex-1 relative z-10"
+                            >
+                                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-gray-300 text-xs font-bold tracking-widest uppercase mb-6 shadow-lg">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                                    Driving Innovation
+                                </div>
+                                <h3 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-3 tracking-tight">Mohit Sinha</h3>
+                                <p className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 font-bold text-xl md:text-2xl mb-8">
+                                    Founder & CEO, Webory Skills
+                                </p>
+                                
+                                <blockquote className="relative my-8 px-6 py-4 border-l-4 border-blue-500/50 bg-white/[0.02] text-left">
+                                    <p className="text-gray-300 text-lg md:text-xl leading-relaxed italic font-serif">
+                                        "Education is not just about learning facts, but training the mind to think and build. We are here to bridge the gap between academic learning and industry demands."
+                                    </p>
+                                </blockquote>
+
+                                <p className="text-gray-400 text-lg leading-relaxed mb-10 font-medium max-w-2xl mx-auto lg:mx-0">
+                                    With a deep passion for technology and education, Mohit established Webory to democratize access to elite tech education. Under his guidance, Webory has grown into a recognized startup that empowers the next generation of developers with hands-on learning, real-world projects, and expert mentorship.
+                                </p>
+                                
+                                {/* Social / Connect Row */}
+                                <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+                                    <span className="text-xs text-gray-500 uppercase font-bold tracking-wider sm:mr-4">Connect:</span>
+                                    <Link href="https://linkedin.com/in/webory-skills-01244b3a9" target="_blank" className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-blue-600 hover:border-blue-500 transition-all duration-300 shadow-lg group/icon">
+                                        <Linkedin size={20} className="group-hover/icon:scale-110 transition-transform" />
+                                    </Link>
+                                    <Link href="https://instagram.com/weboryskills" target="_blank" className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gradient-to-tr hover:from-yellow-500 hover:via-pink-500 hover:to-purple-500 hover:border-pink-500 transition-all duration-300 shadow-lg group/icon border-transparent">
+                                        <Instagram size={20} className="group-hover/icon:scale-110 transition-transform" />
+                                    </Link>
+                                    <Link href="https://github.com/Mohit-Raj62" target="_blank" className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-800 transition-all duration-300 shadow-lg hover:border-gray-600 group/icon">
+                                        <Github size={20} className="group-hover/icon:scale-110 transition-transform" />
+                                    </Link>
+                                </div>
+                            </motion.div>
                         </div>
                     </div>
                 </div>
