@@ -57,12 +57,21 @@ export default function JobSimulator() {
                     const urlParams = new URLSearchParams(window.location.search);
                     const scenarioId = urlParams.get('id');
                     
-                    const target = scenarioId ? (json.data.find((s: any) => s._id === scenarioId) || json.data[0]) : json.data[0];
-                    setScenario(target);
-                    setCode(target.initialCode);
-                    lastCode.current = target.initialCode;
-                    playbackLog.current = [{ offsetSeconds: 0, code: target.initialCode }];
-                    setTimeLeft((target.timeLimit || 30) * 60);
+                    let target = null;
+                    if (scenarioId) {
+                        target = json.data.find((s: any) => s._id === scenarioId) || null;
+                    }
+                    if (!target && json.data.length === 1) {
+                        target = json.data[0];
+                    }
+
+                    if (target) {
+                        setScenario(target);
+                        setCode(target.initialCode);
+                        lastCode.current = target.initialCode;
+                        playbackLog.current = [{ offsetSeconds: 0, code: target.initialCode }];
+                        setTimeLeft((target.timeLimit || 30) * 60);
+                    }
                 } else {
                     setError("No simulator scenarios found. Please create one in the Admin Dashboard.");
                 }
