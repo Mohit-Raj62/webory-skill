@@ -682,10 +682,10 @@ export default function AboutPage() {
                                 {/* Social / Connect Row */}
                                 <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
                                     <span className="text-xs text-gray-500 uppercase font-bold tracking-wider sm:mr-4">Connect:</span>
-                                    <Link href="https://linkedin.com/in/webory-skills-01244b3a9" target="_blank" className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-blue-600 hover:border-blue-500 transition-all duration-300 shadow-lg group/icon">
+                                    <Link href="https://www.linkedin.com/in/mohit0sinha" target="_blank" className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-blue-600 hover:border-blue-500 transition-all duration-300 shadow-lg group/icon">
                                         <Linkedin size={20} className="group-hover/icon:scale-110 transition-transform" />
                                     </Link>
-                                    <Link href="https://instagram.com/weboryskills" target="_blank" className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gradient-to-tr hover:from-yellow-500 hover:via-pink-500 hover:to-purple-500 hover:border-pink-500 transition-all duration-300 shadow-lg group/icon border-transparent">
+                                    <Link href="https://www.instagram.com/it.m0sh.1?igsh=MXdvcng4ZGJsb21jZw==" target="_blank" className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gradient-to-tr hover:from-yellow-500 hover:via-pink-500 hover:to-purple-500 hover:border-pink-500 transition-all duration-300 shadow-lg group/icon border-transparent">
                                         <Instagram size={20} className="group-hover/icon:scale-110 transition-transform" />
                                     </Link>
                                     <Link href="https://github.com/Mohit-Raj62" target="_blank" className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-800 transition-all duration-300 shadow-lg hover:border-gray-600 group/icon">
