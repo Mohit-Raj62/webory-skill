@@ -35,7 +35,9 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withPWA({
+import { withSentryConfig } from "@sentry/nextjs";
+
+const pwaConfig = withPWA({
   dest: "public",
   register: true,
   cacheOnFrontEndNav: true,
@@ -50,3 +52,9 @@ export default withPWA({
     importScripts: ["/custom-sw.js"],
   },
 })(nextConfig);
+
+export default withSentryConfig(pwaConfig, {
+  org: "webory",
+  project: "javascript-nextjs",
+  silent: !process.env.CI,
+});
