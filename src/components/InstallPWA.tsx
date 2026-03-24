@@ -62,6 +62,10 @@ export function InstallPWA({ variant = "sidebar" }: InstallPWAProps) {
             setIsInstalled(true);
             setInstallPrompt(null);
             (window as any).deferredPrompt = null;
+            
+            // Track Installation
+            fetch("/api/analytics/pwa-install", { method: "POST" })
+                .catch(err => console.error("Failed to track PWA install:", err));
         });
 
         return () => {

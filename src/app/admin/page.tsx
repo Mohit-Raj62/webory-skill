@@ -283,7 +283,7 @@ function AnalyticsPreview() {
             </div>
 
              {/* Key Stats Summary */}
-             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mt-8">
                 <div className="bg-blue-500/10 p-4 rounded-xl border border-blue-500/20 text-center">
                     <div className="text-3xl font-bold text-blue-400 mb-1">{stats.totalUsers || 0}</div>
                     <div className="text-sm text-gray-400">Total Users</div>
@@ -299,7 +299,11 @@ function AnalyticsPreview() {
                  <div className="bg-orange-500/10 p-4 rounded-xl border border-orange-500/20 text-center">
                      <div className="text-3xl font-bold text-orange-400 mb-1">{stats.totalApplications || 0}</div>
                      <div className="text-sm text-gray-400">Applications</div>
-                </div>
+                 </div>
+                 <div className="bg-indigo-500/10 p-4 rounded-xl border border-indigo-500/20 text-center">
+                     <div className="text-3xl font-bold text-indigo-400 mb-1">{stats.pwaInstalls || 0}</div>
+                     <div className="text-sm text-gray-400">App Installs</div>
+                 </div>
              </div>
         </div>
     );

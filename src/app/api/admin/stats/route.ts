@@ -7,6 +7,7 @@ import Application from "@/models/Application";
 import Enrollment from "@/models/Enrollment";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
+import Settings from "@/models/Settings";
 
 export async function GET() {
   try {
@@ -35,6 +36,7 @@ export async function GET() {
       recentEnrollments,
       allEnrollments,
       allApplications,
+      pwaSetting,
     ] = await Promise.all([
       User.countDocuments(),
       Course.countDocuments(),
@@ -45,7 +47,10 @@ export async function GET() {
       }),
       Enrollment.find().populate("course").lean(),
       Application.find().populate("internship").lean(),
+      Settings.findOne({ key: "pwa_installs" }).lean(),
     ]);
+
+    const pwaInstalls = pwaSetting?.value || 0;
 
     // Calculate revenue (from enrollments and applications)
     const courseRevenue = allEnrollments.reduce(
@@ -165,6 +170,7 @@ export async function GET() {
       totalInternships,
       totalApplications,
       recentEnrollments,
+      pwaInstalls,
       revenue,
       topCourses: enhancedTopCourses,
       topLearners: topLearnersWithCount,
