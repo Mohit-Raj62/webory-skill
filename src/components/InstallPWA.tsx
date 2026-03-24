@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Download, X } from "lucide-react";
+import { toast } from "sonner";
 
 interface BeforeInstallPromptEvent extends Event {
     prompt: () => Promise<void>;
@@ -66,6 +67,8 @@ export function InstallPWA({ variant = "sidebar" }: InstallPWAProps) {
             // Track Installation
             fetch("/api/analytics/pwa-install", { method: "POST" })
                 .catch(err => console.error("Failed to track PWA install:", err));
+                
+            toast.success("App installed successfully! 🎉");
         });
 
         return () => {
