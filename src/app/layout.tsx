@@ -140,10 +140,6 @@ export default function RootLayout({
                             console.log('PWA: Prompt captured globally');
                             window.dispatchEvent(new Event('pwa-prompt-captured'));
                         });
-                        window.addEventListener('appinstalled', () => {
-                            console.log('PWA: App installed tracked globally');
-                            fetch('/api/analytics/pwa-install', { method: 'POST' }).catch(console.error);
-                        });
                     `}
                 </Script>
                 <Suspense fallback={null}>

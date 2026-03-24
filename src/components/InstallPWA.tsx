@@ -57,9 +57,11 @@ export function InstallPWA({ variant = "sidebar" }: InstallPWAProps) {
             setIsChecking(false);
         };
 
-        window.addEventListener("pwa-prompt-captured", handlePromptCaptured);
-        window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-        window.addEventListener("appinstalled", () => {
+        const handleAppInstalled = () => {
+            // Prevent duplicate tracking if multiple InstallPWA instances are mounted
+            if (window.sessionStorage.getItem('pwa_tracked')) return;
+            window.sessionStorage.setItem('pwa_tracked', 'true');
+
             setIsInstalled(true);
             setInstallPrompt(null);
             (window as any).deferredPrompt = null;
@@ -69,11 +71,16 @@ export function InstallPWA({ variant = "sidebar" }: InstallPWAProps) {
                 .catch(err => console.error("Failed to track PWA install:", err));
                 
             toast.success("App installed successfully! 🎉");
-        });
+        };
+
+        window.addEventListener("pwa-prompt-captured", handlePromptCaptured);
+        window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+        window.addEventListener("appinstalled", handleAppInstalled);
 
         return () => {
             window.removeEventListener("pwa-prompt-captured", handlePromptCaptured);
             window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+            window.removeEventListener("appinstalled", handleAppInstalled);
         };
     }, []);
 
