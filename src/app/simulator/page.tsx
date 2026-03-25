@@ -394,36 +394,45 @@ function WindowTemplate({ title, icon, onClose, children, className = "" }: any)
 }
 
 function MailWindow({ scenario, onClose }: any) {
-    const email = scenario.emails[0] || { sender: "System", subject: "Welcome", body: "No emails in this scenario." };
+    const emails = scenario.emails?.length > 0 ? scenario.emails : [{ sender: "System", subject: "Welcome", body: "No emails in this scenario." }];
+    const [activeIndex, setActiveIndex] = useState(0);
+    const activeEmail = emails[activeIndex] || emails[0];
+
     return (
         <WindowTemplate title="Mail" icon={<Mail size={16}/>} onClose={onClose}>
             <div className="flex h-full">
                 {/* Sidebar */}
-                <div className="w-64 border-r border-slate-700 bg-slate-800/50 hidden md:block">
-                    <div className="p-4 font-bold text-slate-300 text-sm tracking-wider uppercase">Inbox</div>
-                    <div className="bg-blue-500/10 border-l-4 border-blue-500 p-4 cursor-pointer">
-                        <div className="flex justify-between items-start mb-1">
-                            <span className="font-bold text-slate-200 truncate">{email.sender}</span>
-                            <span className="text-xs text-blue-400">{email.time || "Just now"}</span>
+                <div className="w-64 border-r border-slate-700 bg-slate-800/50 flex flex-col hidden md:flex h-full overflow-y-auto">
+                    <div className="p-4 font-bold text-slate-300 text-sm tracking-wider uppercase sticky top-0 bg-slate-800/90 backdrop-blur z-10">Inbox</div>
+                    {emails.map((email: any, idx: number) => (
+                        <div 
+                            key={idx} 
+                            onClick={() => setActiveIndex(idx)}
+                            className={`p-4 cursor-pointer border-l-4 transition-colors ${idx === activeIndex ? 'bg-blue-500/10 border-blue-500' : 'border-transparent hover:bg-slate-700/50 text-slate-400'}`}
+                        >
+                            <div className="flex justify-between items-start mb-1 gap-2">
+                                <span className={`font-bold truncate ${idx === activeIndex ? 'text-slate-200' : 'text-slate-300'}`}>{email.sender}</span>
+                                <span className="text-[10px] text-blue-400 whitespace-nowrap">{email.time || "Just now"}</span>
+                            </div>
+                            <div className={`text-sm font-medium truncate ${idx === activeIndex ? 'text-slate-300' : 'text-slate-400'}`}>{email.subject}</div>
+                            <div className="text-xs text-slate-500 truncate mt-1">{email.body.substring(0, 30)}...</div>
                         </div>
-                        <div className="text-sm font-medium text-slate-300 truncate">{email.subject}</div>
-                        <div className="text-xs text-slate-500 truncate mt-1">{email.body.substring(0, 30)}...</div>
-                    </div>
+                    ))}
                 </div>
                 {/* Mail Content */}
-                <div className="flex-1 p-6 md:p-10 bg-white text-slate-900 overflow-y-auto">
-                    <h1 className="text-3xl font-bold mb-6">{email.subject}</h1>
+                <div className="flex-1 p-6 md:p-10 bg-white text-slate-900 overflow-y-auto h-full">
+                    <h1 className="text-2xl md:text-3xl font-bold mb-6">{activeEmail.subject}</h1>
                     <div className="flex items-center gap-3 mb-8 pb-6 border-b border-slate-200">
-                        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-lg">
-                            {email.sender[0]}
+                        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-lg shrink-0">
+                            {activeEmail.sender[0]}
                         </div>
-                        <div>
-                            <div className="font-bold">{email.sender}</div>
-                            <div className="text-sm text-slate-500">to me, team</div>
+                        <div className="min-w-0">
+                            <div className="font-bold truncate">{activeEmail.sender} <span className="text-slate-500 text-sm font-normal ml-2">&lt;{activeEmail.sender.toLowerCase().replace(/\s+/g, '.')}@{scenario.company.toLowerCase().replace(/\s+/g, '')}.com&gt;</span></div>
+                            <div className="text-sm text-slate-500 truncate">to me, team</div>
                         </div>
                     </div>
-                    <div className="whitespace-pre-wrap text-slate-700 leading-relaxed text-lg">
-                        {email.body}
+                    <div className="whitespace-pre-wrap text-slate-700 leading-relaxed text-[15px] md:text-lg">
+                        {activeEmail.body}
                     </div>
                 </div>
             </div>
