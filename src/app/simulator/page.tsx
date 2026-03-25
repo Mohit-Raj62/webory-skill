@@ -65,6 +65,10 @@ export default function JobSimulator() {
                         target = json.data[0];
                     }
 
+                    if (target && target.completed) {
+                        target = null; // Prevent auto-loading a completed scenario
+                    }
+
                     if (target) {
                         setScenario(target);
                         setCode(target.initialCode);
@@ -152,7 +156,7 @@ export default function JobSimulator() {
                         setSimulationComplete(true);
                         setFeedback({ type: 'success', msg: "PR Approved & Merged! Feedback: " + (aiData.feedback?.[0] || 'LGTM!') });
                         
-                        fetch('/api/simulators/xp', { method: 'POST', body: JSON.stringify({ xp: 50 }), headers: { 'Content-Type': 'application/json' } });
+                        fetch('/api/simulators/xp', { method: 'POST', body: JSON.stringify({ xp: 30 }), headers: { 'Content-Type': 'application/json' } });
                         fetch('/api/simulators/sessions', { 
                             method: 'POST', 
                             body: JSON.stringify({ 
@@ -211,11 +215,26 @@ export default function JobSimulator() {
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
                         {allScenarios.map((sim: any) => (
-                            <div key={sim._id} onClick={() => { setScenario(sim); setCode(sim.initialCode); setTimeLeft((sim.timeLimit || 30) * 60); }} className="bg-slate-900 border border-slate-800 p-8 rounded-2xl flex flex-col hover:border-blue-500/50 transition-colors cursor-pointer group">
+                            <div 
+                                key={sim._id} 
+                                onClick={() => { 
+                                    if (!sim.completed) {
+                                        setScenario(sim); 
+                                        setCode(sim.initialCode); 
+                                        setTimeLeft((sim.timeLimit || 30) * 60); 
+                                    }
+                                }} 
+                                className={`bg-slate-900 border border-slate-800 p-8 rounded-2xl flex flex-col transition-colors ${sim.completed ? 'opacity-70 cursor-not-allowed' : 'hover:border-blue-500/50 cursor-pointer group'}`}
+                            >
                                 <div className="text-xs font-bold text-blue-400 uppercase mb-3 tracking-widest">{sim.difficulty || 'Beginner'} • {sim.timeLimit || 30} mins</div>
                                 <h3 className="text-2xl font-bold mb-2">{sim.role}</h3>
                                 <p className="text-slate-500 mb-8 flex-1">{sim.company}</p>
-                                <Button className="w-full bg-slate-800 group-hover:bg-blue-600 group-hover:text-white text-slate-300">Start Simulator</Button>
+                                <Button 
+                                    disabled={sim.completed}
+                                    className={`w-full ${sim.completed ? 'bg-green-600/20 text-green-500 border border-green-500/30' : 'bg-slate-800 group-hover:bg-blue-600 group-hover:text-white text-slate-300'}`}
+                                >
+                                    {sim.completed ? <><CheckCircle2 size={16} className="mr-2" /> Completed</> : "Start Simulator"}
+                                </Button>
                             </div>
                         ))}
                     </div>
@@ -256,7 +275,7 @@ export default function JobSimulator() {
                             <AwardIcon size={32} />
                         </div>
                         <h2 className="text-2xl font-bold mb-2">Scenario Complete!</h2>
-                        <p className="text-slate-600 mb-6 font-medium">Great job fixing that bug. You've earned +50 XP and leveled up your {scenario.role} skills!</p>
+                        <p className="text-slate-600 mb-6 font-medium">Great job fixing that bug. You've earned +30 XP and leveled up your {scenario.role} skills!</p>
                         <Button onClick={() => window.location.href = '/'} className="w-full bg-blue-600 hover:bg-blue-700 h-11">Return Home</Button>
                     </div>
                 )}
@@ -274,7 +293,7 @@ export default function JobSimulator() {
 
                 {/* Windows Overlay */}
                 {activeApp === 'mail' && <MailWindow scenario={scenario} onClose={() => setActiveApp(null)} />}
-                {activeApp === 'jira' && <JiraWindow scenario={scenario} onClose={() => setActiveApp(null)} taskStatus={taskStatus} hintsUsed={hintsUsed} setHintsUsed={setHintsUsed} />}
+                {activeApp === 'jira' && <JiraWindow scenario={scenario} onClose={() => setActiveApp(null)} taskStatus={taskStatus} setTaskStatus={setTaskStatus} hintsUsed={hintsUsed} setHintsUsed={setHintsUsed} />}
                 {activeApp === 'code' && <CodeWindow onClose={() => setActiveApp(null)} code={code} setCode={setCode} onRun={handleRunTests} taskStatus={taskStatus} feedback={feedback} isSubmitting={isSubmitting} />}
                 {activeApp === 'chat' && <ChatWindow scenario={scenario} hintsUsed={hintsUsed} setHintsUsed={setHintsUsed} onClose={() => setActiveApp(null)} />}
                 {activeApp === 'browser' && <BrowserWindow onClose={() => setActiveApp(null)} code={code} />}
@@ -296,7 +315,7 @@ export default function JobSimulator() {
                         name="Tasks" 
                         active={activeApp === 'jira'} 
                         onClick={() => setActiveApp('jira')} 
-                        badge={taskStatus === 'TODO' ? "1" : null}
+                        badge={(taskStatus === 'TODO' || taskStatus === 'IN_PROGRESS') ? "1" : null}
                     />
                     <div className="w-[1px] h-10 bg-white/20 mx-2"></div>
                     <DockIcon 
@@ -412,7 +431,7 @@ function MailWindow({ scenario, onClose }: any) {
     );
 }
 
-function JiraWindow({ scenario, onClose, taskStatus, hintsUsed, setHintsUsed }: any) {
+function JiraWindow({ scenario, onClose, taskStatus, hintsUsed, setHintsUsed, setTaskStatus }: any) {
     const task = scenario.tasks[0] || { title: "Untitled", id: "000", desc: "No description." };
     return (
         <WindowTemplate title="Jira Work Management" icon={<Briefcase size={16}/>} onClose={onClose}>
@@ -427,7 +446,13 @@ function JiraWindow({ scenario, onClose, taskStatus, hintsUsed, setHintsUsed }: 
                     <div className="flex-1 bg-[#ebecf0] rounded-xl p-3 flex flex-col min-w-[250px]">
                         <h3 className="text-sm font-bold text-[#5e6c84] uppercase mb-3 px-2">To Do {taskStatus === 'TODO' ? '(1)' : '(0)'}</h3>
                         {taskStatus === 'TODO' && (
-                            <div className="bg-white p-4 rounded-lg shadow-sm border border-slate-200 hover:bg-slate-50 cursor-pointer">
+                            <div 
+                                onClick={() => setTaskStatus('IN_PROGRESS')}
+                                className="bg-white p-4 rounded-lg shadow-sm border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all active:scale-95 group relative"
+                            >
+                                <div className="absolute top-2 right-2 text-xs font-bold text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    Click to Start
+                                </div>
                                 <div className="text-sm font-medium mb-2">{task.title}</div>
                                 <div className="text-xs text-[#0052cc] bg-[#deebff] inline-block px-2 py-1 rounded font-bold mb-3">{task.id}</div>
                                 <p className="text-sm text-slate-600 mb-3">{task.desc || scenario.emails[0]?.body}</p>
@@ -444,9 +469,25 @@ function JiraWindow({ scenario, onClose, taskStatus, hintsUsed, setHintsUsed }: 
 
                     {/* IN PROGRESS Column */}
                     <div className="flex-1 bg-[#ebecf0] rounded-xl p-3 flex flex-col min-w-[250px]">
-                        <h3 className="text-sm font-bold text-[#5e6c84] uppercase mb-3 px-2">In Progress (0)</h3>
+                        <h3 className="text-sm font-bold text-[#5e6c84] uppercase mb-3 px-2">In Progress {taskStatus === 'IN_PROGRESS' ? '(1)' : '(0)'}</h3>
+                        
+                        {taskStatus === 'IN_PROGRESS' && (
+                            <div className="bg-white p-4 rounded-lg shadow-sm border-l-4 border-blue-500 cursor-default animate-in zoom-in duration-300">
+                                <div className="text-sm font-medium mb-2">{task.title}</div>
+                                <div className="text-xs text-[#0052cc] bg-[#deebff] inline-block px-2 py-1 rounded font-bold mb-3">{task.id}</div>
+                                <p className="text-sm text-slate-600 mb-3 line-clamp-2">{task.desc || scenario.emails[0]?.body}</p>
+                                <div className="flex items-center justify-between text-[#5e6c84]">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                                        <span className="text-xs font-medium text-blue-600">Working</span>
+                                    </div>
+                                    <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold text-[10px]">YOU</div>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Highlights and Hints */}
-                        {taskStatus === 'TODO' && scenario.hints && scenario.hints.length > 0 && (
+                        {(taskStatus === 'TODO' || taskStatus === 'IN_PROGRESS') && scenario.hints && scenario.hints.length > 0 && (
                             <div className="mt-4 p-4 bg-yellow-50 rounded-lg border border-yellow-200 shadow-sm animate-in fade-in">
                                 <h4 className="text-xs font-bold text-yellow-800 uppercase mb-3 tracking-wider flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg> Available Hints</h4>
                                 <div className="space-y-2">

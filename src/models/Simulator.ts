@@ -49,12 +49,8 @@ const SimulatorSchema = new Schema({
     type: String,
     enum: ["Beginner", "Intermediate", "Advanced"],
     default: "Beginner",
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  }
+}, { timestamps: true });
 
 const Simulator = models.Simulator || model("Simulator", SimulatorSchema);
 
