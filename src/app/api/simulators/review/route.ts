@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
         const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
         const prompt = `
-            Act as a strict Senior Developer at ${scenario.company} reviewing a Pull Request from a Junior ${scenario.role}.
+            Act as an encouraging Senior Developer at ${scenario.company} reviewing a Pull Request from a Junior ${scenario.role}.
             
             Task Description: ${scenario.tasks[0]?.desc || "Fix the code."}
             
@@ -24,11 +24,14 @@ export async function POST(request: NextRequest) {
             ${code}
             \`\`\`
             
-            Evaluate the code for logical correctness, best practices, security, and performance. 
-            If the code uses very bad practices or doesn't fully solve the task gracefully, reject it (passed: false) and give 1-2 specific points of feedback.
-            If the code is acceptable and solves the task reasonably well, approve it (passed: true).
+            Evaluate the code primarily for functionality and logically solving the core task.
+            DO NOT reject the code for minor styling, pedantic best practices, or syntax choices (like using "magic numbers" for basic CSS, using standard variables, or hardcoding simple values in a test environment).
             
-            Return ONLY valid JSON in this exact structure:
+            If the code fundamentally solves the task described (e.g., setting the padding exactly to what was asked), you MUST approve it (passed: true). You may provide up to 1 brief, friendly tip for best practices in the feedback array.
+            ONLY reject the code (passed: false) if it fails to achieve the core goal of the task, is completely broken, or is entirely wrong.
+            Keep feedback short, highly encouraging, and very easy to understand for a beginner.
+            
+            Return ONLY valid JSON in this exact structure without markdown formatting blocks (start with { and end with }):
             {
                 "passed": boolean,
                 "feedback": ["string comment"]

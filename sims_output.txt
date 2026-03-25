@@ -1,0 +1,21 @@
+Total Simulators: 5
+Role: Frontend Developer, Company: TechNova Inc.
+Expected Regex: /padding:\s*20px\s*;/
+Hints: [ 'Check the CSS padding property.' ]
+---
+Role: Frontend Developerb t, Company: TechNova Inc.
+Expected Regex: /padding:\s*20px\s*;/
+Hints: [ 'Check the CSS padding property.' ]
+---
+Role: Frontend Developerhtjh, Company: TechNova Inc.
+Expected Regex: /padding:\s*20px\s*;/
+Hints: [ 'Check the CSS padding property.nbjyj' ]
+---
+Role: Frontend Developer ytry, Company: TechNova Inc.
+Expected Regex: /padding:\s*20px\s*;/
+Hints: [ 'Check the CSS padding property.ntg tyr' ]
+---
+Role: backend-Frontend Developer, Company: webory
+Expected Regex: /padding:\s*(20px|var\(--btn-padding\))\s*;/
+Hints: [ 'Reduce the padding value.' ]
+---
