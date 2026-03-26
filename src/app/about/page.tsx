@@ -37,7 +37,7 @@ export default function AboutPage() {
                             <Rocket size={12} />
                             <span>Innovating Education</span>
                         </div>
-                        <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight">
+                        <h1 className="text-4xl md:text-7xl font-bold text-white mb-6 tracking-tight">
                             Empowering the <br className="hidden md:block" />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 animate-gradient">Next Generation</span>
                         </h1>
@@ -201,7 +201,7 @@ export default function AboutPage() {
                                 <Award size={12} />
                                 <span>Industry Recognized</span>
                             </div>
-                            <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">Earn a <span className="text-yellow-400">Prestigious Certificate</span></h2>
+                            <h2 className="text-2xl md:text-5xl font-bold text-white mb-6">Earn a <span className="text-yellow-400">Prestigious Certificate</span></h2>
                             <p className="text-gray-400 text-lg leading-relaxed mb-8">
                                 Stand out to employers with certificates that validate your skills. Our certifications are recognized by MSME (Govt. of India) and top tech companies.
                             </p>
@@ -231,7 +231,7 @@ export default function AboutPage() {
                                 transition={{ type: "spring", stiffness: 100, damping: 10 }}
                                 className="relative w-full aspect-[1.4/1] bg-white text-blue-900 border-4 border-blue-900 p-2 shadow-2xl shadow-blue-900/20 flex flex-col overflow-hidden"
                             >
-                                <div className="h-full w-full border-2 border-blue-900 relative p-6 flex flex-col">
+                                <div className="h-full w-full border-2 border-blue-900 relative p-4 md:p-6 flex flex-col">
                                     {/* Top Blue Bar */}
                                     <div className="absolute top-0 left-0 right-0 h-2 bg-blue-900"></div>
 
@@ -262,19 +262,19 @@ export default function AboutPage() {
 
                                     {/* Title */}
                                     <div className="text-center relative z-10 my-2">
-                                        <h1 className="font-serif text-4xl md:text-5xl font-bold text-blue-900 mb-2">Certificate of Completion</h1>
+                                        <h1 className="font-serif text-xl md:text-5xl font-bold text-blue-900 mb-2">Certificate of Completion</h1>
                                         <p className="font-great-vibes text-gray-500 italic text-lg">This is to certify that</p>
                                     </div>
 
                                     {/* Name */}
                                     <div className="text-center relative z-10 my-4">
-                                        <h2 className="font-serif text-3xl md:text-4xl font-bold text-blue-900 border-b border-gray-300 pb-2 inline-block px-8">Your Name</h2>
+                                        <h2 className="font-serif text-lg md:text-4xl font-bold text-blue-900 border-b border-gray-300 pb-2 inline-block px-8">Your Name</h2>
                                     </div>
 
                                     {/* Course Details */}
                                     <div className="text-center relative z-10 mb-6">
                                         <p className="font-dancing text-gray-500 italic text-sm mb-2">has successfully completed the course</p>
-                                        <h3 className="font-bold text-xl md:text-2xl text-black mb-4">Full Stack Development with Gen AI</h3>
+                                        <h3 className="font-bold text-sm md:text-2xl text-black mb-4">Full Stack Development with Gen AI</h3>
                                         
                                         <div className="flex justify-center gap-8 text-[10px] uppercase tracking-wider text-gray-600 border-y border-gray-100 py-2 max-w-sm mx-auto">
                                             <div>
@@ -300,13 +300,13 @@ export default function AboutPage() {
                                     {/* Footer / Signatures */}
                                     <div className="flex justify-between items-end relative z-10 mt-4 px-4">
                                         <div className="text-center">
-                                            <div className="font-dancing text-2xl text-blue-900 mb-1">Mohit Sinha</div>
+                                            <div className="font-dancing text-base md:text-2xl text-blue-900 mb-1">Mohit Sinha</div>
                                             <div className="w-32 h-px bg-blue-900 mb-1"></div>
                                             <p className="text-[8px] font-bold text-blue-900 uppercase">Founder & CEO</p>
                                         </div>
 
                                         <div className="text-center flex flex-col items-center">
-                                            <div className="w-16 h-16 bg-white border border-gray-200 p-1 mb-1">
+                                            <div className="w-10 h-10 md:w-16 md:h-16 bg-white border border-gray-200 p-1 mb-1">
                                                 <div className="w-full h-full bg-black/80"></div> 
                                             </div>
                                             <p className="text-[6px] font-bold text-green-600 uppercase">Scan to Verify</p>
@@ -319,7 +319,7 @@ export default function AboutPage() {
                                                     WEBORY<br/>SKILLS<br/>VERIFIED &<br/>AUTHORIZED
                                                 </div>
                                             </div>
-                                            <div className="font-dancing text-2xl text-blue-900 mb-1">Weboryskills</div>
+                                            <div className="font-dancing text-base md:text-2xl text-blue-900 mb-1">Weboryskills</div>
                                             <div className="w-32 h-px bg-blue-900 mb-1"></div>
                                             <p className="text-[8px] font-bold text-blue-900 uppercase">Director of Education</p>
                                         </div>
@@ -463,7 +463,7 @@ export default function AboutPage() {
                                 <motion.div 
                                     animate={{ y: [0, -10, 0] }}
                                     transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                                    className="absolute -right-8 top-20 bg-[#151515] p-4 rounded-xl border border-green-500/20 shadow-xl flex items-center gap-3 z-20"
+                                    className="absolute -right-4 top-10 sm:-right-8 sm:top-20 bg-[#151515] p-3 md:p-4 rounded-xl border border-green-500/20 shadow-xl flex items-center gap-3 z-20 scale-75 sm:scale-100 origin-top-right"
                                 >
                                     <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
                                         <Calendar size={20} />
@@ -641,7 +641,7 @@ export default function AboutPage() {
                                 </div>
                                 
                                 {/* Floating Badge */}
-                                <div className="absolute -bottom-6 -right-6 md:-bottom-8 md:-right-8 p-4 md:p-5 text-left rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl flex items-center gap-4 z-30 transform group-hover:-translate-y-3 transition-transform duration-500 delay-100">
+                                <div className="absolute -bottom-4 -right-4 md:-bottom-8 md:-right-8 p-3 md:p-5 text-left rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl flex items-center gap-4 z-30 transform group-hover:-translate-y-3 transition-transform duration-500 delay-100 scale-90 md:scale-100">
                                     <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
                                         <Shield size={24} className="animate-pulse" />
                                     </div>
