@@ -15,7 +15,7 @@ export default function AboutPage() {
         setOpenFaq(openFaq === index ? null : index);
     };
     return (
-        <main className="min-h-screen bg-[#050505] selection:bg-blue-500/30 font-sans">
+        <main className="min-h-screen bg-[#050505] selection:bg-blue-500/30 font-sans overflow-x-hidden">
             <Navbar />
 
             {/* Background Effects */}
@@ -58,8 +58,8 @@ export default function AboutPage() {
                             </Link>
                         </div>
 
-                        <div className="mt-12 flex justify-center">
-                            <div className="inline-flex items-center space-x-2 bg-green-500/5 border border-green-500/20 rounded-full px-5 py-2.5 shadow-[0_0_20px_rgba(34,197,94,0.15)] hover:bg-green-500/10 transition-all cursor-default group">
+                        <div className="mt-12 flex justify-center px-4">
+                            <div className="inline-flex items-center space-x-2 bg-green-500/5 border border-green-500/20 rounded-full px-4 py-2 md:px-5 md:py-2.5 shadow-[0_0_20px_rgba(34,197,94,0.15)] hover:bg-green-500/10 transition-all cursor-default group max-w-full">
                                 <span className="relative flex h-2.5 w-2.5 mr-1">
                                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
@@ -74,14 +74,14 @@ export default function AboutPage() {
             </section>
 
              {/* Tech Stack Infinite Scroll */}
-             <section className="py-10 border-y border-white/5 bg-white/[0.02] overflow-hidden whitespace-nowrap relative z-10">
+             <section className="py-10 border-y border-white/5 bg-white/[0.02] overflow-hidden relative z-10">
                 <div className="text-center mb-8">
                     <p className="text-gray-400 text-sm font-bold uppercase tracking-widest">Powering Next-Gen Applications</p>
                 </div>
                 <motion.div 
                     animate={{ x: ["0%", "-50%"] }}
                     transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                    className="flex items-center gap-12 inline-flex"
+                    className="flex items-center gap-6 md:gap-12 inline-flex whitespace-nowrap"
                 >
                     {[
                         { name: "React", icon: Code2, color: "text-blue-400" },
@@ -109,10 +109,10 @@ export default function AboutPage() {
                         { name: "Git", icon: GitBranch, color: "text-red-500" },
                         { name: "Figma", icon: PenToolIcon, color: "text-purple-400" },
                     ].map((tech, i) => (
-                        <div key={i} className="flex items-center gap-3 text-2xl font-bold px-4">
+                        <div key={i} className="flex items-center gap-3 text-lg md:text-2xl font-bold px-4">
                             {/* For Lucid icons that act as component, Render them directly */}
                             {/* Note: I'm using placeholder custom components for ones not in Lucide imports above or generic ones */}
-                            <tech.icon className={`w-8 h-8 ${tech.color}`} />
+                            <tech.icon className={`w-6 h-6 md:w-8 md:h-8 ${tech.color}`} />
                             <span className="text-gray-400">{tech.name}</span>
                         </div>
                     ))}
@@ -223,7 +223,7 @@ export default function AboutPage() {
                             </div>
                         </div>
 
-                        <div className="relative perspective-1000 group">
+                        <div className="relative perspective-1000 group overflow-hidden md:overflow-visible">
                              {/* 3D Tilt Effect */}
                             <motion.div 
                                 initial={{ rotateY: 10, rotateX: 5 }}
