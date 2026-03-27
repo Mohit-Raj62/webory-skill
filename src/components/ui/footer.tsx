@@ -79,6 +79,7 @@ export function Footer() {
                                         <>
                                             <li><Link href="/resume-checker" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1 leading-tight">Resume AI <span className="text-[9px] px-1.2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded border border-emerald-500/20 italic font-bold">Free</span></Link></li>
                                             <li><Link href="/simulator" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1 leading-tight">WeboryOS <span className="text-[9px] px-1.2 py-0.5 bg-blue-500/20 text-blue-400 rounded border border-blue-500/20 italic font-bold">New</span></Link></li>
+                                            <li><Link href="/viz" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1 leading-tight">LogicRoom <span className="text-[9px] px-1.2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded border border-emerald-500/20 italic font-bold">Beta</span></Link></li>
                                         </>
                                     )}
                                     <li><Link href="/ai-prep" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1 leading-tight">AI Nexus <span className="text-[9px] px-1.2 py-0.5 bg-purple-500/20 text-purple-400 rounded border border-purple-500/20 italic">Pro</span></Link></li>
