@@ -522,7 +522,10 @@ export default function AmbassadorDashboard() {
                                     {reward.type === "virtual" && rewardsHistory.some(r => r.item === reward.name) ? (
                                         <Button 
                                             className="w-full h-12 rounded-xl font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all"
-                                            onClick={() => setShowRewardModal(reward)}
+                                            onClick={() => {
+                                                const historyItem = rewardsHistory.find(r => r.item === reward.name);
+                                                setShowRewardModal({ ...reward, redeemedAt: historyItem?.createdAt });
+                                            }}
                                         >
                                             Show Reward
                                         </Button>

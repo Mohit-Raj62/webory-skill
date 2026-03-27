@@ -140,7 +140,7 @@ export const CertificateModal = ({ isOpen, onClose, reward, stats, user }: Certi
                     <div className="w-full flex justify-between items-end px-16 mt-4">
                         <div className="text-center w-64">
                             <div className="border-b border-gray-400 w-full mb-1 pb-3 text-2xl font-bold text-[#1a237e] font-sans">
-                                {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                {new Date(reward.redeemedAt || new Date()).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                             </div>
                             <p className="text-sm text-gray-500 font-bold uppercase tracking-widest mt-2">Date of Issue</p>
                         </div>
