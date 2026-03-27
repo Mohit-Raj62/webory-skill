@@ -1,9 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { ArrowLeft, TrendingUp, Users, DollarSign, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+
+const Line = dynamic(() => import("react-chartjs-2").then(mod => mod.Line), { ssr: false });
+const Bar = dynamic(() => import("react-chartjs-2").then(mod => mod.Bar), { ssr: false });
+const Doughnut = dynamic(() => import("react-chartjs-2").then(mod => mod.Doughnut), { ssr: false });
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -16,7 +22,6 @@ import {
   Legend,
   ArcElement,
 } from "chart.js";
-import { Line, Bar, Doughnut } from "react-chartjs-2";
 
 // Register ChartJS components
 ChartJS.register(

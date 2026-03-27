@@ -37,14 +37,17 @@ export async function GET(request: NextRequest) {
       query.status = filter;
     }
 
-    // Search Logic (Searching in name, email, phone)
+    // Search Logic (Searching in name, email, phone, job title)
     if (search) {
+      const matchingJobs = await Job.find({ title: { $regex: search, $options: "i" } }).select("_id");
+      const matchingJobIds = matchingJobs.map(job => job._id);
+
       query.$or = [
         { name: { $regex: search, $options: "i" } },
         { email: { $regex: search, $options: "i" } },
         { phone: { $regex: search, $options: "i" } },
-        // Note: Searching populated fields like jobId.title requires aggregation or post-filter,
-        // staying simple for now to ensure speed on main fields.
+        { jobId: { $in: matchingJobIds } },
+        { position: { $regex: search, $options: "i" } },
       ];
     }
 

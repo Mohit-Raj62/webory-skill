@@ -2,7 +2,15 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Editor from "@monaco-editor/react";
+import dynamic from "next/dynamic";
+const Editor = dynamic(() => import("@monaco-editor/react"), {
+    ssr: false,
+    loading: () => (
+        <div className="h-full w-full flex items-center justify-center bg-[#1e1e1e] text-gray-400">
+            <Loader2 className="animate-spin mr-2" /> Loading Editor...
+        </div>
+    )
+});
 import { Rocket, Play, RotateCcw, Loader2, AlertCircle, Terminal, Copy, Check, Info, Save, FilePlus, FolderOpen, Trash2, FileCode, ChevronRight, ChevronDown, Share2, Code2, Folder, CheckCircle, ExternalLink } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";

@@ -39,7 +39,7 @@ export default function AdminApplicationsPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [pagination, setPagination] = useState({
         page: 1,
-        limit: 5,
+        limit: 10,
         totalPages: 1,
         totalCount: 0
     });
@@ -130,6 +130,11 @@ export default function AdminApplicationsPage() {
 
     const handleScheduleInterview = async () => {
         if (!interviewApp) return;
+        
+        if (!interviewForm.date || !interviewForm.time || !interviewForm.link) {
+            toast.error("Please fill all details (date, time, and link)");
+            return;
+        }
 
         try {
             const interviewDateTime = new Date(`${interviewForm.date}T${interviewForm.time}`);
