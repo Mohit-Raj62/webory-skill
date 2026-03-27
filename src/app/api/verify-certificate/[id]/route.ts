@@ -3,6 +3,9 @@ import dbConnect from "@/lib/db";
 import Enrollment from "@/models/Enrollment";
 import Application from "@/models/Application";
 import CustomCertificate from "@/models/CustomCertificate";
+import RewardRequest from "@/models/RewardRequest";
+import Ambassador from "@/models/Ambassador";
+import mongoose from "mongoose";
 // Import referenced models to ensure they're registered with Mongoose
 import "@/models/Course";
 import "@/models/User";
@@ -106,6 +109,33 @@ export async function GET(
           certificateKey: customCert.certificateKey,
         },
       });
+    }
+
+    // 4. Search in RewardRequests (Ambassador Certificates)
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      const rewardRequest = await RewardRequest.findById(id)
+        .populate({
+          path: "ambassadorId",
+          populate: { path: "userId", select: "firstName lastName" }
+        });
+
+      if (rewardRequest && rewardRequest.item === "Ambassador Certificate") {
+        const ambassador = rewardRequest.ambassadorId as any;
+        const user = ambassador?.userId as any;
+        
+        return NextResponse.json({
+          valid: true,
+          type: "ambassador",
+          data: {
+            studentName: `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || "Campus Ambassador",
+            title: "Campus Ambassador Certificate",
+            description: "Awarded for exceptional leadership and community contributions.",
+            date: rewardRequest.createdAt,
+            certificateId: rewardRequest._id.toString(),
+            certificateKey: `AMB-${rewardRequest._id.toString().slice(-6).toUpperCase()}`,
+          },
+        });
+      }
     }
 
     return NextResponse.json(
