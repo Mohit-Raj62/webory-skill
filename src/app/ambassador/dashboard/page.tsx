@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/components/auth/session-provider";
-import { Copy, Loader2, Trophy, Users, ShoppingBag, Gift, AlertCircle, CheckCircle2, Share2, TrendingUp, Lock, Unlock, Award } from "lucide-react";
+import { Copy, Loader2, Trophy, Users, ShoppingBag, Gift, AlertCircle, CheckCircle2, Share2, TrendingUp, Lock, Unlock, Award, Quote } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -82,6 +82,10 @@ export default function AmbassadorDashboard() {
   const [showAddressModal, setShowAddressModal] = useState<string | null>(null);
   const [rewardsHistory, setRewardsHistory] = useState<any[]>([]);
   const [showRewardModal, setShowRewardModal] = useState<any>(null); // For showing specific virtual rewards
+  
+  // Testimonial State
+  const [testimonial, setTestimonial] = useState("");
+  const [savingTestimonial, setSavingTestimonial] = useState(false);
 
   useEffect(() => {
     if (authLoading) return;
@@ -103,6 +107,7 @@ export default function AmbassadorDashboard() {
         setStats(data.data);
         setIsRegistered(true);
         setApplicationStatus(data.data.status);
+        setTestimonial(data.data.testimonial || "");
         
         // Fetch history if registered and active
         if (data.data.status === "active") {
@@ -150,6 +155,31 @@ export default function AmbassadorDashboard() {
     if (stats?.referralCode) {
       navigator.clipboard.writeText(stats.referralCode);
       toast.success("Referral code copied!");
+    }
+  };
+
+  const handleSaveTestimonial = async () => {
+    if (!testimonial.trim()) {
+      toast.error("Please write something first!");
+      return;
+    }
+    setSavingTestimonial(true);
+    try {
+      const res = await fetch("/api/ambassador/testimonial", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ testimonial }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("Testimonial saved! It will appear on the landing page soon. ✨");
+      } else {
+        throw new Error(data.error || "Failed to save testimonial");
+      }
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setSavingTestimonial(false);
     }
   };
 
@@ -413,6 +443,40 @@ export default function AmbassadorDashboard() {
                     </div>
                  </div>
               </div>
+            </div>
+
+            {/* Testimonial Section */}
+            <div className="bg-[#0A0A0A] border border-white/10 p-8 rounded-3xl relative overflow-hidden group hover:border-blue-500/30 transition-colors">
+                 <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <Quote className="text-white" size={120} />
+                 </div>
+                 <div className="relative z-10">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="p-3 rounded-2xl bg-blue-500/10 text-blue-400">
+                             <Quote size={24} /> 
+                        </div>
+                        <div>
+                            <h2 className="text-2xl font-bold">What You Say</h2>
+                            <p className="text-sm text-gray-400">Share your journey as a Webory Ambassador.</p>
+                        </div>
+                    </div>
+                    
+                    <textarea
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-white mb-6 focus:outline-none focus:border-blue-500 transition-colors resize-none placeholder:text-gray-600 min-h-[120px]"
+                        placeholder="Write your testimonial here... (e.g. 'Being a Webory Ambassador has helped me gain confidence and leadership skills!')"
+                        value={testimonial}
+                        onChange={(e) => setTestimonial(e.target.value)}
+                    />
+                    
+                    <Button 
+                        onClick={handleSaveTestimonial}
+                        disabled={savingTestimonial}
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold h-12 px-8 rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-blue-500/10"
+                    >
+                        {savingTestimonial ? <Loader2 className="animate-spin mr-2" /> : null}
+                        {savingTestimonial ? "Saving..." : "Save Testimonial"}
+                    </Button>
+                 </div>
             </div>
 
             {/* Rewards Section */}

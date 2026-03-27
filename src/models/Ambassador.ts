@@ -40,6 +40,14 @@ const ambassadorSchema = new mongoose.Schema({
     enum: ["active", "suspended", "pending", "rejected"],
     default: "pending",
   },
+  testimonial: {
+    type: String,
+    trim: true,
+  },
+  showTestimonial: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

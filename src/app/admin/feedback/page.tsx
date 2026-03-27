@@ -39,13 +39,15 @@ interface VideoFeedback {
 export default function AdminFeedbackPage() {
     const [feedbacks, setFeedbacks] = useState < Feedback[] > ([]);
     const [videoFeedbacks, setVideoFeedbacks] = useState < VideoFeedback[] > ([]);
+    const [ambassadorTestimonials, setAmbassadorTestimonials] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     const fetchFeedbacks = async () => {
         try {
-            const [resGeneral, resVideo] = await Promise.all([
+            const [resGeneral, resVideo, resAmbassador] = await Promise.all([
                 fetch("/api/admin/feedback"),
-                fetch("/api/admin/video-feedback")
+                fetch("/api/admin/video-feedback"),
+                fetch("/api/admin/feedback/ambassador")
             ]);
 
             if (resGeneral.ok) {
@@ -55,6 +57,10 @@ export default function AdminFeedbackPage() {
             if (resVideo.ok) {
                 const data = await resVideo.json();
                 setVideoFeedbacks(data.feedbacks);
+            }
+            if (resAmbassador.ok) {
+                const data = await resAmbassador.json();
+                setAmbassadorTestimonials(data.testimonials || []);
             }
         } catch (error) {
             toast.error("Failed to fetch feedback data");
@@ -107,6 +113,46 @@ export default function AdminFeedbackPage() {
         }
     };
 
+    const toggleAmbassadorVisibility = async (id: string, currentStatus: boolean) => {
+        try {
+            const res = await fetch(`/api/admin/feedback/ambassador/${id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ showTestimonial: !currentStatus }),
+            });
+
+            if (res.ok) {
+                setAmbassadorTestimonials(ambassadorTestimonials.map(a =>
+                    a._id === id ? { ...a, showTestimonial: !currentStatus } : a
+                ));
+                toast.success(`Testimonial is now ${!currentStatus ? 'Visible' : 'Hidden'}`);
+            } else {
+                toast.error("Failed to update status");
+            }
+        } catch (error) {
+            toast.error("Something went wrong");
+        }
+    };
+
+    const deleteAmbassadorTestimonial = async (id: string) => {
+        if (!confirm("Are you sure you want to clear this testimonial?")) return;
+
+        try {
+            const res = await fetch(`/api/admin/feedback/ambassador/${id}`, {
+                method: "DELETE",
+            });
+
+            if (res.ok) {
+                setAmbassadorTestimonials(ambassadorTestimonials.filter(a => a._id !== id));
+                toast.success("Testimonial cleared");
+            } else {
+                toast.error("Failed to clear testimonial");
+            }
+        } catch (error) {
+            toast.error("Something went wrong");
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
@@ -123,6 +169,7 @@ export default function AdminFeedbackPage() {
                 <TabsList className="mb-8">
                     <TabsTrigger value="general">General Feedback</TabsTrigger>
                     <TabsTrigger value="video">Video Feedback</TabsTrigger>
+                    <TabsTrigger value="ambassador">Ambassador Testimonials</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="general">
@@ -278,6 +325,88 @@ export default function AdminFeedbackPage() {
                         {videoFeedbacks.length === 0 && (
                             <div className="text-center py-20 text-gray-500">
                                 No video feedback or likes yet.
+                            </div>
+                        )}
+                    </div>
+                </TabsContent>
+                <TabsContent value="ambassador">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-xl font-semibold text-gray-200">Ambassador Testimonials</h2>
+                        <div className="bg-yellow-500/10 text-yellow-400 px-4 py-2 rounded-lg text-sm font-medium">
+                            Total: {ambassadorTestimonials.length}
+                        </div>
+                    </div>
+
+                    <div className="grid gap-4">
+                        {ambassadorTestimonials.map((ambassador) => (
+                            <div
+                                key={ambassador._id}
+                                className={`bg-[#0a0a0a] border ${ambassador.showTestimonial ? 'border-blue-500/20' : 'border-white/10'} p-6 rounded-xl transition-all hover:bg-white/5`}
+                            >
+                                <div className="flex justify-between items-start gap-4">
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <span className="px-2 py-1 rounded text-xs font-medium uppercase tracking-wider bg-yellow-500/10 text-yellow-500">
+                                                Ambassador
+                                            </span>
+                                            <span className="text-gray-500 text-sm">
+                                                {ambassador.college}
+                                            </span>
+                                            {ambassador.showTestimonial && (
+                                                <span className="flex items-center gap-1 text-blue-400 text-xs font-medium bg-blue-500/10 px-2 py-0.5 rounded-full">
+                                                    <Eye size={12} /> Live on Landing Page
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <p className="text-gray-200 text-lg mb-4 italic">&ldquo;{ambassador.testimonial}&rdquo;</p>
+
+                                        <div className="flex items-center gap-3 text-sm text-gray-500 bg-white/5 p-3 rounded-lg border border-white/5">
+                                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white overflow-hidden">
+                                                {ambassador.userId?.profilePicture ? (
+                                                    <img src={ambassador.userId.profilePicture} alt="" className="w-full h-full object-cover" />
+                                                ) : (
+                                                    ambassador.userId?.firstName?.[0] || 'A'
+                                                )}
+                                            </div>
+                                            <div>
+                                                <div className="font-medium text-gray-300">
+                                                    {ambassador.userId?.firstName} {ambassador.userId?.lastName}
+                                                </div>
+                                                <div className="text-xs text-gray-500">{ambassador.userId?.email}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-col gap-2">
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => toggleAmbassadorVisibility(ambassador._id, ambassador.showTestimonial)}
+                                            className={ambassador.showTestimonial ? "text-yellow-400 hover:text-yellow-300 border-yellow-500/20 hover:bg-yellow-500/10" : "text-blue-400 hover:text-blue-300 border-blue-500/20 hover:bg-blue-500/10"}
+                                            title={ambassador.showTestimonial ? "Hide from landing page" : "Show on landing page"}
+                                        >
+                                            {ambassador.showTestimonial ? <EyeOff size={16} /> : <Eye size={16} />}
+                                            <span className="ml-2 hidden md:inline">{ambassador.showTestimonial ? "Hide" : "Show"}</span>
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => deleteAmbassadorTestimonial(ambassador._id)}
+                                            className="text-red-400 hover:text-red-300 border-red-500/20 hover:bg-red-500/10"
+                                            title="Clear testimonial"
+                                        >
+                                            <Trash2 size={16} />
+                                            <span className="ml-2 hidden md:inline">Clear</span>
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+
+                        {ambassadorTestimonials.length === 0 && (
+                            <div className="text-center py-20 text-gray-500">
+                                No ambassador testimonials found.
                             </div>
                         )}
                     </div>

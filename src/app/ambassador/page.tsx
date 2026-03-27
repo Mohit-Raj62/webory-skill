@@ -18,6 +18,8 @@ const CAMPUSES = [
 export default function AmbassadorPage() {
   const [topAmbassadors, setTopAmbassadors] = useState([]);
   const [loadingAmbassadors, setLoadingAmbassadors] = useState(true);
+  const [testimonials, setTestimonials] = useState([]);
+  const [loadingTestimonials, setLoadingTestimonials] = useState(true);
 
   useEffect(() => {
     async function fetchTopAmbassadors() {
@@ -33,7 +35,23 @@ export default function AmbassadorPage() {
         setLoadingAmbassadors(false);
       }
     }
+    
+    async function fetchTestimonials() {
+      try {
+        const res = await fetch("/api/ambassador/testimonials");
+        const json = await res.json();
+        if (json.success) {
+          setTestimonials(json.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch testimonials:", error);
+      } finally {
+        setLoadingTestimonials(false);
+      }
+    }
+    
     fetchTopAmbassadors();
+    fetchTestimonials();
   }, []);
 
   return (
@@ -250,27 +268,51 @@ export default function AmbassadorPage() {
         <div className="container mx-auto px-4">
           <SectionHeader title="What Ambassadors Say" subtitle="Hear from the real leaders making a difference." />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <TestimonialCard
-              name="Shubham Singh"
-              college="JBIT College"
-              avatar="SS"
-              quote="Being a Webory Ambassador has been the best decision of my college life. I've hosted 4 events and earned amazing rewards!"
-              color="from-blue-500 to-purple-500"
-            />
-            <TestimonialCard
-              name="mohit Sinha"
-              college="JBIT College"
-              avatar="MS"
-              quote="The mentorship sessions are gold. I got direct guidance from IIT alumni which helped me crack my internship!"
-              color="from-purple-500 to-pink-500"
-            />
-            <TestimonialCard
-              name="Ananya Singh"
-              college="IIT Patna"
-              avatar="AS"
-              quote="I referred 20+ friends and earned ₹8,000 in Amazon vouchers! The referral system is incredibly rewarding."
-              color="from-pink-500 to-orange-500"
-            />
+            {loadingTestimonials ? (
+              <div className="col-span-full text-center text-gray-500 py-10">Loading testimonials...</div>
+            ) : testimonials.length > 0 ? (
+              testimonials.map((t: any, index: number) => {
+                const name = t.userId ? `${t.userId.firstName} ${t.userId.lastName || ""}`.trim() : "Anonymous";
+                const avatar = t.userId && t.userId.firstName ? t.userId.firstName.substring(0, 1) + (t.userId.lastName ? t.userId.lastName.substring(0, 1) : "") : "A";
+                const colors = ["from-blue-500 to-purple-500", "from-purple-500 to-pink-500", "from-pink-500 to-orange-500", "from-cyan-500 to-blue-500", "from-green-500 to-teal-500"];
+                
+                return (
+                  <TestimonialCard
+                    key={t._id || index}
+                    name={name}
+                    college={t.college}
+                    avatar={avatar}
+                    quote={t.testimonial}
+                    color={colors[index % colors.length]}
+                  />
+                );
+              })
+            ) : (
+              // Fallback to hardcoded testimonials
+              <>
+                <TestimonialCard
+                  name="Shubham Singh"
+                  college="JBIT College"
+                  avatar="SS"
+                  quote="Being a Webory Ambassador has been the best decision of my college life. I've hosted 4 events and earned amazing rewards!"
+                  color="from-blue-500 to-purple-500"
+                />
+                <TestimonialCard
+                  name="mohit Sinha"
+                  college="JBIT College"
+                  avatar="MS"
+                  quote="The mentorship sessions are gold. I got direct guidance from IIT alumni which helped me crack my internship!"
+                  color="from-purple-500 to-pink-500"
+                />
+                <TestimonialCard
+                  name="Ananya Singh"
+                  college="IIT Patna"
+                  avatar="AS"
+                  quote="I referred 20+ friends and earned ₹8,000 in Amazon vouchers! The referral system is incredibly rewarding."
+                  color="from-pink-500 to-orange-500"
+                />
+              </>
+            )}
           </div>
         </div>
       </section>
