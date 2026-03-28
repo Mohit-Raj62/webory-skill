@@ -75,6 +75,7 @@ export function Footer() {
                                 <ul className="space-y-2.5 sm:space-y-3 text-[13px] sm:text-sm text-gray-400">
                                     <li><Link href="/courses" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">All Courses</Link></li>
                                     <li><Link href="/internships" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">Internships <span className="text-[9px] px-1.2 py-0.5 bg-green-500/20 text-green-400 rounded border border-green-500/20">New</span></Link></li>
+                                    <li><Link href="/mentorship" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">Mentorship <span className="text-[9px] px-1.2 py-0.5 bg-blue-500/20 text-blue-400 rounded border border-blue-500/20 italic">Pro</span></Link></li>
                                     {user && (
                                         <>
                                             <li><Link href="/resume-checker" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1 leading-tight">Resume AI <span className="text-[9px] px-1.2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded border border-emerald-500/20 italic font-bold">Free</span></Link></li>
