@@ -338,6 +338,11 @@ export default function MentorshipPage() {
                                         MOST POPULAR
                                     </div>
                                 )}
+                                {!mentorshipEnabled && (
+                                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-gray-800 text-gray-400 text-xs font-bold px-4 py-1 rounded-full border border-white/10 shadow-lg">
+                                        COMING SOON
+                                    </div>
+                                )}
 
                                 <div className="mb-8">
                                     <h3 className="text-xl font-bold text-white mb-2">{plan.name}</h3>

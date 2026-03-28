@@ -26,6 +26,7 @@ export default function CareersPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [careerEnabled, setCareerEnabled] = useState(true);
   
   // Application Form State
   const [resumeType, setResumeType] = useState<'file' | 'link'>('file');
@@ -48,7 +49,20 @@ export default function CareersPage() {
 
   useEffect(() => {
     fetchJobs();
+    fetchSettings();
   }, []);
+  
+  const fetchSettings = async () => {
+    try {
+      const res = await fetch("/api/settings");
+      if (res.ok) {
+        const data = await res.json();
+        setCareerEnabled(data.careerApplicationsEnabled);
+      }
+    } catch (error) {
+      console.error("Failed to fetch settings", error);
+    }
+  };
 
   const fetchJobs = async () => {
     try {
@@ -573,19 +587,21 @@ export default function CareersPage() {
 
                           <button
                             type="submit"
-                            disabled={submitting || (uploading && resumeType === 'file')}
+                            disabled={submitting || (uploading && resumeType === 'file') || !careerEnabled}
                             className="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-black font-bold rounded-xl shadow-lg shadow-green-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform active:scale-[0.98] mt-4"
                           >
-                            {uploading ? (
-                              <span className="flex items-center justify-center gap-2">
-                                <Loader2 className="animate-spin h-5 w-5" /> Uploading File...
-                              </span>
+                            {!careerEnabled ? (
+                                "Applications Coming Soon"
+                            ) : uploading ? (
+                                <span className="flex items-center justify-center gap-2">
+                                  <Loader2 className="animate-spin h-5 w-5" /> Uploading File...
+                                </span>
                             ) : submitting ? (
-                              <span className="flex items-center justify-center gap-2">
-                                <Loader2 className="animate-spin h-5 w-5" /> Submitting Application...
-                              </span>
+                                <span className="flex items-center justify-center gap-2">
+                                  <Loader2 className="animate-spin h-5 w-5" /> Submitting Application...
+                                </span>
                             ) : (
-                              "Submit Application"
+                                "Submit Application"
                             )}
                           </button>
                         </form>
