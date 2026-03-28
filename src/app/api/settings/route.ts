@@ -58,19 +58,39 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     await dbConnect();
+    console.log("🛠️ Starting Settings POST update...");
+    
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
 
     if (!token) {
+      console.warn("⚠️ No token found in cookies.");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+    let decoded: any;
+    try {
+        decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+    } catch (jwtError) {
+        console.error("❌ JWT Verification failed:", jwtError);
+        return NextResponse.json({ error: "Session expired. Please login again.", details: "JWT_VERIFY_FAIL" }, { status: 401 });
+    }
+    
     const userId = decoded.userId || decoded.id;
+    if (!userId) {
+        console.warn("⚠️ No user identification found in token.");
+        return NextResponse.json({ error: "Invalid token payload", details: "NO_USER_ID" }, { status: 401 });
+    }
 
     const user = await User.findById(userId);
-    if (!user || user.role !== "admin") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (!user) {
+        console.warn(`⚠️ User not found for ID: ${userId}`);
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    if (user.role !== "admin") {
+      console.warn(`🔒 Forbidden: User ${user.firstName} (Role: ${user.role}) attempted admin action.`);
+      return NextResponse.json({ error: "Forbidden: Admin access required" }, { status: 403 });
     }
 
     const body = await req.json();
@@ -79,6 +99,8 @@ export async function POST(req: Request) {
     if (!key) {
       return NextResponse.json({ error: "Key is required" }, { status: 400 });
     }
+
+    console.log(`✅ Updating setting: ${key} to ${JSON.stringify(value)}`);
 
     const setting = await Settings.findOneAndUpdate(
       { key },
@@ -91,10 +113,7 @@ export async function POST(req: Request) {
       setting,
     });
   } catch (error) {
-    console.error("❌ Update setting error:", error);
-    if (error instanceof Error) {
-        console.error("Stack trace:", error.stack);
-    }
+    console.error("❌ Critical Update setting error:", error);
     return NextResponse.json(
       { 
         error: "Failed to update setting", 

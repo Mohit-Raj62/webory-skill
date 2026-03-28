@@ -141,13 +141,20 @@ export default function AdminSettingsPage() {
         toast.success(`Career applications ${checked ? "enabled" : "disabled"}`);
       } else {
         setCareerEnabled(!checked); // Revert on failure
-        const data = await res.json();
-        toast.error(data.error || "Failed to update setting");
-        if (data.details) console.error("Setting detail:", data.details);
+        const errorText = await res.text();
+        let errorData;
+        try {
+            errorData = JSON.parse(errorText);
+        } catch (e) {
+            errorData = { error: `Server Error (${res.status})` };
+        }
+        toast.error(errorData.error || "Failed to update setting");
+        console.error("Setting error:", errorData);
       }
     } catch (error) {
       setCareerEnabled(!checked);
-      toast.error("Failed to update setting");
+      toast.error("Network error. Please check your connection.");
+      console.error("Fetch error:", error);
     }
   };
 
@@ -167,13 +174,20 @@ export default function AdminSettingsPage() {
         toast.success(`Mentorship ${checked ? "enabled" : "disabled"}`);
       } else {
         setMentorshipEnabled(!checked); // Revert on failure
-        const data = await res.json();
-        toast.error(data.error || "Failed to update setting");
-        if (data.details) console.error("Setting detail:", data.details);
+        const errorText = await res.text();
+        let errorData;
+        try {
+            errorData = JSON.parse(errorText);
+        } catch (e) {
+            errorData = { error: `Server Error (${res.status})` };
+        }
+        toast.error(errorData.error || "Failed to update setting");
+        console.error("Setting error:", errorData);
       }
     } catch (error) {
       setMentorshipEnabled(!checked);
-      toast.error("Failed to update setting");
+      toast.error("Network error. Please check your connection.");
+      console.error("Fetch error:", error);
     }
   };
 
