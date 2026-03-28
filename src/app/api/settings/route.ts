@@ -91,9 +91,15 @@ export async function POST(req: Request) {
       setting,
     });
   } catch (error) {
-    console.error("Update setting error:", error);
+    console.error("❌ Update setting error:", error);
+    if (error instanceof Error) {
+        console.error("Stack trace:", error.stack);
+    }
     return NextResponse.json(
-      { error: "Failed to update setting" },
+      { 
+        error: "Failed to update setting", 
+        details: error instanceof Error ? error.message : "Unknown error" 
+      },
       { status: 500 },
     );
   }

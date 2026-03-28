@@ -141,7 +141,9 @@ export default function AdminSettingsPage() {
         toast.success(`Career applications ${checked ? "enabled" : "disabled"}`);
       } else {
         setCareerEnabled(!checked); // Revert on failure
-        toast.error("Failed to update setting");
+        const data = await res.json();
+        toast.error(data.error || "Failed to update setting");
+        if (data.details) console.error("Setting detail:", data.details);
       }
     } catch (error) {
       setCareerEnabled(!checked);
@@ -165,7 +167,9 @@ export default function AdminSettingsPage() {
         toast.success(`Mentorship ${checked ? "enabled" : "disabled"}`);
       } else {
         setMentorshipEnabled(!checked); // Revert on failure
-        toast.error("Failed to update setting");
+        const data = await res.json();
+        toast.error(data.error || "Failed to update setting");
+        if (data.details) console.error("Setting detail:", data.details);
       }
     } catch (error) {
       setMentorshipEnabled(!checked);
