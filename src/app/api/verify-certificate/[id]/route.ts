@@ -10,6 +10,8 @@ import mongoose from "mongoose";
 import "@/models/Course";
 import "@/models/User";
 import "@/models/Internship";
+import "@/models/Ambassador";
+import "@/models/RewardRequest";
 
 export async function GET(
   req: Request,
@@ -119,7 +121,12 @@ export async function GET(
           populate: { path: "userId", select: "firstName lastName" }
         });
 
-      if (rewardRequest && rewardRequest.item === "Ambassador Certificate") {
+      // Checking for both possible item names used for Ambassador certificates
+      const isAmbassadorCert = rewardRequest && 
+        (rewardRequest.item === "Ambassador Certificate" || 
+         rewardRequest.item === "Official Certificate");
+
+      if (rewardRequest && isAmbassadorCert) {
         const ambassador = rewardRequest.ambassadorId as any;
         const user = ambassador?.userId as any;
         
@@ -143,8 +150,12 @@ export async function GET(
       { status: 404 }
     );
   } catch (error) {
-    console.error("Error verifying certificate:", error);
+    console.error("❌ Error verifying certificate:", error);
+    if (error instanceof Error) {
+        console.error("Stack trace:", error.stack);
+    }
     console.error("Certificate ID attempted:", id);
+    
     return NextResponse.json(
       {
         error: "Internal Server Error",

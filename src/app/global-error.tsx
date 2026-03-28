@@ -32,8 +32,18 @@ export default function GlobalError({
             </div>
 
             {process.env.NODE_ENV === 'development' && (
-              <div className="bg-black/50 p-4 rounded-lg text-left overflow-auto text-xs font-mono text-red-400 border border-red-500/20 max-h-48">
-                {error.message || 'Unknown critical error'}
+              <div className="bg-black/50 p-4 rounded-lg text-left overflow-auto text-xs font-mono text-red-400 border border-red-500/20 max-h-64 space-y-2">
+                <p className="font-bold underline">Error Message:</p>
+                <p>{error.message || 'Unknown critical error'}</p>
+                {error.digest && (
+                  <p><span className="font-bold">Digest:</span> {error.digest}</p>
+                )}
+                {error.stack && (
+                  <>
+                    <p className="font-bold underline mt-2">Stack Trace:</p>
+                    <pre className="whitespace-pre-wrap">{error.stack}</pre>
+                  </>
+                )}
               </div>
             )}
 
