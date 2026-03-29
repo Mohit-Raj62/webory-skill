@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Facebook, Github, Instagram, Linkedin, Twitter, ExternalLink, Youtube } from "lucide-react";
 import { useAuth } from "@/components/auth/session-provider";
 
-export function Footer() {
+export function Footer({ className }: { className?: string }) {
     const { user } = useAuth();
     const [isStandalone, setIsStandalone] = useState(false);
 
@@ -15,7 +15,7 @@ export function Footer() {
     }, []);
 
     return (
-        <footer className={`relative bg-[#050505] border-t border-white/5 pt-12 md:pt-20 ${isStandalone ? 'pb-4' : 'pb-10'} overflow-hidden`}>
+        <footer className={`relative bg-[#050505] border-t border-white/5 pt-12 md:pt-20 ${isStandalone ? 'pb-4' : 'pb-10'} overflow-hidden ${className || ''}`}>
              {/* Background Effects */}
              <div className="absolute inset-0 z-0 pointer-events-none">
                 <div className="absolute top-0 left-1/4 w-80 h-80 bg-blue-600/5 rounded-full blur-[100px] opacity-20 transform -translate-y-1/2"></div>
