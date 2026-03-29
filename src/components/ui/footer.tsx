@@ -93,13 +93,9 @@ export function Footer({ className }: { className?: string }) {
                                 </h4>
                                 <ul className="space-y-3 text-[13px] sm:text-sm text-gray-400">
                                     <li><Link href="/playground" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">DevLab IDE</Link></li>
-                                    {user && (
-                                        <>
-                                            <li><Link href="/simulator" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1 text-left leading-tight">WeboryOS <span className="text-[9px] px-1 py-0.5 bg-blue-500/20 text-blue-400 rounded border border-blue-500/20 italic font-bold shrink-0">New</span></Link></li>
-                                            <li><Link href="/viz" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1 text-left leading-tight">LogicRoom <span className="text-[9px] px-1 py-0.5 bg-emerald-500/20 text-emerald-400 rounded border border-emerald-500/20 italic font-bold shrink-0">Beta</span></Link></li>
-                                            <li><Link href="/resume-checker" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1 text-left leading-tight">Resume AI <span className="text-[9px] px-1 py-0.5 bg-emerald-500/20 text-emerald-400 rounded border border-emerald-500/20 italic font-bold shrink-0">Free</span></Link></li>
-                                        </>
-                                    )}
+                                    <li><Link href="/simulator" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1 text-left leading-tight">WeboryOS <span className="text-[9px] px-1 py-0.5 bg-blue-500/20 text-blue-400 rounded border border-blue-500/20 italic font-bold shrink-0">New</span></Link></li>
+                                    <li><Link href="/viz" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1 text-left leading-tight">LogicRoom <span className="text-[9px] px-1 py-0.5 bg-emerald-500/20 text-emerald-400 rounded border border-emerald-500/20 italic font-bold shrink-0">Beta</span></Link></li>
+                                    <li><Link href="/resume-checker" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1 text-left leading-tight">Resume AI <span className="text-[9px] px-1 py-0.5 bg-emerald-500/20 text-emerald-400 rounded border border-emerald-500/20 italic font-bold shrink-0">Free</span></Link></li>
                                 </ul>
                             </div>
                         </div>
