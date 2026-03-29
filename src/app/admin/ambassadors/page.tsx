@@ -267,7 +267,7 @@ export default function AdminAmbassadorsPage() {
                                     )}
                                 </div>
                             </div>
-                        </div>iv>
+                        </div>
 
                     </div>
                 ))}
