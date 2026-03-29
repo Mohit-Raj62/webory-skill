@@ -34,8 +34,6 @@ export function PushSubscriptionHandler() {
       if (!subscription) {
         // Request permission if not already granted
         if (Notification.permission === "default") {
-          // Transparently wait for a user interaction or just request?
-          // For now, we request. In a real app, maybe trigger on a button.
           const permission = await Notification.requestPermission();
           if (permission !== "granted") return;
         } else if (Notification.permission !== "granted") {
@@ -48,8 +46,16 @@ export function PushSubscriptionHandler() {
         });
       }
 
+      // -- DEDUPLICATION LOGIC --
+      // Check if we've already registered this exact endpoint with the server
+      const savedEndpoint = localStorage.getItem("last_push_endpoint");
+      if (savedEndpoint === subscription.endpoint) {
+        console.log("PWA: Push already registered (cached)");
+        return;
+      }
+
       // Send subscription to server
-      await fetch("/api/push/subscribe", {
+      const res = await fetch("/api/push/subscribe", {
         method: "POST",
         body: JSON.stringify(subscription),
         headers: {
@@ -57,7 +63,11 @@ export function PushSubscriptionHandler() {
         },
       });
 
-      console.log("PWA: Push subscription registered");
+      if (res.ok) {
+        // Cache the endpoint to prevent redundant calls on next page load
+        localStorage.setItem("last_push_endpoint", subscription.endpoint);
+        console.log("PWA: Push subscription updated on server");
+      }
     } catch (error) {
       console.error("PWA: Push registration failed:", error);
     }

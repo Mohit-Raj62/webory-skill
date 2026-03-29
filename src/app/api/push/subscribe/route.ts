@@ -45,21 +45,37 @@ export async function POST(req: Request) {
       });
     }
 
-    // Also keep sync with User model if userId exists (optional but keeps backward compatibility)
+    // Also keep sync with User model if userId exists
     if (userId) {
       const user = await User.findById(userId);
       if (user) {
-        const exists = user.pushSubscriptions.some(
+        // Ensure pushSubscriptions array exists
+        if (!user.pushSubscriptions) {
+          user.pushSubscriptions = [];
+        }
+
+        // Deduplicate: Compare endpoints
+        const isDuplicate = user.pushSubscriptions.some(
           (sub: any) => sub.endpoint === subscription.endpoint
         );
-        if (!exists) {
+
+        if (!isDuplicate) {
+          // Keep only the most recent subscriptions to prevent bloat over years of device changes
+          // Most users have < 5 active devices. Here we can limit to 10 for safety.
+          if (user.pushSubscriptions.length >= 10) {
+            user.pushSubscriptions.shift(); // Remove oldest
+          }
+          
           user.pushSubscriptions.push(subscription);
           await user.save();
+          console.log(`Push: New subscription synced for user ${userId}`);
+        } else {
+          console.log(`Push: Endpoint already exists for user ${userId} (skipping sync)`);
         }
       }
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, message: "Subscription updated" });
   } catch (error: any) {
     console.error("Push subscription error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
