@@ -166,7 +166,7 @@ function SocialLink({ href, icon, brandColor }: { href: string; icon: React.Reac
     return (
         <Link 
             href={href} 
-            className={`aspect-square sm:w-12 sm:h-12 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-gray-400 transition-all duration-300 hover:scale-105 active:scale-95 ${brandColor} group/icon overflow-hidden relative shadow-lg shadow-black/20`}
+            className={`flex-shrink-0 w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-gray-400 transition-all duration-300 hover:scale-105 active:scale-95 ${brandColor} group/icon overflow-hidden relative shadow-lg shadow-black/20`}
         >
             <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/icon:opacity-20 blur-xl transition-opacity duration-300"></div>
             <div className="relative z-10 transition-transform duration-300 group-hover/icon:scale-110">
