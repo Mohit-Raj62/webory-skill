@@ -27,9 +27,9 @@ export function Footer({ className }: { className?: string }) {
             </div>
 
             <div className="container relative z-10 mx-auto px-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-16 mb-16">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-10 xl:gap-16 mb-16">
                     {/* Brand Section */}
-                    <div className="col-span-1 md:col-span-2 lg:col-span-4 space-y-6 flex flex-col items-center md:items-start text-center md:text-left">
+                    <div className="col-span-1 md:col-span-2 lg:col-span-3 space-y-6 flex flex-col items-center md:items-start text-center md:text-left">
                         <Link href="/" className="inline-flex items-center space-x-3 group">
                             <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
                                 <span className="font-black text-xl text-white">W</span>
@@ -65,11 +65,11 @@ export function Footer({ className }: { className?: string }) {
                     </div>
 
                     {/* Navigation Links */}
-                    <div className="col-span-1 md:col-span-2 lg:col-span-8 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 lg:gap-6 text-center sm:text-left">
+                    <div className="col-span-1 md:col-span-2 lg:col-span-9 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 lg:gap-5 xl:gap-6 text-center sm:text-left">
                         
                         {/* Column 1: Learning */}
                         <div className="col-span-1 h-full">
-                            <div className="w-full h-full p-4 sm:p-6 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm hover:border-blue-500/10 transition-colors duration-500">
+                            <div className="w-full h-full p-4 xl:p-6 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm hover:border-blue-500/10 transition-colors duration-500">
                                 <h4 className="text-white font-semibold mb-5 flex items-center justify-center sm:justify-start gap-2">
                                     <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
                                     Learning
@@ -86,7 +86,7 @@ export function Footer({ className }: { className?: string }) {
 
                         {/* Column 2: Labs */}
                         <div className="col-span-1 h-full">
-                            <div className="w-full h-full p-4 sm:p-6 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm hover:border-emerald-500/10 transition-colors duration-500">
+                            <div className="w-full h-full p-4 xl:p-6 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm hover:border-emerald-500/10 transition-colors duration-500">
                                 <h4 className="text-white font-semibold mb-5 flex items-center justify-center sm:justify-start gap-2">
                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                                     Labs
@@ -102,7 +102,7 @@ export function Footer({ className }: { className?: string }) {
 
                         {/* Column 3: Company */}
                         <div className="col-span-1 h-full">
-                            <div className="w-full h-full p-4 sm:p-6 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm hover:border-purple-500/10 transition-colors duration-500">
+                            <div className="w-full h-full p-4 xl:p-6 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm hover:border-purple-500/10 transition-colors duration-500">
                                 <h4 className="text-white font-semibold mb-5 flex items-center justify-center sm:justify-start gap-2">
                                     <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
                                     Company
@@ -118,8 +118,8 @@ export function Footer({ className }: { className?: string }) {
                         </div>
 
                         {/* Column 4: Connect */}
-                        <div className="flex flex-col items-center md:items-start col-span-2 md:col-span-1 lg:col-span-2 pt-8 md:pt-0 border-t border-white/5 md:border-0 h-full">
-                            <div className="w-full h-full p-4 sm:p-6 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm group/connect-box hover:border-blue-500/10 transition-colors duration-500">
+                        <div className="flex flex-col items-center md:items-start col-span-2 md:col-span-1 pt-8 md:pt-0 border-t border-white/5 md:border-0 h-full">
+                            <div className="w-full h-full p-4 xl:p-6 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm group/connect-box hover:border-blue-500/10 transition-colors duration-500">
                                 <h4 className="text-white font-bold mb-5 sm:mb-6 flex items-center justify-center md:justify-start gap-2 group/title">
                                     <span className="w-1.5 h-1.5 rounded-full bg-pink-500 shadow-[0_0_8px_rgba(236,72,153,0.5)] group-hover/title:scale-125 transition-transform duration-300"></span>
                                     <span className="tracking-tight text-lg">Connect</span>
