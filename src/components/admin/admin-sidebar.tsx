@@ -25,6 +25,7 @@ import {
     Shield,
     Home,
     Terminal,
+    Trophy,
 } from "lucide-react";
 
 const menuItems = [
@@ -52,6 +53,7 @@ const menuItems = [
     { name: "Leads", href: "/admin/leads", icon: Users },
     { name: "Rewards", href: "/admin/rewards", icon: Gift },
     { name: "WeboryOS", href: "/admin/simulators", icon: Terminal },
+    { name: "Hackathons", href: "/admin/hackathons", icon: Trophy },
     { name: "Campus Ambassadors", href: "/admin/ambassadors", icon: Megaphone },
     { name: "Maintenance", href: "/admin/maintenance", icon: Database },
 ];

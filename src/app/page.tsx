@@ -16,6 +16,7 @@ const Footer = dynamic(() => import('@/components/ui/footer').then(mod => mod.Fo
 const AIRoadmapFlow = dynamic(() => import('@/components/landing/ai-roadmap-flow').then(mod => mod.AIRoadmapFlow));
 const DevLabPreview = dynamic(() => import('@/components/landing/devlab-preview').then(mod => mod.DevLabPreview));
 const AINexusShowcase = dynamic(() => import('@/components/landing/ai-nexus-showcase').then(mod => mod.AINexusShowcase));
+const HackathonPreview = dynamic(() => import('@/components/landing/hackathon-preview').then(mod => mod.HackathonPreview));
 
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
@@ -61,6 +62,7 @@ export default async function Home() {
             <AIRoadmapFlow />
             <DevLabPreview />
             <AINexusShowcase />
+            <HackathonPreview />
 
             <EnrolledCourses />
             <AppliedInternships />

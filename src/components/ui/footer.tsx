@@ -65,37 +65,53 @@ export function Footer() {
                     </div>
 
                     {/* Navigation Links */}
-                    <div className="col-span-1 md:col-span-2 lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 gap-6 text-center sm:text-left">
+                    <div className="col-span-1 md:col-span-2 lg:col-span-8 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 lg:gap-6 text-center sm:text-left">
+                        
+                        {/* Column 1: Learning */}
                         <div className="col-span-1 h-full">
                             <div className="w-full h-full p-4 sm:p-6 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm hover:border-blue-500/10 transition-colors duration-500">
-                                <h4 className="text-white font-semibold mb-5 sm:mb-6 flex items-center justify-center sm:justify-start gap-2">
+                                <h4 className="text-white font-semibold mb-5 flex items-center justify-center sm:justify-start gap-2">
                                     <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                                    Platform
+                                    Learning
                                 </h4>
-                                <ul className="space-y-2.5 sm:space-y-3 text-[13px] sm:text-sm text-gray-400">
+                                <ul className="space-y-3 text-[13px] sm:text-sm text-gray-400">
                                     <li><Link href="/courses" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">All Courses</Link></li>
-                                    <li><Link href="/internships" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">Internships <span className="text-[9px] px-1.2 py-0.5 bg-green-500/20 text-green-400 rounded border border-green-500/20">New</span></Link></li>
-                                    <li><Link href="/mentorship" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">Mentorship <span className="text-[9px] px-1.2 py-0.5 bg-blue-500/20 text-blue-400 rounded border border-blue-500/20 italic">Pro</span></Link></li>
-                                    {user && (
-                                        <>
-                                            <li><Link href="/resume-checker" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1 leading-tight">Resume AI <span className="text-[9px] px-1.2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded border border-emerald-500/20 italic font-bold">Free</span></Link></li>
-                                            <li><Link href="/simulator" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1 leading-tight">WeboryOS <span className="text-[9px] px-1.2 py-0.5 bg-blue-500/20 text-blue-400 rounded border border-blue-500/20 italic font-bold">New</span></Link></li>
-                                            <li><Link href="/viz" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1 leading-tight">LogicRoom <span className="text-[9px] px-1.2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded border border-emerald-500/20 italic font-bold">Beta</span></Link></li>
-                                        </>
-                                    )}
-                                    <li><Link href="/ai-prep" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1 leading-tight">AI Nexus <span className="text-[9px] px-1.2 py-0.5 bg-purple-500/20 text-purple-400 rounded border border-purple-500/20 italic">Pro</span></Link></li>
-                                    <li><Link href="/playground" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">DevLab IDE</Link></li>
+                                    <li><Link href="/internships" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">Internships <span className="text-[9px] px-1 py-0.5 bg-green-500/20 text-green-400 rounded border border-green-500/20">New</span></Link></li>
+                                    <li><Link href="/hackathons" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">Hackathons <span className="text-[9px] px-1 py-0.5 bg-orange-500/20 text-orange-400 rounded border border-orange-500/20">New</span></Link></li>
+                                    <li><Link href="/mentorship" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">Mentorship <span className="text-[9px] px-1 py-0.5 bg-blue-500/20 text-blue-400 rounded border border-blue-500/20 italic">Pro</span></Link></li>
+                                    <li><Link href="/ai-prep" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">AI Nexus <span className="text-[9px] px-1 py-0.5 bg-purple-500/20 text-purple-400 rounded border border-purple-500/20 italic">Pro</span></Link></li>
                                 </ul>
                             </div>
                         </div>
 
+                        {/* Column 2: Labs */}
+                        <div className="col-span-1 h-full">
+                            <div className="w-full h-full p-4 sm:p-6 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm hover:border-emerald-500/10 transition-colors duration-500">
+                                <h4 className="text-white font-semibold mb-5 flex items-center justify-center sm:justify-start gap-2">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                    Labs
+                                </h4>
+                                <ul className="space-y-3 text-[13px] sm:text-sm text-gray-400">
+                                    <li><Link href="/playground" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">DevLab IDE</Link></li>
+                                    {user && (
+                                        <>
+                                            <li><Link href="/simulator" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1 text-left leading-tight">WeboryOS <span className="text-[9px] px-1 py-0.5 bg-blue-500/20 text-blue-400 rounded border border-blue-500/20 italic font-bold shrink-0">New</span></Link></li>
+                                            <li><Link href="/viz" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1 text-left leading-tight">LogicRoom <span className="text-[9px] px-1 py-0.5 bg-emerald-500/20 text-emerald-400 rounded border border-emerald-500/20 italic font-bold shrink-0">Beta</span></Link></li>
+                                            <li><Link href="/resume-checker" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1 text-left leading-tight">Resume AI <span className="text-[9px] px-1 py-0.5 bg-emerald-500/20 text-emerald-400 rounded border border-emerald-500/20 italic font-bold shrink-0">Free</span></Link></li>
+                                        </>
+                                    )}
+                                </ul>
+                            </div>
+                        </div>
+
+                        {/* Column 3: Company */}
                         <div className="col-span-1 h-full">
                             <div className="w-full h-full p-4 sm:p-6 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm hover:border-purple-500/10 transition-colors duration-500">
-                                <h4 className="text-white font-semibold mb-5 sm:mb-6 flex items-center justify-center sm:justify-start gap-2">
+                                <h4 className="text-white font-semibold mb-5 flex items-center justify-center sm:justify-start gap-2">
                                     <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
                                     Company
                                 </h4>
-                                <ul className="space-y-2.5 sm:space-y-3 text-[13px] sm:text-sm text-gray-400">
+                                <ul className="space-y-3 text-[13px] sm:text-sm text-gray-400">
                                     <li><Link href="/about" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">About Us</Link></li>
                                     <li><Link href="/careers" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">Careers</Link></li>
                                     <li><Link href="/blog" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">Blog</Link></li>
@@ -105,14 +121,15 @@ export function Footer() {
                             </div>
                         </div>
 
-                        <div className="flex flex-col items-center md:items-start col-span-2 sm:col-span-1 pt-8 sm:pt-0 border-t border-white/5 sm:border-0 h-full">
+                        {/* Column 4: Connect */}
+                        <div className="flex flex-col items-center md:items-start col-span-2 md:col-span-1 lg:col-span-2 pt-8 md:pt-0 border-t border-white/5 md:border-0 h-full">
                             <div className="w-full h-full p-4 sm:p-6 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm group/connect-box hover:border-blue-500/10 transition-colors duration-500">
                                 <h4 className="text-white font-bold mb-5 sm:mb-6 flex items-center justify-center md:justify-start gap-2 group/title">
                                     <span className="w-1.5 h-1.5 rounded-full bg-pink-500 shadow-[0_0_8px_rgba(236,72,153,0.5)] group-hover/title:scale-125 transition-transform duration-300"></span>
                                     <span className="tracking-tight text-lg">Connect</span>
                                 </h4>
                                 
-                                <div className="grid grid-cols-5 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 w-full mb-6">
+                                <div className="flex flex-wrap items-center justify-center md:justify-start gap-2.5 w-full mb-6">
                                     <SocialLink href="#" icon={<Github size={18} />} brandColor="hover:text-white hover:bg-gray-800" />
                                     <SocialLink href="#" icon={
                                         <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[18px] w-[18px] fill-current">

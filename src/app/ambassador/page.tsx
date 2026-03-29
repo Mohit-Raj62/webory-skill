@@ -308,7 +308,7 @@ export default function AmbassadorPage() {
                   name="Ananya Singh"
                   college="IIT Patna"
                   avatar="AS"
-                  quote="I referred 20+ friends and earned ₹8,000 in Amazon vouchers! The referral system is incredibly rewarding."
+                  quote="I referred 20+ friends and earned ₹10000 in Amazon vouchers! The referral system is incredibly rewarding."
                   color="from-pink-500 to-orange-500"
                 />
               </>

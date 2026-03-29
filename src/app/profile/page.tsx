@@ -29,8 +29,9 @@ export default function ProfilePage() {
     const [user, setUser] = useState<UserProfile | null>(null);
     const [enrollments, setEnrollments] = useState<any[]>([]);
     const [applications, setApplications] = useState<any[]>([]);
+    const [hackathons, setHackathons] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'courses' | 'internships' | 'grades'>('courses');
+    const [activeTab, setActiveTab] = useState<'courses' | 'internships' | 'grades' | 'hackathons'>('courses');
     const [uploadingAppId, setUploadingAppId] = useState<string | null>(null);
     const [showPhoneModal, setShowPhoneModal] = useState(false);
     const router = useRouter();
@@ -106,6 +107,13 @@ export default function ProfilePage() {
                     const dashData = await resDash.json();
                     setEnrollments(dashData.enrollments || []);
                     setApplications(dashData.applications || []);
+                }
+
+                // Fetch Hackathons
+                const resHack = await fetch("/api/me/hackathons/certificates");
+                if (resHack.ok) {
+                    const hackData = await resHack.json();
+                    setHackathons(hackData.data || []);
                 }
             } catch (error) {
                 console.error("Profile fetch error:", error);
@@ -290,6 +298,16 @@ export default function ProfilePage() {
                                 <Trophy size={14} className={activeTab === 'grades' ? 'text-emerald-500' : ''} />
                                 Grades
                             </button>
+                            <button
+                                onClick={() => setActiveTab('hackathons')}
+                                className={`flex-1 min-w-[140px] px-6 py-3.5 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all duration-500 flex items-center justify-center gap-2 ${activeTab === 'hackathons'
+                                    ? 'bg-white text-black shadow-xl'
+                                    : 'text-slate-500 hover:text-white hover:bg-white/5'
+                                    }`}
+                            >
+                                <Zap size={14} className={activeTab === 'hackathons' ? 'text-orange-500' : ''} />
+                                Hackathons
+                            </button>
                         </div>
 
                         {/* Dynamic Tab Content with Animation */}
@@ -302,6 +320,64 @@ export default function ProfilePage() {
                             </div>
                             <div className={activeTab === 'grades' ? 'block' : 'hidden'}>
                                 <GradesDashboard />
+                            </div>
+                            <div className={activeTab === 'hackathons' ? 'block' : 'hidden'}>
+                                {/* Hackathon Certificates & Submissions */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {hackathons.map((h, i) => {
+                                        const isWinner = h.status === 'winner';
+                                        return (
+                                            <div key={i} className={`relative group p-[1px] rounded-[2.5rem] transition-all duration-500 overflow-hidden ${
+                                                isWinner ? 'bg-gradient-to-br from-yellow-500 via-orange-500 to-amber-700 shadow-xl shadow-orange-500/10' : 'bg-white/10 hover:bg-white/20'
+                                            }`}>
+                                                <div className="bg-[#0A0A15]/90 backdrop-blur-3xl rounded-[2.45rem] p-6 lg:p-8 h-full flex flex-col justify-between relative z-10">
+                                                    <div>
+                                                        <div className="flex justify-between items-start mb-6">
+                                                            <div className={`p-3 rounded-2xl ${isWinner ? 'bg-yellow-500/10 text-yellow-500' : 'bg-blue-500/10 text-blue-500'}`}>
+                                                                <Trophy size={20} className={isWinner ? 'animate-bounce' : ''} />
+                                                            </div>
+                                                            <Badge className={`border-none capitalize font-black text-[9px] tracking-widest ${
+                                                                isWinner ? 'bg-yellow-500 text-black' : 'bg-white/10 text-white'
+                                                            }`}>
+                                                                {h.status}
+                                                            </Badge>
+                                                        </div>
+                                                        <h3 className="text-white font-black tracking-tight mb-2 text-lg lg:text-xl leading-tight">{h.hackathonId.title}</h3>
+                                                        <div className="space-y-1">
+                                                            <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">Project Title</div>
+                                                            <p className="text-gray-300 font-medium text-xs break-all leading-relaxed line-clamp-3">
+                                                                {h.projectName}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="pt-6 mt-6 border-t border-white/5">
+                                                        {h.certificateId ? (
+                                                            <button 
+                                                                onClick={() => router.push(`/certificates/${h.certificateId.certificateId}`)}
+                                                                className={`w-full h-11 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 ${
+                                                                    isWinner 
+                                                                        ? 'bg-yellow-500 text-black shadow-lg shadow-yellow-500/20 hover:bg-yellow-400' 
+                                                                        : 'bg-white text-black hover:bg-gray-200 shadow-lg shadow-white/5'
+                                                                }`}
+                                                            >
+                                                                <Award size={14} /> Get Certificate
+                                                            </button>
+                                                        ) : (
+                                                            <div className="text-[10px] font-black text-slate-600 uppercase tracking-widest py-2 text-center">Result Pending</div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                    {hackathons.length === 0 && (
+                                        <div className="col-span-full py-20 text-center bg-white/[0.02] rounded-[2rem] border border-dashed border-white/5">
+                                            <Zap className="mx-auto text-slate-700 mb-4" size={40} />
+                                            <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest">No coding battles joined yet</p>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
