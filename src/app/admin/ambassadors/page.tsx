@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, CheckCircle, XCircle, Clock, Linkedin, Users, ExternalLink } from "lucide-react";
+import { Loader2, CheckCircle, XCircle, Clock, Linkedin, Users, ExternalLink, CreditCard, Upload } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link"; // Import Link correctly
 
