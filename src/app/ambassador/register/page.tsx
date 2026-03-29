@@ -123,13 +123,13 @@ PremiumSelect.displayName = "PremiumSelect";
 
 const CategoryStep = memo(({ formData, updateField, nextStep }: { formData: FormData, updateField: any, nextStep: any }) => (
   <div className="space-y-10">
-    <div className="text-center space-y-3">
+    <div className="text-center space-y-2 lg:space-y-3 px-2">
       <div className="flex items-center justify-center gap-2 mb-2">
-         <Sparkles className="w-4 h-4 text-orange-500 animate-pulse" />
-         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-orange-500/50">Stage One</span>
+         <Sparkles className="w-3 h-3 lg:w-4 lg:h-4 text-orange-500 animate-pulse" />
+         <span className="text-[8px] lg:text-[10px] font-black uppercase tracking-[0.4em] text-orange-500/50">Stage One</span>
       </div>
-      <h2 className="text-3xl lg:text-4xl font-black text-white tracking-tight uppercase">Design your future</h2>
-      <p className="text-gray-500 font-medium">Select your current status to personalize your journey</p>
+      <h2 className="text-2xl lg:text-4xl font-black text-white tracking-tight uppercase leading-none">Design your future</h2>
+      <p className="text-[11px] lg:text-base text-gray-500 font-medium leading-relaxed">Select your status to personalize your journey</p>
     </div>
     <div className="grid grid-cols-1 gap-5 max-w-xl mx-auto">
       {[
@@ -144,14 +144,14 @@ const CategoryStep = memo(({ formData, updateField, nextStep }: { formData: Form
             key={item.id}
             type="button"
             onClick={() => { updateField("category", item.id); nextStep(); }}
-            className={`flex items-center gap-6 p-6 lg:p-7 rounded-[2.5rem] border transition-all text-left relative overflow-hidden group ${
+            className={`flex items-center gap-4 lg:gap-6 p-5 lg:p-7 rounded-[2rem] lg:rounded-[2.5rem] border transition-all text-left relative overflow-hidden group ${
               isActive ? "border-orange-500/50 bg-orange-500/5 shadow-2xl shadow-orange-500/10" : "border-white/5 hover:border-white/10 bg-white/[0.02]"
             }`}
           >
-            <div className={`w-16 h-16 lg:w-20 lg:h-20 rounded-3xl flex items-center justify-center shrink-0 transition-all duration-500 relative z-10 ${
+            <div className={`w-14 h-14 lg:w-20 lg:h-20 rounded-2xl lg:rounded-3xl flex items-center justify-center shrink-0 transition-all duration-500 relative z-10 ${
               isActive ? "bg-orange-600 text-white shadow-xl shadow-orange-500/20" : "bg-white/5 text-gray-600 group-hover:bg-white/10"
             }`}>
-              <Icon className="w-8 h-8 lg:w-10 lg:h-10" />
+              <Icon className="w-6 h-6 lg:w-10 lg:h-10" />
             </div>
             <div className="relative z-10">
               <div className="font-black text-white text-lg lg:text-xl">{item.label}</div>
@@ -190,16 +190,16 @@ const StudyStep = memo(({ formData, updateField, nextStep }: { formData: FormDat
             key={item.id}
             type="button"
             onClick={() => { updateField("studyLevel", item.id); nextStep(); }}
-            className={`flex flex-col items-center gap-6 p-10 lg:p-14 rounded-[3rem] border transition-all relative overflow-hidden group ${
+            className={`flex flex-col items-center gap-4 lg:gap-6 p-8 lg:p-14 rounded-[2rem] lg:rounded-[3rem] border transition-all relative overflow-hidden group ${
               isActive ? "border-orange-500/50 bg-orange-500/5 shadow-2xl" : "border-white/5 hover:border-white/10 bg-white/[0.02]"
             }`}
           >
-            <div className={`w-24 h-24 lg:w-32 lg:h-32 rounded-full flex items-center justify-center transition-all duration-700 relative z-10 ${
+            <div className={`w-20 h-20 lg:w-32 lg:h-32 rounded-full flex items-center justify-center transition-all duration-700 relative z-10 ${
               isActive ? "bg-orange-500 text-white rotate-[360deg] shadow-2xl shadow-orange-500/30" : "bg-white/5 text-gray-600 group-hover:bg-white/10"
             }`}>
-              <Icon className="w-10 h-10 lg:w-14 lg:h-14" />
+              <Icon className="w-8 h-8 lg:w-14 lg:h-14" />
             </div>
-            <div className="font-black text-xl lg:text-2xl text-white relative z-10">{item.label}</div>
+            <div className="font-black text-lg lg:text-2xl text-white relative z-10">{item.label}</div>
             {isActive && <div className="absolute top-6 right-6 w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-white"><Check className="w-4 h-4" /></div>}
           </button>
         );
@@ -211,9 +211,9 @@ StudyStep.displayName = "StudyStep";
 
 const FieldStep = memo(({ formData, updateField, nextStep }: { formData: FormData, updateField: any, nextStep: any }) => (
   <div className="space-y-10">
-    <div className="text-center space-y-3">
-      <h2 className="text-3xl lg:text-4xl font-black text-white tracking-tight uppercase leading-tight">Field of interest</h2>
-      <p className="text-gray-500 font-medium">Select the domain that aligns with your passions</p>
+    <div className="text-center space-y-2 lg:space-y-3 px-2">
+      <h2 className="text-2xl lg:text-4xl font-black text-white tracking-tight uppercase leading-tight">Field of interest</h2>
+      <p className="text-[11px] lg:text-base text-gray-500 font-medium">Select the domain that aligns with your passions</p>
     </div>
     <div className="grid grid-cols-1 gap-5 max-w-xl mx-auto">
       {[
@@ -228,17 +228,17 @@ const FieldStep = memo(({ formData, updateField, nextStep }: { formData: FormDat
             key={item.id}
             type="button"
             onClick={() => { updateField("courseType", item.id); nextStep(); }}
-            className={`flex items-center gap-6 p-6 lg:p-7 rounded-[2.5rem] border transition-all text-left relative group ${
+            className={`flex items-center gap-4 lg:gap-6 p-5 lg:p-7 rounded-[2rem] lg:rounded-[2.5rem] border transition-all text-left relative group ${
               isActive ? "border-orange-500/50 bg-orange-500/5 shadow-2xl" : "border-white/5 hover:border-white/10 bg-white/[0.02]"
             }`}
           >
-            <div className={`w-16 h-16 lg:w-20 lg:h-20 rounded-3xl flex items-center justify-center shrink-0 transition-all duration-500 ${
+            <div className={`w-14 h-14 lg:w-20 lg:h-20 rounded-2xl lg:rounded-3xl flex items-center justify-center shrink-0 transition-all duration-500 ${
               isActive ? "bg-orange-500 text-white shadow-xl shadow-orange-500/20" : "bg-white/5 text-gray-600 group-hover:bg-white/10"
             }`}>
-              <Icon className="w-8 h-8 lg:w-10 lg:h-10" />
+              <Icon className="w-6 h-6 lg:w-10 lg:h-10" />
             </div>
             <div className="flex-1">
-              <div className="font-black text-white text-lg lg:text-xl">{item.label}</div>
+              <div className="font-black text-white text-base lg:text-xl">{item.label}</div>
               <div className="text-[10px] font-black text-gray-500 mt-1 uppercase tracking-widest leading-none">{item.sub}</div>
             </div>
             {isActive && <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-white shrink-0"><Check className="w-5 h-5" /></div>}
@@ -258,9 +258,9 @@ const AcademicStep = memo(({ formData, updateField, nextStep, uploading, handleF
 
   return (
     <div className="space-y-10 max-w-2xl mx-auto">
-      <div className="text-center space-y-3">
-        <h2 className="text-3xl lg:text-4xl font-black text-white tracking-tight uppercase leading-none">{isStudent ? "Academic Profile" : "Professional Identity"}</h2>
-        <p className="text-gray-500 font-medium">{isStudent ? "Your institution information" : "Your corporate or organization details"}</p>
+      <div className="text-center space-y-2 lg:space-y-3 px-2">
+        <h2 className="text-2xl lg:text-4xl font-black text-white tracking-tight uppercase leading-none">{isStudent ? "Academic Profile" : "Professional Identity"}</h2>
+        <p className="text-[11px] lg:text-base text-gray-500 font-medium leading-relaxed">{isStudent ? "Your institution information" : "Your corporate details"}</p>
       </div>
       
       <div className="grid gap-6">
@@ -328,7 +328,7 @@ const AcademicStep = memo(({ formData, updateField, nextStep, uploading, handleF
       <Button 
         onClick={nextStep}
         disabled={!formData.college || !formData.collegeState || !formData.courseName}
-        className="w-full py-9 rounded-[2.5rem] bg-white text-gray-950 text-lg font-black transition-all shadow-2xl hover:bg-gray-200 active:scale-95"
+        className="w-full py-6 lg:py-9 rounded-[1.5rem] lg:rounded-[2.5rem] bg-white text-gray-950 text-base lg:text-lg font-black transition-all shadow-2xl hover:bg-gray-200 active:scale-95"
       >
         Proceed to Contact Details
       </Button>
@@ -403,7 +403,7 @@ const FinalStep = memo(({ formData, updateField, loading, handleSubmit }: { form
       <Button 
         onClick={handleSubmit}
         disabled={loading}
-        className="w-full py-9 rounded-[2.5rem] bg-orange-600 hover:bg-orange-700 text-white text-xl font-black transition-all shadow-2xl shadow-orange-500/20 active:scale-95"
+        className="w-full py-6 lg:py-9 rounded-[1.5rem] lg:rounded-[2.5rem] bg-orange-600 hover:bg-orange-700 text-white text-base lg:text-xl font-black transition-all shadow-2xl shadow-orange-500/20 active:scale-95"
       >
         {loading ? <Loader2 className="animate-spin" /> : "Complete My Application"}
       </Button>
@@ -484,7 +484,7 @@ export default function AmbassadorRegisterPage() {
 
     // 3. Contact Validation
     if (!formData.address || !formData.city || !formData.state || !formData.pincode) {
-      return toast.error("Please fill in your complete communication address");
+      return toast.error("Please fill in your complete address");
     }
     if (!formData.linkedin) return toast.error("Please provide your LinkedIn profile URL");
     if (!formData.reason) return toast.error("Please share why you want to join Webory");
@@ -544,32 +544,32 @@ export default function AmbassadorRegisterPage() {
       <div className="pt-24 lg:pt-40 container mx-auto px-4 max-w-4xl relative z-10">
         
         {/* Progress Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6">
-           <div className="flex items-center gap-6">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-8 lg:mb-12 gap-6">
+           <div className="flex items-center gap-4 lg:gap-6">
               <button 
                 type="button"
                 onClick={prevStep}
                 disabled={currentStep === 1}
-                className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${currentStep === 1 ? 'bg-white/5 text-white/10 cursor-not-allowed' : 'bg-white/[0.05] text-white shadow-xl hover:bg-white/10 active:scale-90 border border-white/5'}`}
+                className={`w-12 h-12 lg:w-14 lg:h-14 rounded-full flex items-center justify-center transition-all ${currentStep === 1 ? 'bg-white/5 text-white/10 cursor-not-allowed' : 'bg-white/[0.05] text-white shadow-xl hover:bg-white/10 active:scale-90 border border-white/5'}`}
               >
-                <ArrowLeft className="w-5 h-5" />
+                <ArrowLeft className="w-4 h-4 lg:w-5 lg:h-5" />
               </button>
               <div className="flex flex-col">
                 <span className="text-[8px] lg:text-[10px] font-black uppercase tracking-[0.4em] text-orange-500 mb-1">Elite Ambassador 2026</span>
-                <h1 className="text-xl lg:text-2xl font-black text-white tracking-tight leading-none uppercase">{STEPS[currentStep - 1]}</h1>
+                <h1 className="text-lg lg:text-2xl font-black text-white tracking-tight leading-none uppercase">{STEPS[currentStep - 1]}</h1>
               </div>
            </div>
            
-           <div className="flex items-center gap-4 bg-white/[0.03] backdrop-blur-md p-1.5 rounded-3xl border border-white/5 shadow-sm">
-             <div className="flex -space-x-1 pr-4 border-r border-white/5 lg:pl-2">
+           <div className="flex items-center justify-between lg:justify-start gap-4 bg-white/[0.03] backdrop-blur-md p-1.5 rounded-2xl lg:rounded-3xl border border-white/5 shadow-sm overflow-hidden">
+             <div className="flex -space-x-1 pr-4 border-r border-white/5 pl-2">
                 {[1,2,3,4,5].map(s => (
-                  <div key={s} className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${s <= currentStep ? 'bg-orange-500 w-4' : 'bg-white/10'}`} />
+                  <div key={s} className={`w-1 h-1 lg:w-1.5 lg:h-1.5 rounded-full transition-all duration-500 ${s <= currentStep ? 'bg-orange-500 w-3 lg:w-4' : 'bg-white/10'}`} />
                 ))}
              </div>
-             <span className="text-[10px] font-bold text-gray-500 px-3 uppercase tracking-widest leading-none">
+             <span className="text-[8px] lg:text-[10px] font-bold text-gray-500 px-2 lg:px-3 uppercase tracking-widest leading-none">
                 {formData.category === "student" || !formData.category 
-                  ? `${Math.round((currentStep / 5) * 100)}% Profile Progress`
-                  : `${currentStep === 1 ? '33%' : currentStep === 4 ? '66%' : '100%'} Profile Progress`
+                  ? `${Math.round((currentStep / 5) * 100)}% Complete`
+                  : `${currentStep === 1 ? '33%' : currentStep === 4 ? '66%' : '100%'} Complete`
                 }
              </span>
            </div>
