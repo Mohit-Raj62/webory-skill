@@ -14,11 +14,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { college, linkedin, reason } = await request.json();
+    const body = await request.json();
+    const { 
+      category, studyLevel, courseType, 
+      college, collegeState, collegeCity, courseName, graduationYear, collegeIdCardUrl,
+      address, city, state, pincode, panCardNumber,
+      appliedReferralCode, linkedin, reason 
+    } = body;
 
-    if (!college || !linkedin || !reason) {
+    if (!category || !college || !linkedin || !reason) {
       return NextResponse.json(
-        { error: "All fields are required" },
+        { error: "Essential fields (Category, College, LinkedIn, Reason) are required" },
         { status: 400 },
       );
     }
@@ -48,7 +54,21 @@ export async function POST(request: NextRequest) {
 
     const newAmbassador = new Ambassador({
       userId,
+      category,
+      studyLevel,
+      courseType,
       college,
+      collegeState,
+      collegeCity,
+      courseName,
+      graduationYear,
+      collegeIdCardUrl,
+      address,
+      city,
+      state,
+      pincode,
+      panCardNumber,
+      appliedReferralCode,
       linkedin,
       reason,
       referralCode,
@@ -65,6 +85,10 @@ export async function POST(request: NextRequest) {
       data: newAmbassador,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("REGISTRATION_API_FAILURE:", error);
+    return NextResponse.json(
+      { error: error.message || "Internal server error during registration" }, 
+      { status: 500 }
+    );
   }
 }

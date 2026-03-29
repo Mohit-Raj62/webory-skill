@@ -17,6 +17,20 @@ interface AmbassadorApp {
     avatar?: string;
   };
   college: string;
+  category: "student" | "business-owner" | "working-professional";
+  studyLevel: "university" | "college";
+  courseType: "medical" | "engineering" | "other";
+  collegeState: string;
+  collegeCity: string;
+  courseName: string;
+  graduationYear: string;
+  collegeIdCardUrl: string;
+  address: string;
+  city: string;
+  state: string;
+  pincode: string;
+  panCardNumber: string;
+  appliedReferralCode: string;
   linkedin: string;
   reason: string;
   referralCode: string;
@@ -141,8 +155,19 @@ export default function AdminAmbassadorsPage() {
                                         {app.userId.phone}
                                     </p>
                                     <p className="text-blue-400_ text-sm font-medium mt-1 text-gray-300 bg-white/5 px-2 py-0.5 rounded inline-block border border-white/5">
-                                        🎓 {app.college}
+                                        🎓 {app.college} {app.collegeState && `(${app.collegeCity}, ${app.collegeState})`}
                                     </p>
+                                    <div className="flex gap-2 mt-2">
+                                        <div className="px-2 py-1 rounded-lg bg-orange-500/10 border border-orange-500/20 text-[10px] font-black uppercase text-orange-400 tracking-wider">
+                                            {app.category}
+                                        </div>
+                                        <div className="px-2 py-1 rounded-lg bg-blue-500/10 border border-blue-500/20 text-[10px] font-black uppercase text-blue-400 tracking-wider">
+                                            {app.studyLevel}
+                                        </div>
+                                        <div className="px-2 py-1 rounded-lg bg-purple-500/10 border border-purple-500/20 text-[10px] font-black uppercase text-purple-400 tracking-wider">
+                                            {app.courseType}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -173,32 +198,76 @@ export default function AdminAmbassadorsPage() {
                             </div>
                         </div>
 
-                        {/* Expanded Details */}
-                        <div className="mt-6 pt-6 border-t border-white/5 grid md:grid-cols-2 gap-6">
-                            <div>
-                                <span className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Reason for Joining</span>
-                                <p className="text-gray-300 text-sm leading-relaxed bg-black/40 p-3 rounded-lg border border-white/5">
-                                    "{app.reason}"
-                                </p>
+                        {/* Expanded Details Grid */}
+                        <div className="mt-8 pt-6 border-t border-white/5 grid grid-cols-1 md:grid-cols-3 gap-8">
+                            
+                            {/* Academic & Verification */}
+                            <div className="space-y-4">
+                                <div>
+                                    <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 block">Institution & Course</span>
+                                    <div className="text-sm font-medium text-gray-200">
+                                        {app.courseName} <span className="text-gray-500 mx-1">•</span> Class of {app.graduationYear}
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                     <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">Verification</span>
+                                     <div className="flex flex-col gap-2">
+                                        {app.panCardNumber && (
+                                            <div className="flex items-center gap-2 text-xs bg-gray-900 px-3 py-2 rounded-lg border border-white/5">
+                                                <CreditCard size={14} className="text-gray-400" />
+                                                <span className="text-gray-400">PAN:</span> <span className="text-white font-mono">{app.panCardNumber}</span>
+                                            </div>
+                                        )}
+                                        {app.collegeIdCardUrl ? (
+                                            <a href={app.collegeIdCardUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 px-3 py-2 rounded-lg border border-orange-500/20 transition-all group">
+                                                <Upload size={14} /> 
+                                                <span className="font-bold">View College ID Card</span>
+                                                <ExternalLink size={10} className="ml-auto opacity-50 group-hover:opacity-100" />
+                                            </a>
+                                        ) : (
+                                            <div className="text-xs text-red-400/50 italic px-3 py-2 border border-red-400/10 rounded-lg">No ID Card uploaded</div>
+                                        )}
+                                     </div>
+                                </div>
                             </div>
-                            <div className="flex flex-col justify-between">
-                                 <div>
-                                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Social</span>
+
+                            {/* Contact & Location */}
+                            <div className="space-y-4">
+                                <div>
+                                    <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 block">Communication Address</span>
+                                    <p className="text-xs text-gray-400 leading-relaxed bg-white/[0.02] p-3 rounded-xl border border-white/5">
+                                        {app.address}, {app.city}<br />
+                                        {app.state} - <span className="text-white font-mono">{app.pincode}</span>
+                                    </p>
+                                </div>
+                                {app.appliedReferralCode && (
+                                    <div className="text-[10px] font-bold text-emerald-400 flex items-center gap-2">
+                                        <CheckCircle size={12} /> Referred by {app.appliedReferralCode}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Social & Statement */}
+                            <div className="space-y-4">
+                                <div>
+                                    <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 block">Candidate Statement</span>
+                                    <p className="text-xs text-gray-400 line-clamp-3 bg-white/[0.02] p-3 rounded-xl border border-white/5 italic">
+                                        "{app.reason}"
+                                    </p>
+                                </div>
+                                <div>
                                     {app.linkedin ? (
-                                        <a href={app.linkedin} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-blue-400 hover:text-white transition-colors bg-blue-500/10 hover:bg-blue-600 px-3 py-2 rounded-lg border border-blue-500/20">
-                                            <Linkedin size={16} /> 
-                                            <span className="text-sm font-medium">View LinkedIn Profile</span>
-                                            <ExternalLink size={12} className="opacity-50" />
+                                        <a href={app.linkedin} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-blue-400 hover:text-white transition-colors bg-blue-500/10 hover:bg-blue-600 px-3 py-2 rounded-lg border border-blue-500/20 w-fit">
+                                            <Linkedin size={14} /> 
+                                            <span className="text-xs font-bold">LinkedIn Profile</span>
+                                            <ExternalLink size={10} className="opacity-50" />
                                         </a>
                                     ) : (
-                                        <span className="text-gray-500 text-sm italic">No LinkedIn profile provided</span>
+                                        <span className="text-gray-500 text-xs italic">No LinkedIn provided</span>
                                     )}
-                                 </div>
-                                 <div className="text-right mt-4 md:mt-0">
-                                     <span className="text-xs text-gray-600">Applied on {new Date(app.createdAt).toLocaleDateString()}</span>
-                                 </div>
+                                </div>
                             </div>
-                        </div>
+                        </div>iv>
 
                     </div>
                 ))}

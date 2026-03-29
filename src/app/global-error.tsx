@@ -2,7 +2,6 @@
 
 import { AlertCircle, RefreshCcw } from 'lucide-react';
 import { Inter } from 'next/font/google';
-import * as Sentry from '@sentry/nextjs';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -14,7 +13,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   // Catch the error
-  Sentry.captureException(error);
+  console.error("GLOBAL_ERROR:", error);
   return (
     <html lang="en" className={inter.className}>
       <body>

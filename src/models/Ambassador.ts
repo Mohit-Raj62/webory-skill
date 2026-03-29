@@ -35,6 +35,65 @@ const ambassadorSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  category: {
+    type: String,
+    enum: ["student", "business-owner", "working-professional"],
+    required: true,
+  },
+  studyLevel: {
+    type: String,
+    enum: ["university", "college"],
+  },
+  courseType: {
+    type: String,
+    enum: ["medical", "engineering", "other"],
+  },
+  collegeState: {
+    type: String,
+    trim: true,
+  },
+  collegeCity: {
+    type: String,
+    trim: true,
+  },
+  courseName: {
+    type: String,
+    trim: true,
+  },
+  graduationYear: {
+    type: String,
+    trim: true,
+  },
+  collegeIdCardUrl: {
+    type: String,
+    trim: true,
+  },
+  address: {
+    type: String,
+    trim: true,
+  },
+  city: {
+    type: String,
+    trim: true,
+  },
+  state: {
+    type: String,
+    trim: true,
+  },
+  pincode: {
+    type: String,
+    trim: true,
+  },
+  panCardNumber: {
+    type: String,
+    trim: true,
+    uppercase: true,
+  },
+  appliedReferralCode: {
+    type: String,
+    trim: true,
+    uppercase: true,
+  },
   status: {
     type: String,
     enum: ["active", "suspended", "pending", "rejected"],
