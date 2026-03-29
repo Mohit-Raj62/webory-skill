@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
-import { Mail, CheckSquare, Code, X, Maximize2, Minus, User, Briefcase, ChevronRight, CheckCircle2, Play, AlertCircle, Loader2, Video, Mic, MicOff } from 'lucide-react';
+import { Mail, CheckSquare, Code, X, Maximize2, Minus, User, Briefcase, ChevronRight, CheckCircle2, Play, AlertCircle, Loader2, Video, Mic, MicOff, RotateCcw, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/components/auth/session-provider';
 import { useRouter } from 'next/navigation';
@@ -45,47 +45,63 @@ export default function JobSimulator() {
     const playbackLog = useRef<{offsetSeconds: number, code: string}[]>([]);
     const lastCode = useRef<string>("");
 
-    useEffect(() => {
-        const fetchSimulator = async () => {
-            try {
-                // Try to get latest simulator if no ID provided
-                const res = await fetch('/api/simulators');
-                const json = await res.json();
+    const [fetchStatus, setFetchStatus] = useState<'idle' | 'loading' | 'error' | 'success'>('idle');
+
+    const fetchSimulator = async () => {
+        setFetchStatus('loading');
+        setLoading(true);
+        setError("");
+        
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
+        try {
+            const res = await fetch('/api/simulators', { signal: controller.signal });
+            clearTimeout(timeoutId);
+            const json = await res.json();
+            
+            if (json.success && json.data.length > 0) {
+                setAllScenarios(json.data);
+                const urlParams = new URLSearchParams(window.location.search);
+                const scenarioId = urlParams.get('id');
                 
-                if (json.success && json.data.length > 0) {
-                    setAllScenarios(json.data);
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const scenarioId = urlParams.get('id');
-                    
-                    let target = null;
-                    if (scenarioId) {
-                        target = json.data.find((s: any) => s._id === scenarioId) || null;
-                    }
-                    if (!target && json.data.length === 1) {
-                        target = json.data[0];
-                    }
-
-                    if (target && target.completed) {
-                        target = null; // Prevent auto-loading a completed scenario
-                    }
-
-                    if (target) {
-                        setScenario(target);
-                        setCode(target.initialCode);
-                        lastCode.current = target.initialCode;
-                        playbackLog.current = [{ offsetSeconds: 0, code: target.initialCode }];
-                        setTimeLeft((target.timeLimit || 30) * 60);
-                    }
-                } else {
-                    setError("No simulator scenarios found. Please create one in the Admin Dashboard.");
+                let target = null;
+                if (scenarioId) {
+                    target = json.data.find((s: any) => s._id === scenarioId) || null;
                 }
-            } catch (err) {
-                setError("Failed to load simulator data.");
-            } finally {
-                setLoading(false);
-            }
-        };
+                if (!target && json.data.length === 1) {
+                    target = json.data[0];
+                }
 
+                if (target && target.completed) {
+                    target = null; 
+                }
+
+                if (target) {
+                    setScenario(target);
+                    setCode(target.initialCode);
+                    lastCode.current = target.initialCode;
+                    playbackLog.current = [{ offsetSeconds: 0, code: target.initialCode }];
+                    setTimeLeft((target.timeLimit || 30) * 60);
+                }
+                setFetchStatus('success');
+            } else {
+                setError("No simulator scenarios found. Please create one in the Admin Dashboard.");
+                setFetchStatus('error');
+            }
+        } catch (err: any) {
+            if (err.name === 'AbortError') {
+                setError("Connection timed out. The server is taking too long to respond.");
+            } else {
+                setError("Failed to load simulator data. Please check your connection.");
+            }
+            setFetchStatus('error');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
         fetchSimulator();
     }, []);
 
@@ -201,7 +217,14 @@ export default function JobSimulator() {
                 </div>
                 <h1 className="text-2xl font-bold">System Error</h1>
                 <p className="text-slate-400 max-w-md">{error}</p>
-                <Button onClick={() => window.location.href = '/'} variant="outline" className="mt-4 border-slate-700 hover:bg-slate-800">Return to Home</Button>
+                <div className="flex gap-4">
+                    <Button onClick={() => fetchSimulator()} className="mt-4 bg-blue-600 hover:bg-blue-700 text-white border-none">
+                        <RotateCcw size={16} className="mr-2" /> Retry Connection
+                    </Button>
+                    <Button onClick={() => window.location.href = '/'} variant="outline" className="mt-4 border-slate-700 hover:bg-slate-800 text-slate-300">
+                        Return to Home
+                    </Button>
+                </div>
             </div>
         );
     }
@@ -272,7 +295,7 @@ export default function JobSimulator() {
                 {simulationComplete && (
                     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white text-slate-900 p-8 rounded-2xl shadow-2xl z-[100] text-center max-w-md animate-in zoom-in duration-300">
                         <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <AwardIcon size={32} />
+                            <Award size={32} />
                         </div>
                         <h2 className="text-2xl font-bold mb-2">Scenario Complete!</h2>
                         <p className="text-slate-600 mb-6 font-medium">Great job fixing that bug. You've earned +30 XP and leveled up your {scenario.role} skills!</p>
@@ -957,24 +980,4 @@ function MeetWindow({ scenario, code, onClose }: any) {
             </div>
         </WindowTemplate>
     );
-}
-
-function AwardIcon(props: any) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <circle cx="12" cy="8" r="6" />
-            <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />
-        </svg>
-    )
 }

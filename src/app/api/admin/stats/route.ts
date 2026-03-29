@@ -27,16 +27,16 @@ export async function GET() {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Fetch statistics
+    // Fetch base statistics
     const [
       totalUsers,
       totalCourses,
       totalInternships,
       totalApplications,
       recentEnrollments,
-      allEnrollments,
-      allApplications,
       pwaSetting,
+      courseRevenueResult,
+      internshipRevenueResult,
     ] = await Promise.all([
       User.countDocuments(),
       Course.countDocuments(),
@@ -45,53 +45,73 @@ export async function GET() {
       Enrollment.countDocuments({
         enrolledAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
       }),
-      Enrollment.find().populate("course").lean(),
-      Application.find().populate("internship").lean(),
       Settings.findOne({ key: "pwa_installs" }).lean(),
+      Enrollment.aggregate([
+        {
+          $lookup: {
+            from: "courses",
+            localField: "course",
+            foreignField: "_id",
+            as: "courseData",
+          },
+        },
+        { $unwind: { path: "$courseData", preserveNullAndEmptyArrays: true } },
+        { $group: { _id: null, total: { $sum: { $ifNull: ["$courseData.price", 0] } } } },
+      ]),
+      Application.aggregate([
+        { $group: { _id: null, total: { $sum: { $ifNull: ["$amountPaid", 0] } } } },
+      ]),
     ]);
 
     const pwaInstalls = pwaSetting?.value || 0;
-
-    // Calculate revenue (from enrollments and applications)
-    const courseRevenue = allEnrollments.reduce(
-      (sum: number, enrollment: any) => {
-        return sum + (enrollment.course?.price || 0);
-      },
-      0,
-    );
-
-    const internshipRevenue = allApplications.reduce(
-      (sum: number, app: any) => {
-        return sum + (app.amountPaid || 0);
-      },
-      0,
-    );
-
+    const courseRevenue = courseRevenueResult[0]?.total || 0;
+    const internshipRevenue = internshipRevenueResult[0]?.total || 0;
     const revenue = courseRevenue + internshipRevenue;
 
-    const topCoursesRaw = await Course.find()
-      .sort({ views: -1 })
-      .limit(5)
-      .select("title views studentsCount price");
+    // Optimized Top Courses with Completion Rate using Aggregation
+    const enhancedTopCourses = await Course.aggregate([
+        { $sort: { views: -1 } },
+        { $limit: 5 },
+        {
+            $lookup: {
+                from: "enrollments",
+                localField: "_id",
+                foreignField: "course",
+                as: "enrollmentData"
+            }
+        },
+        {
+            $addFields: {
+                totalEnrollments: { $size: "$enrollmentData" },
+                completedEnrollments: {
+                    $size: {
+                        $filter: {
+                            input: "$enrollmentData",
+                            as: "e",
+                            cond: { $eq: ["$$e.completed", true] }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            $project: {
+                title: 1,
+                views: 1,
+                studentsCount: 1,
+                price: 1,
+                completionRate: {
+                    $cond: [
+                        { $gt: ["$totalEnrollments", 0] },
+                        { $round: [{ $multiply: [{ $divide: ["$completedEnrollments", "$totalEnrollments"] }, 100] }, 0] },
+                        0
+                    ]
+                }
+            }
+        }
+    ]);
 
-    // Enhanced Top Courses with Completion Rate
-    const enhancedTopCourses = await Promise.all(
-      topCoursesRaw.map(async (course: any) => {
-        const enrollments = await Enrollment.find({
-          course: course._id,
-        }).select("completed");
-        const total = enrollments.length;
-        const completed = enrollments.filter((e) => e.completed).length;
-        const completionRate = total > 0 ? (completed / total) * 100 : 0;
-
-        return {
-          ...course.toObject(),
-          completionRate: Math.round(completionRate),
-        };
-      }),
-    );
-
-    // Revenue Distribution (Top 5 Earning Courses)
+    // Revenue Distribution (Top 5 Earning Courses) - Keep as is but ensure it's efficient
     const revenueDistributionRaw = await Enrollment.aggregate([
       {
         $lookup: {
@@ -112,21 +132,37 @@ export async function GET() {
       { $limit: 5 },
     ]);
 
-    // Top Learners (Users with most XP)
-    const topLearners = await User.find({ role: "student" })
-      .sort({ xp: -1 })
-      .limit(5)
-      .select("firstName lastName email avatar xp");
+    // Top Learners (Users with most XP) with Enrollment Count using Aggregation
+    const topLearnersResult = await User.aggregate([
+        { $match: { role: "student" } },
+        { $sort: { xp: -1 } },
+        { $limit: 5 },
+        {
+            $lookup: {
+                from: "enrollments",
+                localField: "_id",
+                foreignField: "student",
+                as: "enrollmentData"
+            }
+        },
+        {
+            $addFields: {
+                coursesCount: { $size: "$enrollmentData" }
+            }
+        },
+        {
+            $project: {
+                firstName: 1,
+                lastName: 1,
+                email: 1,
+                avatar: 1,
+                xp: 1,
+                coursesCount: 1
+            }
+        }
+    ]);
 
-    const topLearnersWithCount = await Promise.all(
-      topLearners.map(async (user) => {
-        const count = await Enrollment.countDocuments({ student: user._id });
-        return {
-          ...user.toObject(),
-          coursesCount: count,
-        };
-      }),
-    );
+    const topLearnersWithCount = topLearnersResult;
 
     // Real User Growth (Last 7 Days)
     const sevenDaysAgo = new Date();

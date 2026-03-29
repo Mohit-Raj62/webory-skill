@@ -54,17 +54,16 @@ export async function POST(req: Request) {
     let pushSentCount = 0;
     let pushFailedCount = 0;
 
-    // Send emails IF mode is 'email' or 'both'
+    // Parallel Delivery - Emails
     if (mode === "email" || mode === "both") {
-      // Fetch all users with valid emails
       const users = await User.find(
         { email: { $exists: true, $ne: null } },
         "email firstName"
       );
 
-      console.log(`Found ${users.length} users for email broadcast.`);
+      console.log(`Found ${users.length} users for email broadcast. Parallelizing...`);
 
-      for (const user of users) {
+      const emailPromises = users.map(async (user) => {
         let personalizedMessage = message;
         if (message.includes("{{name}}")) {
           personalizedMessage = message.replace(
@@ -74,26 +73,23 @@ export async function POST(req: Request) {
         }
 
         try {
-          const success = await sendEmail(
-            user.email,
-            subject,
-            personalizedMessage
-          );
+          const success = await sendEmail(user.email, subject, personalizedMessage);
           if (success) sentCount++;
           else errors.push(user.email);
-        } catch (error: any) {
+        } catch (error) {
           console.error(`Failed to email ${user.email}:`, error);
           errors.push(user.email);
         }
-      }
+      });
+
+      await Promise.all(emailPromises);
     }
 
-    // Send Push Notifications IF mode is 'push' or 'both'
+    // Parallel Delivery - Push Notifications
     if (mode === "push" || mode === "both") {
       const allPushSubs = await PushSubscription.find({});
-      console.log(`Push: Found ${allPushSubs.length} total push subscriptions.`);
+      console.log(`Push: Found ${allPushSubs.length} subscriptions. Parallelizing...`);
 
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.weboryskills.in";
       const payloadObj: any = {
         title: subject,
         body: message.replace(/<[^>]*>?/gm, '').substring(0, 200),
@@ -101,12 +97,10 @@ export async function POST(req: Request) {
         url: `/`,
         tag: 'webory-broadcast'
       };
-      if (pushImage) {
-        payloadObj.image = pushImage;
-      }
+      if (pushImage) payloadObj.image = pushImage;
       const pushPayload = JSON.stringify(payloadObj);
 
-      for (const sub of allPushSubs) {
+      const pushPromises = allPushSubs.map(async (sub) => {
         try {
           await webpush.sendNotification(
             {
@@ -120,15 +114,14 @@ export async function POST(req: Request) {
           );
           pushSentCount++;
         } catch (error: any) {
-          console.error(`Failed to send push to sub ${sub._id}:`, error);
           pushFailedCount++;
-          // If 410 or 404, subscription is expired/invalid, should remove it
           if (error.statusCode === 410 || error.statusCode === 404) {
              await PushSubscription.findByIdAndDelete(sub._id);
-             console.log(`Push: Removed expired subscription ${sub._id}`);
           }
         }
-      }
+      });
+
+      await Promise.all(pushPromises);
     }
 
     let resultMessage = "";

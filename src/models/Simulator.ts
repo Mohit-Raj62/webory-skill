@@ -52,6 +52,8 @@ const SimulatorSchema = new Schema({
   }
 }, { timestamps: true });
 
+SimulatorSchema.index({ difficulty: 1 });
+
 const Simulator = models.Simulator || model("Simulator", SimulatorSchema);
 
 export default Simulator;

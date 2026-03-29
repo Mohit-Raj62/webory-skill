@@ -24,4 +24,8 @@ const SimulatorSessionSchema = new Schema<ISimulatorSession>({
     createdAt: { type: Date, default: Date.now }
 });
 
+// Optimization: Index for faster progress tracking
+SimulatorSessionSchema.index({ userId: 1, passed: 1 });
+SimulatorSessionSchema.index({ userId: 1, scenarioId: 1 });
+
 export default mongoose.models.SimulatorSession || mongoose.model<ISimulatorSession>('SimulatorSession', SimulatorSessionSchema);
