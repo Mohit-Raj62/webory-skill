@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ExternalLink, CheckCircle, XCircle, Clock } from "lucide-react";
+import { ArrowLeft, ExternalLink, CheckCircle, XCircle, Clock, Code } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 

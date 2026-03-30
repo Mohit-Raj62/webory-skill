@@ -6,13 +6,22 @@ import { Plus, Trash2, Calendar, FileText, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+interface TaskFormData {
+    title: string;
+    description: string;
+    dueDate: string;
+    isSimulated: boolean;
+    initialCode: string;
+    expectedRegex: string;
+}
+
 export default function InternshipTasksPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
     const router = useRouter();
     const [tasks, setTasks] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<TaskFormData>({
         title: "",
         description: "",
         dueDate: "",
