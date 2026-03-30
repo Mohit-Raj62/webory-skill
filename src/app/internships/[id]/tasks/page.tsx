@@ -127,16 +127,37 @@ export default function StudentInternshipTasksPage({ params }: { params: Promise
                                 {task.submission ? (
                                     <div className="bg-white/5 rounded-lg p-4 border border-white/10">
                                         <h4 className="font-semibold mb-2 text-sm text-gray-400">Your Submission</h4>
-                                        <div className="flex items-center gap-2 text-blue-400 mb-2">
-                                            <LinkIcon size={16} />
-                                            <a href={task.submission.submissionUrl} target="_blank" rel="noopener noreferrer" className="hover:underline truncate">
-                                                {task.submission.submissionUrl}
-                                            </a>
-                                        </div>
-                                        {task.submission.comments && (
-                                            <p className="text-sm text-gray-400 italic">"{task.submission.comments}"</p>
+                                        
+                                        {task.submission.finalCode ? (
+                                            <div className="flex flex-col gap-3">
+                                                <div className="flex items-center gap-2 text-green-400">
+                                                    <CheckCircle size={16} />
+                                                    <span className="text-sm font-medium text-slate-300">Solved in WeboryOS Simulator</span>
+                                                </div>
+                                                <Button 
+                                                    variant="outline" 
+                                                    size="sm" 
+                                                    className="w-fit border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
+                                                    onClick={() => window.open(`/simulator?taskId=${task._id}`, '_blank')}
+                                                >
+                                                    <RotateCcw size={14} className="mr-2" /> Re-open in Simulator
+                                                </Button>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <div className="flex items-center gap-2 text-blue-400 mb-2">
+                                                    <LinkIcon size={16} />
+                                                    <a href={task.submission.submissionUrl} target="_blank" rel="noopener noreferrer" className="hover:underline truncate">
+                                                        {task.submission.submissionUrl}
+                                                    </a>
+                                                </div>
+                                                {task.submission.comments && (
+                                                    <p className="text-sm text-gray-400 italic">"{task.submission.comments}"</p>
+                                                )}
+                                            </>
                                         )}
-                                        {task.submission.status !== 'approved' && (
+                                        
+                                        {task.submission.status !== 'approved' && !task.submission.finalCode && (
                                             <Button
                                                 variant="outline"
                                                 size="sm"
@@ -154,12 +175,24 @@ export default function StudentInternshipTasksPage({ params }: { params: Promise
                                         )}
                                     </div>
                                 ) : (
-                                    <Button
-                                        onClick={() => setSubmittingId(task._id)}
-                                        className="bg-blue-600 hover:bg-blue-700"
-                                    >
-                                        Submit Work
-                                    </Button>
+                                    <div className="flex gap-3">
+                                        {task.isSimulated ? (
+                                            <Button
+                                                className="bg-blue-600 hover:bg-blue-700 h-11 px-8 rounded-xl font-bold shadow-lg shadow-blue-500/20 group"
+                                                onClick={() => window.open(`/simulator?taskId=${task._id}`, '_blank')}
+                                            >
+                                                <Code size={20} className="mr-2 group-hover:scale-110 transition-transform" />
+                                                Launch WeboryOS
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                onClick={() => setSubmittingId(task._id)}
+                                                className="bg-slate-800 hover:bg-slate-700 h-11 px-8 rounded-xl font-bold"
+                                            >
+                                                Submit Work
+                                            </Button>
+                                        )}
+                                    </div>
                                 )}
                             </div>
                         ))}

@@ -21,6 +21,8 @@ const SimulatorSessionSchema = new Schema<ISimulatorSession>({
         offsetSeconds: { type: Number, required: true },
         code: { type: String, required: true }
     }],
+    finalCode: { type: String, default: "" },
+    taskStatus: { type: String, default: "TODO" },
     createdAt: { type: Date, default: Date.now }
 });
 

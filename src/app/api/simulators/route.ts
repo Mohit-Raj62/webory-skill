@@ -10,54 +10,92 @@ export async function GET(request: NextRequest) {
         
         const { searchParams } = new URL(request.url);
         const difficulty = searchParams.get("difficulty");
+        const taskId = searchParams.get("taskId");
+        const studentId = searchParams.get("studentId");
         
-        let query = {};
-        if (difficulty) {
-            query = { difficulty };
-        }
+        // Import User model for role checking
+        require("@/models/User");
+        const User = (await import("@/models/User")).default;
 
-        const simulators = await Simulator.find(query).sort({ createdAt: -1 }).lean() as any[];
-        
         let userId = null;
+        let isAdmin = false;
         try {
-            userId = await getDataFromToken(request as any);
-        } catch (e) {
-            // Ignore token errors, userId remains null
+            const rawId = await getDataFromToken(request as any);
+            const authUser = await User.findById(rawId);
+            if (authUser) {
+                userId = rawId;
+                isAdmin = authUser.role === "admin";
+            }
+        } catch (e) {}
+
+        // Admin override: lookup session for student instead of self
+        if (isAdmin && studentId) {
+            userId = studentId;
         }
 
-        let completedScenarioIds = new Set();
-        if (userId) {
-            const sessions = await SimulatorSession.find({ userId, passed: true }, { scenarioId: 1, createdAt: 1 }).lean() as any[];
-            
-            const latestCompletions = new Map<string, Date>();
-            sessions.forEach(s => {
-                const id = s.scenarioId.toString();
-                if (!latestCompletions.has(id) || new Date(s.createdAt) > latestCompletions.get(id)!) {
-                    latestCompletions.set(id, new Date(s.createdAt));
-                }
-            });
+        if (taskId) {
+            // Fetch Internship Task as Simulator Scenario
+            require("@/models/InternshipTask");
+            require("@/models/InternshipSubmission");
+            const InternshipTask = (await import("@/models/InternshipTask")).default;
+            const InternshipSubmission = (await import("@/models/InternshipSubmission")).default;
 
-            simulators.forEach(sim => {
-                const id = sim._id.toString();
-                if (latestCompletions.has(id)) {
-                    const completionDate = latestCompletions.get(id)!;
-                    // Provide a 1-minute buffer in case of simultaneous updates
-                    const lastUpdated = new Date(sim.updatedAt || sim.createdAt || 0);
-                    lastUpdated.setSeconds(lastUpdated.getSeconds() - 60);
-                    
-                    if (completionDate >= lastUpdated) {
-                        completedScenarioIds.add(id);
-                    }
+            const task = await InternshipTask.findById(taskId).lean() as any;
+            if (!task) return NextResponse.json({ error: "Task not found" }, { status: 404 });
+
+            let lastSession = null;
+            if (userId) {
+                const submission = await InternshipSubmission.findOne({ task: taskId, student: userId }).lean() as any;
+                if (submission) {
+                    lastSession = {
+                        code: submission.finalCode,
+                        status: submission.status === "approved" ? "DONE" : "IN_PROGRESS"
+                    };
                 }
-            });
+            }
+
+            // Map InternshipTask to SimulatorData format
+            const data = {
+                _id: task._id,
+                role: task.title,
+                company: "Internship Project",
+                emails: task.emails || [],
+                tasks: [{ id: "TASK-1", title: task.title, desc: task.description, priority: "High" }],
+                initialCode: task.initialCode || "",
+                expectedRegex: task.expectedRegex || "",
+                hints: task.hints || [],
+                lastSession
+            };
+
+            return NextResponse.json({ success: true, data: [data] });
         }
 
-        const data = simulators.map(sim => ({
-            ...sim,
-            completed: completedScenarioIds.has(sim._id.toString())
+        const simulators = await Simulator.find(difficulty ? { difficulty } : {}).sort({ createdAt: -1 }).lean() as any[];
+        
+        const dataWithProgress = await Promise.all(simulators.map(async (sim) => {
+            const id = sim._id.toString();
+            let lastSession = null;
+            let completed = false;
+
+            if (userId) {
+                const session = await SimulatorSession.findOne({ userId, scenarioId: id }).sort({ createdAt: -1 }).lean() as any;
+                if (session) {
+                    lastSession = {
+                        code: session.finalCode,
+                        status: session.taskStatus
+                    };
+                    completed = session.passed;
+                }
+            }
+
+            return {
+                ...sim,
+                completed,
+                lastSession
+            };
         }));
 
-        return NextResponse.json({ success: true, data });
+        return NextResponse.json({ success: true, data: dataWithProgress });
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }

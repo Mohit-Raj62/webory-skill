@@ -23,6 +23,14 @@ const InternshipSubmissionSchema = new Schema({
     enum: ["pending", "approved", "rejected"],
     default: "pending",
   },
+  finalCode: {
+    type: String,
+    default: "",
+  },
+  playback: [{
+    offsetSeconds: { type: Number },
+    code: { type: String }
+  }],
   grade: {
     type: String,
   },

@@ -35,10 +35,11 @@ export default function AdminHackathonsPage() {
   const router = useRouter();
   const [hackathons, setHackathons] = useState<Hackathon[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isAdding, setIsAdding] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   
-  // New Hackathon Form
-  const [newH, setNewH] = useState({
+  const initialForm = {
     title: "",
     theme: "",
     description: "",
@@ -46,7 +47,9 @@ export default function AdminHackathonsPage() {
     endDate: "",
     registrationDeadline: "",
     bannerImage: ""
-  });
+  };
+
+  const [formH, setFormH] = useState(initialForm);
 
   useEffect(() => {
     fetchHackathons();
@@ -64,28 +67,70 @@ export default function AdminHackathonsPage() {
     }
   };
 
-  const handleCreate = async () => {
+  const handleSave = async () => {
     try {
         setLoading(true);
-        // This would call POST /api/admin/hackathons (to be created)
-        const res = await fetch("/api/admin/hackathons", {
-            method: "POST",
+        const url = isEditing ? `/api/admin/hackathons/${editingId}` : "/api/admin/hackathons";
+        const method = isEditing ? "PUT" : "POST";
+
+        const res = await fetch(url, {
+            method,
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(newH)
+            body: JSON.stringify(formH)
         });
         
         if (res.ok) {
-            toast.success("Hackathon created successfully! 🚀");
-            setIsAdding(false);
+            toast.success(isEditing ? "Hackathon updated! 🚀" : "Hackathon created! 🚀");
+            setIsModalOpen(false);
+            setFormH(initialForm);
+            setIsEditing(false);
             fetchHackathons();
         } else {
-            toast.error("Failed to create hackathon");
+            const err = await res.json();
+            toast.error(err.error || "Operation failed");
         }
     } catch (error) {
         toast.error("Network error");
     } finally {
         setLoading(false);
     }
+  };
+
+  const handleDelete = async (id: string, title: string) => {
+    if (!confirm(`Are you sure you want to delete "${title}"? This cannot be undone.`)) return;
+
+    try {
+        setLoading(true);
+        const res = await fetch(`/api/admin/hackathons/${id}`, {
+            method: "DELETE"
+        });
+
+        if (res.ok) {
+            toast.success("Hackathon deleted! 🗑️");
+            fetchHackathons();
+        } else {
+            toast.error("Failed to delete");
+        }
+    } catch (error) {
+        toast.error("Network error");
+    } finally {
+        setLoading(false);
+    }
+  };
+
+  const openEdit = (h: any) => {
+    setIsEditing(true);
+    setEditingId(h._id);
+    setFormH({
+        title: h.title,
+        theme: h.theme,
+        description: h.description || "",
+        startDate: h.startDate.split('T')[0],
+        endDate: h.endDate.split('T')[0],
+        registrationDeadline: h.registrationDeadline ? h.registrationDeadline.split('T')[0] : "",
+        bannerImage: h.bannerImage || ""
+    });
+    setIsModalOpen(true);
   };
 
   if (loading && hackathons.length === 0) {
@@ -104,7 +149,7 @@ export default function AdminHackathonsPage() {
           <p className="text-gray-500 font-medium">Create and judge skill-based coding battles.</p>
         </div>
         <Button 
-            onClick={() => setIsAdding(true)}
+            onClick={() => { setIsEditing(false); setFormH(initialForm); setIsModalOpen(true); }}
             className="bg-orange-600 hover:bg-orange-700 text-white font-black h-12 rounded-xl px-6 flex items-center gap-2"
         >
           <Plus size={18} />
@@ -112,27 +157,31 @@ export default function AdminHackathonsPage() {
         </Button>
       </div>
 
-      {isAdding && (
-          <Card className="bg-gray-900/50 border-white/10 text-white shadow-2xl backdrop-blur-3xl p-4 lg:p-10 mb-10">
+      {isModalOpen && (
+          <Card className="bg-gray-900/50 border-white/10 text-white shadow-2xl backdrop-blur-3xl p-4 lg:p-10 mb-10 overflow-visible z-10">
               <CardHeader className="px-0">
-                  <CardTitle className="text-2xl font-black uppercase tracking-tight">New Competition</CardTitle>
-                  <CardDescription className="text-gray-500">Define the rules, themes, and prizes for the upcoming battle.</CardDescription>
+                  <CardTitle className="text-2xl font-black uppercase tracking-tight">
+                    {isEditing ? "Edit Competition" : "New Competition"}
+                  </CardTitle>
+                  <CardDescription className="text-gray-500">
+                    {isEditing ? "Update the details for this competition." : "Define the rules, themes, and prizes for the upcoming battle."}
+                  </CardDescription>
               </CardHeader>
               <CardContent className="px-0 space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                           <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Event Title</label>
-                          <Input value={newH.title} onChange={e => setNewH({...newH, title: e.target.value})} placeholder="e.g., MERN Masterclass" className="bg-white/[0.03] border-white/10 h-12 text-white" />
+                          <Input value={formH.title} onChange={e => setFormH({...formH, title: e.target.value})} placeholder="e.g., MERN Masterclass" className="bg-white/[0.03] border-white/10 h-12 text-white" />
                       </div>
                       <div className="space-y-2">
                           <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Theme / Domain</label>
-                          <Input value={newH.theme} onChange={e => setNewH({...newH, theme: e.target.value})} placeholder="e.g., AI & ML" className="bg-white/[0.03] border-white/10 h-12 text-white" />
+                          <Input value={formH.theme} onChange={e => setFormH({...formH, theme: e.target.value})} placeholder="e.g., AI & ML" className="bg-white/[0.03] border-white/10 h-12 text-white" />
                       </div>
                   </div>
                   <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Description</label>
                       <textarea 
-                        value={newH.description} onChange={e => setNewH({...newH, description: e.target.value})}
+                        value={formH.description} onChange={e => setFormH({...formH, description: e.target.value})}
                         className="w-full bg-white/[0.03] border border-white/10 rounded-xl p-4 min-h-[150px] outline-none text-white focus:border-orange-500/50" 
                         placeholder="Detail about the hackathon..."
                       />
@@ -140,22 +189,22 @@ export default function AdminHackathonsPage() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="space-y-2">
                           <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Start Date</label>
-                          <Input type="date" value={newH.startDate} onChange={e => setNewH({...newH, startDate: e.target.value})} className="bg-white/[0.03] border-white/10 h-12 text-white" />
+                          <Input type="date" value={formH.startDate} onChange={e => setFormH({...formH, startDate: e.target.value})} className="bg-white/[0.03] border-white/10 h-12 text-white" />
                       </div>
                       <div className="space-y-2">
                           <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">End Date</label>
-                          <Input type="date" value={newH.endDate} onChange={e => setNewH({...newH, endDate: e.target.value})} className="bg-white/[0.03] border-white/10 h-12 text-white" />
+                          <Input type="date" value={formH.endDate} onChange={e => setFormH({...formH, endDate: e.target.value})} className="bg-white/[0.03] border-white/10 h-12 text-white" />
                       </div>
                       <div className="space-y-2">
                           <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Reg. Deadline</label>
-                          <Input type="date" value={newH.registrationDeadline} onChange={e => setNewH({...newH, registrationDeadline: e.target.value})} className="bg-white/[0.03] border-white/10 h-12 text-white" />
+                          <Input type="date" value={formH.registrationDeadline} onChange={e => setFormH({...formH, registrationDeadline: e.target.value})} className="bg-white/[0.03] border-white/10 h-12 text-white" />
                       </div>
                   </div>
                   <div className="flex gap-4 pt-4">
-                      <Button onClick={handleCreate} className="bg-white text-black font-black flex-1 h-14 rounded-2xl hover:bg-gray-200">
-                          Deploy Hackathon
+                      <Button onClick={handleSave} className="bg-white text-black font-black flex-1 h-14 rounded-2xl hover:bg-gray-200 uppercase tracking-tighter">
+                          {isEditing ? "Update Event" : "Deploy Hackathon"}
                       </Button>
-                      <Button onClick={() => setIsAdding(false)} variant="outline" className="border-white/10 text-white font-black flex-1 h-14 rounded-2xl hover:bg-white/5">
+                      <Button onClick={() => setIsModalOpen(false)} variant="outline" className="border-white/10 text-white font-black flex-1 h-14 rounded-2xl hover:bg-white/5 uppercase tracking-tighter">
                           Cancel
                       </Button>
                   </div>
@@ -192,12 +241,23 @@ export default function AdminHackathonsPage() {
                       <div className="flex gap-2 pt-8">
                           <Button 
                             onClick={() => router.push(`/admin/hackathons/${h._id}/judge`)}
-                            className="flex-1 bg-white hover:bg-gray-200 text-black font-black rounded-xl h-11 flex items-center gap-2"
+                            className="flex-1 bg-white hover:bg-gray-200 text-black font-black rounded-xl h-11 flex items-center gap-2 tracking-tighter"
                           >
                               <Award size={14} /> Judge
                           </Button>
-                          <Button variant="outline" className="border-white/10 hover:border-white/20 text-white font-black rounded-xl h-11">
+                          <Button 
+                            onClick={() => openEdit(h)}
+                            variant="outline" 
+                            className="border-white/10 hover:border-white/20 text-white font-black rounded-xl h-11"
+                          >
                               <Edit size={14} />
+                          </Button>
+                          <Button 
+                            onClick={() => handleDelete(h._id, h.title)}
+                            variant="ghost" 
+                            className="text-red-500 hover:text-red-400 hover:bg-red-500/10 rounded-xl h-11 px-3"
+                          >
+                              <Trash2 size={16} />
                           </Button>
                       </div>
                   </div>

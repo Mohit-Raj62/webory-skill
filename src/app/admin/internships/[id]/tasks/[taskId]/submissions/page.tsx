@@ -108,21 +108,30 @@ export default function TaskSubmissionsPage({ params }: { params: Promise<{ id: 
                                             <div className="text-xs text-gray-400">{submission.student?.email}</div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <a
-                                                href={submission.submissionUrl}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-blue-400 hover:underline flex items-center gap-1"
-                                            >
-                                                View Work <ExternalLink size={14} />
-                                            </a>
-                                            {submission.comments && (
-                                                <p className="text-xs text-gray-400 mt-1 max-w-xs truncate">
-                                                    "{submission.comments}"
-                                                </p>
+                                            {submission.finalCode ? (
+                                                <div className="flex flex-col gap-1">
+                                                    <span className="text-xs font-bold text-green-400 flex items-center gap-1"><CheckCircle size={10} /> Solved in Simulator</span>
+                                                    <span className="text-[10px] text-gray-500 italic truncate max-w-[150px]">Code: {submission.finalCode.substring(0, 20)}...</span>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <a
+                                                        href={submission.submissionUrl}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-blue-400 hover:underline flex items-center gap-1"
+                                                    >
+                                                        View Work <ExternalLink size={14} />
+                                                    </a>
+                                                    {submission.comments && (
+                                                        <p className="text-xs text-gray-400 mt-1 max-w-xs truncate">
+                                                            "{submission.comments}"
+                                                        </p>
+                                                    )}
+                                                </>
                                             )}
                                         </td>
-                                        <td className="px-6 py-4 text-gray-300">
+                                        <td className="px-6 py-4 text-gray-300 whitespace-nowrap">
                                             {new Date(submission.submittedAt).toLocaleString()}
                                         </td>
                                         <td className="px-6 py-4">
@@ -132,21 +141,33 @@ export default function TaskSubmissionsPage({ params }: { params: Promise<{ id: 
                                             {submission.grade || "-"}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <Button
-                                                size="sm"
-                                                variant="outline"
-                                                className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
-                                                onClick={() => {
-                                                    setGradingId(submission._id);
-                                                    setGradeData({
-                                                        status: submission.status,
-                                                        grade: submission.grade || "",
-                                                        comments: submission.comments || "",
-                                                    });
-                                                }}
-                                            >
-                                                Grade
-                                            </Button>
+                                            <div className="flex gap-2">
+                                                {submission.finalCode && (
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        className="border-green-500/30 text-green-400 hover:bg-green-500/10"
+                                                        onClick={() => window.open(`/simulator?taskId=${taskId}&studentId=${submission.student?._id}`, '_blank')}
+                                                    >
+                                                        <Code size={14} className="mr-1" /> View Code
+                                                    </Button>
+                                                )}
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
+                                                    onClick={() => {
+                                                        setGradingId(submission._id);
+                                                        setGradeData({
+                                                            status: submission.status,
+                                                            grade: submission.grade || "",
+                                                            comments: submission.comments || "",
+                                                        });
+                                                    }}
+                                                >
+                                                    Grade
+                                                </Button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}

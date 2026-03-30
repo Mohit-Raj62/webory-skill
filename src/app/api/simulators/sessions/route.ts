@@ -12,17 +12,42 @@ export async function POST(request: NextRequest) {
         }
 
         const body = await request.json();
-        const { scenarioId, timeTakenSeconds, passed, playback } = body;
+        const { scenarioId, taskId, timeTakenSeconds, passed, playback, finalCode, taskStatus } = body;
 
-        const session = await SimulatorSession.create({
-            userId,
-            scenarioId,
-            timeTakenSeconds,
-            passed,
-            playback
-        });
+        if (taskId) {
+            // Import model using side-effect to ensure registration
+            require("@/models/InternshipSubmission");
+            require("@/models/InternshipTask");
+            const InternshipSubmission = (await import("@/models/InternshipSubmission")).default;
 
-        return NextResponse.json({ success: true, sessionId: session._id, message: "Session recorded for recruiter replay." });
+            // This is an Internship Task Submission from WeboryOS
+            const submission = await InternshipSubmission.findOneAndUpdate(
+                { student: userId, task: taskId },
+                {
+                    student: userId,
+                    task: taskId,
+                    finalCode,
+                    playback,
+                    status: passed ? "approved" : "pending",
+                    submittedAt: new Date()
+                },
+                { upsert: true, new: true }
+            );
+
+            return NextResponse.json({ success: true, submissionId: submission._id, message: "Internship task progress saved." });
+        } else {
+            // Generic Simulator Scenario
+            const session = await SimulatorSession.create({
+                userId,
+                scenarioId,
+                timeTakenSeconds,
+                passed,
+                playback,
+                finalCode,
+                taskStatus: taskStatus || (passed ? "DONE" : "IN_PROGRESS")
+            });
+            return NextResponse.json({ success: true, sessionId: session._id, message: "Session recorded for recruiter replay." });
+        }
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }

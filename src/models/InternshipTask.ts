@@ -14,6 +14,26 @@ const InternshipTaskSchema = new Schema({
     type: String,
     required: true,
   },
+  isSimulated: {
+    type: Boolean,
+    default: false,
+  },
+  initialCode: {
+    type: String,
+    default: "",
+  },
+  expectedRegex: {
+    type: String,
+    default: "",
+  },
+  hints: {
+    type: [String],
+    default: [],
+  },
+  emails: {
+    type: [Object],
+    default: [],
+  },
   dueDate: {
     type: Date,
     required: true,

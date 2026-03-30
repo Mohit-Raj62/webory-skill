@@ -16,6 +16,9 @@ export default function InternshipTasksPage({ params }: { params: Promise<{ id: 
         title: "",
         description: "",
         dueDate: "",
+        isSimulated: false,
+        initialCode: "",
+        expectedRegex: "",
     });
 
     useEffect(() => {
@@ -48,7 +51,7 @@ export default function InternshipTasksPage({ params }: { params: Promise<{ id: 
             if (res.ok) {
                 fetchTasks();
                 setIsModalOpen(false);
-                setFormData({ title: "", description: "", dueDate: "" });
+                setFormData({ title: "", description: "", dueDate: "", isSimulated: false, initialCode: "", expectedRegex: "" });
                 alert("Task created successfully!");
             } else {
                 alert("Failed to create task");
@@ -170,26 +173,64 @@ export default function InternshipTasksPage({ params }: { params: Promise<{ id: 
                                     onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
                                 />
                             </div>
-                            <div className="flex gap-2 pt-4">
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    onClick={() => setIsModalOpen(false)}
-                                    className="flex-1"
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    className="flex-1 bg-blue-600 hover:bg-blue-700"
-                                >
-                                    Create Task
-                                </Button>
-                            </div>
-                        </form>
+                                <div className="flex items-center gap-3 bg-white/5 p-4 rounded-xl border border-white/10">
+                                    <input
+                                        type="checkbox"
+                                        id="isSimulated"
+                                        checked={formData.isSimulated}
+                                        onChange={(e) => setFormData({ ...formData, isSimulated: e.target.checked })}
+                                        className="w-5 h-5 rounded border-white/10 bg-white/5"
+                                    />
+                                    <label htmlFor="isSimulated" className="text-sm font-medium text-white cursor-pointer select-none">
+                                        Enable WeboryOS Simulation for this task
+                                    </label>
+                                </div>
+
+                                {formData.isSimulated && (
+                                    <div className="space-y-4 animate-in fade-in duration-300">
+                                        <div>
+                                            <label className="text-xs font-bold text-slate-500 uppercase block mb-2">Initial Starter Code</label>
+                                            <textarea
+                                                rows={4}
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white font-mono text-sm outline-none"
+                                                value={formData.initialCode}
+                                                onChange={(e) => setFormData({ ...formData, initialCode: e.target.value })}
+                                                placeholder=".cta-button { padding: 40px; }"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-bold text-red-400 uppercase block mb-2">Validation Regex</label>
+                                            <input
+                                                type="text"
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white font-mono text-sm outline-none"
+                                                value={formData.expectedRegex}
+                                                onChange={(e) => setFormData({ ...formData, expectedRegex: e.target.value })}
+                                                placeholder="/padding:\s*20px\s*;/"
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="flex gap-2 pt-4">
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        onClick={() => setIsModalOpen(false)}
+                                        className="flex-1"
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        type="submit"
+                                        className="flex-1 bg-blue-600 hover:bg-blue-700"
+                                    >
+                                        Create Task
+                                    </Button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            )}
-        </div>
-    );
-}
+                )}
+            </div>
+        );
+    }

@@ -42,6 +42,7 @@ export default function JobSimulator() {
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
     const [hintsUsed, setHintsUsed] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [mailUnread, setMailUnread] = useState(true);
     const playbackLog = useRef<{offsetSeconds: number, code: string}[]>([]);
     const lastCode = useRef<string>("");
 
@@ -53,35 +54,44 @@ export default function JobSimulator() {
         setError("");
         
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+        const timeoutId = setTimeout(() => controller.abort(), 15000); 
 
         try {
-            const res = await fetch('/api/simulators', { signal: controller.signal });
+            const urlParams = new URLSearchParams(window.location.search);
+            const scenarioId = urlParams.get('id');
+            const taskId = urlParams.get('taskId');
+            
+            const url = taskId ? `/api/simulators?taskId=${taskId}` : '/api/simulators';
+            const res = await fetch(url, { signal: controller.signal });
             clearTimeout(timeoutId);
             const json = await res.json();
             
             if (json.success && json.data.length > 0) {
                 setAllScenarios(json.data);
-                const urlParams = new URLSearchParams(window.location.search);
-                const scenarioId = urlParams.get('id');
                 
                 let target = null;
-                if (scenarioId) {
-                    target = json.data.find((s: any) => s._id === scenarioId) || null;
+                if (taskId || scenarioId) {
+                    target = json.data.find((s: any) => s._id === (taskId || scenarioId)) || null;
                 }
                 if (!target && json.data.length === 1) {
                     target = json.data[0];
                 }
 
-                if (target && target.completed) {
-                    target = null; 
-                }
-
                 if (target) {
                     setScenario(target);
-                    setCode(target.initialCode);
-                    lastCode.current = target.initialCode;
-                    playbackLog.current = [{ offsetSeconds: 0, code: target.initialCode }];
+                    
+                    // Resume from last session if available
+                    if (target.lastSession) {
+                        setCode(target.lastSession.code || target.initialCode);
+                        setTaskStatus(target.lastSession.status || "TODO");
+                        if (target.lastSession.status === "DONE") setSimulationComplete(true);
+                    } else {
+                        setCode(target.initialCode);
+                        setTaskStatus("TODO");
+                    }
+                    
+                    lastCode.current = target.lastSession?.code || target.initialCode;
+                    playbackLog.current = [{ offsetSeconds: 0, code: target.lastSession?.code || target.initialCode }];
                     setTimeLeft((target.timeLimit || 30) * 60);
                 }
                 setFetchStatus('success');
@@ -172,17 +182,25 @@ export default function JobSimulator() {
                         setSimulationComplete(true);
                         setFeedback({ type: 'success', msg: "PR Approved & Merged! Feedback: " + (aiData.feedback?.[0] || 'LGTM!') });
                         
-                        fetch('/api/simulators/xp', { method: 'POST', body: JSON.stringify({ xp: 30 }), headers: { 'Content-Type': 'application/json' } });
+                        
+                        fetch('/api/simulators/xp', { method: 'POST', body: JSON.stringify({ xp: 30 }), headers: { 'Content-Type': 'application/json' } }).catch(() => {});
+                        
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const taskId = urlParams.get('taskId');
+
                         fetch('/api/simulators/sessions', { 
                             method: 'POST', 
                             body: JSON.stringify({ 
-                                scenarioId: scenario._id, 
+                                scenarioId: !taskId ? scenario._id : undefined,
+                                taskId: taskId || undefined,
                                 timeTakenSeconds: elapsedSeconds, 
                                 passed: true, 
-                                playback: playbackLog.current 
+                                playback: playbackLog.current,
+                                finalCode: code,
+                                taskStatus: "DONE"
                             }),
                             headers: { 'Content-Type': 'application/json' }
-                        });
+                        }).catch(() => {});
                     } else {
                         setFeedback({ type: 'error', msg: "PR Rejected by Senior Dev: " + (aiData.feedback?.[0] || 'Poor code quality.') });
                     }
@@ -316,7 +334,24 @@ export default function JobSimulator() {
 
                 {/* Windows Overlay */}
                 {activeApp === 'mail' && <MailWindow scenario={scenario} onClose={() => setActiveApp(null)} />}
-                {activeApp === 'jira' && <JiraWindow scenario={scenario} onClose={() => setActiveApp(null)} taskStatus={taskStatus} setTaskStatus={setTaskStatus} hintsUsed={hintsUsed} setHintsUsed={setHintsUsed} />}
+                {activeApp === 'jira' && <JiraWindow scenario={scenario} onClose={() => setActiveApp(null)} taskStatus={taskStatus} setTaskStatus={(s: string) => {
+                    setTaskStatus(s);
+                    // Also save status to DB
+                    const taskId = new URLSearchParams(window.location.search).get('taskId');
+                    fetch('/api/simulators/sessions', { 
+                        method: 'POST', 
+                        body: JSON.stringify({ 
+                            scenarioId: !taskId ? scenario._id : undefined,
+                            taskId: taskId || undefined,
+                            timeTakenSeconds: elapsedSeconds, 
+                            passed: false, 
+                            playback: playbackLog.current,
+                            finalCode: code,
+                            taskStatus: s
+                        }),
+                        headers: { 'Content-Type': 'application/json' }
+                    }).catch(() => {});
+                }} hintsUsed={hintsUsed} setHintsUsed={setHintsUsed} />}
                 {activeApp === 'code' && <CodeWindow onClose={() => setActiveApp(null)} code={code} setCode={setCode} onRun={handleRunTests} taskStatus={taskStatus} feedback={feedback} isSubmitting={isSubmitting} />}
                 {activeApp === 'chat' && <ChatWindow scenario={scenario} hintsUsed={hintsUsed} setHintsUsed={setHintsUsed} onClose={() => setActiveApp(null)} />}
                 {activeApp === 'browser' && <BrowserWindow onClose={() => setActiveApp(null)} code={code} />}
@@ -330,8 +365,8 @@ export default function JobSimulator() {
                         icon={<Mail size={28} />} 
                         name="Mail" 
                         active={activeApp === 'mail'} 
-                        onClick={() => setActiveApp('mail')} 
-                        badge="1"
+                        onClick={() => { setActiveApp('mail'); setMailUnread(false); }} 
+                        badge={mailUnread ? "1" : null}
                     />
                     <DockIcon 
                         icon={<CheckSquare size={28} />} 
@@ -844,6 +879,7 @@ function MeetWindow({ scenario, code, onClose }: any) {
         
         utterance.rate = 1.0;
         utterance.pitch = 0.9;
+        utterance.onerror = (e) => console.warn("Speech synthesis error suppressed:", e);
         window.speechSynthesis.speak(utterance);
     };
 
@@ -878,8 +914,8 @@ function MeetWindow({ scenario, code, onClose }: any) {
                 setMessages(prev => [...prev, { sender: 'bot', text: data.reply }]);
                 speakManager(data.reply);
             }
-        } catch(e) {
-            console.error(e);
+        } catch(e: any) {
+            console.error("Meet AI Error:", e?.message || "Unknown error");
         } finally {
             setLoading(false);
         }
