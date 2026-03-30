@@ -42,7 +42,22 @@ export default function HackathonJudgingPage() {
         try {
             const res = await fetch(`/api/admin/hackathons/${id}/submissions`);
             const data = await res.json();
-            if (res.ok) setSubmissions(data.data);
+            if (res.ok) {
+                setSubmissions(data.data);
+                
+                // Pre-fill visual state for previously finalized ranks
+                const existingRanks = data.data
+                    .filter((sub: any) => sub.rank && sub.rank > 0)
+                    .map((sub: any) => ({
+                        userId: sub.userId._id,
+                        rank: sub.rank,
+                        points: sub.rank === 1 ? 1000 : sub.rank === 2 ? 500 : 250
+                    }));
+                
+                if (existingRanks.length > 0) {
+                    setResults(existingRanks);
+                }
+            }
         } catch (error) {
             toast.error("Failed to load submissions");
         } finally {
