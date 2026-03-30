@@ -122,7 +122,7 @@ export default function PublicCertificateView() {
                 <motion.div 
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="shadow-[0_0_100px_rgba(37,99,235,0.1)] rounded-[2rem] overflow-hidden"
+                    className="motion-wrapper shadow-[0_0_100px_rgba(37,99,235,0.1)] rounded-[2rem] overflow-hidden print:overflow-visible print:shadow-none print:rounded-none"
                 >
                     <HackathonCertificate 
                         type={certificate.type}
@@ -138,18 +138,53 @@ export default function PublicCertificateView() {
                 {/* Print Styles */}
                 <style jsx global>{`
                     @media print {
-                        body { background: white !important; }
-                        main { padding: 0 !important; }
-                        .container { padding: 0 !important; max-width: 100% !important; margin: 0 !important; }
-                        .print\:hidden { display: none !important; }
-                        footer { display: none !important; }
-                        .certificate-container { 
-                            box-shadow: none !important; 
-                            border: 8px double #eee !important;
-                            max-width: 100% !important;
-                            width: 100% !important;
+                        @page { 
+                            size: A4 landscape; 
+                            margin: 0; 
+                        }
+                        
+                        /* Hide everything on the page including scrollbars and backgrounds */
+                        html, body {
                             margin: 0 !important;
-                            transform: scale(0.9) !important;
+                            padding: 0 !important;
+                            height: 100% !important;
+                            width: 100% !important;
+                            overflow: hidden !important;
+                            background: white !important;
+                            visibility: hidden !important;
+                        }
+
+                        /* ONLY the certificate and its children are visible */
+                        #certificate-container, 
+                        #certificate-container * {
+                            visibility: visible !important;
+                        }
+
+                        /* Force certificate to top-left of the PDF page at exact A4 pixels */
+                        #certificate-container {
+                            position: fixed !important;
+                            top: 0 !important;
+                            left: 0 !important;
+                            width: 297mm !important;
+                            height: 210mm !important;
+                            margin: 0 !important;
+                            padding: 0 !important;
+                            z-index: 999999 !important;
+                            background: white !important;
+                            transform: scale(1) !important;
+                            transform-origin: top left !important;
+                        }
+
+                        /* Disable all parent containers that might clip it */
+                        main, .container, .motion-wrapper {
+                            visibility: hidden !important;
+                            display: block !important;
+                            padding: 0 !important;
+                            margin: 0 !important;
+                            width: auto !important;
+                            height: auto !important;
+                            overflow: visible !important;
+                            transform: none !important;
                         }
                     }
                 `}</style>
