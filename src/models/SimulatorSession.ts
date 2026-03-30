@@ -9,12 +9,14 @@ export interface ISimulatorSession extends Document {
         offsetSeconds: number;
         code: string;
     }[];
+    finalCode: string;
+    taskStatus: string;
     createdAt: Date;
 }
 
 const SimulatorSessionSchema = new Schema<ISimulatorSession>({
-    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    scenarioId: { type: Schema.Types.ObjectId, ref: 'Simulator', required: true },
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+    scenarioId: { type: Schema.Types.ObjectId, ref: 'Simulator', required: true, index: true },
     timeTakenSeconds: { type: Number, required: true },
     passed: { type: Boolean, required: true },
     playback: [{
