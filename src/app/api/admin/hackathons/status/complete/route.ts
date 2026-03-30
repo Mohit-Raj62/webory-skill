@@ -35,8 +35,12 @@ export async function POST(req: Request) {
     hackathon.status = "completed";
     await hackathon.save();
 
-    // 2. Process Winners and Participants
+    // Process Winners and Participants
     const submissions = await HackathonSubmission.find({ hackathonId }).populate("userId");
+    
+    // Side-effect import to ensure model is registered
+    require("@/models/User");
+    const User = (await import("@/models/User")).default;
 
     const certificateResults = [];
 
@@ -52,6 +56,10 @@ export async function POST(req: Request) {
         : "Hackathon Participant";
       
       const description = `Awarded for ${isWinner ? 'Outstanding performance' : 'Active participation'} in the ${hackathon.title}. Project: ${sub.projectName}`;
+
+      // Award XP
+      const xpAmount = isWinner ? (winnerData.rank === 1 ? 500 : winnerData.rank === 2 ? 300 : 100) : 50;
+      await User.findByIdAndUpdate(sub.userId._id, { $inc: { xp: xpAmount } });
 
       // Create Certificate Record
       const certificate = await CustomCertificate.create({
@@ -69,12 +77,12 @@ export async function POST(req: Request) {
       sub.certificateId = certificate._id;
       await sub.save();
 
-      certificateResults.push({ userId: sub.userId._id, title, certId });
+      certificateResults.push({ userId: sub.userId._id, title, certId, xpAwarded: xpAmount });
     }
 
     return NextResponse.json({
       success: true,
-      message: `Hackathon finalized. ${certificateResults.length} certificates generated.`,
+      message: `Hackathon finalized. ${certificateResults.length} certificates generated and XP awarded.`,
       data: certificateResults,
     });
   } catch (error: any) {
