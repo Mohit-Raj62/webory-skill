@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import CustomCertificate from "@/models/CustomCertificate";
 import HackathonSubmission from "@/models/HackathonSubmission";
-import Hackathon from "@/models/Hackathon";
-import User from "@/models/User";
+import "@/models/Hackathon";
+import "@/models/User";
 
 export async function GET(
   req: NextRequest,

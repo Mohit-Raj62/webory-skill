@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import HackathonSubmission from "@/models/HackathonSubmission";
-import CustomCertificate from "@/models/CustomCertificate";
-import Hackathon from "@/models/Hackathon";
+import "@/models/User";
+import "@/models/CustomCertificate";
+import "@/models/Hackathon";
 import { getDataFromToken } from "@/helpers/getDataFromToken";
 
 export async function GET(req: NextRequest) {
