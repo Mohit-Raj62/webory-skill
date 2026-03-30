@@ -222,7 +222,43 @@ export default function HackathonJudgingPage() {
                                             <div className="flex items-center gap-1.5 text-[8px] font-black text-gray-700 uppercase tracking-widest leading-none">
                                                 <Calendar size={10} /> {new Date(sub.createdAt).toLocaleDateString()}
                                             </div>
+                                            {/* Participation Type Badge */}
+                                            <div className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border ${
+                                                sub.participationType === 'team' 
+                                                  ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' 
+                                                  : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                                            }`}>
+                                                {sub.participationType === 'team' ? `👥 Team: ${sub.teamName}` : '👤 Individual'}
+                                            </div>
                                         </div>
+
+                                        {/* Team Members Details (if team) */}
+                                        {sub.participationType === 'team' && sub.teamMemberDetails && sub.teamMemberDetails.length > 0 && (
+                                            <div className="p-4 rounded-2xl bg-purple-500/5 border border-purple-500/10 space-y-3">
+                                                <div className="flex items-center gap-2">
+                                                    <Users size={12} className="text-purple-400" />
+                                                    <span className="text-[9px] font-black uppercase tracking-widest text-purple-400">
+                                                        Team Members ({sub.teamMemberDetails.length})
+                                                    </span>
+                                                </div>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                                                    {sub.teamMemberDetails.map((m: any, mIdx: number) => (
+                                                        <div key={mIdx} className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/5">
+                                                            <div className="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center text-[10px] font-black shrink-0">
+                                                                {mIdx + 1}
+                                                            </div>
+                                                            <div className="min-w-0 space-y-0.5">
+                                                                <div className="text-xs font-bold text-white truncate">{m.name}</div>
+                                                                <div className="text-[10px] text-gray-500 truncate">{m.email}</div>
+                                                                {m.phone && <div className="text-[10px] text-gray-600">📞 {m.phone}</div>}
+                                                                {m.role && <div className="text-[10px] text-blue-400/70">💼 {m.role}</div>}
+                                                                {m.college && <div className="text-[10px] text-gray-600">🎓 {m.college}</div>}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
 
                                         <div className="group/title relative">
                                             <h3 className="text-sm font-mono text-blue-400/90 leading-relaxed break-all bg-blue-500/5 p-2 rounded-lg border border-blue-500/10">

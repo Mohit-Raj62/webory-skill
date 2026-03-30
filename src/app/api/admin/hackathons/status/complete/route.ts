@@ -48,41 +48,72 @@ export async function POST(req: Request) {
       const isWinner = winners?.some((w: any) => w.userId === sub.userId._id.toString());
       const winnerData = winners?.find((w: any) => w.userId === sub.userId._id.toString());
       
-      const certId = "WEBORY-" + crypto.randomBytes(4).toString("hex").toUpperCase();
-      const certKey = crypto.randomBytes(16).toString("hex");
+      // Calculate new XP
+      const newXp = isWinner ? (winnerData.rank === 1 ? 500 : winnerData.rank === 2 ? 300 : 100) : 50;
+      
+      // Get previously awarded XP (stored on submission)
+      const previousXp = (sub as any).xpAwarded || 0;
+      
+      // Calculate XP difference (could be positive or negative)
+      const xpDiff = newXp - previousXp;
 
+      // Only update user XP if there's a difference
+      if (xpDiff !== 0) {
+        await User.findByIdAndUpdate(sub.userId._id, { $inc: { xp: xpDiff } });
+      }
+
+      // Check if certificate already exists for this submission
+      let certificate;
       const title = isWinner 
         ? `Hackathon Champion - ${winnerData.rank}${winnerData.rank === 1 ? 'st' : winnerData.rank === 2 ? 'nd' : 'rd'} Place`
         : "Hackathon Participant";
       
       const description = `Awarded for ${isWinner ? 'Outstanding performance' : 'Active participation'} in the ${hackathon.title}. Project: ${sub.projectName}`;
 
-      // Award XP
-      const xpAmount = isWinner ? (winnerData.rank === 1 ? 500 : winnerData.rank === 2 ? 300 : 100) : 50;
-      await User.findByIdAndUpdate(sub.userId._id, { $inc: { xp: xpAmount } });
+      if (!sub.certificateId) {
+        // First time — create new certificate
+        const certId = "WEBORY-" + crypto.randomBytes(4).toString("hex").toUpperCase();
+        const certKey = crypto.randomBytes(16).toString("hex");
 
-      // Create Certificate Record
-      const certificate = await CustomCertificate.create({
-        studentName: `${(sub.userId as any).firstName} ${(sub.userId as any).lastName}`,
-        title,
-        description,
-        certificateId: certId,
-        certificateKey: certKey,
-        issuedAt: new Date(),
-      });
+        certificate = await CustomCertificate.create({
+          studentName: `${(sub.userId as any).firstName} ${(sub.userId as any).lastName}`,
+          title,
+          description,
+          certificateId: certId,
+          certificateKey: certKey,
+          issuedAt: new Date(),
+        });
+        sub.certificateId = certificate._id;
+      } else {
+        // Already has certificate — update title/description if rank changed
+        await CustomCertificate.findByIdAndUpdate(sub.certificateId, { title, description });
+      }
 
-      // Link certificate to submission
+      // Update submission with new status, rank, and XP tracking
       sub.status = isWinner ? "winner" : "participated";
       if (isWinner) sub.rank = winnerData.rank;
-      sub.certificateId = certificate._id;
+      else sub.rank = 0;
+      (sub as any).xpAwarded = newXp; // Track how much XP was given
       await sub.save();
 
-      certificateResults.push({ userId: sub.userId._id, title, certId, xpAwarded: xpAmount });
+      certificateResults.push({ 
+        userId: sub.userId._id, 
+        title, 
+        xpAwarded: newXp, 
+        xpDiff, 
+        previousXp,
+        action: previousXp === 0 ? 'NEW' : xpDiff === 0 ? 'UNCHANGED' : xpDiff > 0 ? 'UPGRADED' : 'DOWNGRADED'
+      });
     }
+
+    // Update total XP distributed on the hackathon
+    const totalXp = certificateResults.reduce((sum, r) => sum + r.xpAwarded, 0);
+    hackathon.totalXpDistributed = totalXp;
+    await hackathon.save();
 
     return NextResponse.json({
       success: true,
-      message: `Hackathon finalized. ${certificateResults.length} certificates generated and XP awarded.`,
+      message: `Hackathon finalized. ${certificateResults.length} certificates generated and ${totalXp} XP distributed.`,
       data: certificateResults,
     });
   } catch (error: any) {

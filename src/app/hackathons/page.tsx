@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
@@ -19,13 +19,101 @@ import {
   Sparkles,
   Rocket,
   FileCode,
-  ListChecks
+  ListChecks,
+  Clock
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Award } from "lucide-react";
 import Link from "next/link";
+
+// ─── Countdown Timer Component ─────────────────────────────────────
+function CountdownTimer({ targetDate, label }: { targetDate: string; label: string }) {
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [isExpired, setIsExpired] = useState(false);
+
+  useEffect(() => {
+    const calculate = () => {
+      const now = new Date().getTime();
+      const target = new Date(targetDate).getTime();
+      const diff = target - now;
+
+      if (diff <= 0) {
+        setIsExpired(true);
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
+
+      setTimeLeft({
+        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((diff % (1000 * 60)) / 1000),
+      });
+    };
+
+    calculate();
+    const interval = setInterval(calculate, 1000);
+    return () => clearInterval(interval);
+  }, [targetDate]);
+
+  if (isExpired) {
+    return (
+      <div className="flex items-center gap-2 text-gray-500">
+        <Clock size={12} />
+        <span className="text-[10px] font-black uppercase tracking-widest">Time&apos;s Up!</span>
+      </div>
+    );
+  }
+
+  const blocks = [
+    { value: timeLeft.days, unit: "D" },
+    { value: timeLeft.hours, unit: "H" },
+    { value: timeLeft.minutes, unit: "M" },
+    { value: timeLeft.seconds, unit: "S" },
+  ];
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-1.5">
+        <Timer size={10} className="text-orange-500" />
+        <span className="text-[8px] font-black uppercase tracking-widest text-gray-600">{label}</span>
+      </div>
+      <div className="flex items-center gap-1.5">
+        {blocks.map((block, i) => (
+          <div key={i} className="flex items-center gap-1.5">
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg px-2 py-1.5 min-w-[36px] text-center">
+              <span className="text-base font-black text-white tabular-nums">{String(block.value).padStart(2, "0")}</span>
+              <span className="text-[7px] font-black text-gray-600 ml-0.5">{block.unit}</span>
+            </div>
+            {i < blocks.length - 1 && <span className="text-gray-600 font-black text-xs">:</span>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Pulsing Live Badge ────────────────────────────────────────────
+function StatusBadge({ status }: { status: string }) {
+  const isLive = status === "live";
+  const isCompleted = status === "completed";
+  
+  return (
+    <div className={`px-4 py-1.5 rounded-full text-white text-[10px] font-black uppercase tracking-widest shadow-xl flex items-center gap-2 ${
+      isLive ? 'bg-red-600' : isCompleted ? 'bg-gray-700' : 'bg-orange-600'
+    }`}>
+      {isLive && (
+        <span className="relative flex h-2 w-2">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-red-200" />
+        </span>
+      )}
+      {status}
+    </div>
+  );
+}
 
 interface Hackathon {
   _id: string;
@@ -41,6 +129,7 @@ interface Hackathon {
   rules?: string[];
   problemStatement?: string;
   totalParticipants: number;
+  totalSubmissions?: number;
 }
 
 const MOCK_HACKATHON: Hackathon = {
@@ -63,7 +152,8 @@ const MOCK_HACKATHON: Hackathon = {
         { title: "Champion", reward: "₹10,000 + Internship", value: 5000 },
         { title: "Runner Up", reward: "₹5,000 + Merchandise", value: 2500 }
     ],
-    totalParticipants: 142
+    totalParticipants: 142,
+    totalSubmissions: 89
 };
 
 export default function HackathonArena() {
@@ -200,10 +290,10 @@ export default function HackathonArena() {
       <div className="container mx-auto px-4 -mt-10 mb-20 relative z-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-0 p-4 md:p-8 rounded-[2rem] md:rounded-[3rem] bg-white/[0.02] border border-white/5 backdrop-blur-3xl shadow-2xl divide-y md:divide-y-0 md:divide-x divide-white/5">
               {[
-                { label: "Total Hackathons", value: "24+", icon: LayoutGrid },
-                { label: "Community Builders", value: "2.5k+", icon: Users },
-                { label: "Rewards Won", value: "₹5L+", icon: Trophy },
-                { label: "Code Submissions", value: "8.2k+", icon: Code },
+                { label: "Total Hackathons", value: `${hackathons.length}`, icon: LayoutGrid },
+                { label: "Community Builders", value: `${hackathons.reduce((sum, h) => sum + (h.totalParticipants || 0), 0)}+`, icon: Users },
+                { label: "Rewards Won", value: `${hackathons.reduce((sum, h: any) => sum + (h.totalXpDistributed || 0), 0)} XP`, icon: Trophy },
+                { label: "Code Submissions", value: `${hackathons.reduce((sum, h) => sum + (h.totalSubmissions || 0), 0)}+`, icon: Code },
               ].map((stat, i) => (
                 <div key={i} className="flex flex-col items-center justify-center py-4 md:p-4">
                     <stat.icon className="w-5 h-5 text-gray-600 mb-2" />
@@ -290,16 +380,35 @@ export default function HackathonArena() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.1 }}
-                        className="group relative p-1 lg:p-1.5 rounded-[2rem] md:rounded-[3.5rem] bg-white/[0.02] border border-white/5 hover:border-orange-500/30 transition-all duration-700 overflow-hidden"
+                        className={`group relative p-1 lg:p-1.5 rounded-[2rem] md:rounded-[3.5rem] bg-white/[0.02] border transition-all duration-700 overflow-hidden ${
+                            h.status === 'live' 
+                              ? 'border-red-500/20 hover:border-red-500/40 shadow-[0_0_60px_-12px_rgba(239,68,68,0.15)]' 
+                              : 'border-white/5 hover:border-orange-500/30'
+                        }`}
                     >
                         <div className="flex flex-col md:flex-row h-full rounded-[1.8rem] md:rounded-[3rem] bg-[#0A0A0A] overflow-hidden">
                             {/* Visual Side */}
-                            <div className="w-full md:w-2/5 relative h-52 md:h-auto overflow-hidden bg-gradient-to-br from-orange-600 to-indigo-600 flex items-center justify-center shrink-0">
+                            <div className={`w-full md:w-2/5 relative h-52 md:h-auto overflow-hidden flex items-center justify-center shrink-0 ${
+                                h.status === 'live' 
+                                  ? 'bg-gradient-to-br from-red-600 via-orange-600 to-amber-500' 
+                                  : h.status === 'completed' 
+                                    ? 'bg-gradient-to-br from-gray-700 to-gray-900'
+                                    : 'bg-gradient-to-br from-orange-600 to-indigo-600'
+                            }`}>
                                 <Code className="w-16 h-16 md:w-20 md:h-20 text-white/20 scale-150 group-hover:scale-[2] group-hover:rotate-12 transition-transform duration-700" />
                                 <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px]" />
-                                <div className="absolute top-4 left-4 md:top-6 md:left-6 px-4 py-1.5 rounded-full bg-orange-600 text-white text-[10px] font-black uppercase tracking-widest shadow-xl">
-                                    {h.status}
+                                <div className="absolute top-4 left-4 md:top-6 md:left-6">
+                                    <StatusBadge status={h.status} />
                                 </div>
+                                {/* Countdown on the visual side */}
+                                {h.status !== 'completed' && (
+                                  <div className="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6">
+                                    <CountdownTimer 
+                                      targetDate={h.status === 'live' ? h.endDate : h.startDate}
+                                      label={h.status === 'live' ? 'Ends In' : 'Starts In'}
+                                    />
+                                  </div>
+                                )}
                             </div>
 
                             {/* Info Side */}
@@ -318,125 +427,28 @@ export default function HackathonArena() {
                                 </div>
 
                                 <div className="space-y-5 md:space-y-6">
-                                    <div className="flex items-center gap-6 md:gap-8 border-y border-white/5 py-4">
+                                    <div className="flex flex-wrap items-center gap-4 md:gap-6 border-y border-white/5 py-4">
                                         <div className="flex flex-col">
-                                            <span className="text-[7px] md:text-[8px] font-black text-gray-600 uppercase tracking-widest">Partici.</span>
+                                            <span className="text-[7px] md:text-[8px] font-black text-gray-600 uppercase tracking-widest">Participants</span>
                                             <span className="text-base md:text-lg font-black text-white">{h.totalParticipants}+</span>
                                         </div>
-                                        <div className="w-px h-8 bg-white/5 md:hidden" />
+                                        <div className="w-px h-8 bg-white/5" />
                                         <div className="flex flex-col">
-                                            <span className="text-[7px] md:text-[8px] font-black text-gray-600 uppercase tracking-widest">Type</span>
-                                            <span className="text-base md:text-lg font-black text-orange-500 uppercase tracking-tight">{h.theme.split(' ')[0]}</span>
+                                            <span className="text-[7px] md:text-[8px] font-black text-gray-600 uppercase tracking-widest">Theme</span>
+                                            <span className="text-sm font-black text-orange-500 uppercase tracking-tight">{h.theme.split(' ').slice(0,2).join(' ')}</span>
                                         </div>
                                         <button 
                                             onClick={() => setExpandedId(expandedId === h._id ? null : h._id)}
-                                            className="ml-auto text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
+                                            className={`ml-auto text-[10px] font-black uppercase tracking-widest transition-all px-4 py-2 rounded-xl border ${
+                                                expandedId === h._id 
+                                                  ? 'bg-orange-600/10 text-orange-500 border-orange-500/30' 
+                                                  : 'bg-white/5 text-gray-500 hover:text-white border-white/5 hover:border-white/20'
+                                            }`}
                                         >
-                                            {expandedId === h._id ? "Close Details" : "Read Problem"}
+                                            {expandedId === h._id ? '✕ Close' : '📄 Read Problem'}
                                         </button>
                                     </div>
 
-                                    <AnimatePresence>
-                                        {expandedId === h._id && (
-                                            <motion.div 
-                                                initial={{ height: 0, opacity: 0 }}
-                                                animate={{ height: "auto", opacity: 1 }}
-                                                exit={{ height: 0, opacity: 0 }}
-                                                className="overflow-hidden space-y-6"
-                                            >
-                                                {/* Problem Statement Section */}
-                                                <div className="space-y-3 p-6 rounded-3xl bg-white/[0.02] border border-white/5">
-                                                    <div className="flex items-center gap-2 text-orange-500">
-                                                        <FileCode size={14} />
-                                                        <span className="text-[10px] font-black uppercase tracking-widest">Problem Statement</span>
-                                                    </div>
-                                                    <p className="text-sm text-gray-400 font-medium leading-relaxed whitespace-pre-wrap bg-white/5 p-6 rounded-2xl border border-white/5 border-dashed">
-                                                        {h.problemStatement || "No problem statement provided for this challenge. Please check back soon or follow the theme: " + h.theme}
-                                                    </p>
-                                                </div>
-
-                                                {/* Timeline & Steps Section */}
-                                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                                                    <div className="space-y-4 p-6 rounded-3xl bg-white/[0.02] border border-white/5">
-                                                        <div className="flex items-center gap-2 text-indigo-500">
-                                                            <Calendar size={14} />
-                                                            <span className="text-[10px] font-black uppercase tracking-widest">Event Timeline</span>
-                                                        </div>
-                                                        <div className="space-y-4">
-                                                            <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                                                                <span className="text-[9px] font-black text-gray-600 uppercase">Registration Deadline</span>
-                                                                <span className="text-[11px] font-black text-white">{new Date(h.registrationDeadline || h.startDate).toLocaleDateString(undefined, { day: 'numeric', month: 'long' })}</span>
-                                                            </div>
-                                                            <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                                                                <span className="text-[9px] font-black text-gray-600 uppercase">Submission Opens</span>
-                                                                <span className="text-[11px] font-black text-white">{new Date(h.startDate).toLocaleDateString(undefined, { day: 'numeric', month: 'long' })}</span>
-                                                            </div>
-                                                            <div className="flex items-center justify-between text-orange-500">
-                                                                <span className="text-[9px] font-black uppercase">Final Deadline</span>
-                                                                <span className="text-[11px] font-black">{new Date(h.endDate).toLocaleDateString(undefined, { day: 'numeric', month: 'long' })}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="space-y-4 p-6 rounded-3xl bg-white/[0.02] border border-white/5">
-                                                        <div className="flex items-center gap-2 text-green-500">
-                                                            <Rocket size={14} />
-                                                            <span className="text-[10px] font-black uppercase tracking-widest">How to Enter</span>
-                                                        </div>
-                                                        <div className="space-y-3">
-                                                            {[
-                                                                { s: "1", t: "Join the Battle", d: "Click the 'Join Battle' button below." },
-                                                                { s: "2", t: "Build your code", d: "Solve the problem using your expertise." },
-                                                                { s: "3", t: "Submit Demo", d: "Provide your GitHub & Live Demo links." }
-                                                            ].map((step, idx) => (
-                                                                <div key={idx} className="flex gap-3">
-                                                                    <div className="w-5 h-5 rounded-full bg-white/5 flex items-center justify-center text-[10px] font-black text-gray-600 shrink-0">{step.s}</div>
-                                                                    <div className="space-y-0.5">
-                                                                        <div className="text-[10px] font-black uppercase text-white leading-tight">{step.t}</div>
-                                                                        <div className="text-[9px] font-bold text-gray-500">{step.d}</div>
-                                                                    </div>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                    {/* Rules Section */}
-                                                    <div className="space-y-3 p-6 rounded-3xl bg-white/[0.02] border border-white/5">
-                                                        <div className="flex items-center gap-2 text-blue-500">
-                                                            <ListChecks size={14} />
-                                                            <span className="text-[10px] font-black uppercase tracking-widest">Ground Rules</span>
-                                                        </div>
-                                                        <ul className="space-y-2">
-                                                            {(h.rules || ["Follow the standard guidelines."]).map((rule, idx) => (
-                                                                <li key={idx} className="text-[11px] text-gray-500 font-medium flex items-start gap-2">
-                                                                    <div className="w-1 h-1 rounded-full bg-blue-500 mt-1.5 shrink-0" />
-                                                                    {rule}
-                                                                </li>
-                                                            ))}
-                                                        </ul>
-                                                    </div>
-
-                                                    {/* Prizes Section */}
-                                                    <div className="space-y-3 p-6 rounded-3xl bg-[#0F0F0F] border border-yellow-500/10">
-                                                        <div className="flex items-center gap-2 text-yellow-500">
-                                                            <Trophy size={14} />
-                                                            <span className="text-[10px] font-black uppercase tracking-widest">Reward Pool</span>
-                                                        </div>
-                                                        <div className="space-y-3">
-                                                            {(h.prizes || []).map((prize, idx) => (
-                                                                <div key={idx} className="flex justify-between items-center border-b border-white/5 pb-2 last:border-0 last:pb-0">
-                                                                    <span className="text-[10px] font-bold text-gray-400 uppercase">{prize.title}</span>
-                                                                    <span className="text-[11px] font-black text-white">{prize.reward}</span>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
 
                                     <div className="flex items-center gap-4">
                                         {h.status === 'completed' ? (
@@ -480,6 +492,166 @@ export default function HackathonArena() {
             )}
           </div>
       </div>
+
+      {/* ═══════ FULLSCREEN DETAILS POPUP MODAL ═══════ */}
+      <AnimatePresence>
+        {expandedId && (() => {
+          const h = hackathons.find(hk => hk._id === expandedId);
+          if (!h) return null;
+          return (
+            <motion.div
+              key="modal-overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8"
+              onClick={() => setExpandedId(null)}
+            >
+              {/* Backdrop */}
+              <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
+              
+              {/* Modal Content */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+                onClick={(e) => e.stopPropagation()}
+                className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-[#0A0A0A] border border-white/10 rounded-[1.5rem] md:rounded-[2.5rem] shadow-2xl"
+              >
+                {/* Modal Header */}
+                <div className="sticky top-0 z-10 bg-[#0A0A0A]/95 backdrop-blur-xl border-b border-white/5 px-5 py-4 md:p-8 flex items-center justify-between">
+                  <div className="space-y-1 pr-4">
+                    <h2 className="text-lg md:text-2xl font-black italic uppercase tracking-tighter leading-tight">{h.title}</h2>
+                    <div className="flex items-center gap-2">
+                      <Zap className="w-3.5 h-3.5 text-orange-500" />
+                      <span className="text-xs md:text-sm font-bold uppercase tracking-wider text-gray-400">{h.theme}</span>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => setExpandedId(null)}
+                    className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all shrink-0"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {/* Modal Body */}
+                <div className="px-5 py-5 md:p-8 space-y-5 md:space-y-6">
+                  {/* Problem Statement */}
+                  <div className="relative p-[1px] rounded-2xl bg-gradient-to-br from-orange-500/30 via-transparent to-orange-500/10">
+                    <div className="space-y-3 md:space-y-4 p-5 md:p-6 rounded-2xl bg-[#0A0A0A]">
+                      <div className="flex items-center gap-2 text-orange-500">
+                        <FileCode size={18} />
+                        <span className="text-xs md:text-sm font-black uppercase tracking-widest">Problem Statement</span>
+                      </div>
+                      <p className="text-sm md:text-base text-gray-300 font-medium leading-relaxed md:leading-[1.9] whitespace-pre-wrap">
+                        {h.problemStatement || "No problem statement provided for this challenge. Please check back soon or follow the theme: " + h.theme}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Timeline & How to Enter */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-4 p-5 md:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+                      <div className="flex items-center gap-2 text-indigo-500">
+                        <Calendar size={16} />
+                        <span className="text-xs md:text-sm font-black uppercase tracking-widest">Event Timeline</span>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                          <span className="text-xs md:text-sm font-bold text-gray-500 uppercase">Registration Deadline</span>
+                          <span className="text-xs md:text-sm font-black text-white">{new Date(h.registrationDeadline || h.startDate).toLocaleDateString(undefined, { day: 'numeric', month: 'long' })}</span>
+                        </div>
+                        <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                          <span className="text-xs md:text-sm font-bold text-gray-500 uppercase">Submission Opens</span>
+                          <span className="text-xs md:text-sm font-black text-white">{new Date(h.startDate).toLocaleDateString(undefined, { day: 'numeric', month: 'long' })}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-orange-500">
+                          <span className="text-xs md:text-sm font-black uppercase">Final Deadline</span>
+                          <span className="text-xs md:text-sm font-black">{new Date(h.endDate).toLocaleDateString(undefined, { day: 'numeric', month: 'long' })}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 p-5 md:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+                      <div className="flex items-center gap-2 text-green-500">
+                        <Rocket size={16} />
+                        <span className="text-xs md:text-sm font-black uppercase tracking-widest">How to Enter</span>
+                      </div>
+                      <div className="space-y-4">
+                        {[
+                          { s: "1", t: "Join the Battle", d: "Click the 'Join Battle' button." },
+                          { s: "2", t: "Build your code", d: "Solve the problem using your expertise." },
+                          { s: "3", t: "Submit Demo", d: "Provide GitHub & Live Demo links." }
+                        ].map((step, idx) => (
+                          <div key={idx} className="flex gap-3 items-start">
+                            <div className="w-7 h-7 rounded-full bg-green-500/10 flex items-center justify-center text-xs font-black text-green-500 shrink-0">{step.s}</div>
+                            <div className="space-y-0.5">
+                              <div className="text-xs md:text-sm font-black uppercase text-white">{step.t}</div>
+                              <div className="text-xs text-gray-500 font-medium">{step.d}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Rules & Prizes */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-3 p-5 md:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+                      <div className="flex items-center gap-2 text-blue-500">
+                        <ListChecks size={16} />
+                        <span className="text-xs md:text-sm font-black uppercase tracking-widest">Ground Rules</span>
+                      </div>
+                      <ul className="space-y-3">
+                        {(h.rules || ["Follow the standard guidelines."]).map((rule: string, idx: number) => (
+                          <li key={idx} className="text-xs md:text-sm text-gray-400 font-medium flex items-start gap-2.5 leading-relaxed">
+                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0" />
+                            {rule}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="space-y-3 p-5 md:p-6 rounded-2xl bg-[#0F0F0F] border border-yellow-500/10">
+                      <div className="flex items-center gap-2 text-yellow-500">
+                        <Trophy size={16} />
+                        <span className="text-xs md:text-sm font-black uppercase tracking-widest">Reward Pool</span>
+                      </div>
+                      <div className="space-y-3">
+                        {(h.prizes || []).map((prize: any, idx: number) => (
+                          <div key={idx} className="flex justify-between items-center border-b border-white/5 pb-3 last:border-0 last:pb-0">
+                            <span className="text-xs md:text-sm font-bold text-gray-400 uppercase">{prize.title}</span>
+                            <span className="text-xs md:text-sm font-black text-white">{prize.reward}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Modal Footer */}
+                <div className="sticky bottom-0 bg-[#0A0A0A]/95 backdrop-blur-xl border-t border-white/5 px-5 py-4 md:p-8 flex gap-3 md:gap-4">
+                  <Button 
+                    onClick={() => { setExpandedId(null); handleJoin(h._id); }}
+                    className="flex-1 h-12 md:h-14 rounded-2xl bg-white text-gray-950 font-black uppercase shadow-xl hover:bg-gray-200 text-sm md:text-base"
+                  >
+                    Join Battle
+                  </Button>
+                  <Button 
+                    onClick={() => setExpandedId(null)}
+                    variant="outline"
+                    className="h-12 md:h-14 rounded-2xl border-white/10 text-white font-black uppercase px-6 md:px-8 hover:bg-white/5 text-sm md:text-base"
+                  >
+                    Close
+                  </Button>
+                </div>
+              </motion.div>
+            </motion.div>
+          );
+        })()}
+      </AnimatePresence>
 
       {/* Rewards Showcase */}
       <div id="rewards" className="container mx-auto px-4 pb-40">

@@ -19,17 +19,29 @@ const SubmissionSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
   }],
+  participationType: {
+    type: String,
+    enum: ["individual", "team"],
+    default: "individual",
+  },
+  teamMemberDetails: [{
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    phone: { type: String, default: "" },
+    role: { type: String, default: "" }, // e.g. "Frontend Dev", "Designer"
+    college: { type: String, default: "" },
+  }],
   projectName: {
     type: String,
-    required: true,
+    default: "",
   },
   projectDescription: {
     type: String,
-    required: true,
+    default: "",
   },
   githubUrl: {
     type: String,
-    required: true,
+    default: "",
   },
   demoUrl: {
     type: String,
@@ -38,8 +50,8 @@ const SubmissionSchema = new Schema({
   techStack: [String],
   status: {
     type: String,
-    enum: ["submitted", "reviewing", "shortlisted", "winner", "participated"],
-    default: "submitted",
+    enum: ["draft", "submitted", "reviewing", "shortlisted", "winner", "participated"],
+    default: "draft",
   },
   score: {
     type: Number,
@@ -57,6 +69,10 @@ const SubmissionSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "CustomCertificate",
     default: null,
+  },
+  xpAwarded: {
+    type: Number,
+    default: 0, // Tracks XP given to prevent duplicates and enable rank change adjustments
   },
   createdAt: {
     type: Date,

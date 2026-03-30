@@ -289,7 +289,7 @@ export default function AdminHackathonsPage() {
                                     ))}
                                     <Button 
                                         onClick={() => setFormH({...formH, rules: [...(formH.rules || []), ""]})}
-                                        className="w-full bg-white/5 border border-dashed border-white/10 hover:bg-white/10 text-xs font-black uppercase h-11"
+                                        className="w-full bg-white/5 border border-dashed border-white/10 hover:bg-white/10 text-white text-xs font-black uppercase h-11"
                                     >
                                         <Plus size={14} className="mr-2" /> Add Rule
                                     </Button>
@@ -301,7 +301,7 @@ export default function AdminHackathonsPage() {
                                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 flex items-center gap-2"><Gift size={14} className="text-yellow-500" /> Reward Pool</label>
                                 <div className="space-y-3">
                                     {(formH.prizes || []).map((prize, idx) => (
-                                        <div key={idx} className="grid grid-cols-[1fr,1fr,40px] gap-2 p-3 rounded-2xl bg-white/5 border border-white/5 relative">
+                                        <div key={idx} className="grid grid-cols-[1fr,1fr,80px,40px] gap-2 p-3 rounded-2xl bg-white/5 border border-white/5 relative">
                                             <div className="space-y-1">
                                                 <span className="text-[8px] font-black text-gray-500 uppercase">Title</span>
                                                 <Input 
@@ -312,7 +312,7 @@ export default function AdminHackathonsPage() {
                                                         setFormH({...formH, prizes: newPrizes});
                                                     }}
                                                     placeholder="Winner"
-                                                    className="bg-transparent border-white/10 h-8 text-[10px]"
+                                                    className="bg-transparent border-white/10 h-8 text-[10px] text-white"
                                                 />
                                             </div>
                                             <div className="space-y-1">
@@ -325,7 +325,21 @@ export default function AdminHackathonsPage() {
                                                         setFormH({...formH, prizes: newPrizes});
                                                     }}
                                                     placeholder="₹5,000 + Swag"
-                                                    className="bg-transparent border-white/10 h-8 text-[10px]"
+                                                    className="bg-transparent border-white/10 h-8 text-[10px] text-white"
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <span className="text-[8px] font-black text-yellow-500 uppercase">XP</span>
+                                                <Input 
+                                                    type="number"
+                                                    value={prize.value || ""} 
+                                                    onChange={e => {
+                                                        const newPrizes = [...(formH.prizes || [])];
+                                                        newPrizes[idx].value = Number(e.target.value);
+                                                        setFormH({...formH, prizes: newPrizes});
+                                                    }}
+                                                    placeholder="300"
+                                                    className="bg-transparent border-yellow-500/20 h-8 text-[10px] text-yellow-400"
                                                 />
                                             </div>
                                             <button 
@@ -341,7 +355,7 @@ export default function AdminHackathonsPage() {
                                     ))}
                                     <Button 
                                         onClick={() => setFormH({...formH, prizes: [...(formH.prizes || []), { title: "", reward: "", value: 0 }]})}
-                                        className="w-full bg-white/5 border border-dashed border-white/10 hover:bg-white/10 text-xs font-black uppercase h-11"
+                                        className="w-full bg-white/5 border border-dashed border-white/10 hover:bg-white/10 text-white text-xs font-black uppercase h-11"
                                     >
                                         <Plus size={14} className="mr-2" /> Add Prize
                                     </Button>
