@@ -3,6 +3,9 @@ import dbConnect from "@/lib/db";
 import Hackathon from "@/models/Hackathon";
 import HackathonSubmission from "@/models/HackathonSubmission";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET(req: Request) {
   try {
     await dbConnect();
