@@ -14,10 +14,16 @@ import {
   Loader2, 
   CheckCircle, 
   Clock, 
-  Edit,
   ExternalLink,
-  Award
+  Award,
+  X,
+  FileCode,
+  ListChecks,
+  Gift,
+  Files,
+  Edit
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -29,6 +35,10 @@ interface Hackathon {
   endDate: string;
   status: "upcoming" | "live" | "completed";
   registeredUsers: string[];
+  problemStatement?: string;
+  prizes?: { title: string; reward: string; value: number }[];
+  rules?: string[];
+  simulatorPrerequisite?: boolean;
 }
 
 export default function AdminHackathonsPage() {
@@ -38,15 +48,20 @@ export default function AdminHackathonsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"general" | "details" | "dates">("general");
   
   const initialForm = {
     title: "",
     theme: "",
     description: "",
+    problemStatement: "",
     startDate: "",
     endDate: "",
     registrationDeadline: "",
-    bannerImage: ""
+    bannerImage: "",
+    prizes: [] as { title: string; reward: string; value: number }[],
+    rules: [] as string[],
+    simulatorPrerequisite: false
   };
 
   const [formH, setFormH] = useState(initialForm);
@@ -125,11 +140,16 @@ export default function AdminHackathonsPage() {
         title: h.title,
         theme: h.theme,
         description: h.description || "",
+        problemStatement: h.problemStatement || "",
         startDate: h.startDate.split('T')[0],
         endDate: h.endDate.split('T')[0],
         registrationDeadline: h.registrationDeadline ? h.registrationDeadline.split('T')[0] : "",
-        bannerImage: h.bannerImage || ""
+        bannerImage: h.bannerImage || "",
+        prizes: h.prizes || [],
+        rules: h.rules || [],
+        simulatorPrerequisite: h.simulatorPrerequisite || false
     });
+    setActiveTab("general");
     setIsModalOpen(true);
   };
 
@@ -167,44 +187,215 @@ export default function AdminHackathonsPage() {
                     {isEditing ? "Update the details for this competition." : "Define the rules, themes, and prizes for the upcoming battle."}
                   </CardDescription>
               </CardHeader>
-              <CardContent className="px-0 space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Event Title</label>
-                          <Input value={formH.title} onChange={e => setFormH({...formH, title: e.target.value})} placeholder="e.g., MERN Masterclass" className="bg-white/[0.03] border-white/10 h-12 text-white" />
-                      </div>
-                      <div className="space-y-2">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Theme / Domain</label>
-                          <Input value={formH.theme} onChange={e => setFormH({...formH, theme: e.target.value})} placeholder="e.g., AI & ML" className="bg-white/[0.03] border-white/10 h-12 text-white" />
-                      </div>
+              <CardContent className="px-0 pt-6 space-y-8">
+                  {/* Tab Navigation */}
+                  <div className="flex items-center gap-2 border-b border-white/5 pb-4">
+                      {[ 
+                        { id: 'general', icon: FileText, label: 'General' },
+                        { id: 'details', icon: FileCode, label: 'Content' },
+                        { id: 'dates', icon: Calendar, label: 'Schedule' }
+                      ].map((tab) => (
+                        <button
+                          key={tab.id}
+                          onClick={() => setActiveTab(tab.id as any)}
+                          className={`flex items-center gap-2 px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                            activeTab === tab.id 
+                            ? 'bg-orange-600 text-white shadow-lg shadow-orange-500/20' 
+                            : 'bg-white/5 text-gray-500 hover:bg-white/10'
+                          }`}
+                        >
+                          <tab.icon size={14} />
+                          {tab.label}
+                        </button>
+                      ))}
                   </div>
-                  <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Description</label>
-                      <textarea 
-                        value={formH.description} onChange={e => setFormH({...formH, description: e.target.value})}
-                        className="w-full bg-white/[0.03] border border-white/10 rounded-xl p-4 min-h-[150px] outline-none text-white focus:border-orange-500/50" 
-                        placeholder="Detail about the hackathon..."
-                      />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="space-y-2">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Start Date</label>
-                          <Input type="date" value={formH.startDate} onChange={e => setFormH({...formH, startDate: e.target.value})} className="bg-white/[0.03] border-white/10 h-12 text-white" />
-                      </div>
-                      <div className="space-y-2">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">End Date</label>
-                          <Input type="date" value={formH.endDate} onChange={e => setFormH({...formH, endDate: e.target.value})} className="bg-white/[0.03] border-white/10 h-12 text-white" />
-                      </div>
-                      <div className="space-y-2">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Reg. Deadline</label>
-                          <Input type="date" value={formH.registrationDeadline} onChange={e => setFormH({...formH, registrationDeadline: e.target.value})} className="bg-white/[0.03] border-white/10 h-12 text-white" />
-                      </div>
-                  </div>
-                  <div className="flex gap-4 pt-4">
-                      <Button onClick={handleSave} className="bg-white text-black font-black flex-1 h-14 rounded-2xl hover:bg-gray-200 uppercase tracking-tighter">
+
+                  <AnimatePresence mode="wait">
+                    {activeTab === 'general' && (
+                      <motion.div 
+                        key="general"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="space-y-6"
+                      >
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div className="space-y-2">
+                                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 flex items-center gap-2"><FileText size={10} /> Event Title</label>
+                                  <Input value={formH.title} onChange={e => setFormH({...formH, title: e.target.value})} placeholder="e.g., MERN Masterclass" className="bg-white/[0.03] border-white/10 h-12 text-white placeholder:text-gray-700 font-bold" />
+                              </div>
+                              <div className="space-y-2">
+                                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 flex items-center gap-2"><Trophy size={10} /> Theme / Domain</label>
+                                  <Input value={formH.theme} onChange={e => setFormH({...formH, theme: e.target.value})} placeholder="e.g., AI & ML" className="bg-white/[0.03] border-white/10 h-12 text-white placeholder:text-gray-700 font-bold" />
+                              </div>
+                          </div>
+                          <div className="space-y-2">
+                              <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 flex items-center gap-2"><Files size={10} /> Short Description</label>
+                              <textarea 
+                                value={formH.description} onChange={e => setFormH({...formH, description: e.target.value})}
+                                className="w-full bg-white/[0.03] border border-white/10 rounded-xl p-4 min-h-[100px] outline-none text-white focus:border-orange-500/50 font-medium text-sm" 
+                                placeholder="A catchy brief about the event..."
+                              />
+                          </div>
+                      </motion.div>
+                    )}
+
+                    {activeTab === 'details' && (
+                      <motion.div 
+                        key="details"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="space-y-8"
+                      >
+                          {/* Problem Statement */}
+                          <div className="space-y-4">
+                              <div className="flex items-center justify-between">
+                                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 flex items-center gap-2"><FileCode size={14} className="text-orange-500" /> Problem Statement</label>
+                              </div>
+                              <textarea 
+                                value={formH.problemStatement} onChange={e => setFormH({...formH, problemStatement: e.target.value})}
+                                className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-6 min-h-[250px] outline-none text-white focus:border-orange-500/50 font-medium text-sm leading-relaxed" 
+                                placeholder="Describe the problem, requirements, and expected outcome. Be as detailed as possible..."
+                              />
+                          </div>
+
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                             {/* Rules Management */}
+                             <div className="space-y-4">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 flex items-center gap-2"><ListChecks size={14} className="text-blue-500" /> Ground Rules</label>
+                                <div className="space-y-3">
+                                    {(formH.rules || []).map((rule, idx) => (
+                                        <div key={idx} className="flex gap-2">
+                                            <Input 
+                                                value={rule} 
+                                                onChange={e => {
+                                                    const newRules = [...(formH.rules || [])];
+                                                    newRules[idx] = e.target.value;
+                                                    setFormH({...formH, rules: newRules});
+                                                }}
+                                                className="bg-white/5 border-white/5 h-11"
+                                            />
+                                            <Button 
+                                                onClick={() => {
+                                                    const newRules = (formH.rules || []).filter((_, i) => i !== idx);
+                                                    setFormH({...formH, rules: newRules});
+                                                }}
+                                                variant="ghost" className="text-red-500 bg-red-500/10 hover:bg-red-500/20 px-3"
+                                            >
+                                                <X size={14} />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                    <Button 
+                                        onClick={() => setFormH({...formH, rules: [...(formH.rules || []), ""]})}
+                                        className="w-full bg-white/5 border border-dashed border-white/10 hover:bg-white/10 text-xs font-black uppercase h-11"
+                                    >
+                                        <Plus size={14} className="mr-2" /> Add Rule
+                                    </Button>
+                                </div>
+                             </div>
+
+                             {/* Prizes Management */}
+                             <div className="space-y-4">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 flex items-center gap-2"><Gift size={14} className="text-yellow-500" /> Reward Pool</label>
+                                <div className="space-y-3">
+                                    {(formH.prizes || []).map((prize, idx) => (
+                                        <div key={idx} className="grid grid-cols-[1fr,1fr,40px] gap-2 p-3 rounded-2xl bg-white/5 border border-white/5 relative">
+                                            <div className="space-y-1">
+                                                <span className="text-[8px] font-black text-gray-500 uppercase">Title</span>
+                                                <Input 
+                                                    value={prize.title} 
+                                                    onChange={e => {
+                                                        const newPrizes = [...(formH.prizes || [])];
+                                                        newPrizes[idx].title = e.target.value;
+                                                        setFormH({...formH, prizes: newPrizes});
+                                                    }}
+                                                    placeholder="Winner"
+                                                    className="bg-transparent border-white/10 h-8 text-[10px]"
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <span className="text-[8px] font-black text-gray-500 uppercase">Reward</span>
+                                                <Input 
+                                                    value={prize.reward} 
+                                                    onChange={e => {
+                                                        const newPrizes = [...(formH.prizes || [])];
+                                                        newPrizes[idx].reward = e.target.value;
+                                                        setFormH({...formH, prizes: newPrizes});
+                                                    }}
+                                                    placeholder="₹5,000 + Swag"
+                                                    className="bg-transparent border-white/10 h-8 text-[10px]"
+                                                />
+                                            </div>
+                                            <button 
+                                                onClick={() => {
+                                                    const newPrizes = (formH.prizes || []).filter((_, i) => i !== idx);
+                                                    setFormH({...formH, prizes: newPrizes});
+                                                }}
+                                                className="text-red-500 hover:text-red-400 self-center"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                    <Button 
+                                        onClick={() => setFormH({...formH, prizes: [...(formH.prizes || []), { title: "", reward: "", value: 0 }]})}
+                                        className="w-full bg-white/5 border border-dashed border-white/10 hover:bg-white/10 text-xs font-black uppercase h-11"
+                                    >
+                                        <Plus size={14} className="mr-2" /> Add Prize
+                                    </Button>
+                                </div>
+                             </div>
+                          </div>
+                      </motion.div>
+                    )}
+
+                    {activeTab === 'dates' && (
+                      <motion.div 
+                        key="dates"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="space-y-6"
+                      >
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                              <div className="space-y-2">
+                                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 flex items-center gap-2"><Clock size={10} /> Start Date</label>
+                                  <Input type="date" value={formH.startDate} onChange={e => setFormH({...formH, startDate: e.target.value})} className="bg-white/[0.03] border-white/10 h-12 text-white" />
+                              </div>
+                              <div className="space-y-2">
+                                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 flex items-center gap-2"><Clock size={10} /> End Date</label>
+                                  <Input type="date" value={formH.endDate} onChange={e => setFormH({...formH, endDate: e.target.value})} className="bg-white/[0.03] border-white/10 h-12 text-white" />
+                              </div>
+                              <div className="space-y-2">
+                                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 flex items-center gap-2"><Clock size={10} /> Reg. Deadline</label>
+                                  <Input type="date" value={formH.registrationDeadline} onChange={e => setFormH({...formH, registrationDeadline: e.target.value})} className="bg-white/[0.03] border-white/10 h-12 text-white" />
+                              </div>
+                          </div>
+                          <div className="p-6 rounded-[2rem] bg-orange-600/5 border border-orange-600/10 space-y-4">
+                              <div className="flex items-center justify-between">
+                                  <div className="space-y-1">
+                                      <h4 className="text-sm font-black uppercase">Simulator Prerequisite</h4>
+                                      <p className="text-[10px] text-gray-500 font-medium">Require participants to pass a specific simulator test before joining.</p>
+                                  </div>
+                                  <button 
+                                      onClick={() => setFormH({...formH, simulatorPrerequisite: !formH.simulatorPrerequisite})}
+                                      className={`w-12 h-6 rounded-full transition-all relative ${formH.simulatorPrerequisite ? 'bg-orange-600' : 'bg-white/10'}`}
+                                  >
+                                      <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${formH.simulatorPrerequisite ? 'left-7' : 'left-1'}`} />
+                                  </button>
+                              </div>
+                          </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  <div className="flex flex-col sm:flex-row gap-4 pt-8 border-t border-white/5">
+                      <Button onClick={handleSave} className="bg-white text-black font-black flex-1 h-14 rounded-[1.5rem] hover:bg-orange-500 hover:text-white transition-all uppercase tracking-tighter">
                           {isEditing ? "Update Event" : "Deploy Hackathon"}
                       </Button>
-                      <Button onClick={() => setIsModalOpen(false)} variant="outline" className="border-white/10 text-white font-black flex-1 h-14 rounded-2xl hover:bg-white/5 uppercase tracking-tighter">
+                      <Button onClick={() => setIsModalOpen(false)} variant="outline" className="border-white/10 text-white font-black flex-1 h-14 rounded-[1.5rem] hover:bg-white/5 uppercase tracking-tighter">
                           Cancel
                       </Button>
                   </div>

@@ -17,7 +17,9 @@ import {
   Lock,
   Loader2,
   Sparkles,
-  Rocket
+  Rocket,
+  FileCode,
+  ListChecks
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -34,7 +36,10 @@ interface Hackathon {
   startDate: string;
   endDate: string;
   status: "upcoming" | "live" | "completed";
+  registrationDeadline: string;
   prizes: { title: string; reward: string; value: number }[];
+  rules?: string[];
+  problemStatement?: string;
   totalParticipants: number;
 }
 
@@ -46,7 +51,14 @@ const MOCK_HACKATHON: Hackathon = {
     theme: "Modern Interface Design",
     startDate: new Date().toISOString(),
     endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    registrationDeadline: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
     status: "live",
+    problemStatement: "The current Webory interface is functional but lacks the 'premium' feel that modern developers expect. We want you to redesign the landing page and dashboard using Glassmorphism, Framer Motion, and a cohesive design system. Focus on performance and micro-interactions.",
+    rules: [
+        "Use React/Next.js and TailwindCSS.",
+        "Must be fully responsive.",
+        "Include at least 3 custom animations."
+    ],
     prizes: [
         { title: "Champion", reward: "₹10,000 + Internship", value: 5000 },
         { title: "Runner Up", reward: "₹5,000 + Merchandise", value: 2500 }
@@ -59,6 +71,7 @@ export default function HackathonArena() {
   const [mySubmissions, setMySubmissions] = useState<Array<any>>([]);
   const [loading, setLoading] = useState(true);
   const [joiningId, setJoiningId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -312,10 +325,118 @@ export default function HackathonArena() {
                                         </div>
                                         <div className="w-px h-8 bg-white/5 md:hidden" />
                                         <div className="flex flex-col">
-                                            <span className="text-[7px] md:text-[8px] font-black text-gray-600 uppercase tracking-widest">Time Left</span>
-                                            <span className="text-base md:text-lg font-black text-orange-500">2d 14h</span>
+                                            <span className="text-[7px] md:text-[8px] font-black text-gray-600 uppercase tracking-widest">Type</span>
+                                            <span className="text-base md:text-lg font-black text-orange-500 uppercase tracking-tight">{h.theme.split(' ')[0]}</span>
                                         </div>
+                                        <button 
+                                            onClick={() => setExpandedId(expandedId === h._id ? null : h._id)}
+                                            className="ml-auto text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
+                                        >
+                                            {expandedId === h._id ? "Close Details" : "Read Problem"}
+                                        </button>
                                     </div>
+
+                                    <AnimatePresence>
+                                        {expandedId === h._id && (
+                                            <motion.div 
+                                                initial={{ height: 0, opacity: 0 }}
+                                                animate={{ height: "auto", opacity: 1 }}
+                                                exit={{ height: 0, opacity: 0 }}
+                                                className="overflow-hidden space-y-6"
+                                            >
+                                                {/* Problem Statement Section */}
+                                                <div className="space-y-3 p-6 rounded-3xl bg-white/[0.02] border border-white/5">
+                                                    <div className="flex items-center gap-2 text-orange-500">
+                                                        <FileCode size={14} />
+                                                        <span className="text-[10px] font-black uppercase tracking-widest">Problem Statement</span>
+                                                    </div>
+                                                    <p className="text-sm text-gray-400 font-medium leading-relaxed whitespace-pre-wrap bg-white/5 p-6 rounded-2xl border border-white/5 border-dashed">
+                                                        {h.problemStatement || "No problem statement provided for this challenge. Please check back soon or follow the theme: " + h.theme}
+                                                    </p>
+                                                </div>
+
+                                                {/* Timeline & Steps Section */}
+                                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                                    <div className="space-y-4 p-6 rounded-3xl bg-white/[0.02] border border-white/5">
+                                                        <div className="flex items-center gap-2 text-indigo-500">
+                                                            <Calendar size={14} />
+                                                            <span className="text-[10px] font-black uppercase tracking-widest">Event Timeline</span>
+                                                        </div>
+                                                        <div className="space-y-4">
+                                                            <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                                                                <span className="text-[9px] font-black text-gray-600 uppercase">Registration Deadline</span>
+                                                                <span className="text-[11px] font-black text-white">{new Date(h.registrationDeadline || h.startDate).toLocaleDateString(undefined, { day: 'numeric', month: 'long' })}</span>
+                                                            </div>
+                                                            <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                                                                <span className="text-[9px] font-black text-gray-600 uppercase">Submission Opens</span>
+                                                                <span className="text-[11px] font-black text-white">{new Date(h.startDate).toLocaleDateString(undefined, { day: 'numeric', month: 'long' })}</span>
+                                                            </div>
+                                                            <div className="flex items-center justify-between text-orange-500">
+                                                                <span className="text-[9px] font-black uppercase">Final Deadline</span>
+                                                                <span className="text-[11px] font-black">{new Date(h.endDate).toLocaleDateString(undefined, { day: 'numeric', month: 'long' })}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="space-y-4 p-6 rounded-3xl bg-white/[0.02] border border-white/5">
+                                                        <div className="flex items-center gap-2 text-green-500">
+                                                            <Rocket size={14} />
+                                                            <span className="text-[10px] font-black uppercase tracking-widest">How to Enter</span>
+                                                        </div>
+                                                        <div className="space-y-3">
+                                                            {[
+                                                                { s: "1", t: "Join the Battle", d: "Click the 'Join Battle' button below." },
+                                                                { s: "2", t: "Build your code", d: "Solve the problem using your expertise." },
+                                                                { s: "3", t: "Submit Demo", d: "Provide your GitHub & Live Demo links." }
+                                                            ].map((step, idx) => (
+                                                                <div key={idx} className="flex gap-3">
+                                                                    <div className="w-5 h-5 rounded-full bg-white/5 flex items-center justify-center text-[10px] font-black text-gray-600 shrink-0">{step.s}</div>
+                                                                    <div className="space-y-0.5">
+                                                                        <div className="text-[10px] font-black uppercase text-white leading-tight">{step.t}</div>
+                                                                        <div className="text-[9px] font-bold text-gray-500">{step.d}</div>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                    {/* Rules Section */}
+                                                    <div className="space-y-3 p-6 rounded-3xl bg-white/[0.02] border border-white/5">
+                                                        <div className="flex items-center gap-2 text-blue-500">
+                                                            <ListChecks size={14} />
+                                                            <span className="text-[10px] font-black uppercase tracking-widest">Ground Rules</span>
+                                                        </div>
+                                                        <ul className="space-y-2">
+                                                            {(h.rules || ["Follow the standard guidelines."]).map((rule, idx) => (
+                                                                <li key={idx} className="text-[11px] text-gray-500 font-medium flex items-start gap-2">
+                                                                    <div className="w-1 h-1 rounded-full bg-blue-500 mt-1.5 shrink-0" />
+                                                                    {rule}
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+
+                                                    {/* Prizes Section */}
+                                                    <div className="space-y-3 p-6 rounded-3xl bg-[#0F0F0F] border border-yellow-500/10">
+                                                        <div className="flex items-center gap-2 text-yellow-500">
+                                                            <Trophy size={14} />
+                                                            <span className="text-[10px] font-black uppercase tracking-widest">Reward Pool</span>
+                                                        </div>
+                                                        <div className="space-y-3">
+                                                            {(h.prizes || []).map((prize, idx) => (
+                                                                <div key={idx} className="flex justify-between items-center border-b border-white/5 pb-2 last:border-0 last:pb-0">
+                                                                    <span className="text-[10px] font-bold text-gray-400 uppercase">{prize.title}</span>
+                                                                    <span className="text-[11px] font-black text-white">{prize.reward}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
 
                                     <div className="flex items-center gap-4">
                                         {h.status === 'completed' ? (

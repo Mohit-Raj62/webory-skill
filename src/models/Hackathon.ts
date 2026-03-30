@@ -14,6 +14,10 @@ const HackathonSchema = new Schema({
     type: String,
     required: true,
   },
+  problemStatement: {
+    type: String,
+    default: "",
+  },
   bannerImage: {
     type: String,
     default: "",
