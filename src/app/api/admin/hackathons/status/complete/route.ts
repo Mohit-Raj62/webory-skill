@@ -81,7 +81,7 @@ export async function POST(req: Request) {
           description,
           certificateId: certId,
           certificateKey: certKey,
-          issuedAt: new Date(),
+          issuedAt: hackathon.endDate, // Fixed to the event end date, rather than the moment admin clicks 'Finalize'
         });
         sub.certificateId = certificate._id;
       } else {
