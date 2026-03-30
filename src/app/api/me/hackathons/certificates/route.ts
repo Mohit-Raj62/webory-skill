@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import HackathonSubmission from "@/models/HackathonSubmission";
 import CustomCertificate from "@/models/CustomCertificate";
 import Hackathon from "@/models/Hackathon";
 import { getDataFromToken } from "@/helpers/getDataFromToken";
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
     await dbConnect();
     
@@ -23,7 +23,8 @@ export async function GET(req: Request) {
     })
     .populate("hackathonId", "title theme bannerImage startDate status")
     .populate("certificateId")
-    .sort({ createdAt: -1 });
+    .sort({ createdAt: -1 })
+    .lean();
 
     return NextResponse.json({
       success: true,

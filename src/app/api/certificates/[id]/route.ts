@@ -1,11 +1,12 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import CustomCertificate from "@/models/CustomCertificate";
 import HackathonSubmission from "@/models/HackathonSubmission";
 import Hackathon from "@/models/Hackathon";
+import User from "@/models/User";
 
 export async function GET(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -35,6 +36,7 @@ export async function GET(
       },
     });
   } catch (error: any) {
+    console.error("CERTIFICATE_FETCH_ERROR:", error);
     return NextResponse.json(
       { error: "Internal Server Error", message: error.message },
       { status: 500 }
