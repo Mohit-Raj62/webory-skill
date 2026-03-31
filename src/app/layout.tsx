@@ -4,16 +4,15 @@ import { Suspense } from "react";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ProgressBar } from "@/components/ui/progress-bar";
-import { InactivityLogout } from "@/components/auth/inactivity-logout";
 import { SessionProvider } from "@/components/auth/session-provider";
 import { Toaster } from "sonner";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import SupportChatbotWrapper from "@/components/SupportChatbotWrapper";
 import Script from "next/script";
-import { MobileBottomNav } from "@/components/ui/MobileBottomNav";
-import { PWAUpdater } from "@/components/PWAUpdater";
-import { PushSubscriptionHandler } from "@/components/PushSubscriptionHandler";
-import { PushNotificationBanner } from "@/components/PushNotificationBanner";
+import dynamic from "next/dynamic";
+
+// Defer non-critical global components to boost initial performance and LCP
+import { GlobalClientBootstrap } from "@/components/GlobalClientBootstrap";
+
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
@@ -167,16 +166,11 @@ export default function RootLayout({
                     <ProgressBar />
                 </Suspense>
                 <SessionProvider>
-                    <InactivityLogout />
+                    <GlobalClientBootstrap />
                     {children}
                 </SessionProvider>
-                <MobileBottomNav />
                 <Toaster position="top-right" richColors />
                 <SpeedInsights />
-                <SupportChatbotWrapper />
-                <PWAUpdater />
-                <PushSubscriptionHandler />
-                <PushNotificationBanner />
             </body>
         </html>
     );

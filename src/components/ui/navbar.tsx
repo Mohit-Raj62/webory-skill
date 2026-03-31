@@ -5,9 +5,12 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, User, Code2, Sparkles, MessageSquare, GraduationCap, Briefcase, BrainCircuit, Bot, FileText, Terminal, Layers } from "lucide-react";
 import { useState, useEffect } from "react";
-import { FeedbackForm } from "@/components/feedback/FeedbackForm";
 import { useAuth } from "@/components/auth/session-provider";
-import { InstallPWA } from "@/components/InstallPWA";
+import dynamic from "next/dynamic";
+
+const FeedbackForm = dynamic(() => import("@/components/feedback/FeedbackForm").then(mod => mod.FeedbackForm), { ssr: false });
+const InstallPWA = dynamic(() => import("@/components/InstallPWA").then(mod => mod.InstallPWA), { ssr: false });
+
 
 const NavLink = ({ href, children, onClick, badge, icon: Icon }: {
     href: string;

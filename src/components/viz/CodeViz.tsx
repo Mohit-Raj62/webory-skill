@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import Editor from "@monaco-editor/react";
+import dynamic from "next/dynamic";
+const Editor = dynamic(() => import("@monaco-editor/react").then(mod => mod.default), { ssr: false });
 import ReactMarkdown from "react-markdown";
 import { 
   Play, 

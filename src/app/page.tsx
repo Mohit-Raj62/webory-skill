@@ -27,6 +27,9 @@ import Course from "@/models/Course";
 // Alternatively we can use revalidate = 60 (seconds) for performance
 export const revalidate = 60;
 
+import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
 export default async function Home() {
     let userCount = 0;
     let internshipCount = 0;
@@ -34,20 +37,17 @@ export default async function Home() {
     let popularCourses: any[] = [];
     try {
         await dbConnect();
-        // Fetch all data in parallel
         const [users, internships, courses, popular] = await Promise.all([
             User.countDocuments(),
-            Internship.countDocuments({ status: 'active' }),
+            Internship.countDocuments(), // Simplified as per logic
             Course.countDocuments({ isAvailable: true }),
             Course.find({ isPopular: true, isAvailable: true }).select('title level studentsCount color icon').limit(4).lean(),
         ]);
         
         userCount = users;
-        // internshipCount = internships; 
-        // Logic: specific count.
-        internshipCount = await Internship.countDocuments(); // Keeping total count for now as per previous step
+        internshipCount = internships; 
         courseCount = courses;
-        popularCourses = JSON.parse(JSON.stringify(popular)); // Serialize mongo objects
+        popularCourses = JSON.parse(JSON.stringify(popular));
 
     } catch (error) {
         console.error("Failed to fetch counts for landing page", error);
@@ -57,20 +57,59 @@ export default async function Home() {
         <main className="min-h-screen">
             <Navbar />
             <Hero initialUserCount={userCount} initialInternshipCount={internshipCount} initialCourseCount={courseCount} />
-            <FreeExperienceHighlight />
-            <Features />
-            <AIRoadmapFlow />
-            <DevLabPreview />
-            <AINexusShowcase />
-            <HackathonPreview />
+            
+            <Suspense fallback={<div className="h-40 bg-white/5 animate-pulse" />}>
+                <FreeExperienceHighlight />
+            </Suspense>
 
-            <EnrolledCourses />
-            <AppliedInternships />
-            <CoursesPreview popularCourses={popularCourses} />
-            <Internships />
-            <TrustProofSection />
-            <TestimonialsSection />
-            <FAQ />
+            <Suspense fallback={<div className="h-96 bg-white/5 animate-pulse" />}>
+                <Features />
+            </Suspense>
+
+            <Suspense fallback={<div className="h-96 bg-white/5 animate-pulse" />}>
+                <AIRoadmapFlow />
+            </Suspense>
+
+            <Suspense fallback={<div className="h-96 bg-white/5 animate-pulse" />}>
+                <DevLabPreview />
+            </Suspense>
+
+            <Suspense fallback={<div className="h-96 bg-white/5 animate-pulse" />}>
+                <AINexusShowcase />
+            </Suspense>
+
+            <Suspense fallback={<div className="h-96 bg-white/5 animate-pulse" />}>
+                <HackathonPreview />
+            </Suspense>
+
+            <Suspense fallback={<div className="h-64 bg-white/5 animate-pulse" />}>
+                <EnrolledCourses />
+            </Suspense>
+
+            <Suspense fallback={<div className="h-64 bg-white/5 animate-pulse" />}>
+                <AppliedInternships />
+            </Suspense>
+
+            <Suspense fallback={<div className="h-[600px] bg-white/5 animate-pulse" />}>
+                <CoursesPreview popularCourses={popularCourses} />
+            </Suspense>
+
+            <Suspense fallback={<div className="h-96 bg-white/5 animate-pulse" />}>
+                <Internships />
+            </Suspense>
+
+            <Suspense fallback={<div className="h-40 bg-white/5 animate-pulse" />}>
+                <TrustProofSection />
+            </Suspense>
+
+            <Suspense fallback={<div className="h-80 bg-white/5 animate-pulse" />}>
+                <TestimonialsSection />
+            </Suspense>
+
+            <Suspense fallback={<div className="h-80 bg-white/5 animate-pulse" />}>
+                <FAQ />
+            </Suspense>
+
             <Footer />
         </main>
     );

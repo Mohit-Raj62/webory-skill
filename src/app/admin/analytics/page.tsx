@@ -1,132 +1,108 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import dynamic from "next/dynamic";
 import { ArrowLeft, TrendingUp, Users, DollarSign, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { getUser } from "@/lib/get-user";
+import { redirect } from "next/navigation";
+import dbConnect from "@/lib/db";
+import User from "@/models/User";
+import Course from "@/models/Course";
+import Internship from "@/models/Internship";
+import Application from "@/models/Application";
+import Enrollment from "@/models/Enrollment";
+import Settings from "@/models/Settings";
+import { AnalyticsCharts } from "@/components/admin/AnalyticsCharts";
 
-const Line = dynamic(() => import("react-chartjs-2").then(mod => mod.Line), { ssr: false });
-const Bar = dynamic(() => import("react-chartjs-2").then(mod => mod.Bar), { ssr: false });
-const Doughnut = dynamic(() => import("react-chartjs-2").then(mod => mod.Doughnut), { ssr: false });
+export default async function AdminAnalyticsPage() {
+  const user = await getUser();
 
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-} from "chart.js";
-
-// Register ChartJS components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement
-);
-
-export default function AnalyticsPage() {
-  const [stats, setStats] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/admin/stats")
-      .then((res) => res.json())
-      .then((data) => setStats(data))
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="p-8 flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
+  if (!user || user.role !== "admin") {
+    redirect("/login?redirect=/admin/analytics");
   }
 
-  // --- Chart Configuration ---
-  const chartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "top" as const,
-        labels: { color: "#ccc" }, // Dark mode text
-      },
-      title: {
-        display: false,
-      },
-    },
-    scales: {
-      y: {
-        grid: { color: "rgba(255, 255, 255, 0.1)" },
-        ticks: { color: "#ccc" },
-      },
-      x: {
-        grid: { display: false },
-        ticks: { color: "#ccc" },
-      },
-    },
-  };
+  await dbConnect();
 
-  // Process Real Data for Charts
-  const processChartData = (data: any[], type: 'count' | 'total') => {
-      const labels = [];
-      const values = [];
-      const today = new Date();
-      
-      for(let i = 6; i >= 0; i--) {
-          const d = new Date(today);
-          d.setDate(d.getDate() - i);
-          const dateStr = d.toISOString().split('T')[0];
-          labels.push(dateStr); // e.g., "2023-10-27"
-          
-          const found = data?.find((item: any) => item._id === dateStr);
-          values.push(found ? found[type] : 0);
-      }
-      return { labels, values };
-  };
+  // Replicating the logic from /api/admin/stats to execute on the server
+  const [
+    totalUsers,
+    totalCourses,
+    totalInternships,
+    totalApplications,
+    recentEnrollmentsCount,
+    pwaSetting,
+    courseRevenueResult,
+    internshipRevenueResult,
+  ] = await Promise.all([
+    User.countDocuments(),
+    Course.countDocuments(),
+    Internship.countDocuments(),
+    Application.countDocuments(),
+    Enrollment.countDocuments({
+      enrolledAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+    }),
+    Settings.findOne({ key: "pwa_installs" }).lean(),
+    Enrollment.aggregate([
+      { $lookup: { from: "courses", localField: "course", foreignField: "_id", as: "courseData" } },
+      { $unwind: { path: "$courseData", preserveNullAndEmptyArrays: true } },
+      { $group: { _id: null, total: { $sum: { $ifNull: ["$courseData.price", 0] } } } },
+    ]),
+    Application.aggregate([
+      { $group: { _id: null, total: { $sum: { $ifNull: ["$amountPaid", 0] } } } },
+    ]),
+  ]);
 
-  const revenueChart = processChartData(stats?.charts?.revenueTrend || [], 'total');
-  const userChart = processChartData(stats?.charts?.userGrowth || [], 'count');
+  const pwaInstalls = (pwaSetting as any)?.value || 0;
+  const courseRevenue = courseRevenueResult[0]?.total || 0;
+  const internshipRevenue = internshipRevenueResult[0]?.total || 0;
+  const revenue = courseRevenue + internshipRevenue;
 
-  const revenueData = {
-    labels: revenueChart.labels,
-    datasets: [
-      {
-        label: "Revenue (₹)",
-        data: revenueChart.values,
-        borderColor: "rgb(34, 197, 94)",
-        backgroundColor: "rgba(34, 197, 94, 0.5)",
-        tension: 0.4,
-      },
-    ],
-  };
+  const enhancedTopCourses = await Course.aggregate([
+      { $sort: { views: -1 } },
+      { $limit: 5 },
+      { $lookup: { from: "enrollments", localField: "_id", foreignField: "course", as: "enrollmentData" } },
+      { $addFields: { totalEnrollments: { $size: "$enrollmentData" }, completedEnrollments: { $size: { $filter: { input: "$enrollmentData", as: "e", cond: { $eq: ["$$e.completed", true] } } } } } },
+      { $project: { title: 1, views: 1, studentsCount: 1, price: 1, completionRate: { $cond: [{ $gt: ["$totalEnrollments", 0] }, { $round: [{ $multiply: [{ $divide: ["$completedEnrollments", "$totalEnrollments"] }, 100] }, 0] }, 0] } } }
+  ]);
 
-  const userGrowthData = {
-    labels: userChart.labels,
-    datasets: [
-      {
-        label: "New Users",
-        data: userChart.values,
-        backgroundColor: "rgba(59, 130, 246, 0.8)",
-      },
-    ],
-  };
+  const revenueDistributionRaw = await Enrollment.aggregate([
+    { $lookup: { from: "courses", localField: "course", foreignField: "_id", as: "courseDetails" } },
+    { $unwind: "$courseDetails" },
+    { $group: { _id: "$courseDetails.title", total: { $sum: "$courseDetails.price" } } },
+    { $sort: { total: -1 } },
+    { $limit: 5 },
+  ]);
+
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+  const userGrowthRaw = await User.aggregate([
+    { $match: { createdAt: { $gte: sevenDaysAgo } } },
+    { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, count: { $sum: 1 } } },
+    { $sort: { _id: 1 } },
+  ]);
+
+  const revenueTrendRaw = await Enrollment.aggregate([
+    { $match: { createdAt: { $gte: sevenDaysAgo } } },
+    { $lookup: { from: "courses", localField: "course", foreignField: "_id", as: "courseDetails" } },
+    { $unwind: "$courseDetails" },
+    { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, total: { $sum: "$courseDetails.price" } } },
+    { $sort: { _id: 1 } },
+  ]);
+
+  const stats = JSON.parse(JSON.stringify({
+    totalUsers,
+    totalCourses,
+    revenue,
+    totalApplications,
+    topCourses: enhancedTopCourses,
+    charts: {
+      userGrowth: userGrowthRaw,
+      revenueTrend: revenueTrendRaw,
+      revenueDistribution: revenueDistributionRaw,
+    }
+  }));
 
   return (
-    <div className="p-4 md:p-8 space-y-8">
+    <div className="p-4 md:p-8 space-y-8 bg-black min-h-screen text-white">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Link href="/admin">
@@ -146,7 +122,7 @@ export default function AnalyticsPage() {
         <StatCard
           icon={Users}
           label="Total Users"
-          value={stats?.totalUsers || 0}
+          value={stats.totalUsers || 0}
           color="text-blue-400"
           bgColor="bg-blue-500/10"
           borderColor="border-blue-500/20"
@@ -154,7 +130,7 @@ export default function AnalyticsPage() {
         <StatCard
           icon={DollarSign}
           label="Total Revenue"
-          value={`₹${stats?.revenue?.toLocaleString() || 0}`}
+          value={`₹${stats.revenue?.toLocaleString() || 0}`}
           color="text-green-400"
           bgColor="bg-green-500/10"
           borderColor="border-green-500/20"
@@ -162,7 +138,7 @@ export default function AnalyticsPage() {
         <StatCard
           icon={BookOpen}
           label="Total Courses"
-          value={stats?.totalCourses || 0}
+          value={stats.totalCourses || 0}
           color="text-purple-400"
           bgColor="bg-purple-500/10"
           borderColor="border-purple-500/20"
@@ -170,7 +146,7 @@ export default function AnalyticsPage() {
         <StatCard
           icon={TrendingUp}
           label="Applications"
-          value={stats?.totalApplications || 0}
+          value={stats.totalApplications || 0}
           color="text-orange-400"
           bgColor="bg-orange-500/10"
           borderColor="border-orange-500/20"
@@ -178,45 +154,10 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="glass-card p-6 rounded-2xl">
-          <h3 className="text-xl font-bold text-white mb-4">Revenue Trend (Last 7 Days)</h3>
-          <Line options={chartOptions} data={revenueData} />
-        </div>
-        <div className="glass-card p-6 rounded-2xl">
-          <h3 className="text-xl font-bold text-white mb-4">User Growth (Last 7 Days)</h3>
-          <Bar options={chartOptions} data={userGrowthData} />
-        </div>
-         <div className="glass-card p-6 rounded-2xl lg:col-span-2">
-            <h3 className="text-xl font-bold text-white mb-4">Revenue Distribution by Course</h3>
-            <div className="h-64 flex justify-center">
-                 <Doughnut 
-                    data={{
-                        labels: stats?.charts?.revenueDistribution?.map((d: any) => d._id) || [],
-                        datasets: [{
-                            data: stats?.charts?.revenueDistribution?.map((d: any) => d.total) || [],
-                            backgroundColor: [
-                                'rgba(255, 99, 132, 0.8)',
-                                'rgba(54, 162, 235, 0.8)',
-                                'rgba(255, 206, 86, 0.8)',
-                                'rgba(75, 192, 192, 0.8)',
-                                'rgba(153, 102, 255, 0.8)',
-                            ],
-                            borderWidth: 0
-                        }]
-                    }}
-                    options={{
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { position: 'right', labels: { color: '#ccc' } } }
-                    }} 
-                />
-            </div>
-        </div>
-      </div>
+      <AnalyticsCharts stats={stats} />
 
       {/* Detailed Top Courses Table */}
-      <div className="glass-card p-6 rounded-2xl">
+      <div className="glass-card p-6 rounded-2xl border border-white/5 bg-white/5">
         <h3 className="text-xl font-bold text-white mb-6">Detailed Course Performance</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left text-gray-400">
@@ -232,7 +173,7 @@ export default function AnalyticsPage() {
               </tr>
             </thead>
             <tbody>
-              {stats?.topCourses?.map((course: any) => {
+              {stats.topCourses?.map((course: any) => {
                  const conversionRate = course.views > 0 
                     ? ((course.studentsCount || 0) / course.views * 100).toFixed(1) 
                     : 0;
@@ -253,7 +194,7 @@ export default function AnalyticsPage() {
                 </tr>
                  );
               })}
-               {(!stats?.topCourses || stats?.topCourses.length === 0) && (
+               {(!stats.topCourses || stats.topCourses.length === 0) && (
                   <tr><td colSpan={7} className="text-center py-6">No data available.</td></tr>
                )}
             </tbody>
