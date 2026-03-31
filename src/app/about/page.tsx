@@ -1,4 +1,4 @@
-"use client";
+
 
 import dynamic from "next/dynamic";
 import { Navbar } from "@/components/ui/navbar";
@@ -6,6 +6,14 @@ import { Footer } from "@/components/ui/footer";
 import { HeroSection } from "@/components/about/HeroSection";
 import { TechStack } from "@/components/about/TechStack";
 import { Code2, Layout, PenTool, Hash } from "lucide-react";
+
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: "About Us | Meet our Founder Mohit Sinha",
+    description: "Learn about Webory's mission to bridge the gap between academic learning and industry demands. Founded by Mohit Sinha, Webory is a startup recognized by the Govt. of India.",
+    authors: [{ name: "Mohit Sinha" }],
+};
 
 // Lazy load sections below the fold
 const StatsSection = dynamic(() => import("@/components/about/StatsSection").then(mod => mod.StatsSection), { ssr: false });

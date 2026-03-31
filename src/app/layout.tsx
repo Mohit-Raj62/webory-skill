@@ -38,9 +38,9 @@ export const metadata: Metadata = {
     },
     description: "Master industry-relevant skills, build real-world projects, and launch your career with Webory. Join thousands of students learning and growing together.",
     keywords: ["online courses", "internships", "skill development", "web development", "coding", "career growth", "webory", "webory skills", "startup"],
-    authors: [{ name: "Webory Team" }],
-    creator: "Webory",
-    publisher: "Webory",
+    authors: [{ name: "Mohit Sinha", url: "https://www.linkedin.com/in/mohit0sinha" }, { name: "Webory Team" }],
+    creator: "Mohit Sinha",
+    publisher: "Webory Skills",
     openGraph: {
         type: "website",
         locale: "en_IN",
@@ -113,20 +113,41 @@ export default function RootLayout({
                     dangerouslySetInnerHTML={{
                         __html: JSON.stringify({
                             "@context": "https://schema.org",
-                            "@type": "Organization",
-                            "name": "Webory",
-                            "alternateName": "Webory Skills",
-                            "url": "https://www.weboryskills.in",
-                            "logo": "https://www.weboryskills.in/favicon.png",
-                            "founder": {
-                                "@type": "Person",
-                                "name": "Mohit Sinha",
-                                "jobTitle": "CEO"
-                            },
-                            "sameAs": [
-                                "https://www.linkedin.com/in/webory-skills-01244b3a9",
-                                "https://www.instagram.com/weboryskills",
-                                "https://www.youtube.com/@CodeWithWebory"
+                            "@graph": [
+                                {
+                                    "@type": "Organization",
+                                    "@id": "https://www.weboryskills.in/#organization",
+                                    "name": "Webory",
+                                    "alternateName": "Webory Skills",
+                                    "url": "https://www.weboryskills.in",
+                                    "logo": {
+                                        "@type": "ImageObject",
+                                        "url": "https://www.weboryskills.in/favicon.png"
+                                    },
+                                    "founder": {
+                                        "@id": "https://www.weboryskills.in/#person"
+                                    },
+                                    "sameAs": [
+                                        "https://www.linkedin.com/in/webory-skills-01244b3a9",
+                                        "https://www.instagram.com/weboryskills",
+                                        "https://www.youtube.com/@CodeWithWebory"
+                                    ]
+                                },
+                                {
+                                    "@type": "Person",
+                                    "@id": "https://www.weboryskills.in/#person",
+                                    "name": "Mohit Sinha",
+                                    "jobTitle": "Founder & CEO",
+                                    "url": "https://www.weboryskills.in",
+                                    "sameAs": [
+                                        "https://www.linkedin.com/in/mohit0sinha",
+                                        "https://github.com/Mohit-Raj62",
+                                        "https://www.instagram.com/mohit_sinha_official"
+                                    ],
+                                    "worksFor": {
+                                        "@id": "https://www.weboryskills.in/#organization"
+                                    }
+                                }
                             ]
                         })
                     }}

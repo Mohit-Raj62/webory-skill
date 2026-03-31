@@ -11,8 +11,9 @@ export async function GET(
     const { id } = await params;
 
     const hackathon = await Hackathon.findById(id).lean();
-    if (!hackathon) {
-      return NextResponse.json({ error: "Hackathon not found" }, { status: 404 });
+    if (!hackathon || (hackathon.isHidden && !hackathon.isArchived)) {
+      // Note: We might allow archived but hidden is usually for drafts/removed events
+      return NextResponse.json({ error: "Hackathon not found or is currently hidden." }, { status: 404 });
     }
 
     return NextResponse.json({

@@ -21,7 +21,9 @@ import {
   ListChecks,
   Gift,
   Files,
-  Edit
+  Edit,
+  EyeOff,
+  Eye
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -39,6 +41,7 @@ interface Hackathon {
   prizes?: { title: string; reward: string; value: number }[];
   rules?: string[];
   simulatorPrerequisite?: boolean;
+  isHidden?: boolean;
 }
 
 export default function AdminHackathonsPage() {
@@ -61,7 +64,8 @@ export default function AdminHackathonsPage() {
     bannerImage: "",
     prizes: [] as { title: string; reward: string; value: number }[],
     rules: [] as string[],
-    simulatorPrerequisite: false
+    simulatorPrerequisite: false,
+    isHidden: false
   };
 
   const [formH, setFormH] = useState(initialForm);
@@ -72,13 +76,35 @@ export default function AdminHackathonsPage() {
 
   const fetchHackathons = async () => {
     try {
-      const res = await fetch("/api/hackathons");
+      const res = await fetch("/api/admin/hackathons");
       const data = await res.json();
       if (res.ok) setHackathons(data.data);
     } catch (error) {
       toast.error("Failed to load events");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const toggleHide = async (id: string, currentStatus: boolean) => {
+    try {
+        setLoading(true);
+        const res = await fetch(`/api/admin/hackathons/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ isHidden: !currentStatus })
+        });
+        
+        if (res.ok) {
+            toast.success(currentStatus ? "Hackathon is now LIVE! 🌏" : "Hackathon is now HIDDEN! 🔒");
+            fetchHackathons();
+        } else {
+            toast.error("Failed to update status");
+        }
+    } catch (error) {
+        toast.error("Network error");
+    } finally {
+        setLoading(false);
     }
   };
 
@@ -147,7 +173,8 @@ export default function AdminHackathonsPage() {
         bannerImage: h.bannerImage || "",
         prizes: h.prizes || [],
         rules: h.rules || [],
-        simulatorPrerequisite: h.simulatorPrerequisite || false
+        simulatorPrerequisite: h.simulatorPrerequisite || false,
+        isHidden: h.isHidden || false
     });
     setActiveTab("general");
     setIsModalOpen(true);
@@ -236,6 +263,21 @@ export default function AdminHackathonsPage() {
                                 className="w-full bg-white/[0.03] border border-white/10 rounded-xl p-4 min-h-[100px] outline-none text-white focus:border-orange-500/50 font-medium text-sm" 
                                 placeholder="A catchy brief about the event..."
                               />
+                          </div>
+
+                          <div className="p-6 rounded-[2rem] bg-indigo-600/5 border border-indigo-600/10 space-y-4 shadow-xl">
+                              <div className="flex items-center justify-between">
+                                  <div className="space-y-1">
+                                      <h4 className="text-sm font-black text-indigo-400 uppercase">Hide Hackathon</h4>
+                                      <p className="text-[10px] text-gray-500 font-medium">Temporarily hide this event from the public page.</p>
+                                  </div>
+                                  <button 
+                                      onClick={() => setFormH({...formH, isHidden: !formH.isHidden})}
+                                      className={`w-12 h-6 rounded-full transition-all relative ${formH.isHidden ? 'bg-indigo-600' : 'bg-white/10'}`}
+                                  >
+                                      <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${formH.isHidden ? 'left-7' : 'left-1'}`} />
+                                  </button>
+                              </div>
                           </div>
                       </motion.div>
                     )}
@@ -425,7 +467,10 @@ export default function AdminHackathonsPage() {
                       <div className="space-y-6">
                         <div className="flex items-center justify-between">
                             <div className="p-3 rounded-2xl bg-orange-600/10 text-orange-500"><Trophy size={18} /></div>
-                            <span className="text-[10px] font-black uppercase tracking-widest bg-white/5 px-3 py-1 rounded-full text-gray-400">{h.status}</span>
+                            <div className="flex items-center gap-2">
+                                {h.isHidden && <span className="text-[10px] font-black uppercase tracking-widest bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 px-3 py-1 rounded-full flex items-center gap-1.5"><EyeOff size={10} /> Hidden</span>}
+                                <span className="text-[10px] font-black uppercase tracking-widest bg-white/5 px-3 py-1 rounded-full text-gray-400">{h.status}</span>
+                            </div>
                         </div>
                         <div className="space-y-2">
                             <h3 className="text-2xl font-black italic uppercase leading-none tracking-tight">{h.title}</h3>
@@ -450,10 +495,20 @@ export default function AdminHackathonsPage() {
                           >
                               <Award size={14} /> Judge
                           </Button>
+                          
+                          <Button 
+                            onClick={() => toggleHide(h._id, !!h.isHidden)}
+                            variant="outline" 
+                            className={`border-white/10 hover:border-white/20 text-white font-black rounded-xl h-11 px-3 ${h.isHidden ? 'bg-indigo-600/20 border-indigo-500/30 text-indigo-400' : ''}`}
+                            title={h.isHidden ? "Make Live" : "Hide from Users"}
+                          >
+                              {h.isHidden ? <Eye size={16} /> : <EyeOff size={16} />}
+                          </Button>
+
                           <Button 
                             onClick={() => openEdit(h)}
                             variant="outline" 
-                            className="border-white/10 hover:border-white/20 text-white font-black rounded-xl h-11"
+                            className="border-white/10 hover:border-white/20 text-white font-black rounded-xl h-11 px-3"
                           >
                               <Edit size={14} />
                           </Button>

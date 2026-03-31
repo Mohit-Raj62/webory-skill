@@ -10,8 +10,8 @@ export async function GET(req: Request) {
   try {
     await dbConnect();
     
-    // Get all non-archived hackathons
-    const hackathons = await Hackathon.find({ isArchived: false })
+    // Get all non-archived and non-hidden hackathons
+    const hackathons = await Hackathon.find({ isArchived: false, isHidden: { $ne: true } })
       .sort({ startDate: -1 })
       .lean();
 

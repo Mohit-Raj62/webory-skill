@@ -23,8 +23,8 @@ export async function POST(req: Request) {
     }
 
     const hackathon = await Hackathon.findById(hackathonId);
-    if (!hackathon) {
-      return NextResponse.json({ error: "Hackathon not found" }, { status: 404 });
+    if (!hackathon || (hackathon.isHidden && !hackathon.registeredUsers.includes(userId))) {
+      return NextResponse.json({ error: "Hackathon not found or is currently hidden." }, { status: 404 });
     }
 
     // Check if registration is open

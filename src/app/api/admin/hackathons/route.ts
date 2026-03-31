@@ -4,6 +4,44 @@ import Hackathon from "@/models/Hackathon";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 
+async function isAdmin(request: Request) {
+    try {
+        const cookieStore = await cookies();
+        const token = cookieStore.get("token")?.value;
+        if (!token) return false;
+        
+        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+        return decoded.role === "admin";
+    } catch {
+        return false;
+    }
+}
+
+export async function GET(req: Request) {
+    try {
+        await dbConnect();
+        
+        if (!(await isAdmin(req))) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        const hackathons = await Hackathon.find({})
+            .sort({ createdAt: -1 })
+            .lean();
+
+        return NextResponse.json({
+            success: true,
+            data: hackathons
+        });
+    } catch (error: any) {
+        console.error("ADMIN_HACKATHON_GET_ERROR:", error);
+        return NextResponse.json(
+            { error: "Internal Server Error", message: error.message },
+            { status: 500 }
+        );
+    }
+}
+
 export async function POST(req: Request) {
   try {
     await dbConnect();

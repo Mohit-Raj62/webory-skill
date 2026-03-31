@@ -66,6 +66,10 @@ const HackathonSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  isHidden: {
+    type: Boolean,
+    default: false,
+  },
   totalXpDistributed: {
     type: Number,
     default: 0,
