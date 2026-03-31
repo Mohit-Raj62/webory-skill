@@ -16,15 +16,15 @@ export const metadata: Metadata = {
 };
 
 // Lazy load sections below the fold
-const StatsSection = dynamic(() => import("@/components/about/StatsSection").then(mod => mod.StatsSection), { ssr: false });
-const LearningPath = dynamic(() => import("@/components/about/LearningPath").then(mod => mod.LearningPath), { ssr: false });
-const CertificateShowcase = dynamic(() => import("@/components/about/CertificateShowcase").then(mod => mod.CertificateShowcase), { ssr: false });
-const MissionVision = dynamic(() => import("@/components/about/MissionVision").then(mod => mod.MissionVision), { ssr: false });
-const MentorshipSection = dynamic(() => import("@/components/about/MentorshipSection").then(mod => mod.MentorshipSection), { ssr: false });
-const CoreValues = dynamic(() => import("@/components/about/CoreValues").then(mod => mod.CoreValues), { ssr: false });
-const LeadershipSection = dynamic(() => import("@/components/about/LeadershipSection").then(mod => mod.LeadershipSection), { ssr: false });
-const FaqSection = dynamic(() => import("@/components/about/FaqSection").then(mod => mod.FaqSection), { ssr: false });
-const CtaSection = dynamic(() => import("@/components/about/CtaSection").then(mod => mod.CtaSection), { ssr: false });
+const StatsSection = dynamic(() => import("@/components/about/StatsSection").then(mod => mod.StatsSection));
+const LearningPath = dynamic(() => import("@/components/about/LearningPath").then(mod => mod.LearningPath));
+const CertificateShowcase = dynamic(() => import("@/components/about/CertificateShowcase").then(mod => mod.CertificateShowcase));
+const MissionVision = dynamic(() => import("@/components/about/MissionVision").then(mod => mod.MissionVision));
+const MentorshipSection = dynamic(() => import("@/components/about/MentorshipSection").then(mod => mod.MentorshipSection));
+const CoreValues = dynamic(() => import("@/components/about/CoreValues").then(mod => mod.CoreValues));
+const LeadershipSection = dynamic(() => import("@/components/about/LeadershipSection").then(mod => mod.LeadershipSection));
+const FaqSection = dynamic(() => import("@/components/about/FaqSection").then(mod => mod.FaqSection));
+const CtaSection = dynamic(() => import("@/components/about/CtaSection").then(mod => mod.CtaSection));
 
 export default function AboutPage() {
     return (
