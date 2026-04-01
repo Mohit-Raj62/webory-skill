@@ -9,7 +9,7 @@ const features = [
         items: [
             {
                 icon: BookOpen,
-                title: "AI-Generated Personalized Roadmap",
+                title: "AI-Powered Personalized Roadmap",
                 description: "Get a clear, custom learning path tailored to your career goals using AI.",
             },
             {
@@ -19,7 +19,7 @@ const features = [
             },
             {
                 icon: HeartHandshake,
-                title: "Real Projects & Problems",
+                title: "Real-World Projects",
                 description: "Build your portfolio by solving real-world problems, not dummy projects.",
             },
              {
@@ -29,12 +29,12 @@ const features = [
             },
              {
                 icon: Trophy,
-                title: "Career-Focused Outcomes",
+                title: "Career-Focused Results",
                 description: "We focus on making you employable and career-ready, not just collecting certificates.",
             },
             {
                 icon: PlayCircle,
-                title: "Zero-Risk Exploration",
+                title: "Risk-Free Learning",
                 description: "Experience our teaching quality firsthand. The first module of every course is unlocked for free.",
             }
         ],
@@ -44,12 +44,12 @@ const features = [
         items: [
              {
                 icon: ShieldCheck,
-                title: "Government Recognized",
+                title: "Government Recognized Platform",
                 description: "Trust in a platform that is officially registered and recognized by the Ministry of MSME, Govt. of India.",
             },
              {
                 icon: Trophy,
-                title: "Certificate",
+                title: "Certification",
                 description: "Earn verifiable certificates with QR codes that confirm your achievements and course completions.",
             },
             {
@@ -59,7 +59,7 @@ const features = [
             },
             {
                 icon: FileUser,
-                title: "Resume Build",
+                title: "Resume Builder",
                 description: "Create polished, professional resumes with smart templates that highlight your strengths.",
             },
             {

@@ -10,21 +10,21 @@ import { useAuth } from "@/components/auth/session-provider";
 const steps = [
     {
         icon: UserCircle,
-        title: "Step 1: Career Goal Input",
+        title: "Step 1: Choose Your Career Goal",
         description: "Select your goal (Web Dev, AI, etc.) and current level. We adapt to you.",
         details: ["Web Developer", "AI / Data", "Beginner/Intermediate"],
     },
     {
         icon: Brain,
-        title: "Step 2: AI Roadmap Generation",
-        description: "We automatically create a skill sequence, weekly plan, and project timeline.",
-        details: ["Skill sequence", "Weekly plan", "Projects timeline"],
-        highlight: "Every student gets a different roadmap.",
+        title: "Step 2: AI Roadmap Generator",
+        description: "We automatically create a learning path, weekly plan, and project timeline.",
+        details: ["Learning path", "Weekly plan", "Projects timeline"],
+        highlight: "Every student gets a personalized roadmap.",
     },
     {
         icon: Lightbulb,
         title: "Step 3: Learning + Projects",
-        description: "Follow structured lessons and hands-on assignments. No just watching.",
+        description: "Follow structured lessons and hands-on assignments-not just watching.",
         details: ["Structured lessons", "Hands-on assignments", "Real-world projects"],
     },
     {
@@ -35,7 +35,7 @@ const steps = [
     },
     {
         icon: Rocket,
-        title: "Step 5: Career Readiness",
+        title: "Step 5: Job Readiness",
         description: "Gain practical skills, a project portfolio, and job readiness support.",
         details: ["Practical skills", "Project portfolio", "Job readiness"],
     },
@@ -69,7 +69,7 @@ export function AIRoadmapFlow() {
                         viewport={{ once: true }}
                         className="text-3xl md:text-5xl font-bold mb-6"
                     >
-                        AI-Powered <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Mentor & Learning Roadmap</span>
+                        AI-Powered <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400"> Learning Roadmap & Mentorship</span>
                     </motion.h2>
                     <motion.p 
                         initial={{ opacity: 0, y: 20 }}
@@ -78,7 +78,7 @@ export function AIRoadmapFlow() {
                         transition={{ delay: 0.1 }}
                         className="text-xl text-gray-300 font-medium"
                     >
-                        Not a generic course list. A personalized path built around your career goal.
+                        Not Just another course list. A personalized path built around your career goal.
                     </motion.p>
                 </div>
 
