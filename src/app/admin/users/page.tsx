@@ -7,6 +7,8 @@ import dbConnect from "@/lib/db";
 import User from "@/models/User";
 import { UserManagementClient } from "@/components/admin/UserManagementClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function UsersPage() {
     const user = await getUser();
 

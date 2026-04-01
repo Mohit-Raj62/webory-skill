@@ -16,7 +16,6 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "50mb",
     },
   },
-  outputFileTracingRoot: "c:/Users/91620/Desktop/skill-webory",
   turbopack: {},
   outputFileTracingExcludes: {
     "api/**/*": [

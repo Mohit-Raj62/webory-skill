@@ -11,6 +11,8 @@ import RewardRequest from "@/models/RewardRequest";
 import { AmbassadorRegistration } from "@/components/ambassador/AmbassadorRegistration";
 import { AmbassadorDashboardClient } from "@/components/ambassador/AmbassadorDashboardClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function AmbassadorDashboard() {
   const user = await getUser();
 

@@ -12,6 +12,8 @@ import Enrollment from "@/models/Enrollment";
 import Settings from "@/models/Settings";
 import { AnalyticsCharts } from "@/components/admin/AnalyticsCharts";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminAnalyticsPage() {
   const user = await getUser();
 
