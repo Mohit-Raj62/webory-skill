@@ -66,6 +66,7 @@ EnrollmentSchema.index({ student: 1, course: 1 }, { unique: true });
 // Performance indexes for faster queries
 EnrollmentSchema.index({ student: 1 }); // For user dashboard queries
 EnrollmentSchema.index({ course: 1 }); // For course aggregations
+EnrollmentSchema.index({ enrolledAt: -1 }); // For admin dashboard queries (most recent first)
 
 const Enrollment = models.Enrollment || model("Enrollment", EnrollmentSchema);
 

@@ -1,30 +1,25 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Enrollment from "@/models/Enrollment";
-import jwt from "jsonwebtoken";
-import { cookies } from "next/headers";
+import User from "@/models/User";
+import { getDataFromToken } from "@/helpers/getDataFromToken";
 
 export async function PATCH(
   req: Request,
-  props: { params: Promise<{ id: string }> }
+  props: { params: Promise<{ id: string }> },
 ) {
   try {
-    const params = await props.params;
     await dbConnect();
-    const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
+    const params = await props.params;
 
-    if (!token) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    const userId = await getDataFromToken(req);
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
-      userId: string;
-      role: string;
-    };
-
-    if (decoded.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    const user = await User.findById(userId);
+    if (!user || user.role !== "admin") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const { id } = params;
@@ -35,7 +30,7 @@ export async function PATCH(
       if (progress < 0 || progress > 100) {
         return NextResponse.json(
           { error: "Progress must be between 0 and 100" },
-          { status: 400 }
+          { status: 400 },
         );
       }
       updateData.progress = progress;
@@ -49,41 +44,43 @@ export async function PATCH(
     if (!enrollment) {
       return NextResponse.json(
         { error: "Enrollment not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     return NextResponse.json({ enrollment });
   } catch (error: any) {
     console.error("Error updating enrollment:", error);
+    if (
+      error.message?.includes("jwt") ||
+      error.message?.includes("Session expired") ||
+      error.message?.includes("Not authenticated")
+    ) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
     return NextResponse.json(
       { error: "Internal server error", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   req: Request,
-  props: { params: Promise<{ id: string }> }
+  props: { params: Promise<{ id: string }> },
 ) {
   try {
-    const params = await props.params;
     await dbConnect();
-    const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
+    const params = await props.params;
 
-    if (!token) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    const userId = await getDataFromToken(req);
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
-      userId: string;
-      role: string;
-    };
-
-    if (decoded.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    const user = await User.findById(userId);
+    if (!user || user.role !== "admin") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const { id } = params;
@@ -92,16 +89,23 @@ export async function DELETE(
     if (!enrollment) {
       return NextResponse.json(
         { error: "Enrollment not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     return NextResponse.json({ message: "Enrollment deleted successfully" });
   } catch (error: any) {
     console.error("Error deleting enrollment:", error);
+    if (
+      error.message?.includes("jwt") ||
+      error.message?.includes("Session expired") ||
+      error.message?.includes("Not authenticated")
+    ) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
     return NextResponse.json(
       { error: "Internal server error", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
