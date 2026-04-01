@@ -78,7 +78,7 @@ const staggerContainer: any = {
 
 export default function PortfolioPage() {
     const params = useParams();
-    const [data, setData] = useState < PortfolioData | null > (null);
+    const [data, setData] = useState<PortfolioData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [mounted, setMounted] = useState(false);
@@ -122,7 +122,12 @@ export default function PortfolioPage() {
     if (error || !data) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-[#030303] text-white gap-6">
-                <motion.div {...fadeInUp} className="text-center">
+                <motion.div 
+                    initial={fadeInUp.initial}
+                    animate={fadeInUp.animate}
+                    transition={fadeInUp.transition}
+                    className="text-center"
+                >
                     <h1 className="text-3xl font-black text-red-500 mb-2">ACCESS DENIED</h1>
                     <p className="text-neutral-500 font-mono text-sm">{error || "Portfolio data stream corrupted or not found"}</p>
                 </motion.div>

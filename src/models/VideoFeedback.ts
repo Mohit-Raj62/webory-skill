@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, models } from "mongoose";
+import { Schema, model, models, CallbackWithoutResultAndOptionalError } from "mongoose";
 
 const VideoFeedbackSchema = new Schema({
   user: {
@@ -35,7 +35,7 @@ const VideoFeedbackSchema = new Schema({
 });
 
 // Update timestamp on save
-VideoFeedbackSchema.pre("save", function (next: any) {
+VideoFeedbackSchema.pre("save", function (next: CallbackWithoutResultAndOptionalError) {
   this.updatedAt = new Date();
   next();
 });

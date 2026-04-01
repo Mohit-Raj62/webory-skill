@@ -1,0 +1,1034 @@
+
+> skill-webory@0.1.0 build
+> next build
+
+ ΓÜá Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\91620\package-lock.json as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * C:\Users\91620\Desktop\skill-webory\package-lock.json
+
+   Γû▓ Next.js 15.5.14
+   - Environments: .env.local
+   - Experiments (use with caution):
+     ┬╖ serverActions
+
+   Creating an optimized production build ...
+ Γ£ô (pwa) Compiling for server...
+ Γ£ô (pwa) Compiling for server...
+ Γ£ô (pwa) Compiling for client (static)...
+ Γùï (pwa) Service worker: C:\Users\91620\Desktop\skill-webory\public\sw.js
+ Γùï (pwa)   URL: /sw.js
+ Γùï (pwa)   Scope: /
+ ΓÜá Compiled with warnings in 119s
+
+./node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+./node_modules/@opentelemetry/instrumentation/build/esm/platform/node/index.js
+./node_modules/@opentelemetry/instrumentation/build/esm/platform/index.js
+./node_modules/@opentelemetry/instrumentation/build/esm/index.js
+./node_modules/@sentry/node/build/cjs/integrations/tracing/postgresjs.js
+./node_modules/@sentry/node/build/cjs/index.js
+./node_modules/@sentry/nextjs/build/cjs/index.server.js
+./src/app/error.tsx
+
+./node_modules/@fastify/otel/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/@fastify/otel/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+./node_modules/@fastify/otel/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/index.js
+./node_modules/@fastify/otel/node_modules/@opentelemetry/instrumentation/build/esm/platform/index.js
+./node_modules/@fastify/otel/node_modules/@opentelemetry/instrumentation/build/esm/index.js
+./node_modules/@fastify/otel/index.js
+./node_modules/@sentry/node/build/cjs/integrations/tracing/fastify/index.js
+./node_modules/@sentry/node/build/cjs/index.js
+./node_modules/@sentry/nextjs/build/cjs/index.server.js
+./src/app/api/sentry-example-api/route.ts
+
+./node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+./node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/index.js
+./node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/platform/index.js
+./node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/index.js
+./node_modules/@prisma/instrumentation/dist/index.js
+./node_modules/@sentry/node/build/cjs/integrations/tracing/prisma.js
+./node_modules/@sentry/node/build/cjs/index.js
+./node_modules/@sentry/nextjs/build/cjs/index.server.js
+./src/app/api/sentry-example-api/route.ts
+
+   Linting and checking validity of types ...
+
+Failed to compile.
+
+./src/app/about/page.tsx
+8:10  Warning: 'Code2' is defined but never used.  @typescript-eslint/no-unused-vars
+8:17  Warning: 'Layout' is defined but never used.  @typescript-eslint/no-unused-vars
+59:10  Warning: 'SnakeIcon' is defined but never used.  @typescript-eslint/no-unused-vars
+67:10  Warning: 'PenToolIcon' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/admin/activity/page.tsx
+4:29  Warning: 'CardHeader' is defined but never used.  @typescript-eslint/no-unused-vars
+4:41  Warning: 'CardTitle' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/admin/ambassadors/page.tsx
+8:8  Warning: 'Link' is defined but never used.  @typescript-eslint/no-unused-vars
+50:6  Warning: React Hook useEffect has a missing dependency: 'fetchAmbassadors'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+81:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+91:9  Warning: 'rejectedCount' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/admin/analytics/page.tsx
+28:5  Warning: 'totalInternships' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+30:5  Warning: 'recentEnrollmentsCount' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+53:9  Warning: 'pwaInstalls' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/admin/blogs/page.tsx
+8:5  Warning: 'Filter' is defined but never used.  @typescript-eslint/no-unused-vars
+16:5  Warning: 'ChevronDown' is defined but never used.  @typescript-eslint/no-unused-vars
+88:8  Warning: React Hook useEffect has a missing dependency: 'fetchBlogs'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/admin/broadcast/page.tsx
+617:45  Warning: img elements must have an alt prop, either with meaningful text, or an empty string for decorative images.  jsx-a11y/alt-text
+652:41  Warning: img elements must have an alt prop, either with meaningful text, or an empty string for decorative images.  jsx-a11y/alt-text
+699:45  Warning: img elements must have an alt prop, either with meaningful text, or an empty string for decorative images.  jsx-a11y/alt-text
+
+./src/app/admin/careers/applications/page.tsx
+4:79  Warning: 'Edit2' is defined but never used.  @typescript-eslint/no-unused-vars
+4:86  Warning: 'Save' is defined but never used.  @typescript-eslint/no-unused-vars
+4:105  Warning: 'Award' is defined but never used.  @typescript-eslint/no-unused-vars
+4:112  Warning: 'Mail' is defined but never used.  @typescript-eslint/no-unused-vars
+4:145  Warning: 'Briefcase' is defined but never used.  @typescript-eslint/no-unused-vars
+78:8  Warning: React Hook useEffect has a missing dependency: 'fetchApplications'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/admin/careers/jobs/page.tsx
+4:73  Warning: 'Clock' is defined but never used.  @typescript-eslint/no-unused-vars
+4:80  Warning: 'CheckCircle' is defined but never used.  @typescript-eslint/no-unused-vars
+4:93  Warning: 'XCircle' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/admin/certificates/generate/page.tsx
+57:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/admin/certificates/page.tsx
+7:96  Warning: 'ChevronDown' is defined but never used.  @typescript-eslint/no-unused-vars
+82:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+111:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+250:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+284:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+310:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/admin/courses/new/page.tsx
+709:33  Warning: Image elements must have an alt prop, either with meaningful text, or an empty string for decorative images.  jsx-a11y/alt-text
+748:33  Warning: Image elements must have an alt prop, either with meaningful text, or an empty string for decorative images.  jsx-a11y/alt-text
+
+./src/app/admin/courses/page.tsx
+5:137  Warning: 'LayoutGrid' is defined but never used.  @typescript-eslint/no-unused-vars
+5:149  Warning: 'List' is defined but never used.  @typescript-eslint/no-unused-vars
+76:8  Warning: React Hook useEffect has a missing dependency: 'fetchCourses'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/admin/courses/[id]/assignments/page.tsx
+18:8  Warning: React Hook useEffect has a missing dependency: 'fetchAssignments'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/admin/courses/[id]/assignments/[assignmentId]/submissions/page.tsx
+6:34  Warning: 'XCircle' is defined but never used.  @typescript-eslint/no-unused-vars
+10:11  Warning: 'router' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+22:8  Warning: React Hook useEffect has a missing dependency: 'fetchSubmissions'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/admin/courses/[id]/edit/page.tsx
+12:11  Warning: 'router' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+76:8  Warning: React Hook useEffect has missing dependencies: 'fetchCourse' and 'fetchPDFs'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+1245:37  Warning: Image elements must have an alt prop, either with meaningful text, or an empty string for decorative images.  jsx-a11y/alt-text
+1269:49  Warning: Image elements must have an alt prop, either with meaningful text, or an empty string for decorative images.  jsx-a11y/alt-text
+
+./src/app/admin/courses/[id]/quizzes/new/page.tsx
+49:8  Warning: React Hook useEffect has a missing dependency: 'fetchCourseModules'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/admin/courses/[id]/quizzes/page.tsx
+30:8  Warning: React Hook useEffect has a missing dependency: 'fetchQuizzes'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/admin/courses/[id]/quizzes/[quizId]/results/page.tsx
+6:27  Warning: 'CheckCircle' is defined but never used.  @typescript-eslint/no-unused-vars
+6:40  Warning: 'XCircle' is defined but never used.  @typescript-eslint/no-unused-vars
+10:11  Warning: 'router' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+21:8  Warning: React Hook useEffect has a missing dependency: 'fetchResults'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/admin/doubts/page.tsx
+10:11  Warning: 'router' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+20:8  Warning: React Hook useEffect has a missing dependency: 'fetchDoubts'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/admin/employee-verifications/page.tsx
+15:3  Warning: 'Clock' is defined but never used.  @typescript-eslint/no-unused-vars
+18:3  Warning: 'X' is defined but never used.  @typescript-eslint/no-unused-vars
+81:6  Warning: React Hook useEffect has a missing dependency: 'fetchVerifications'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+97:14  Warning: 'err' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/admin/enrollments/page.tsx
+61:8  Warning: React Hook useEffect has a missing dependency: 'fetchEnrollments'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/admin/feedback/page.tsx
+65:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+92:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+111:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+132:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+151:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/admin/hackathons/page.tsx
+12:3  Warning: 'Users' is defined but never used.  @typescript-eslint/no-unused-vars
+15:3  Warning: 'CheckCircle' is defined but never used.  @typescript-eslint/no-unused-vars
+17:3  Warning: 'ExternalLink' is defined but never used.  @typescript-eslint/no-unused-vars
+82:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+104:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+133:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+155:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/admin/hackathons/[id]/judge/page.tsx
+12:5  Warning: 'Award' is defined but never used.  @typescript-eslint/no-unused-vars
+18:5  Warning: 'ExternalLink' is defined but never used.  @typescript-eslint/no-unused-vars
+39:8  Warning: React Hook useEffect has missing dependencies: 'fetchHackathonInfo' and 'fetchSubmissions'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+61:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+73:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+96:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/admin/internships/[id]/edit/page.tsx
+35:8  Warning: React Hook useEffect has a missing dependency: 'fetchInternship'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/admin/internships/[id]/tasks/page.tsx
+20:11  Warning: 'router' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+35:8  Warning: React Hook useEffect has a missing dependency: 'fetchTasks'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/admin/internships/[id]/tasks/[taskId]/submissions/page.tsx
+22:8  Warning: React Hook useEffect has a missing dependency: 'fetchSubmissions'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/admin/layout.tsx
+34:22  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/admin/leads/page.tsx
+4:10  Warning: 'Navbar' is defined but never used.  @typescript-eslint/no-unused-vars
+8:17  Warning: 'Calendar' is defined but never used.  @typescript-eslint/no-unused-vars
+10:10  Warning: 'AdminSidebar' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/admin/live-classes/page.tsx
+7:8  Warning: 'Link' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/admin/maintenance/page.tsx
+5:39  Warning: 'CheckCircle' is defined but never used.  @typescript-eslint/no-unused-vars
+5:52  Warning: 'AlertTriangle' is defined but never used.  @typescript-eslint/no-unused-vars
+99:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+113:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+297:8  Warning: React Hook useEffect has a missing dependency: 'fetchLogs'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/admin/page.tsx
+4:91  Warning: 'Shield' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/admin/payments/page.tsx
+4:75  Warning: 'Filter' is defined but never used.  @typescript-eslint/no-unused-vars
+19:8  Warning: React Hook useEffect has a missing dependency: 'fetchPayments'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+56:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+89:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/admin/promo-codes/page.tsx
+5:38  Warning: 'Check' is defined but never used.  @typescript-eslint/no-unused-vars
+6:8  Warning: 'Link' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/admin/rewards/page.tsx
+4:10  Warning: 'Copy' is defined but never used.  @typescript-eslint/no-unused-vars
+4:55  Warning: 'Clock' is defined but never used.  @typescript-eslint/no-unused-vars
+4:69  Warning: 'ExternalLink' is defined but never used.  @typescript-eslint/no-unused-vars
+6:34  Warning: 'AvatarImage' is defined but never used.  @typescript-eslint/no-unused-vars
+72:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/admin/settings/page.tsx
+61:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+94:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+148:18  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+181:18  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+211:16  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/admin/simulators/page.tsx
+4:30  Warning: 'CheckSquare' is defined but never used.  @typescript-eslint/no-unused-vars
+59:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+92:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+115:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+175:45  Error: 'newEmails' is never reassigned. Use 'const' instead.  prefer-const
+180:45  Error: 'newEmails' is never reassigned. Use 'const' instead.  prefer-const
+
+./src/app/admin/users/page.tsx
+1:10  Warning: 'motion' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/admin/users/[id]/portfolio/page.tsx
+8:50  Warning: 'ExternalLink' is defined but never used.  @typescript-eslint/no-unused-vars
+10:10  Warning: 'Tabs' is defined but never used.  @typescript-eslint/no-unused-vars
+10:16  Warning: 'TabsContent' is defined but never used.  @typescript-eslint/no-unused-vars
+10:29  Warning: 'TabsList' is defined but never used.  @typescript-eslint/no-unused-vars
+10:39  Warning: 'TabsTrigger' is defined but never used.  @typescript-eslint/no-unused-vars
+88:8  Warning: React Hook useEffect has a missing dependency: 'fetchUser'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+117:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+147:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/admin/verify-certificate/page.tsx
+54:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+84:10  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/ai-prep/page.tsx
+8:37  Warning: 'CheckCircle2' is defined but never used.  @typescript-eslint/no-unused-vars
+8:51  Warning: 'ArrowRight' is defined but never used.  @typescript-eslint/no-unused-vars
+14:12  Warning: 'selectedMode' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+14:26  Warning: 'setSelectedMode' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/ai-prep/result/page.tsx
+13:10  Warning: 'Progress' is defined but never used.  @typescript-eslint/no-unused-vars
+58:8  Warning: React Hook useEffect has a missing dependency: 'generateReport'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/ai-prep/session/page.tsx
+3:10  Warning: 'useEffect' is defined but never used.  @typescript-eslint/no-unused-vars
+3:21  Warning: 'useState' is defined but never used.  @typescript-eslint/no-unused-vars
+3:31  Warning: 'useRef' is defined but never used.  @typescript-eslint/no-unused-vars
+3:39  Warning: 'Suspense' is defined but never used.  @typescript-eslint/no-unused-vars
+4:10  Warning: 'useSearchParams' is defined but never used.  @typescript-eslint/no-unused-vars
+4:27  Warning: 'useRouter' is defined but never used.  @typescript-eslint/no-unused-vars
+5:10  Warning: 'Navbar' is defined but never used.  @typescript-eslint/no-unused-vars
+6:10  Warning: 'Button' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/ai-weboryskills/page.tsx
+9:136  Warning: 'Star' is defined but never used.  @typescript-eslint/no-unused-vars
+9:142  Warning: 'Code' is defined but never used.  @typescript-eslint/no-unused-vars
+9:148  Warning: 'Terminal' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/ambassador/register/page.tsx
+9:3  Warning: 'ArrowRight' is defined but never used.  @typescript-eslint/no-unused-vars
+18:3  Warning: 'Building' is defined but never used.  @typescript-eslint/no-unused-vars
+25:3  Warning: 'Phone' is defined but never used.  @typescript-eslint/no-unused-vars
+26:3  Warning: 'Mail' is defined but never used.  @typescript-eslint/no-unused-vars
+28:3  Warning: 'User' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/activity/route.ts
+4:8  Warning: 'User' is defined but never used.  @typescript-eslint/no-unused-vars
+10:27  Warning: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+21:14  Warning: 'err' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/analytics/route.ts
+4:8  Warning: 'Course' is defined but never used.  @typescript-eslint/no-unused-vars
+5:8  Warning: 'Internship' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/applications/route.ts
+33:9  Error: 'query' is never reassigned. Use 'const' instead.  prefer-const
+
+./src/app/api/admin/certificates/issue/route.ts
+5:8  Warning: 'Course' is defined but never used.  @typescript-eslint/no-unused-vars
+6:8  Warning: 'Internship' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/certificates/search-user/route.ts
+6:8  Warning: 'Course' is defined but never used.  @typescript-eslint/no-unused-vars
+7:8  Warning: 'Internship' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/courses/route.ts
+9:27  Warning: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+57:7  Warning: 'title' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+58:7  Warning: 'description' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+59:7  Warning: 'level' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+60:7  Warning: 'color' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+61:7  Warning: 'icon' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+62:7  Warning: 'price' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/courses/[id]/assignments/[assignmentId]/route.ts
+5:8  Warning: 'Course' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/courses/[id]/pdfs/route.ts
+21:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/courses/[id]/pdfs/[pdfId]/route.ts
+20:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/courses/[id]/quizzes/[quizId]/attempts/route.ts
+4:8  Warning: 'User' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/courses/[id]/quizzes/[quizId]/route.ts
+4:8  Warning: 'Course' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/courses/[id]/route.ts
+43:9  Error: 'videoUrls' is never reassigned. Use 'const' instead.  prefer-const
+171:9  Error: 'oldVideoUrls' is never reassigned. Use 'const' instead.  prefer-const
+193:9  Error: 'newVideoUrls' is never reassigned. Use 'const' instead.  prefer-const
+
+./src/app/api/admin/enrollments/route.ts
+4:8  Warning: 'User' is defined but never used.  @typescript-eslint/no-unused-vars
+5:8  Warning: 'Course' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/hackathons/route.ts
+7:24  Warning: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/hackathons/[id]/route.ts
+7:24  Warning: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/internship-applications/route.ts
+4:8  Warning: 'Internship' is defined but never used.  @typescript-eslint/no-unused-vars
+5:8  Warning: 'User' is defined but never used.  @typescript-eslint/no-unused-vars
+11:27  Warning: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/leads/route.ts
+9:27  Warning: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+20:14  Warning: 'err' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/live-classes/route.ts
+8:27  Warning: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/maintenance/cleanup/route.ts
+4:8  Warning: 'Internship' is defined but never used.  @typescript-eslint/no-unused-vars
+13:28  Warning: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+119:20  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/maintenance/debug-cloud/route.ts
+4:27  Warning: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+14:9  Error: 'details' is never reassigned. Use 'const' instead.  prefer-const
+24:18  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/maintenance/optimize/route.ts
+11:28  Warning: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+76:14  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/maintenance/revalidate/route.ts
+2:26  Warning: 'revalidateTag' is defined but never used.  @typescript-eslint/no-unused-vars
+6:28  Warning: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/maintenance/test-email/route.ts
+8:28  Warning: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+40:11  Warning: 'result' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/payments/route.ts
+17:11  Warning: '_' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/users/[id]/portfolio/route.ts
+13:12  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/admin/video-feedback/route.ts
+6:8  Warning: 'Course' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/ambassador/testimonials/route.ts
+8:27  Warning: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/ambassador/top/route.ts
+6:27  Warning: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/analytics/pwa-install/route.ts
+5:28  Warning: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/analytics/track/route.ts
+20:14  Warning: 'err' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/auth/apple/route.ts
+3:27  Warning: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/auth/logout/route.ts
+13:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/auth/session/route.ts
+18:18  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/careers/apply/route.ts
+23:11  Warning: 'position' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/code/share/route.ts
+20:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/code/snippets/route.ts
+19:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/code/snippets/[id]/route.ts
+18:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/courses/recently-viewed/route.ts
+9:27  Warning: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+21:14  Warning: 'err' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/courses/[id]/live-classes/route.ts
+4:10  Warning: 'cookies' is defined but never used.  @typescript-eslint/no-unused-vars
+5:8  Warning: 'jwt' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/courses/[id]/videos/[videoIndex]/notes/route.ts
+137:11  Warning: 'videoIndex' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/courses/[id]/videos/[videoIndex]/watch/route.ts
+104:13  Warning: 'existingActivity' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/debug-resumes/route.ts
+4:27  Warning: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/debug-sign/route.ts
+4:27  Warning: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/employee-verification/route.ts
+98:9  Error: 'baseNameStr' is never reassigned. Use 'const' instead.  prefer-const
+113:9  Error: 'baseEmployeeId' is never reassigned. Use 'const' instead.  prefer-const
+
+./src/app/api/feedback/route.ts
+5:8  Warning: 'User' is defined but never used.  @typescript-eslint/no-unused-vars
+45:27  Warning: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/hackathons/register/route.ts
+4:8  Warning: 'User' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/hackathons/route.ts
+9:27  Warning: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/maintenance/test-quiz-questions/route.ts
+6:27  Warning: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/payment/payu/response/route.ts
+120:11  Warning: 'enrollment' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/pdf-proxy/route.ts
+21:11  Warning: 'contentType' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/promo-codes/route.ts
+5:27  Warning: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/promo-codes/validate/route.ts
+20:9  Error: 'promoCode' is never reassigned. Use 'const' instead.  prefer-const
+
+./src/app/api/push/subscribe/route.ts
+27:16  Warning: 'err' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/simulators/chat/route.ts
+46:13  Error: 'reply' is never reassigned. Use 'const' instead.  prefer-const
+
+./src/app/api/simulators/interview/route.ts
+39:13  Error: 'responseText' is never reassigned. Use 'const' instead.  prefer-const
+
+./src/app/api/simulators/review/route.ts
+50:18  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/simulators/route.ts
+29:18  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/student/courses/[id]/pdfs/[pdfId]/access/route.ts
+20:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/student/live-classes/route.ts
+11:27  Warning: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/support-chat/message/route.ts
+39:16  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+108:14  Warning: 'parseError' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/teacher/courses/[id]/assignments/[assignmentId]/submissions/[submissionId]/route.ts
+19:17  Warning: 'assignmentId' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/teacher/courses/[id]/pdfs/route.ts
+20:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/teacher/courses/[id]/pdfs/[pdfId]/route.ts
+20:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/teacher/courses/[id]/quizzes/[quizId]/attempts/route.ts
+4:8  Warning: 'User' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/upload/video/route.ts
+94:7  Error: Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free.  @typescript-eslint/ban-ts-comment
+
+./src/app/api/user/enrollments/route.ts
+5:8  Warning: 'Course' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/verify-certificate/[id]/route.ts
+7:8  Warning: 'Ambassador' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/blog/page.tsx
+55:8  Warning: React Hook useEffect has a missing dependency: 'fetchBlogs'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/blog/[slug]/page.tsx
+7:52  Warning: 'Tag' is defined but never used.  @typescript-eslint/no-unused-vars
+63:22  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/careers/page.tsx
+5:19  Warning: 'Briefcase' is defined but never used.  @typescript-eslint/no-unused-vars
+5:38  Warning: 'DollarSign' is defined but never used.  @typescript-eslint/no-unused-vars
+5:50  Warning: 'Send' is defined but never used.  @typescript-eslint/no-unused-vars
+5:100  Warning: 'X' is defined but never used.  @typescript-eslint/no-unused-vars
+5:137  Warning: 'Plus' is defined but never used.  @typescript-eslint/no-unused-vars
+84:9  Warning: 'handleApply' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/courses/page.tsx
+122:18  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+128:12  Warning: 'user' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/courses/[id]/assignment/[assignmentId]/page.tsx
+28:8  Warning: React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/courses/[id]/doubts/page.tsx
+18:8  Warning: React Hook useEffect has a missing dependency: 'fetchDoubts'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/courses/[id]/page.tsx
+15:24  Warning: 'Curriculum' is defined but never used.  @typescript-eslint/no-unused-vars
+15:36  Warning: 'CourseBenefits' is defined but never used.  @typescript-eslint/no-unused-vars
+29:14  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+186:11  Warning: 'handlePaymentSuccess' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/courses/[id]/quiz/[quizId]/page.tsx
+36:23  Warning: 'setStartTime' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+40:8  Warning: React Hook useEffect has a missing dependency: 'fetchQuiz'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+53:8  Warning: React Hook useEffect has a missing dependency: 'handleSubmit'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/courses/[id]/quiz/[quizId]/result/page.tsx
+6:40  Warning: 'Clock' is defined but never used.  @typescript-eslint/no-unused-vars
+29:11  Warning: 'router' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+31:11  Warning: 'searchParams' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/courses/[id]/video/[videoIndex]/page.tsx
+8:5  Warning: 'MoreVertical' is defined but never used.  @typescript-eslint/no-unused-vars
+8:39  Warning: 'Minimize' is defined but never used.  @typescript-eslint/no-unused-vars
+44:12  Warning: 'checkingEnrollment' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+110:8  Warning: React Hook useEffect has a missing dependency: 'handleEnded'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+432:34  Warning: 'prev' is defined but never used.  @typescript-eslint/no-unused-vars
+456:8  Warning: React Hook useEffect has missing dependencies: 'fetchData', 'fetchFeedback', and 'fetchNotes'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+468:59  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+473:13  Warning: 'player' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+507:63  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+511:8  Warning: React Hook useEffect has a missing dependency: 'isYouTube'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+534:26  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+586:8  Warning: React Hook useEffect has missing dependencies: 'lastValidTime' and 'markAsWatched'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/forgot-password/page.tsx
+10:11  Warning: 'router' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/hackathons/page.tsx
+3:31  Warning: 'useMemo' is defined but never used.  @typescript-eslint/no-unused-vars
+3:40  Warning: 'useCallback' is defined but never used.  @typescript-eslint/no-unused-vars
+17:3  Warning: 'Lock' is defined but never used.  @typescript-eslint/no-unused-vars
+220:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/hackathons/[id]/submit/page.tsx
+163:16  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+196:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/internships/applications/[id]/certificate/page.tsx
+6:10  Warning: 'Download' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/internships/page.tsx
+83:18  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/internships/[id]/tasks/page.tsx
+21:8  Warning: React Hook useEffect has a missing dependency: 'fetchTasks'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/layout.tsx
+11:8  Warning: 'dynamic' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/mentorship/page.tsx
+7:37  Warning: 'MessageCircle' is defined but never used.  @typescript-eslint/no-unused-vars
+7:64  Warning: 'Video' is defined but never used.  @typescript-eslint/no-unused-vars
+7:81  Warning: 'MessageSquare' is defined but never used.  @typescript-eslint/no-unused-vars
+7:96  Warning: 'Code2' is defined but never used.  @typescript-eslint/no-unused-vars
+7:110  Warning: 'ArrowRight' is defined but never used.  @typescript-eslint/no-unused-vars
+7:122  Warning: 'Star' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/page.tsx
+1:8  Warning: 'Link' is defined but never used.  @typescript-eslint/no-unused-vars
+31:10  Warning: 'Skeleton' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/payment/success/page.tsx
+3:21  Warning: 'useState' is defined but never used.  @typescript-eslint/no-unused-vars
+5:29  Warning: 'Download' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/playground/page.tsx
+7:62  Warning: 'Lock' is defined but never used.  @typescript-eslint/no-unused-vars
+11:10  Warning: 'Button' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/playground/share/[shareId]/page.tsx
+34:8  Warning: React Hook useEffect has a missing dependency: 'fetchSharedCode'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/portfolio/[id]/page.tsx
+5:61  Warning: 'Code' is defined but never used.  @typescript-eslint/no-unused-vars
+5:120  Warning: 'Sparkles' is defined but never used.  @typescript-eslint/no-unused-vars
+9:18  Warning: 'AnimatePresence' is defined but never used.  @typescript-eslint/no-unused-vars
+97:22  Warning: 'err' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/profile/page.tsx
+8:8  Warning: 'Ambassador' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/project/[subdomain]/page.tsx
+5:10  Warning: 'Loader2' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/reset-password/[token]/page.tsx
+24:8  Warning: React Hook useEffect has a missing dependency: 'verifyToken'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/resume/page.tsx
+4:38  Warning: 'Mail' is defined but never used.  @typescript-eslint/no-unused-vars
+4:44  Warning: 'Phone' is defined but never used.  @typescript-eslint/no-unused-vars
+4:51  Warning: 'MapPin' is defined but never used.  @typescript-eslint/no-unused-vars
+4:59  Warning: 'Linkedin' is defined but never used.  @typescript-eslint/no-unused-vars
+4:69  Warning: 'Github' is defined but never used.  @typescript-eslint/no-unused-vars
+77:22  Warning: 'err' is defined but never used.  @typescript-eslint/no-unused-vars
+87:11  Warning: 'sanitizeDescription' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/resume-checker/page.tsx
+4:18  Warning: 'FileText' is defined but never used.  @typescript-eslint/no-unused-vars
+4:51  Warning: 'AlertTriangle' is defined but never used.  @typescript-eslint/no-unused-vars
+4:85  Warning: 'ChevronRight' is defined but never used.  @typescript-eslint/no-unused-vars
+7:18  Warning: 'AnimatePresence' is defined but never used.  @typescript-eslint/no-unused-vars
+74:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/simulator/page.tsx
+49:12  Warning: 'fetchStatus' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+613:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/teacher/blogs/create/page.tsx
+9:5  Warning: 'Upload' is defined but never used.  @typescript-eslint/no-unused-vars
+52:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+88:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/teacher/blogs/edit/[id]/page.tsx
+87:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+135:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/teacher/blogs/page.tsx
+63:8  Warning: React Hook useEffect has a missing dependency: 'fetchBlogs'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/teacher/courses/create/page.tsx
+5:36  Warning: 'Plus' is defined but never used.  @typescript-eslint/no-unused-vars
+5:42  Warning: 'X' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/teacher/courses/[id]/assignments/page.tsx
+18:8  Warning: React Hook useEffect has a missing dependency: 'fetchAssignments'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/teacher/courses/[id]/assignments/[assignmentId]/submissions/page.tsx
+6:34  Warning: 'XCircle' is defined but never used.  @typescript-eslint/no-unused-vars
+10:11  Warning: 'router' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+22:8  Warning: React Hook useEffect has a missing dependency: 'fetchSubmissions'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/teacher/courses/[id]/edit/page.tsx
+13:11  Warning: 'router' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+69:8  Warning: React Hook useEffect has missing dependencies: 'fetchCourse' and 'fetchPDFs'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+1123:37  Warning: Image elements must have an alt prop, either with meaningful text, or an empty string for decorative images.  jsx-a11y/alt-text
+1147:49  Warning: Image elements must have an alt prop, either with meaningful text, or an empty string for decorative images.  jsx-a11y/alt-text
+
+./src/app/teacher/courses/[id]/quizzes/page.tsx
+30:8  Warning: React Hook useEffect has a missing dependency: 'fetchQuizzes'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/teacher/courses/[id]/quizzes/[quizId]/results/page.tsx
+6:27  Warning: 'CheckCircle' is defined but never used.  @typescript-eslint/no-unused-vars
+6:40  Warning: 'XCircle' is defined but never used.  @typescript-eslint/no-unused-vars
+10:11  Warning: 'router' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+21:8  Warning: React Hook useEffect has a missing dependency: 'fetchResults'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/teacher/doubts/page.tsx
+10:11  Warning: 'router' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+20:8  Warning: React Hook useEffect has a missing dependency: 'fetchDoubts'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/app/teacher/layout.tsx
+34:22  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/teacher/live-classes/page.tsx
+7:8  Warning: 'Link' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/teacher/profile/page.tsx
+27:18  Warning: 'AnimatePresence' is defined but never used.  @typescript-eslint/no-unused-vars
+28:10  Warning: 'QrCode' is defined but never used.  @typescript-eslint/no-unused-vars
+28:34  Warning: 'GlobeIcon' is defined but never used.  @typescript-eslint/no-unused-vars
+28:45  Warning: 'Download' is defined but never used.  @typescript-eslint/no-unused-vars
+77:10  Warning: 'verificationStatus' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/verify/[id]/page.tsx
+4:10  Warning: 'motion' is defined but never used.  @typescript-eslint/no-unused-vars
+25:9  Warning: 'isPending' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/verify-certificate/page.tsx
+12:9  Warning: 'router' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/verify-certificate/[id]/page.tsx
+39:16  Warning: 'err' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/about/LeadershipSection.tsx
+4:35  Warning: 'Instagram' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/admin/ManageCourseTeachersModal.tsx
+10:37  Warning: 'X' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/admin/UserManagementClient.tsx
+21:12  Warning: 'totalUsers' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+31:8  Warning: React Hook useEffect has a missing dependency: 'fetchUsers'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+125:50  Warning: 'index' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/ai-prep/SessionContent.tsx
+7:15  Warning: 'Rocket' is defined but never used.  @typescript-eslint/no-unused-vars
+126:8  Warning: React Hook useEffect has a missing dependency: 'userAnswer'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+209:8  Warning: React Hook useEffect has a missing dependency: 'handleTimeout'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+267:15  Warning: 'words' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+315:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/ambassador/AmbassadorDashboardClient.tsx
+4:10  Warning: 'Award' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/ambassador/certificate-modal.tsx
+4:10  Warning: 'motion' is defined but never used.  @typescript-eslint/no-unused-vars
+4:18  Warning: 'AnimatePresence' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/ambassador/RewardsStore.tsx
+4:10  Warning: 'Gift' is defined but never used.  @typescript-eslint/no-unused-vars
+70:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/auth/inactivity-logout.tsx
+71:8  Warning: React Hook useEffect has a missing dependency: 'resetTimer'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/components/auth/session-provider.tsx
+33:11  Warning: 'pathname' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/auth/SignupForm.tsx
+3:10  Warning: 'Button' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/careers/job-application-modal.tsx
+57:16  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/courses/course-details-components.tsx
+5:10  Warning: 'CheckCircle2' is defined but never used.  @typescript-eslint/no-unused-vars
+5:24  Warning: 'PlayCircle' is defined but never used.  @typescript-eslint/no-unused-vars
+5:36  Warning: 'BookOpen' is defined but never used.  @typescript-eslint/no-unused-vars
+5:46  Warning: 'Clock' is defined but never used.  @typescript-eslint/no-unused-vars
+5:53  Warning: 'Award' is defined but never used.  @typescript-eslint/no-unused-vars
+5:81  Warning: 'ArrowRight' is defined but never used.  @typescript-eslint/no-unused-vars
+5:93  Warning: 'Share2' is defined but never used.  @typescript-eslint/no-unused-vars
+5:101  Warning: 'Heart' is defined but never used.  @typescript-eslint/no-unused-vars
+5:114  Warning: 'Lock' is defined but never used.  @typescript-eslint/no-unused-vars
+5:133  Warning: 'Check' is defined but never used.  @typescript-eslint/no-unused-vars
+5:160  Warning: 'Tablet' is defined but never used.  @typescript-eslint/no-unused-vars
+6:10  Warning: 'Button' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/courses/courses-view.tsx
+6:98  Warning: 'BookOpen' is defined but never used.  @typescript-eslint/no-unused-vars
+6:128  Warning: 'Filter' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/courses/invoice.tsx
+3:10  Warning: 'CheckCircle' is defined but never used.  @typescript-eslint/no-unused-vars
+3:33  Warning: 'FileText' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/courses/payment-modal.tsx
+3:20  Warning: 'useEffect' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/courses/upi-payment-modal.tsx
+5:49  Warning: 'Tag' is defined but never used.  @typescript-eslint/no-unused-vars
+25:5  Warning: 'onSuccess' is defined but never used.  @typescript-eslint/no-unused-vars
+28:5  Warning: 'originalPrice' is defined but never used.  @typescript-eslint/no-unused-vars
+29:5  Warning: 'discountPercentage' is defined but never used.  @typescript-eslint/no-unused-vars
+52:8  Warning: React Hook useEffect has a missing dependency: 'generateQRCode'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+100:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/dashboard/activity-dashboard.tsx
+4:22  Warning: 'CalendarIcon' is defined but never used.  @typescript-eslint/no-unused-vars
+28:8  Warning: React Hook useEffect has a missing dependency: 'fetchActivities'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/components/HackathonCertificate.tsx
+4:10  Warning: 'CheckCircle2' is defined but never used.  @typescript-eslint/no-unused-vars
+4:24  Warning: 'QrCode' is defined but never used.  @typescript-eslint/no-unused-vars
+6:10  Warning: 'motion' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/internships/internships-view.tsx
+6:63  Warning: 'Filter' is defined but never used.  @typescript-eslint/no-unused-vars
+44:29  Warning: 'setTransactionData' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/landing/ai-nexus-showcase.tsx
+5:41  Warning: 'Mic' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/landing/ai-practice-preview.tsx
+4:58  Warning: 'Timer' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/landing/ai-roadmap-flow.tsx
+6:8  Warning: 'Link' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/landing/courses-preview.tsx
+8:11  Warning: 'PopularCourse' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/landing/faq.tsx
+5:23  Warning: 'HelpCircle' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/landing/features.tsx
+4:31  Warning: 'LayoutDashboard' is defined but never used.  @typescript-eslint/no-unused-vars
+4:69  Warning: 'Zap' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/landing/free-experience.tsx
+3:10  Warning: 'motion' is defined but never used.  @typescript-eslint/no-unused-vars
+4:16  Warning: 'Sparkles' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/landing/hero.tsx
+6:18  Warning: 'useMotionValue' is defined but never used.  @typescript-eslint/no-unused-vars
+6:34  Warning: 'useTransform' is defined but never used.  @typescript-eslint/no-unused-vars
+6:48  Warning: 'useSpring' is defined but never used.  @typescript-eslint/no-unused-vars
+7:53  Warning: 'PlayCircle' is defined but never used.  @typescript-eslint/no-unused-vars
+7:65  Warning: 'Zap' is defined but never used.  @typescript-eslint/no-unused-vars
+26:50  Warning: 'index' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/lead-capture-modal.tsx
+32:9  Warning: 'pathname' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/mentorship/mentorship-payment-modal.tsx
+5:28  Warning: 'AlertCircle' is defined but never used.  @typescript-eslint/no-unused-vars
+37:8  Warning: React Hook useEffect has a missing dependency: 'generateQRCode'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/components/playground/CodeEditor.tsx
+14:44  Warning: 'AlertCircle' is defined but never used.  @typescript-eslint/no-unused-vars
+14:80  Warning: 'Info' is defined but never used.  @typescript-eslint/no-unused-vars
+14:102  Warning: 'FolderOpen' is defined but never used.  @typescript-eslint/no-unused-vars
+14:132  Warning: 'ChevronRight' is defined but never used.  @typescript-eslint/no-unused-vars
+269:12  Warning: 'isSidebarOpen' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+492:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+558:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+588:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+615:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+641:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+889:46  Warning: 'mouseDownEvent' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/playground/pyodide.worker.ts
+2:1  Error: Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free.  @typescript-eslint/ban-ts-comment
+5:1  Error: Unexpected var, use let or const instead.  no-var
+
+./src/components/profile/ProfileClientContent.tsx
+7:5  Warning: 'User' is defined but never used.  @typescript-eslint/no-unused-vars
+30:25  Warning: 'setEnrollments' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+32:24  Warning: 'setHackathons' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/profile/StudentInfoForm.tsx
+7:11  Warning: 'Mail' is defined but never used.  @typescript-eslint/no-unused-vars
+7:17  Warning: 'Phone' is defined but never used.  @typescript-eslint/no-unused-vars
+7:42  Warning: 'Globe' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/PWAUpdater.tsx
+10:5  Error: Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free.  @typescript-eslint/ban-ts-comment
+
+./src/components/recently-viewed.tsx
+5:10  Warning: 'Badge' is defined but never used.  @typescript-eslint/no-unused-vars
+23:10  Warning: 'loading' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/SupportChatbot.tsx
+4:43  Warning: 'Minimize2' is defined but never used.  @typescript-eslint/no-unused-vars
+4:54  Warning: 'Bot' is defined but never used.  @typescript-eslint/no-unused-vars
+4:59  Warning: 'Terminal' is defined but never used.  @typescript-eslint/no-unused-vars
+129:9  Warning: 'parseAssistantMessage' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/teacher/id-card-modal.tsx
+5:66  Warning: 'CreditCard' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/ui/footer.tsx
+5:10  Warning: 'Facebook' is defined but never used.  @typescript-eslint/no-unused-vars
+5:49  Warning: 'Twitter' is defined but never used.  @typescript-eslint/no-unused-vars
+5:58  Warning: 'ExternalLink' is defined but never used.  @typescript-eslint/no-unused-vars
+9:13  Warning: 'user' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/ui/input.tsx
+5:18  Error: An interface declaring no members is equivalent to its supertype.  @typescript-eslint/no-empty-object-type
+
+./src/components/ui/MobileBottomNav.tsx
+6:67  Warning: 'User' is defined but never used.  @typescript-eslint/no-unused-vars
+6:73  Warning: 'MessageSquare' is defined but never used.  @typescript-eslint/no-unused-vars
+60:13  Warning: 'user' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/ui/navbar.tsx
+6:102  Warning: 'FileText' is defined but never used.  @typescript-eslint/no-unused-vars
+6:112  Warning: 'Terminal' is defined but never used.  @typescript-eslint/no-unused-vars
+6:122  Warning: 'Layers' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/ui/textarea.tsx
+4:18  Error: An interface declaring no members is equivalent to its supertype.  @typescript-eslint/no-empty-object-type
+
+./src/components/viz/CodeViz.tsx
+3:51  Warning: 'useRef' is defined but never used.  @typescript-eslint/no-unused-vars
+14:3  Warning: 'Layout' is defined but never used.  @typescript-eslint/no-unused-vars
+16:3  Warning: 'Maximize2' is defined but never used.  @typescript-eslint/no-unused-vars
+17:3  Warning: 'Code' is defined but never used.  @typescript-eslint/no-unused-vars
+18:3  Warning: 'Sun' is defined but never used.  @typescript-eslint/no-unused-vars
+19:3  Warning: 'Moon' is defined but never used.  @typescript-eslint/no-unused-vars
+20:3  Warning: 'Check' is defined but never used.  @typescript-eslint/no-unused-vars
+21:3  Warning: 'Layers' is defined but never used.  @typescript-eslint/no-unused-vars
+28:3  Warning: 'Type' is defined but never used.  @typescript-eslint/no-unused-vars
+31:3  Warning: 'HelpCircle' is defined but never used.  @typescript-eslint/no-unused-vars
+126:15  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+138:6  Warning: React Hook useCallback has a missing dependency: 'templates'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+167:6  Warning: React Hook useEffect has a missing dependency: 'isMobile'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+188:14  Warning: 'err' is defined but never used.  @typescript-eslint/no-unused-vars
+264:38  Warning: Expected an assignment or function call and instead saw an expression.  @typescript-eslint/no-unused-expressions
+
+./src/lib/admin-middleware.ts
+21:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/lib/db.ts
+18:3  Warning: Unused eslint-disable directive (no problems were reported from 'no-var').
+
+./src/lib/ocr-service.ts
+24:7  Error: Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free.  @typescript-eslint/ban-ts-comment
+36:5  Error: Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free.  @typescript-eslint/ban-ts-comment
+
+./src/lib/upload-utils.ts
+90:18  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+97:18  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/lib/viz/engine.ts
+41:13  Warning: 'scopes' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+149:14  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+172:14  Error: 'valRaw' is never reassigned. Use 'const' instead.  prefer-const
+
+./src/middleware.ts
+14:11  Error: 'subdomain' is never reassigned. Use 'const' instead.  prefer-const
+58:14  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/models/Activity.ts
+1:8  Warning: 'mongoose' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/models/ActivityLog.ts
+1:8  Warning: 'mongoose' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/models/Application.ts
+1:8  Warning: 'mongoose' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/models/ChatMessage.ts
+1:8  Warning: 'mongoose' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/models/Course.ts
+1:8  Warning: 'mongoose' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/models/CustomCertificate.ts
+1:8  Warning: 'mongoose' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/models/Doubt.ts
+1:8  Warning: 'mongoose' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/models/Enrollment.ts
+1:8  Warning: 'mongoose' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/models/Feedback.ts
+1:8  Warning: 'mongoose' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/models/Hackathon.ts
+1:8  Warning: 'mongoose' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/models/HackathonSubmission.ts
+1:8  Warning: 'mongoose' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/models/Internship.ts
+1:8  Warning: 'mongoose' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/models/InternshipSubmission.ts
+1:8  Warning: 'mongoose' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/models/InternshipTask.ts
+1:8  Warning: 'mongoose' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/models/Lead.ts
+1:8  Warning: 'mongoose' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/models/PDFAccess.ts
+1:8  Warning: 'mongoose' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/models/PushSubscription.ts
+1:8  Warning: 'mongoose' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/models/ResumeAnalysis.ts
+1:8  Warning: 'mongoose' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/models/Simulator.ts
+1:8  Warning: 'mongoose' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/models/User.ts
+1:8  Warning: 'mongoose' is defined but never used.  @typescript-eslint/no-unused-vars
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
