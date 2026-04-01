@@ -57,7 +57,7 @@ export const metadata: Metadata = {
     twitter: {
         card: "summary_large_image",
         title: "WEBORY - Skill Custom Startup Platform",
-        description: "Master skills, build projects, and launch your career with Webory.",
+        description: "Master skills, build projects, and launch your career with Webory Skills.",
         images: ["/og-image.png"],
     },
     icons: {

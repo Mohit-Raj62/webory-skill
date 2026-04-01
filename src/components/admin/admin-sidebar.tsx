@@ -85,7 +85,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
                 <div className="p-6 border-b border-white/10 flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-bold text-white">Admin Panel</h1>
-                        <p className="text-sm text-gray-400 mt-1">Skill Webory</p>
+                        <p className="text-sm text-gray-400 mt-1">Webory Skills</p>
                     </div>
                     <button
                         onClick={onClose}
