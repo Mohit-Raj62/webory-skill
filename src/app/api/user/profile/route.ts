@@ -23,8 +23,6 @@ export async function PATCH(req: Request) {
       userId,
       {
         $set: {
-          firstName,
-          lastName,
           bio,
           socialLinks,
           education,

@@ -94,7 +94,7 @@ export function StudentInfoForm({ initialUser }: { initialUser: any }) {
                     <div key={s.id} className="relative z-10 flex flex-col items-center">
                         <motion.button
                             onClick={() => setStep(s.id)}
-                            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                            className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
                                 step >= s.id 
                                 ? "bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/20" 
                                 : "bg-slate-900 border border-white/10 text-slate-500"
@@ -102,9 +102,9 @@ export function StudentInfoForm({ initialUser }: { initialUser: any }) {
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                         >
-                            <s.icon size={18} />
+                            <s.icon size={14} className="md:size-[18px]" />
                         </motion.button>
-                        <span className={`text-[10px] font-black uppercase tracking-widest mt-2 ${step >= s.id ? "text-white" : "text-slate-500"}`}>
+                        <span className={`text-[8px] md:text-[10px] font-black uppercase tracking-widest mt-2 hidden sm:block ${step >= s.id ? "text-white" : "text-slate-500"}`}>
                             {s.title}
                         </span>
                     </div>
@@ -130,31 +130,33 @@ export function StudentInfoForm({ initialUser }: { initialUser: any }) {
                 </AnimatePresence>
 
                 {/* Navigation Buttons */}
-                <div className="flex items-center justify-between mt-12 pt-8 border-t border-white/5">
+                <div className="flex flex-col sm:flex-row items-center justify-between mt-12 pt-8 border-t border-white/5 gap-4">
                     <Button
                         onClick={prevStep}
                         disabled={step === 1}
-                        className="h-12 px-6 rounded-2xl bg-white/5 hover:bg-white/10 text-white font-black uppercase tracking-widest text-[10px] border border-white/5 disabled:opacity-0 transition-all"
+                        className="w-full sm:w-auto h-12 px-6 rounded-2xl bg-white/5 hover:bg-white/10 text-white font-black uppercase tracking-widest text-[10px] border border-white/5 disabled:opacity-0 transition-all"
                     >
                         <ChevronLeft size={16} className="mr-2" /> Back
                     </Button>
 
-                    {step < 5 ? (
-                        <Button
-                            onClick={nextStep}
-                            className="h-12 px-8 rounded-2xl bg-white text-black hover:bg-blue-500 hover:text-white font-black uppercase tracking-widest text-[10px] transition-all flex items-center gap-2 group shadow-xl"
-                        >
-                            Next Step <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                        </Button>
-                    ) : (
-                        <Button
-                            onClick={handleSave}
-                            disabled={isSaving}
-                            className="h-12 px-8 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500 font-black uppercase tracking-widest text-[10px] transition-all flex items-center gap-2 shadow-xl shadow-blue-500/20"
-                        >
-                            {isSaving ? "Saving..." : <><Save size={16} /> Complete Profile</>}
-                        </Button>
-                    )}
+                    <div className="w-full sm:w-auto">
+                        {step < 5 ? (
+                            <Button
+                                onClick={nextStep}
+                                className="w-full sm:w-8 h-12 px-8 rounded-2xl bg-white text-black hover:bg-blue-500 hover:text-white font-black uppercase tracking-widest text-[10px] transition-all flex items-center gap-2 group shadow-xl"
+                            >
+                                Next Step <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                            </Button>
+                        ) : (
+                            <Button
+                                onClick={handleSave}
+                                disabled={isSaving}
+                                className="w-full sm:w-auto h-12 px-8 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500 font-black uppercase tracking-widest text-[10px] transition-all flex items-center gap-2 shadow-xl shadow-blue-500/20"
+                            >
+                                {isSaving ? "Saving..." : <><Save size={16} /> Complete Profile</>}
+                            </Button>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
@@ -177,16 +179,16 @@ function PersonalInfoStep({ formData, updateFormData }: StepProps) {
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">First Name</label>
                     <Input 
                         value={formData.firstName} 
-                        onChange={(e: any) => updateFormData({ firstName: e.target.value })}
-                        className="h-12 bg-white/5 border-white/10 rounded-xl focus:ring-blue-500 focus:border-blue-500"
+                        disabled
+                        className="h-12 bg-white/5 border-white/10 rounded-xl opacity-50 cursor-not-allowed"
                     />
                 </div>
                 <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Last Name</label>
                     <Input 
                         value={formData.lastName} 
-                        onChange={(e: any) => updateFormData({ lastName: e.target.value })}
-                        className="h-12 bg-white/5 border-white/10 rounded-xl focus:ring-blue-500 focus:border-blue-500"
+                        disabled
+                        className="h-12 bg-white/5 border-white/10 rounded-xl opacity-50 cursor-not-allowed"
                     />
                 </div>
                 <div className="space-y-2">
