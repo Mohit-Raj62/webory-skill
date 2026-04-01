@@ -3,7 +3,8 @@ import dbConnect from "@/lib/db";
 import Application from "@/models/Application";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
-import { getUser } from "@/lib/get-user";
+
+export const dynamic = "force-dynamic";
 
 export async function GET(
   req: Request,
@@ -14,12 +15,18 @@ export async function GET(
     await dbConnect();
     const { id: applicationId } = params;
 
-    // Auth Check using utility
-    const user = await getUser();
-    if (!user) {
+    // Auth Check (Manual for reliability)
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+
+    if (!token) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
-    const userId = user._id.toString();
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+      userId: string;
+    };
+    const userId = decoded.userId;
 
     // Fetch Application
     const application = await Application.findById(applicationId)
@@ -42,9 +49,8 @@ export async function GET(
       return NextResponse.json({ error: "Student data not found in application" }, { status: 404 });
     }
 
-    const studentId = typeof application.student === 'object' 
-      ? (application.student._id || application.student).toString() 
-      : application.student.toString();
+    // Safety check for student ID
+    const studentId = application.student._id ? application.student._id.toString() : application.student.toString();
 
     if (studentId !== userId) {
       return NextResponse.json({ error: "Unauthorized access" }, { status: 403 });

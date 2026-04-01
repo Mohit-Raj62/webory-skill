@@ -29,12 +29,27 @@ export async function PATCH(
       );
     }
 
-    // Find and update application, ensuring it belongs to the student
-    const application = await Application.findOneAndUpdate(
-      { _id: id, student: decoded.userId },
-      { resume },
-      { new: true }
-    );
+    // Find the application
+    const application = await Application.findOne({ _id: id, student: decoded.userId });
+
+    if (!application) {
+      return NextResponse.json(
+        { error: "Application not found or unauthorized" },
+        { status: 404 }
+      );
+    }
+
+    // Check if resume is already fixed (cannot be changed once set)
+    if (application.resume && application.resume !== "") {
+      return NextResponse.json(
+        { error: "Resume is locked and cannot be changed once submitted" },
+        { status: 403 }
+      );
+    }
+
+    // Update since no resume exists yet
+    application.resume = resume;
+    await application.save();
 
     if (!application) {
       return NextResponse.json(

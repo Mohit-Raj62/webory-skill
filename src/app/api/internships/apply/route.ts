@@ -61,8 +61,11 @@ export async function POST(req: Request) {
       ) {
         // Re-open/Update the application
         application.status = "pending";
-        application.resume = resume;
-        application.resumeType = resumeType;
+        // Preserve old resume if already present
+        if (!application.resume || application.resume === "") {
+          application.resume = resume;
+          application.resumeType = resumeType;
+        }
         application.coverLetter = coverLetter;
         application.portfolio = portfolio;
         application.linkedin = linkedin;

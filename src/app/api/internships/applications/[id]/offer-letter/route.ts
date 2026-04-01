@@ -6,6 +6,8 @@ import { cookies } from "next/headers";
 import fs from "fs";
 import path from "path";
 
+export const dynamic = "force-dynamic";
+
 function logDebug(message: string, data?: any) {
   const logPath = path.join(process.cwd(), "debug_log.txt");
   const timestamp = new Date().toISOString();
@@ -76,8 +78,16 @@ export async function GET(
       });
     }
 
+    // Safety check for student and internship existence before access
+    if (!application.student) {
+      console.error("Student data missing in application");
+      return NextResponse.json({ error: "Student data not found" }, { status: 404 });
+    }
+
     // Verify application belongs to user
-    if (application.student._id.toString() !== userId) {
+    const studentId = application.student._id ? application.student._id.toString() : application.student.toString();
+    
+    if (studentId !== userId) {
       console.error("Unauthorized access attempt");
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
