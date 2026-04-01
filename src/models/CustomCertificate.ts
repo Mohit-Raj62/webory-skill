@@ -26,6 +26,15 @@ const CustomCertificateSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  hackathonTitle: String,
+  projectName: String,
+  domain: String,
+  type: {
+    type: String,
+    enum: ["winner", "participant"],
+    default: "participant",
+  },
+  rank: Number,
 });
 
 const CustomCertificate =

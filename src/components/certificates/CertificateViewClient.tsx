@@ -67,18 +67,19 @@ export function CertificateViewClient({ certificate }: { certificate: any }) {
                 className="motion-wrapper shadow-[0_0_100px_rgba(37,99,235,0.1)] rounded-[2rem] overflow-hidden print:overflow-visible print:shadow-none print:rounded-none"
             >
                 <HackathonCertificate 
-                    type={certificate.type}
+                    type={certificate.type || (certificate.title?.toLowerCase().includes('champion') ? 'winner' : 'participant')}
                     studentName={certificate.studentName}
-                    hackathonTitle={certificate.hackathonTitle}
-                    projectName={certificate.projectName}
-                    rank={certificate.rank}
+                    hackathonTitle={certificate.hackathonTitle || certificate.description?.match(/in the (.*?)\./)?.[1] || "Software Development Hackathon"}
+                    projectName={certificate.projectName || certificate.description?.split("Project: ")[1] || "Open Innovation Project"}
+                    rank={certificate.rank || (certificate.title?.match(/(\d+)/)?.[0] ? parseInt(certificate.title.match(/(\d+)/)![0]) : 0)}
                     issueDate={certificate.issuedAt}
                     certificateId={certificate.certificateId}
+                    domain={certificate.domain || "Skills Hackathon"}
                 />
             </motion.div>
 
             {/* Print Styles */}
-            <style jsx global>{`
+            <style dangerouslySetInnerHTML={{ __html: `
                 @media print {
                     @page { 
                         size: A4 landscape; 
@@ -91,37 +92,51 @@ export function CertificateViewClient({ certificate }: { certificate: any }) {
                         width: 100% !important;
                         overflow: hidden !important;
                         background: white !important;
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                    }
+                    body {
                         visibility: hidden !important;
                     }
                     #certificate-container, 
                     #certificate-container * {
                         visibility: visible !important;
+                        -webkit-print-color-adjust: exact !important;
                     }
                     #certificate-container {
-                        position: fixed !important;
+                        position: absolute !important;
                         top: 0 !important;
                         left: 0 !important;
                         width: 297mm !important;
                         height: 210mm !important;
                         margin: 0 !important;
                         padding: 0 !important;
-                        z-index: 999999 !important;
+                        z-index: 9999999 !important;
                         background: white !important;
                         transform: scale(1) !important;
                         transform-origin: top left !important;
+                        display: flex !important;
+                        flex-direction: column !important;
+                        page-break-after: avoid !important;
+                        break-after: avoid !important;
+                        visibility: visible !important;
                     }
+                    /* Ensure parents are not display:none but content is hidden */
                     main, .container, .motion-wrapper {
-                        visibility: hidden !important;
                         display: block !important;
-                        padding: 0 !important;
-                        margin: 0 !important;
-                        width: auto !important;
+                        visibility: hidden !important;
                         height: auto !important;
+                        width: auto !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
                         overflow: visible !important;
-                        transform: none !important;
+                    }
+                    /* Force hide other specific non-parents */
+                    navbar, footer, .print\\:hidden {
+                        display: none !important;
                     }
                 }
-            `}</style>
+            ` }} />
         </div>
     );
 }

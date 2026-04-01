@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/session-provider";
 import { 
     User, Mail, Award, Briefcase, LogOut, ExternalLink, Trophy, 
-    Calendar, Video, FileText, Clock, Upload, ChevronRight, Zap 
+    Calendar, Video, FileText, Clock, Upload, ChevronRight, Zap, Sparkles 
 } from "lucide-react";
 import dynamic from 'next/dynamic';
 import { Badge } from "@/components/ui/badge";
@@ -33,8 +33,13 @@ export function ProfileClientContent({
     const [activeTab, setActiveTab] = useState<'courses' | 'internships' | 'grades' | 'hackathons'>('courses');
     const [uploadingAppId, setUploadingAppId] = useState<string | null>(null);
     const [showPhoneModal, setShowPhoneModal] = useState(!initialUser.phone);
+    const [mounted, setMounted] = useState(false);
     const router = useRouter();
     const { refreshAuth } = useAuth();
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const handleLogout = async () => {
         try {
@@ -124,6 +129,9 @@ export function ProfileClientContent({
                             </button>
                             <button onClick={() => router.push('/resume')} className="h-11 px-6 rounded-xl bg-slate-800/50 hover:bg-slate-800 text-white border border-white/5 font-black uppercase tracking-wider text-[10px] transition-all duration-300 flex items-center gap-2">
                                 <Briefcase size={14} /> My Resume
+                            </button>
+                            <button onClick={() => router.push('/profile/edit')} className="h-11 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-wider text-[10px] transition-all duration-300 flex items-center gap-2 shadow-lg shadow-blue-500/20">
+                                <Sparkles size={14} /> Edit Resume Info
                             </button>
                         </div>
                     </div>
@@ -246,7 +254,12 @@ export function ProfileClientContent({
                                     <div className="flex justify-between items-start mb-6">
                                         <div className="flex-1">
                                             <h3 className="text-white font-black tracking-tight mb-1 group-hover/app:text-purple-400 transition-colors">{app.internship?.title || "Unknown Career"}</h3>
-                                            <div className="flex items-center gap-2"><Calendar size={12} className="text-slate-500" /><p className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">Applied {new Date(app.appliedAt).toLocaleDateString()}</p></div>
+                                            <div className="flex items-center gap-2">
+                                                <Calendar size={12} className="text-slate-500" />
+                                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">
+                                                    Applied {mounted ? new Date(app.appliedAt).toLocaleDateString() : "Loading..."}
+                                                </p>
+                                            </div>
                                         </div>
                                         <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter ${app.status === 'pending' ? 'bg-amber-500/10 text-amber-500' : 'bg-emerald-500/10 text-emerald-500'}`}>{app.status.replace('_', ' ')}</span>
                                     </div>

@@ -3,6 +3,8 @@ import { Footer } from "@/components/ui/footer";
 import { CertificateViewClient } from "@/components/certificates/CertificateViewClient";
 import dbConnect from "@/lib/db";
 import CustomCertificate from "@/models/CustomCertificate";
+import HackathonSubmission from "@/models/HackathonSubmission";
+import "@/models/Hackathon"; // Ensure Hackathon model is registered
 import { ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -17,11 +19,13 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
         return { title: "Invalid Certificate - Webory Skills" };
     }
 
+    const hackTitle = (certificate as any).hackathonTitle || (certificate as any).title || "Webory Hackathon";
+
     return {
-        title: `Verified Certificate for ${(certificate as any).studentName} - Webory Skills`,
-        description: `Verified credential for completion of ${(certificate as any).hackathonTitle} at Webory Skills.`,
+        title: `Verified Certificate for ${certificate.studentName} - Webory Skills`,
+        description: `Verified credential for completion of ${hackTitle} at Webory Skills.`,
         openGraph: {
-            images: [`/api/certificates/${id}/og`], // Assuming there's an OG image endpoint or similar
+            images: [`/api/certificates/${id}/og`],
         }
     };
 }
@@ -45,6 +49,21 @@ export default async function PublicCertificateView({ params }: { params: Promis
                 </Link>
             </div>
         );
+    }
+
+    // Backward compatibility: If fields are missing, try to find the HackathonSubmission
+    if (!certificate.projectName || !certificate.hackathonTitle || !certificate.domain) {
+        const submission = await HackathonSubmission.findOne({ certificateId: certificate._id })
+            .populate("hackathonId", "title theme")
+            .lean();
+        
+        if (submission) {
+            certificate.projectName = certificate.projectName || submission.projectName;
+            certificate.hackathonTitle = certificate.hackathonTitle || (submission.hackathonId as any)?.title;
+            certificate.domain = certificate.domain || (submission.hackathonId as any)?.theme;
+            certificate.rank = certificate.rank || submission.rank;
+            certificate.type = certificate.type || (submission.status === "winner" ? "winner" : "participant");
+        }
     }
 
     const serializedCertificate = JSON.parse(JSON.stringify(certificate));

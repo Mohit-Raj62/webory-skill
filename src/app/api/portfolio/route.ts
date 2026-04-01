@@ -8,6 +8,8 @@ import "@/models/Assignment"; // Register Assignment model
 import "@/models/Course"; // Register Course model
 import "@/models/Internship"; // Register Internship model
 import { getDataFromToken } from "@/helpers/getDataFromToken";
+import HackathonSubmission from "@/models/HackathonSubmission";
+import "@/models/Hackathon";
 
 export async function GET(req: Request) {
   try {
@@ -38,7 +40,15 @@ export async function GET(req: Request) {
       status: { $in: ["accepted", "completed"] },
     }).populate("internship", "title company location type");
 
-    // 4. Fetch Projects (Submitted Assignments)
+    // 4. Fetch Internal Hackathons
+    const internalHackathons = await HackathonSubmission.find({
+      userId: userId,
+      status: { $in: ["submitted", "reviewing", "shortlisted", "winner", "participated"] },
+    })
+    .populate("hackathonId", "title description")
+    .lean();
+
+    // 5. Fetch Projects (Submitted Assignments)
     // We assume assignments with attachments or text are projects
     const submissions = await AssignmentSubmission.find({
       userId: userId,
@@ -58,27 +68,31 @@ export async function GET(req: Request) {
         bio: user.bio,
         skills: user.skills,
         avatar: user.avatar,
-        linkedin: user.linkedin || "", // Assuming linkedin might be added to user model later or fetched from application
-        github: user.github || "", // Same assumption
+        linkedin: user.socialLinks?.linkedin || "",
+        github: user.socialLinks?.github || "",
+        twitter: user.socialLinks?.twitter || "",
+        website: user.socialLinks?.website || "",
+        phone: user.phone || "",
       },
-      certificates: [
-        ...enrollments
-          .filter((e: any) => e.course != null)
-          .map((e: any) => ({
-            id: e._id,
-            courseTitle: e.course.title,
-            courseThumbnail: e.course.thumbnail,
-            completedAt: e.updatedAt,
-            type: "academic",
-          })),
-        ...(user.education || []).map((e: any) => ({
+      certificates: enrollments
+        .filter((e: any) => e.course != null)
+        .map((e: any) => ({
           id: e._id,
-          courseTitle: `${e.degree} at ${e.institution}`,
-          completedAt: e.endDate || e.startDate,
-          type: "manual_education",
-          details: e,
+          courseTitle: e.course.title,
+          courseThumbnail: e.course.thumbnail,
+          completedAt: e.updatedAt,
+          type: "academic",
         })),
-      ],
+      education: (user.education || []).map((e: any) => ({
+        id: e._id,
+        degree: e.degree,
+        institution: e.institution,
+        startDate: e.startDate,
+        endDate: e.endDate,
+        current: e.current,
+        learnings: e.learnings,
+        achievements: e.achievements,
+      })),
       internships: [
         ...internships
           .filter((i: any) => i.internship != null)
@@ -120,6 +134,27 @@ export async function GET(req: Request) {
           submissionUrl: p.url,
           technologies: p.technologies,
           type: "personal", // Distinguish manual
+        })),
+      ],
+      hackathons: [
+        ...internalHackathons.map((h: any) => ({
+          id: h._id,
+          title: h.hackathonId?.title || "Platform Hackathon",
+          projectName: h.projectName,
+          description: h.projectDescription,
+          role: h.teamMemberDetails?.find((m: any) => m.email === user.email)?.role || "Participant",
+          status: h.status,
+          date: h.createdAt,
+          type: "internal",
+        })),
+        ...(user.externalHackathons || []).map((h: any) => ({
+          id: h._id,
+          title: h.title,
+          projectName: h.projectName,
+          description: h.description,
+          role: h.role,
+          date: h.date,
+          type: "external",
         })),
       ],
     };

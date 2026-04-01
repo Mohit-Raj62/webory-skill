@@ -8,6 +8,9 @@ import "@/models/Assignment"; // Register Assignment model
 import "@/models/Course"; // Register Course model
 import "@/models/Internship"; // Register Internship model
 import CodeSnippet from "@/models/CodeSnippet";
+import HackathonSubmission from "@/models/HackathonSubmission";
+import "@/models/Hackathon";
+import "@/models/CustomCertificate";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
@@ -41,6 +44,12 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
             select: "title description"
         }).populate("courseId", "title");
 
+        // 5. Fetch Hackathons
+        const internalHackathons = await HackathonSubmission.find({
+            userId: id,
+            status: { $in: ["submitted", "reviewing", "shortlisted", "winner", "participated"] },
+        }).populate("hackathonId", "title description").populate("certificateId").lean();
+
         // 5. Fetch Proof of Work (Live Deployed Projects)
         const proofOfWork = await CodeSnippet.find({
             user: id,
@@ -55,6 +64,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
                 bio: user.bio,
                 skills: user.skills,
                 avatar: user.avatar,
+                linkedin: user.socialLinks?.linkedin || "",
+                github: user.socialLinks?.github || "",
             },
             certificates: enrollments
                 .filter((e: any) => e.course != null)
@@ -91,7 +102,29 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
                 subdomain: pow.subdomain,
                 deploymentUrl: pow.deploymentUrl,
                 caseStudy: pow.caseStudy
-            }))
+            })),
+            hackathons: [
+                ...internalHackathons.map((h: any) => ({
+                    id: h._id,
+                    title: h.hackathonId?.title || "Platform Hackathon",
+                    projectName: h.projectName,
+                    description: h.projectDescription,
+                    role: h.teamMemberDetails?.find((m: any) => m.email === user.email)?.role || "Participant",
+                    status: h.status,
+                    date: h.createdAt,
+                    type: "internal",
+                    certificateId: h.certificateId?.certificateId || null,
+                })),
+                ...(user.externalHackathons || []).map((h: any) => ({
+                    id: h._id,
+                    title: h.title,
+                    projectName: h.projectName,
+                    description: h.description,
+                    role: h.role,
+                    date: h.date,
+                    type: "external",
+                })),
+            ]
         };
 
         return NextResponse.json({ portfolio: portfolioData });

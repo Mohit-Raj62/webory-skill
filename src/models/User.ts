@@ -40,6 +40,7 @@ const UserSchema = new Schema({
     type: {
       linkedin: String,
       twitter: String,
+      github: String,
       website: String,
     },
     default: {},
@@ -72,6 +73,8 @@ const UserSchema = new Schema({
         endDate: Date,
         current: Boolean,
         description: String,
+        learnings: String,
+        achievements: String,
       },
     ],
     default: [],
@@ -86,7 +89,22 @@ const UserSchema = new Schema({
         endDate: Date,
         current: Boolean,
         description: String, // Grade/GPA etc
+        learnings: String,
+        achievements: String,
       },
+    ],
+    default: [],
+  },
+  externalHackathons: {
+    type: [
+      {
+        title: String,
+        projectName: String,
+        description: String,
+        certificateUrl: String,
+        date: Date,
+        role: String,
+      }
     ],
     default: [],
   },

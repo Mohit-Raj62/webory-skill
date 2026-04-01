@@ -82,11 +82,24 @@ export async function POST(req: Request) {
           certificateId: certId,
           certificateKey: certKey,
           issuedAt: hackathon.endDate, // Fixed to the event end date, rather than the moment admin clicks 'Finalize'
+          type: isWinner ? "winner" : "participant",
+          rank: isWinner ? winnerData.rank : 0,
+          hackathonTitle: hackathon.title,
+          projectName: sub.projectName,
+          domain: hackathon.theme,
         });
         sub.certificateId = certificate._id;
       } else {
         // Already has certificate — update title/description if rank changed
-        await CustomCertificate.findByIdAndUpdate(sub.certificateId, { title, description });
+        await CustomCertificate.findByIdAndUpdate(sub.certificateId, { 
+          title, 
+          description,
+          type: isWinner ? "winner" : "participant",
+          rank: isWinner ? winnerData.rank : 0,
+          hackathonTitle: hackathon.title,
+          projectName: sub.projectName,
+          domain: hackathon.theme,
+        });
       }
 
       // Update submission with new status, rank, and XP tracking

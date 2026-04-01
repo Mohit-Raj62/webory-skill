@@ -13,6 +13,7 @@ interface HackathonCertificateProps {
   rank?: number;
   issueDate: string;
   certificateId: string;
+  domain?: string;
 }
 
 export default function HackathonCertificate({
@@ -22,11 +23,19 @@ export default function HackathonCertificate({
   projectName,
   rank,
   issueDate,
-  certificateId
+  certificateId,
+  domain
 }: HackathonCertificateProps) {
   const isWinner = type === "winner";
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
+  const [qrUrl, setQrUrl] = useState(`https://weboryskills.in/certificates/${certificateId}`);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+        setQrUrl(`${window.location.origin}/certificates/${certificateId}`);
+    }
+  }, [certificateId]);
 
   // Define theme colors based on rank/participation
   const themeAccent = isWinner ? (rank === 1 ? 'from-amber-400 to-yellow-600' : rank === 2 ? 'from-slate-300 to-slate-500' : 'from-orange-400 to-orange-600') : 'from-blue-600 to-indigo-600';
@@ -60,7 +69,7 @@ export default function HackathonCertificate({
 
   return (
     <div 
-      className="w-full flex flex-col items-center justify-center p-4 overflow-hidden print:overflow-visible print:block" 
+      className="w-full flex flex-col items-center justify-center p-4 overflow-hidden print:overflow-visible print:block !print:p-0 !print:m-0" 
       ref={wrapperRef}
     >
       <div 
@@ -74,7 +83,7 @@ export default function HackathonCertificate({
       >
         <div 
           id="certificate-container"
-          className="bg-white relative shadow-2xl flex flex-col items-center justify-between p-8 md:p-12 print-exact overflow-hidden h-full w-full"
+          className="bg-white relative shadow-2xl flex flex-col items-center justify-between p-8 md:p-12 print-exact overflow-hidden h-full w-full !print:p-8"
           style={{ 
             width: '1122px',
             height: '794px',
@@ -122,7 +131,9 @@ export default function HackathonCertificate({
                 </div>
                 <div>
                   <h1 className="text-3xl font-black tracking-tighter uppercase text-slate-900 leading-none">WEBORY</h1>
-                  <p className="text-xs font-bold tracking-[0.3em] uppercase text-slate-500">Skills Hackathon</p>
+                  <span className={`inline-block mt-1 text-[8px] font-black tracking-[0.2em] uppercase px-2 py-0.5 rounded-md ${themeBg} ${themeText} border ${themeBorder}`}>
+                    {domain || "Skills Hackathon"}
+                  </span>
                 </div>
               </div>
 
@@ -153,15 +164,15 @@ export default function HackathonCertificate({
                 <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 mt-4 relative overflow-hidden group">
                   <div className={`absolute top-0 left-0 w-1 h-full bg-gradient-to-b ${themeAccent}`}></div>
                   
-                  <h3 className="text-2xl font-black text-slate-900 uppercase tracking-wide mb-2">
+                  <h3 className={`text-xl font-black uppercase tracking-wide mb-2 ${themeText}`}>
                     {hackathonTitle}
                   </h3>
                   
                   <div className="flex flex-col md:flex-row items-center justify-center gap-4 mt-4">
-                    <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm">
-                      <Code2 size={16} className="text-slate-400" />
-                      <span className="text-xs font-black text-slate-700 uppercase tracking-widest truncate max-w-[200px]">
-                        Project: {projectName}
+                    <div className={`flex items-center gap-2 bg-white px-4 py-2 rounded-xl border ${themeBorder} shadow-sm group-hover:shadow-md transition-shadow`}>
+                      <Code2 size={16} className={themeText} />
+                      <span className="text-xs font-black text-slate-700 uppercase tracking-widest truncate max-w-[250px]">
+                        Project: <span className={themeText}>{projectName}</span>
                       </span>
                     </div>
                     
@@ -198,7 +209,7 @@ export default function HackathonCertificate({
                 </div>
                 <div className="text-center mt-2">
                   <span className="block text-[8px] font-black text-slate-400 uppercase tracking-widest">Issued On</span>
-                  <span className="block text-xs font-bold text-slate-800">
+                  <span className="block text-xs font-bold text-slate-800" suppressHydrationWarning>
                     {new Date(issueDate).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </span>
                 </div>
@@ -208,7 +219,7 @@ export default function HackathonCertificate({
               <div className="flex flex-col items-end gap-2 text-right">
                 <div className="p-2 bg-white border border-slate-200 rounded-xl shadow-sm">
                   <QRCodeSVG 
-                    value={typeof window !== 'undefined' ? `${window.location.origin}/certificates/${certificateId}` : `https://weboryskills.in/certificates/${certificateId}`} 
+                    value={qrUrl} 
                     size={70}
                     level="M"
                   />
@@ -224,7 +235,7 @@ export default function HackathonCertificate({
         </div>
       </div>
 
-      <style jsx global>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
         
         .print-exact {
@@ -238,7 +249,7 @@ export default function HackathonCertificate({
             margin-bottom: 0 !important;
           }
         }
-      `}</style>
+      ` }} />
     </div>
   );
 }
