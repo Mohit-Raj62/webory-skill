@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { AlertCircle, RefreshCcw, Home } from 'lucide-react';
 import Link from 'next/link';
-import * as Sentry from '@sentry/nextjs';
+import { captureException } from '@sentry/nextjs';
 
 export default function ErrorBoundary({
   error,
@@ -14,7 +14,7 @@ export default function ErrorBoundary({
 }) {
   useEffect(() => {
     // Log the error to Sentry
-    Sentry.captureException(error);
+    captureException(error);
     console.error('App Error Caught:', error);
   }, [error]);
 
