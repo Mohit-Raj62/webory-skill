@@ -31,7 +31,7 @@ export async function GET(
       .populate("internship", "title company")
       .populate("student", "firstName lastName")
       .select(
-        "status startDate appliedAt duration completedAt certificateId certificateKey offerDate"
+        "student internship status startDate appliedAt duration completedAt certificateId certificateKey offerDate"
       )
       .lean();
 
@@ -43,7 +43,7 @@ export async function GET(
     }
 
     // Verify ownership
-    if (application.student._id.toString() !== userId) {
+    if (!application.student || application.student._id.toString() !== userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
