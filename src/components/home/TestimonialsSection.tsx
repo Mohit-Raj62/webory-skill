@@ -58,7 +58,7 @@ export function TestimonialsSection() {
                     What Our Users Say
                 </h2>
                 <p className="text-gray-400 max-w-2xl mx-auto">
-                    Real feedback from students and interns shaping their future with Skill Webory.
+                    Real feedback from students and interns shaping their future with Webory Skills.
                 </p>
             </div>
 

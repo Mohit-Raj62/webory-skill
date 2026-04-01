@@ -198,7 +198,7 @@ export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initi
                         
                         <p className="text-base sm:text-lg md:text-2xl text-gray-400 mb-8 md:mb-10 max-w-2xl mx-auto leading-relaxed font-light px-4">
                             Personalized AI roadmaps, hands-on projects, and industry mentorship. 
-                            Build your <span className="text-white font-medium">high-income career</span> with Webory.
+                            Build your <span className="text-white font-medium">high-income career</span> with Webory Skills.
                         </p>
 
                         <div className="flex flex-col items-center justify-center gap-6 mt-8 md:mt-12">

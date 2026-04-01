@@ -45,7 +45,7 @@ export const metadata: Metadata = {
         locale: "en_IN",
         url: "https://www.weboryskills.in",
         title: "WEBORY - Skill Custom Startup Platform",
-        description: "Master skills, build projects, and launch your career with Webory.",
+        description: "Master skills, build projects, and launch your career with Webory Skills.",
         siteName: "Webory Skills",
         images: [{
             url: "/og-image.png",
