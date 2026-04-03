@@ -149,71 +149,63 @@ export default function ExplorePage() {
             </div>
 
             {/* Premium Header Control Rail */}
-            <div className="relative z-50 pt-safe px-6 pt-16">
-                <header className="flex flex-col gap-8">
-                    <div className="flex items-center justify-between">
-                         <div className="flex items-center gap-3">
+            <div className="relative z-50 pt-safe px-4 sm:px-6 pt-24">
+                <header className="flex flex-col gap-6 sm:gap-8">
+                    <div className="flex items-center justify-between gap-2">
+                         <div className="flex items-center gap-2 sm:gap-3">
                             <motion.button 
                                 whileTap={{ scale: 0.9 }}
                                 onClick={() => router.back()}
-                                className="bg-white/[0.03] border border-white/10 px-4 py-2 rounded-full flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-all backdrop-blur-2xl"
+                                className="bg-white/[0.03] border border-white/10 px-3 sm:px-4 py-2 rounded-full flex items-center gap-2 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-all backdrop-blur-2xl whitespace-nowrap"
                             >
                                 <ArrowLeft size={14} />
+                                BACK
                             </motion.button>
-                            <div className="w-px h-6 bg-white/10" />
-                            {/* Webory Branding Integration */}
-                            <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center font-black text-xs shadow-lg shadow-blue-500/20">W</div>
-                                <div className="flex flex-col -gap-1">
-                                    <span className="text-[10px] font-black tracking-tighter leading-none">WEBORY</span>
-                                    <span className="text-[8px] font-black text-blue-500 tracking-tighter leading-none">SKILLS</span>
-                                </div>
-                            </div>
                          </div>
 
-                        <div className="flex items-center gap-4 bg-white/[0.03] border border-white/5 px-4 py-2 rounded-full backdrop-blur-3xl shadow-xl">
-                            <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest leading-none flex items-center gap-2">
+                        <div className="flex items-center gap-2 sm:gap-4 bg-white/[0.03] border border-white/5 px-3 sm:px-4 py-2 rounded-full backdrop-blur-3xl shadow-xl min-w-0">
+                            <span className="text-[9px] sm:text-[10px] font-black text-blue-500 uppercase tracking-widest leading-none flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
                                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.8)]" />
                                 ONLINE
                             </span>
                             <div className="w-px h-3 bg-white/10" />
-                            <div className="flex items-center gap-2 text-gray-400">
+                            <div className="flex items-center gap-1.5 sm:gap-2 text-gray-400 whitespace-nowrap">
                                 <Clock size={12} />
-                                <span className="text-[10px] font-black">{currentTime}</span>
+                                <span className="text-[9px] sm:text-[10px] font-black">{currentTime}</span>
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-5 mt-2">
-                         <div className="relative w-14 h-14 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center shadow-2xl backdrop-blur-3xl">
-                                <LayoutGrid size={28} className="text-blue-500" />
+                    <div className="flex items-center gap-4 sm:gap-5 mt-2">
+                         <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center shadow-2xl backdrop-blur-3xl flex-shrink-0">
+                                <LayoutGrid size={24} className="text-blue-500 sm:w-[28px] sm:h-[28px]" />
                                 <div className="absolute inset-0 bg-blue-500/10 blur-xl -z-10" />
                          </div>
-                         <div>
-                            <h1 className="text-2xl font-black italic tracking-tighter uppercase text-white leading-none">
+                         <div className="min-w-0">
+                            <h1 className="text-xl sm:text-2xl font-black italic tracking-tighter uppercase text-white leading-none truncate">
                                 EXPLORE <span className="text-blue-400">INDEX</span>
                             </h1>
-                            <p className="text-[9px] font-bold text-gray-500 uppercase tracking-[0.4em] mt-2">Industrial Navigation Unit v.5</p>
+                            <p className="text-[8px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-[0.2em] sm:tracking-[0.4em] mt-2 truncate">Industrial Navigation Unit v.5</p>
                          </div>
                     </div>
                 </header>
             </div>
 
-            <main className="relative z-10 max-w-xl mx-auto px-6 pt-16">
+            <main className="relative z-10 max-w-xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16">
                 
                 {MENU_RAIL_CATEGORIES.map((category, catIdx) => (
-                    <section key={category.id} className="mb-20 last:mb-0 space-y-6">
+                    <section key={category.id} className="mb-16 sm:mb-20 last:mb-0 space-y-5 sm:space-y-6">
                         {/* Technical Section Divider */}
                         <div className="flex flex-col gap-2">
                              <div className="flex items-center gap-3">
-                                <span className="text-[10px] font-black text-blue-500 uppercase tracking-[0.5em] italic">{category.title}</span>
+                                <span className="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em] sm:tracking-[0.5em] italic">{category.title}</span>
                                 <div className="flex-1 h-px bg-gradient-to-r from-blue-500/20 to-transparent" />
                              </div>
-                             <p className="border-l border-blue-500/30 pl-3 text-[9px] font-bold text-gray-600 uppercase tracking-widest">{category.subtitle}</p>
+                             <p className="border-l border-blue-500/30 pl-3 text-[8px] sm:text-[9px] font-bold text-gray-600 uppercase tracking-widest">{category.subtitle}</p>
                         </div>
 
                         {/* Premium Vertical Rail */}
-                        <div className="flex flex-col gap-3">
+                        <div className="flex flex-col gap-2.5 sm:gap-3">
                             {category.items.map((item, itemIdx) => (
                                 <motion.div
                                     key={itemIdx}
@@ -226,33 +218,33 @@ export default function ExplorePage() {
                                 >
                                     <Link 
                                         href={item.href}
-                                        className="relative flex items-center justify-between p-4 rounded-2xl bg-[#0A0A0A] border border-white/5 hover:bg-white/[0.04] hover:border-blue-500/20 transition-all duration-300 backdrop-blur-3xl overflow-hidden shadow-sm shadow-blue-500/5 group"
+                                        className="relative flex items-center justify-between p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-[#0A0A0A] border border-white/5 hover:bg-white/[0.04] hover:border-blue-500/20 transition-all duration-300 backdrop-blur-3xl overflow-hidden shadow-sm shadow-blue-500/5 group"
                                     >
                                         {/* Interaction Glow */}
                                         <div className="absolute inset-y-0 left-0 w-1 bg-blue-500/0 group-hover:bg-blue-500/60 transition-all" />
                                         
-                                        <div className="flex items-center gap-5">
-                                            <div className="w-12 h-12 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-center text-blue-400 group-hover:scale-110 group-hover:bg-blue-500/10 group-hover:text-blue-500 transition-all shadow-xl">
-                                                <item.icon size={22} strokeWidth={1.5} />
+                                        <div className="flex items-center gap-3 sm:gap-5 min-w-0">
+                                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-center text-blue-400 group-hover:scale-110 group-hover:bg-blue-500/10 group-hover:text-blue-500 transition-all shadow-xl flex-shrink-0">
+                                                <item.icon size={18} className="sm:w-[22px] sm:h-[22px]" strokeWidth={1.5} />
                                             </div>
-                                            <div className="space-y-1">
-                                                <div className="flex items-center gap-2">
-                                                    <h3 className="text-sm font-black tracking-tighter uppercase italic group-hover:text-blue-400 transition-colors">{item.label}</h3>
+                                            <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                                                <div className="flex items-center gap-1.5 sm:gap-2">
+                                                    <h3 className="text-xs sm:text-sm font-black tracking-tighter uppercase italic group-hover:text-blue-400 transition-colors truncate">{item.label}</h3>
                                                     {item.verified && (
-                                                         <ShieldCheck size={12} className="text-blue-500" />
+                                                         <ShieldCheck size={10} className="text-blue-500 sm:w-[12px] sm:h-[12px]" />
                                                     )}
                                                 </div>
-                                                <p className="text-[9px] font-bold text-gray-600 uppercase tracking-widest leading-none">{item.description || "Access neural functionality"}</p>
+                                                <p className="text-[8px] sm:text-[9px] font-bold text-gray-600 uppercase tracking-widest leading-none truncate">{item.description || "Access neural functionality"}</p>
                                             </div>
                                         </div>
 
-                                        <div className="flex items-center gap-4">
+                                        <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0 ml-2">
                                             {item.badge && (
-                                                <span className="text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 italic">
+                                                <span className="text-[7px] sm:text-[8px] font-black uppercase tracking-widest px-1.5 sm:px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 italic hidden min-[360px]:inline-block">
                                                     {item.badge}
                                                 </span>
                                             )}
-                                            <ChevronRight size={16} className="text-gray-700 group-hover:text-blue-500 group-hover:translate-x-1 transition-all" />
+                                            <ChevronRight size={14} className="text-gray-700 sm:w-[16px] sm:h-[16px] group-hover:text-blue-500 group-hover:translate-x-1 transition-all" />
                                         </div>
                                     </Link>
                                 </motion.div>
@@ -262,61 +254,64 @@ export default function ExplorePage() {
                 ))}
 
                 {/* Final Professional Identity Rail */}
-                <footer className="pt-12 pb-10 space-y-10 border-t border-white/5">
-                    <div className="flex flex-col items-center gap-10">
+                <footer className="pt-10 sm:pt-12 pb-8 sm:pb-10 space-y-8 sm:space-y-10 border-t border-white/5">
+                    <div className="flex flex-col items-center gap-8 sm:gap-10">
                         {/* Premium Social Rail */}
-                        <div className="flex justify-center items-center gap-8 px-6 py-4 rounded-3xl bg-white/[0.02] border border-white/5 backdrop-blur-3xl shadow-2xl">
+                        <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-8 px-4 sm:px-6 py-3 sm:py-4 rounded-2xl sm:rounded-3xl bg-white/[0.02] border border-white/5 backdrop-blur-3xl shadow-2xl">
                             {SOCIALS.map((social, sIdx) => (
                                 <Link 
                                     key={sIdx} 
                                     href={social.href} 
-                                    className="group flex flex-col items-center gap-2"
+                                    className="group flex flex-col items-center gap-1.5 sm:gap-2"
                                 >
-                                    <div className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-gray-500 group-hover:text-blue-400 group-hover:bg-blue-500/10 group-hover:border-blue-500/20 group-hover:scale-110 transition-all duration-300 shadow-xl">
-                                        <social.icon size={20} strokeWidth={1.5} />
+                                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-gray-500 group-hover:text-blue-400 group-hover:bg-blue-500/10 group-hover:border-blue-500/20 group-hover:scale-110 transition-all duration-300 shadow-xl">
+                                        <social.icon size={18} className="sm:w-[20px] sm:h-[20px]" strokeWidth={1.5} />
                                     </div>
-                                    <span className="text-[7px] font-black uppercase tracking-[0.2em] text-gray-700 group-hover:text-blue-500 transition-colors">
+                                    <span className="text-[6px] sm:text-[7px] font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] text-gray-700 group-hover:text-blue-500 transition-colors">
                                         {social.name}
                                     </span>
                                 </Link>
                             ))}
                         </div>
 
-                        <div className="flex flex-col items-center gap-6 text-center">
-                             <div className="flex justify-center gap-6">
+                        <div className="flex flex-col items-center gap-4 text-center w-full">
+                             <div className="flex justify-center gap-4 sm:gap-6">
                                 {["PRIVACY", "TERMS", "SUPPORT"].map((l, i) => (
-                                    <Link key={i} href="#" className="text-[9px] font-black text-gray-600 uppercase tracking-widest hover:text-blue-400 transition-colors italic">{l}</Link>
+                                    <Link key={i} href="#" className="text-[8px] sm:text-[9px] font-black text-gray-600 uppercase tracking-widest hover:text-blue-400 transition-colors italic">{l}</Link>
                                 ))}
                             </div>
                             
                             {/* Detailed Branding Hub */}
-                            <div className="flex flex-col items-center gap-3">
-                                <div className="flex items-center gap-3">
-                                     <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shadow-inner">
-                                        <div className="w-4 h-4 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-[10px] font-black">W</div>
+                            <div className="flex flex-col items-center gap-3 w-full">
+                                <div className="flex items-center gap-2 sm:gap-3">
+                                     <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shadow-inner">
+                                        <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-[8px] font-black">W</div>
                                      </div>
-                                     <div className="flex flex-col items-start leading-none -gap-1">
-                                        <span className="text-sm font-black tracking-tighter italic">WEBORY <span className="text-blue-500">SKILLS</span></span>
-                                        <span className="text-[7px] font-bold text-gray-700 tracking-widest uppercase">Official Industry Platform</span>
+                                     <div className="flex flex-col items-start leading-none gap-0.5">
+                                        <span className="text-xs sm:text-sm font-black tracking-tighter italic">WEBORY <span className="text-blue-500">SKILLS</span></span>
+                                        <span className="text-[6px] sm:text-[7px] font-bold text-gray-700 tracking-widest uppercase">Official Industry Platform</span>
                                      </div>
                                 </div>
-                                <div className="h-px w-24 bg-gradient-to-r from-transparent via-white/10 to-transparent mx-auto opacity-50" />
+                                <div className="h-px w-20 sm:w-24 bg-gradient-to-r from-transparent via-white/10 to-transparent mx-auto opacity-50" />
                             </div>
                         </div>
                     </div>
 
-                    <div className="text-center space-y-5">
+                    <div className="text-center space-y-4 sm:space-y-5">
                         <div className="space-y-1.5 opacity-60">
-                             <p className="text-[9px] font-black uppercase tracking-[0.6em] text-gray-700 italic">WEBORY TECHNOLOGIES INC.</p>
-                             <p className="text-[7px] text-gray-800 font-bold uppercase tracking-[0.2em] leading-none">Industrial Navigation Operating System • EST. 2024</p>
+                             <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.4em] sm:tracking-[0.6em] text-gray-700 italic">WEBORY TECHNOLOGIES INC.</p>
+                             <p className="text-[6px] sm:text-[7px] text-gray-800 font-bold uppercase tracking-[0.1em] sm:tracking-[0.2em] leading-none">Industrial Navigation Operating System • EST. 2024</p>
                         </div>
-                        <div className="flex justify-center gap-6 opacity-20 group-hover:opacity-100 transition-all">
-                                <Cpu size={14} className="text-gray-800" />
-                                <Activity size={14} className="text-gray-800" />
-                                <Dna size={14} className="text-gray-800" />
+                        <div className="flex justify-center gap-4 sm:gap-6 opacity-20 group-hover:opacity-100 transition-all">
+                                <Cpu size={12} className="sm:w-[14px] sm:h-[14px] text-gray-800" />
+                                <Activity size={12} className="sm:w-[14px] sm:h-[14px] text-gray-800" />
+                                <Dna size={12} className="sm:w-[14px] sm:h-[14px] text-gray-800" />
                         </div>
                     </div>
                 </footer>
+
+            </main>
+        </div>
 
             </main>
         </div>
