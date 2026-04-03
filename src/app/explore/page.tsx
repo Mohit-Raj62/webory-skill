@@ -312,9 +312,6 @@ export default function ExplorePage() {
 
             </main>
         </div>
-
-            </main>
-        </div>
     );
 }
 
