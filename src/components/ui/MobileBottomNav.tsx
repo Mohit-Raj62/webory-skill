@@ -17,10 +17,14 @@ const NavItem = ({ href, icon: Icon, label, isActive, onClick, isCenter }: {
     isCenter?: boolean;
 }) => {
     const content = (
-        <div className={cn(
-            "flex flex-col items-center justify-center flex-1 relative group cursor-pointer transition-all duration-300",
-            isCenter ? "-mt-8 mb-4 h-16" : "h-full pt-1"
-        )}>
+        <motion.div 
+            whileTap={{ y: isCenter ? -12 : -4 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            className={cn(
+                "flex flex-col items-center justify-center flex-1 relative group cursor-pointer transition-all duration-300 min-w-0",
+                isCenter ? "-mt-8 mb-4 h-16" : "h-full pt-1"
+            )}
+        >
             <div className={cn(
                 "relative transition-all duration-300 flex items-center justify-center",
                 isCenter 
@@ -28,7 +32,7 @@ const NavItem = ({ href, icon: Icon, label, isActive, onClick, isCenter }: {
                     : "p-1 rounded-xl",
                 !isCenter && (isActive ? "text-blue-400 bg-blue-500/10" : "text-gray-500 group-hover:text-gray-300")
             )}>
-                <Icon size={isCenter ? 24 : 22} strokeWidth={isActive || isCenter ? 2.5 : 2} />
+                <Icon size={isCenter ? 24 : 20} strokeWidth={isActive || isCenter ? 2.5 : 2} />
                 {isActive && !isCenter && (
                     <motion.div
                         layoutId="active-pill"
@@ -38,7 +42,7 @@ const NavItem = ({ href, icon: Icon, label, isActive, onClick, isCenter }: {
                 )}
             </div>
             <span className={cn(
-                "text-[9px] sm:text-[10px] whitespace-nowrap font-bold tracking-tight transition-colors duration-300",
+                "text-[8px] sm:text-[10px] whitespace-nowrap font-bold tracking-tight transition-colors duration-300 truncate w-full px-0.5 text-center",
                 isCenter ? "mt-1 text-gray-300" : "mt-0.5",
                 isActive ? "text-blue-400" : "text-gray-500"
             )}>
