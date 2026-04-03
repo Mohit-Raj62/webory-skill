@@ -48,7 +48,7 @@ const NavItem = ({ href, icon: Icon, label, isActive, onClick, isCenter }: {
             )}>
                 {label}
             </span>
-        </div>
+        </motion.div>
     );
 
     if (onClick) {
