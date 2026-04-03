@@ -100,15 +100,18 @@ const getCachedUserEnrollments = unstable_cache(
             const enrollments = await Enrollment.find({ student: userId })
                 .select("course")
                 .lean();
-            return enrollments.map((e: any) => e.course.toString());
+            return enrollments.map((e: any) => (e.course as any).toString());
         } catch (error) {
             console.error("Failed to fetch enrollments:", error);
             return [];
         }
     },
-    ['user-enrollments'],
+    ['user-enrollments', userId],
     { revalidate: 3600, tags: ['user-enrollments'] } // Cache for 1 hour, revalidate on change
 );
+
+
+
 
 export default async function CoursesPage() {
     const cookieStore = await cookies();

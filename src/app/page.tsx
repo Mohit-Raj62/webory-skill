@@ -27,8 +27,12 @@ import Course from "@/models/Course";
 // Alternatively we can use revalidate = 60 (seconds) for performance
 export const revalidate = 60;
 
-import { Suspense } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { 
+    SectionSkeleton, 
+    FeatureSkeleton, 
+    CoursesPreviewSkeleton, 
+    TrustProofSkeleton 
+} from "@/components/landing/LandingSkeletons";
 
 export default async function Home() {
     let userCount = 0;
@@ -62,51 +66,51 @@ export default async function Home() {
                 <FreeExperienceHighlight />
             </Suspense>
 
-            <Suspense fallback={<div className="h-96 bg-white/5 animate-pulse" />}>
+            <Suspense fallback={<FeatureSkeleton />}>
                 <Features />
             </Suspense>
 
-            <Suspense fallback={<div className="h-96 bg-white/5 animate-pulse" />}>
+            <Suspense fallback={<SectionSkeleton height="h-[500px]" />}>
                 <AIRoadmapFlow />
             </Suspense>
 
-            <Suspense fallback={<div className="h-96 bg-white/5 animate-pulse" />}>
+            <Suspense fallback={<SectionSkeleton height="h-[600px]" />}>
                 <DevLabPreview />
             </Suspense>
 
-            <Suspense fallback={<div className="h-96 bg-white/5 animate-pulse" />}>
+            <Suspense fallback={<SectionSkeleton height="h-[800px]" />}>
                 <AINexusShowcase />
             </Suspense>
 
-            <Suspense fallback={<div className="h-96 bg-white/5 animate-pulse" />}>
+            <Suspense fallback={<SectionSkeleton height="h-[500px]" />}>
                 <HackathonPreview />
             </Suspense>
 
-            <Suspense fallback={<div className="h-64 bg-white/5 animate-pulse" />}>
+            <Suspense fallback={<div className="container mx-auto px-4 py-12"><div className="h-64 bg-white/5 rounded-3xl animate-pulse" /></div>}>
                 <EnrolledCourses />
             </Suspense>
 
-            <Suspense fallback={<div className="h-64 bg-white/5 animate-pulse" />}>
+            <Suspense fallback={<div className="container mx-auto px-4 py-12"><div className="h-64 bg-white/5 rounded-3xl animate-pulse" /></div>}>
                 <AppliedInternships />
             </Suspense>
 
-            <Suspense fallback={<div className="h-[600px] bg-white/5 animate-pulse" />}>
+            <Suspense fallback={<CoursesPreviewSkeleton />}>
                 <CoursesPreview popularCourses={popularCourses} />
             </Suspense>
 
-            <Suspense fallback={<div className="h-96 bg-white/5 animate-pulse" />}>
+            <Suspense fallback={<SectionSkeleton height="h-[900px]" />}>
                 <Internships />
             </Suspense>
 
-            <Suspense fallback={<div className="h-40 bg-white/5 animate-pulse" />}>
+            <Suspense fallback={<TrustProofSkeleton />}>
                 <TrustProofSection />
             </Suspense>
 
-            <Suspense fallback={<div className="h-80 bg-white/5 animate-pulse" />}>
+            <Suspense fallback={<SectionSkeleton height="h-[400px]" />}>
                 <TestimonialsSection />
             </Suspense>
 
-            <Suspense fallback={<div className="h-80 bg-white/5 animate-pulse" />}>
+            <Suspense fallback={<SectionSkeleton height="h-[600px]" />}>
                 <FAQ />
             </Suspense>
 
@@ -114,3 +118,4 @@ export default async function Home() {
         </main>
     );
 }
+

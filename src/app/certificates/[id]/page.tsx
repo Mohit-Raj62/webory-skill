@@ -9,11 +9,40 @@ import { ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { unstable_cache } from "next/cache";
+
+const getCachedCertificate = unstable_cache(
+    async (id: string) => {
+        await dbConnect();
+        const certificate = await CustomCertificate.findOne({ certificateId: id }).lean();
+
+        if (!certificate) return null;
+
+        // Backward compatibility: If fields are missing, try to find the HackathonSubmission
+        if (!certificate.projectName || !certificate.hackathonTitle || !certificate.domain) {
+            const submission = await HackathonSubmission.findOne({ certificateId: certificate._id })
+                .populate("hackathonId", "title theme")
+                .lean();
+            
+            if (submission) {
+                certificate.projectName = certificate.projectName || submission.projectName;
+                certificate.hackathonTitle = certificate.hackathonTitle || (submission.hackathonId as any)?.title;
+                certificate.domain = certificate.domain || (submission.hackathonId as any)?.theme;
+                certificate.rank = certificate.rank || submission.rank;
+                certificate.type = certificate.type || (submission.status === "winner" ? "winner" : "participant");
+                certificate.studentName = certificate.studentName || submission.teamName;
+            }
+        }
+
+        return JSON.parse(JSON.stringify(certificate));
+    },
+    ['public-certificate'],
+    { revalidate: 3600, tags: ['certificates'] }
+);
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
     const { id } = await params;
-    await dbConnect();
-    const certificate = await CustomCertificate.findOne({ certificateId: id }).lean();
+    const certificate = await getCachedCertificate(id);
 
     if (!certificate) {
         return { title: "Invalid Certificate - Webory Skills" };
@@ -32,9 +61,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function PublicCertificateView({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    await dbConnect();
-
-    const certificate = await CustomCertificate.findOne({ certificateId: id }).lean();
+    const certificate = await getCachedCertificate(id);
 
     if (!certificate) {
         return (
@@ -51,27 +78,10 @@ export default async function PublicCertificateView({ params }: { params: Promis
         );
     }
 
-    // Backward compatibility: If fields are missing, try to find the HackathonSubmission
-    if (!certificate.projectName || !certificate.hackathonTitle || !certificate.domain) {
-        const submission = await HackathonSubmission.findOne({ certificateId: certificate._id })
-            .populate("hackathonId", "title theme")
-            .lean();
-        
-        if (submission) {
-            certificate.projectName = certificate.projectName || submission.projectName;
-            certificate.hackathonTitle = certificate.hackathonTitle || (submission.hackathonId as any)?.title;
-            certificate.domain = certificate.domain || (submission.hackathonId as any)?.theme;
-            certificate.rank = certificate.rank || submission.rank;
-            certificate.type = certificate.type || (submission.status === "winner" ? "winner" : "participant");
-        }
-    }
-
-    const serializedCertificate = JSON.parse(JSON.stringify(certificate));
-
     return (
         <main className="min-h-screen bg-[#020617] relative">
             <Navbar />
-            <CertificateViewClient certificate={serializedCertificate} />
+            <CertificateViewClient certificate={certificate} />
             <Footer className="print:hidden" />
         </main>
     );

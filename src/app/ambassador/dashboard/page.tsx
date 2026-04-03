@@ -10,8 +10,72 @@ import Ambassador from "@/models/Ambassador";
 import RewardRequest from "@/models/RewardRequest";
 import { AmbassadorRegistration } from "@/components/ambassador/AmbassadorRegistration";
 import { AmbassadorDashboardClient } from "@/components/ambassador/AmbassadorDashboardClient";
+import { unstable_cache } from "next/cache";
+import mongoose from "mongoose";
 
 export const dynamic = "force-dynamic";
+
+// Cached function for heavy aggregations
+const getAmbassadorStats = unstable_cache(
+  async (ambId: string, ambassadorPoints: number, createdAtStr: string) => {
+    await dbConnect();
+    const ambassadorId = new mongoose.Types.ObjectId(ambId);
+    const ambassadorCreatedAt = new Date(createdAtStr);
+
+    // Calculate total spent points for current ambassador (non-rejected rewards)
+    const spentResult = await RewardRequest.aggregate([
+      { $match: { ambassadorId: ambassadorId, status: { $ne: "rejected" } } },
+      { $group: { _id: null, totalSpent: { $sum: "$pointsSpent" } } },
+    ]);
+    const myTotalSpent = spentResult.length > 0 ? spentResult[0].totalSpent : 0;
+    const myTotalEarned = (ambassadorPoints || 0) + myTotalSpent;
+
+    // Calculate rank
+    const higherRankedCount = await Ambassador.aggregate([
+        {
+            $lookup: {
+                from: "rewardrequests",
+                let: { ambId: "$_id" },
+                pipeline: [
+                    { $match: { $expr: { $and: [{ $eq: ["$ambassadorId", "$$ambId"] }, { $ne: ["$status", "rejected"] }] } } },
+                    { $group: { _id: null, totalSpent: { $sum: "$pointsSpent" } } }
+                ],
+                as: "rewards"
+            }
+        },
+        {
+            $addFields: {
+                totalEarned: { $add: [{ $ifNull: ["$points", 0] }, { $ifNull: [{ $arrayElemAt: ["$rewards.totalSpent", 0] }, 0] }] }
+            }
+        },
+        {
+            $match: {
+                _id: { $ne: ambassadorId },
+                $or: [
+                    { totalEarned: { $gt: myTotalEarned } },
+                    { totalEarned: myTotalEarned, createdAt: { $lt: ambassadorCreatedAt } }
+                ]
+            }
+        },
+        { $count: "count" }
+    ]);
+    
+    const rank = (higherRankedCount.length > 0 ? higherRankedCount[0].count : 0) + 1;
+    return { rank, totalEarned: myTotalEarned };
+  },
+  ['ambassador-stats'],
+  { revalidate: 600, tags: ['ambassador'] }
+);
+
+const getRewardsHistory = unstable_cache(
+  async (ambId: string) => {
+    await dbConnect();
+    const history = await RewardRequest.find({ ambassadorId: new mongoose.Types.ObjectId(ambId) }).sort({ createdAt: -1 }).lean();
+    return JSON.parse(JSON.stringify(history));
+  },
+  ['ambassador-history'],
+  { revalidate: 300, tags: ['ambassador'] }
+);
 
 export default async function AmbassadorDashboard() {
   const user = await getUser();
@@ -85,57 +149,17 @@ export default async function AmbassadorDashboard() {
     );
   }
 
-  // ACTIVE DASHBOARD LOGIC (moved to server)
-  
-  // Calculate total spent points for current ambassador (non-rejected rewards)
-  const spentResult = await RewardRequest.aggregate([
-    { $match: { ambassadorId: ambassador._id, status: { $ne: "rejected" } } },
-    { $group: { _id: null, totalSpent: { $sum: "$pointsSpent" } } },
+  // Fetch stats and history in parallel
+  const [statsResult, history] = await Promise.all([
+    getAmbassadorStats(ambassador._id.toString(), ambassador.points || 0, ambassador.createdAt.toISOString()),
+    getRewardsHistory(ambassador._id.toString())
   ]);
-  const myTotalSpent = spentResult.length > 0 ? spentResult[0].totalSpent : 0;
-  const myTotalEarned = (ambassador.points || 0) + myTotalSpent;
-
-  // Calculate rank
-  const higherRankedCount = await Ambassador.aggregate([
-      {
-          $lookup: {
-              from: "rewardrequests",
-              let: { ambId: "$_id" },
-              pipeline: [
-                  { $match: { $expr: { $and: [{ $eq: ["$ambassadorId", "$$ambId"] }, { $ne: ["$status", "rejected"] }] } } },
-                  { $group: { _id: null, totalSpent: { $sum: "$pointsSpent" } } }
-              ],
-              as: "rewards"
-          }
-      },
-      {
-          $addFields: {
-              totalEarned: { $add: [{ $ifNull: ["$points", 0] }, { $ifNull: [{ $arrayElemAt: ["$rewards.totalSpent", 0] }, 0] }] }
-          }
-      },
-      {
-          $match: {
-              _id: { $ne: ambassador._id },
-              $or: [
-                  { totalEarned: { $gt: myTotalEarned } },
-                  { totalEarned: myTotalEarned, createdAt: { $lt: ambassador.createdAt } }
-              ]
-          }
-      },
-      { $count: "count" }
-  ]);
-  
-  const rank = (higherRankedCount.length > 0 ? higherRankedCount[0].count : 0) + 1;
-
-  // Fetch Rewards History
-  const history = await RewardRequest.find({ ambassadorId: ambassador._id }).sort({ createdAt: -1 }).lean();
 
   const serializedStats = JSON.parse(JSON.stringify({ 
     ...ambassador, 
-    rank, 
-    totalEarned: myTotalEarned 
+    rank: statsResult.rank, 
+    totalEarned: statsResult.totalEarned 
   }));
-  const serializedHistory = JSON.parse(JSON.stringify(history));
 
   return (
     <main className="min-h-screen bg-black text-white font-sans selection:bg-blue-500/30 print:bg-white print:min-h-0 relative">
@@ -144,7 +168,7 @@ export default async function AmbassadorDashboard() {
       <div className="pt-24 pb-20 container mx-auto px-4 md:px-8 print:hidden">
         <AmbassadorDashboardClient 
           initialStats={serializedStats} 
-          initialHistory={serializedHistory} 
+          initialHistory={history} 
           user={JSON.parse(JSON.stringify(user))} 
         />
       </div>
