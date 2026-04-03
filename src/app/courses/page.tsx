@@ -106,7 +106,7 @@ const getCachedUserEnrollments = unstable_cache(
             return [];
         }
     },
-    ['user-enrollments', userId],
+    ['user-enrollments'],
     { revalidate: 3600, tags: ['user-enrollments'] } // Cache for 1 hour, revalidate on change
 );
 

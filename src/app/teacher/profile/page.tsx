@@ -88,7 +88,7 @@ export default function TeacherProfilePage() {
           });
           setSubmitted(true);
         } else if (json.success && json.userDefaults) {
-          setFormData((prev: any) => ({
+          setFormData((prev) => ({
             ...prev,
             fullName: json.userDefaults.fullName || "",
             email: json.userDefaults.email || "",
@@ -104,14 +104,12 @@ export default function TeacherProfilePage() {
     fetchStatus();
   }, []);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    setFormData((prev: any) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleInputChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleDocUpload = useCallback(
-    async (key: string, file: File) => {
+    async (key, file) => {
       const allowedTypes = ["application/pdf", "image/jpeg", "image/jpg", "image/png"];
       if (!allowedTypes.includes(file.type)) {
         toast.error("Only PDF and JPG/PNG files are allowed.");
@@ -135,10 +133,10 @@ export default function TeacherProfilePage() {
 
         if (!result.success) throw new Error(result.error || "Upload failed");
 
-        setDocuments((prev: any) => ({ ...prev, [key]: result.url }));
-        setFileNames((prev: any) => ({ ...prev, [key]: file.name }));
+        setDocuments((prev) => ({ ...prev, [key]: result.url }));
+        setFileNames((prev) => ({ ...prev, [key]: file.name }));
         toast.success(`${file.name} uploaded successfully!`);
-      } catch (err: any) {
+      } catch (err) {
         toast.error(err.message || "Failed to upload document");
       } finally {
         setUploadingDoc(null);

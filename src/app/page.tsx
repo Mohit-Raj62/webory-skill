@@ -27,6 +27,7 @@ import Course from "@/models/Course";
 // Alternatively we can use revalidate = 60 (seconds) for performance
 export const revalidate = 60;
 
+import { Suspense } from "react";
 import { 
     SectionSkeleton, 
     FeatureSkeleton, 
