@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, User, Code2, Sparkles, MessageSquare, GraduationCap, Briefcase, BrainCircuit, Bot, FileText, Terminal, Layers, Orbit } from "lucide-react";
+import { Menu, X, User, Code2, Sparkles, MessageSquare, GraduationCap, Briefcase, BrainCircuit, Bot, FileText, Terminal, Layers, Orbit, Trophy, Monitor, Info, BookOpen, Mail } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/components/auth/session-provider";
 import dynamic from "next/dynamic";
@@ -287,19 +287,14 @@ export function Navbar() {
                                 </MobileNavLink>
 
                                 {user && (
-                                    <MobileNavLink href="/playground" icon={Code2} onClick={() => setIsOpen(false)} index={2}>
-                                        Webory DevLab
-                                    </MobileNavLink>
-                                )}
-                                {user && (
-                                    <MobileNavLink href="/ai-weboryskills" icon={Bot} onClick={() => setIsOpen(false)} index={3}>
-                                        Weboryskills AI
-                                    </MobileNavLink>
-                                )}
-                                {user && (
-                                    <MobileNavLink href="/ai-prep" icon={BrainCircuit} badge="PRO" onClick={() => setIsOpen(false)} index={4}>
-                                        AI Nexus
-                                    </MobileNavLink>
+                                    <>
+                                        <MobileNavLink href="/ai-weboryskills" icon={Bot} onClick={() => setIsOpen(false)} index={2}>
+                                            Weboryskills AI
+                                        </MobileNavLink>
+                                        <MobileNavLink href="/ai-prep" icon={BrainCircuit} badge="PRO" onClick={() => setIsOpen(false)} index={3}>
+                                            AI Nexus
+                                        </MobileNavLink>
+                                    </>
                                 )}
 
                                 {user && (
