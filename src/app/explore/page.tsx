@@ -15,59 +15,62 @@ import {
     Info, 
     Mail, 
     BookOpen, 
-    ShieldCheck, 
+    UserCircle,
+    Orbit,
     ArrowLeft,
+    Sparkles,
+    Search,
     Github,
     Twitter,
     Linkedin,
     Instagram,
-    Youtube,
-    UserCircle,
-    Orbit
+    Youtube
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const EXPLORE_CATEGORIES = [
     {
-        title: "Learning & Growth",
+        title: "CORE LEARNING",
         icon: GraduationCap,
         color: "text-blue-400",
+        glow: "shadow-[0_0_15px_rgba(59,130,246,0.3)]",
         items: [
-            { label: "All Courses", href: "/courses", icon: GraduationCap, badge: "Free" },
-            { label: "Internships", href: "/internships", icon: Briefcase, badge: "New" },
+            { label: "Courses", href: "/courses", icon: GraduationCap, badge: "Free" },
+            { label: "Internships", href: "/internships", icon: Briefcase, badge: "Hi-Res" },
             { label: "Hackathons", href: "/hackathons", icon: Trophy, badge: "Live" },
             { label: "Mentorship", href: "/mentorship", icon: MessagesSquare, badge: "Pro" },
-            { label: "AI Nexus", href: "/ai-prep", icon: Zap, badge: "NexGen" },
+            { label: "AI Nexus", href: "/ai-prep", icon: Zap, badge: "Elite" },
         ]
     },
     {
-        title: "Innovation Labs",
+        title: "INNOVATION LABS",
         icon: Orbit,
         color: "text-emerald-400",
+        glow: "shadow-[0_0_15px_rgba(16,185,129,0.3)]",
         items: [
-            { label: "DevLab IDE", href: "/playground", icon: Code2, badge: "Cloud" },
-            { label: "WeboryOS", href: "/simulator", icon: Monitor, badge: "OS" },
-            { label: "LogicRoom", href: "/viz", icon: Orbit, badge: "Beta" },
-            { label: "Resume AI", href: "/resume-checker", icon: FileText, badge: "AI" },
+            { label: "WeboryOS", href: "/simulator", icon: Monitor, badge: "New" },
+            { label: "DevLab", href: "/playground", icon: Code2, badge: "Beta" },
+            { label: "LogicRoom", href: "/viz", icon: Orbit, badge: "Hi-Fi" },
+            { label: "Resume AI", href: "/resume-checker", icon: FileText, badge: "Free" },
         ]
     },
     {
-        title: "Company & Community",
+        title: "THE NETWORK",
         icon: Info,
         color: "text-purple-400",
+        glow: "shadow-[0_0_15px_rgba(168,85,247,0.3)]",
         items: [
-            { label: "About Us", href: "/about", icon: Info },
+            { label: "About", href: "/about", icon: Info },
             { label: "Careers", href: "/careers", icon: Briefcase },
-            { label: "Our Blog", href: "/blog", icon: BookOpen },
-            { label: "Contact Us", href: "/contact", icon: Mail },
+            { label: "Blog", href: "/blog", icon: BookOpen },
+            { label: "Contact", href: "/contact", icon: Mail },
             { label: "Ambassador", href: "/ambassador", icon: UserCircle, badge: "Join" },
         ]
     }
 ];
 
-const SOCIAL_LINKS = [
+const SOCIALS = [
     { icon: Github, href: "#", color: "hover:text-white" },
-    { icon: Twitter, href: "#", color: "hover:text-blue-400" },
     { icon: Linkedin, href: "https://www.linkedin.com/in/webory-skills-01244b3a9", color: "hover:text-[#0077b5]" },
     { icon: Instagram, href: "https://www.instagram.com/weboryskills", color: "hover:text-[#ee2a7b]" },
     { icon: Youtube, href: "https://www.youtube.com/@CodeWithWebory", color: "hover:text-[#ff0000]" },
@@ -77,58 +80,112 @@ export default function ExplorePage() {
     const router = useRouter();
 
     return (
-        <div className="min-h-screen bg-[#020202] text-white pb-20 overflow-x-hidden">
-            {/* Background Aesthetic */}
-            <div className="fixed inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px]" />
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px]" />
+        <div className="min-h-screen bg-[#020202] text-white pb-32 overflow-x-hidden selection:bg-blue-500/30">
+            {/* Animated Control Center Background */}
+            <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+                <motion.div 
+                    animate={{ 
+                        scale: [1, 1.2, 1],
+                        rotate: [0, 90, 0],
+                        opacity: [0.15, 0.25, 0.15] 
+                    }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    className="absolute -top-[20%] -left-[20%] w-[80%] h-[80%] bg-blue-600/20 rounded-full blur-[140px]" 
+                />
+                <motion.div 
+                    animate={{ 
+                        scale: [1, 1.2, 1],
+                        rotate: [0, -90, 0],
+                        opacity: [0.1, 0.2, 0.1] 
+                    }}
+                    transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                    className="absolute -bottom-[20%] -right-[20%] w-[80%] h-[80%] bg-purple-600/10 rounded-full blur-[140px]" 
+                />
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] contrast-150 brightness-150" />
             </div>
 
-            {/* Header */}
-            <div className="sticky top-0 z-50 bg-black/60 backdrop-blur-2xl border-b border-white/5 py-4 px-6 flex items-center justify-between">
-                <button 
-                    onClick={() => router.back()}
-                    className="p-2 -ml-2 text-gray-400 hover:text-white transition-colors"
-                >
-                    <ArrowLeft size={24} />
-                </button>
-                <div className="text-center flex-1 pr-8">
-                    <h1 className="text-lg font-black uppercase tracking-[0.2em] italic">Explore <span className="text-blue-500">Hub</span></h1>
+            {/* Premium Header */}
+            <header className="sticky top-0 z-50 bg-black/40 backdrop-blur-3xl border-b border-white/[0.05] shadow-2xl">
+                <div className="container mx-auto px-6 h-20 flex items-center justify-between">
+                    <motion.button 
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => router.back()}
+                        className="p-2.5 rounded-2xl bg-white/[0.03] border border-white/10 text-gray-400 hover:text-white"
+                    >
+                        <ArrowLeft size={20} />
+                    </motion.button>
+                    
+                    <div className="flex flex-col items-center">
+                        <span className="text-[10px] font-black tracking-[0.4em] text-blue-500 uppercase italic">Control Center</span>
+                        <h1 className="text-lg font-black uppercase tracking-[0.1em] italic flex items-center gap-2">
+                             EXPLORE <span className="text-blue-500">HUB</span>
+                             <Sparkles size={14} className="text-yellow-500 animate-pulse" />
+                        </h1>
+                    </div>
+
+                    <div className="w-10" /> {/* Spacer */}
                 </div>
-            </div>
+            </header>
 
-            {/* Scrolling Content */}
-            <div className="relative z-10 max-w-lg mx-auto px-6 py-10 space-y-12">
+            {/* Control Center Page Content */}
+            <main className="relative z-10 max-w-xl mx-auto px-6 pt-10 space-y-12">
+                
+                {/* Visual Search Highlight (Fake) */}
+                <div className="relative group">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition" />
+                    <div className="relative flex items-center gap-4 p-4 rounded-2xl bg-black border border-white/10">
+                        <Search size={18} className="text-gray-500" />
+                        <span className="text-sm font-medium text-gray-600 italic">Access neural network functions...</span>
+                    </div>
+                </div>
+
                 {EXPLORE_CATEGORIES.map((category, catIdx) => (
                     <section key={catIdx} className="space-y-6">
-                        <div className="flex flex-col items-center gap-2">
-                             <div className={`p-3 rounded-2xl bg-white/5 border border-white/10 ${category.color}`}>
-                                <category.icon size={20} />
+                        {/* High-End Section Header */}
+                        <div className="flex flex-col items-center">
+                            <motion.div 
+                                initial={{ scale: 0.8, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                className={`w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center mb-4 ${category.color} ${category.glow}`}
+                            >
+                                <category.icon size={22} />
+                            </motion.div>
+                            <div className="flex flex-col items-center text-center">
+                                <h2 className="text-[11px] font-black uppercase tracking-[0.5em] text-gray-500 mb-1 italic">
+                                    {category.title}
+                                </h2>
+                                <div className="h-0.5 w-12 bg-gradient-to-r from-transparent via-blue-500 to-transparent rounded-full opacity-40" />
                             </div>
-                            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-gray-500 text-center">{category.title}</h2>
                         </div>
 
-                        <div className="grid grid-cols-1 gap-3">
+                        {/* Control Center Grid */}
+                        <div className="grid grid-cols-2 gap-3">
                             {category.items.map((item, itemIdx) => (
                                 <motion.div
                                     key={itemIdx}
-                                    whileTap={{ scale: 0.98 }}
-                                    className="relative group"
+                                    whileTap={{ scale: 0.96 }}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: (catIdx * 0.1) + (itemIdx * 0.05) }}
                                 >
                                     <Link 
                                         href={item.href}
-                                        className="flex items-center justify-between p-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.08] hover:border-white/10 transition-all duration-300"
+                                        className="relative group h-full flex flex-col items-center text-center p-5 rounded-[2rem] bg-white/[0.02] border border-white/5 hover:border-blue-500/30 hover:bg-white/[0.05] transition-all duration-500 overflow-hidden"
                                     >
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-white/10 to-transparent flex items-center justify-center border border-white/10">
-                                                <item.icon size={18} className="text-gray-400 group-hover:text-white transition-colors" />
-                                            </div>
-                                            <span className="font-bold text-sm tracking-tight">{item.label}</span>
+                                        {/* Premium Glow Overlay */}
+                                        <div className="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        <div className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                                        <div className={`p-3 rounded-2xl bg-white/[0.04] border border-white/10 mb-3 group-hover:scale-110 group-hover:bg-blue-500/10 group-hover:border-blue-500/30 transition-all duration-300 ${category.color}`}>
+                                            <item.icon size={20} />
                                         </div>
+                                        
+                                        <span className="text-xs font-bold tracking-tight text-gray-300 group-hover:text-white transition-colors">{item.label}</span>
+                                        
                                         {item.badge && (
-                                            <span className="text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20 leading-none">
-                                                {item.badge}
-                                            </span>
+                                            <div className="mt-2.5 px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20">
+                                                <span className="text-[8px] font-black uppercase tracking-widest text-blue-400 italic">{item.badge}</span>
+                                            </div>
                                         )}
                                     </Link>
                                 </motion.div>
@@ -137,22 +194,22 @@ export default function ExplorePage() {
                     </section>
                 ))}
 
-                {/* Legal & Social Section */}
-                <div className="pt-8 space-y-10 border-t border-white/5">
-                    {/* Socials */}
-                    <div className="flex justify-center gap-6">
-                        {SOCIAL_LINKS.map((social, sIdx) => (
+                {/* Footer Section Cleanup */}
+                <div className="pt-12 space-y-12 border-t border-white/[0.05]">
+                    {/* Social Holograms */}
+                    <div className="flex justify-center gap-8">
+                        {SOCIALS.map((social, sIdx) => (
                             <Link 
                                 key={sIdx} 
                                 href={social.href}
-                                className={`text-gray-500 transition-all duration-300 hover:scale-110 active:scale-90 ${social.color}`}
+                                className={`w-10 h-10 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-center text-gray-500 transition-all duration-300 hover:text-white hover:scale-110 hover:border-white/20 hover:bg-white/[0.05] ${social.color}`}
                             >
-                                <social.icon size={20} />
+                                <social.icon size={18} />
                             </Link>
                         ))}
                     </div>
 
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="flex flex-wrap justify-center gap-3">
                         {[
                             { label: "Privacy", href: "/privacy" },
                             { label: "Terms", href: "/terms" },
@@ -161,21 +218,21 @@ export default function ExplorePage() {
                             <Link 
                                 key={lIdx} 
                                 href={link.href}
-                                className="py-2 px-1 text-center bg-white/[0.02] border border-white/5 rounded-lg text-[9px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
+                                className="px-4 py-2 bg-white/[0.02] border border-white/5 rounded-xl text-[9px] font-black tracking-[0.2em] uppercase text-gray-500 hover:text-white hover:border-blue-500/30 transition-all"
                             >
                                 {link.label}
                             </Link>
                         ))}
                     </div>
 
-                    <div className="text-center">
-                        <p className="text-[9px] font-bold text-gray-700 uppercase tracking-[0.25em]">
-                            © {new Date().getFullYear()} Webory Technologies
+                    <div className="text-center opacity-40">
+                        <p className="text-[9px] font-black uppercase tracking-[0.5em] text-gray-500 italic">
+                            System Identity: Webory Technologies
                         </p>
-                        <p className="text-[10px] text-gray-800 mt-1">Made with ❤️ in India</p>
+                        <p className="text-[8px] mt-2 tracking-widest">EST. 2024 • MSME REGISTERED</p>
                     </div>
                 </div>
-            </div>
+            </main>
         </div>
     );
 }
