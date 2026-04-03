@@ -60,11 +60,8 @@ const EXPLORE_CATEGORIES: Category[] = [
         icon: GraduationCap,
         accent: "from-blue-600/40 to-cyan-500/40",
         items: [
-            { label: "Elite Courses", href: "/courses", icon: GraduationCap, badge: "Free", size: "wide", description: "Master industrial-grade skills with ease", verified: true },
-            { label: "Premium Internhips", href: "/internships", icon: Briefcase, badge: "Elite", size: "small" },
-            { label: "Live Hackathons", href: "/hackathons", icon: Trophy, badge: "Live", size: "small" },
+            { label: "Live Hackathons", href: "/hackathons", icon: Trophy, badge: "Live", size: "wide", description: "Participate and win industrial rewards", verified: true },
             { label: "Industry Mentors", href: "/mentorship", icon: MessagesSquare, badge: "Pro", size: "small", verified: true },
-            { label: "AI Nexus", href: "/ai-prep", icon: Zap, badge: "Nexus", size: "small" },
         ]
     },
     {
@@ -73,7 +70,6 @@ const EXPLORE_CATEGORIES: Category[] = [
         icon: Orbit,
         accent: "from-emerald-600/40 to-teal-500/40",
         items: [
-            { label: "DevLab Cloud IDE", href: "/playground", icon: Code2, badge: "Beta", size: "wide", description: "Full-stack development in your browser", verified: true },
             { label: "WeboryOS", href: "/simulator", icon: Monitor, badge: "New", size: "small" },
             { label: "LogicRoom", href: "/viz", icon: Orbit, badge: "Hi-Fi", size: "small" },
             { label: "Resume Intelligence", href: "/resume-checker", icon: FileText, badge: "AI", size: "small", verified: true },

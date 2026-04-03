@@ -18,22 +18,16 @@ const NavItem = ({ href, icon: Icon, label, isActive, onClick, isCenter }: {
 }) => {
     const content = (
         <motion.div 
-            whileTap={{ y: isCenter ? -12 : -4 }}
+            whileTap={{ y: -6 }}
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            className={cn(
-                "flex flex-col items-center justify-center flex-1 relative group cursor-pointer transition-all duration-300 min-w-0",
-                isCenter ? "-mt-8 mb-4 h-16" : "h-full pt-1"
-            )}
+            className="flex flex-col items-center justify-center flex-1 h-full relative group cursor-pointer pt-1 min-w-0"
         >
             <div className={cn(
-                "relative transition-all duration-300 flex items-center justify-center",
-                isCenter 
-                    ? "w-14 h-14 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 shadow-lg shadow-blue-500/40 text-white border-2 border-white/20"
-                    : "p-1 rounded-xl",
-                !isCenter && (isActive ? "text-blue-400 bg-blue-500/10" : "text-gray-500 group-hover:text-gray-300")
+                "relative p-1 rounded-xl transition-all duration-300 flex items-center justify-center",
+                isActive ? "text-blue-400 bg-blue-500/10" : "text-gray-500 group-hover:text-gray-300"
             )}>
-                <Icon size={isCenter ? 24 : 20} strokeWidth={isActive || isCenter ? 2.5 : 2} />
-                {isActive && !isCenter && (
+                <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+                {isActive && (
                     <motion.div
                         layoutId="active-pill"
                         className="absolute inset-0 bg-blue-500/20 rounded-xl -z-10"
@@ -42,8 +36,7 @@ const NavItem = ({ href, icon: Icon, label, isActive, onClick, isCenter }: {
                 )}
             </div>
             <span className={cn(
-                "text-[8px] sm:text-[10px] whitespace-nowrap font-bold tracking-tight transition-colors duration-300 truncate w-full px-0.5 text-center",
-                isCenter ? "mt-1 text-gray-300" : "mt-0.5",
+                "text-[8px] sm:text-[10px] whitespace-nowrap font-bold tracking-tight transition-colors duration-300 truncate w-full px-0.5 text-center mt-0.5",
                 isActive ? "text-blue-400" : "text-gray-500"
             )}>
                 {label}
