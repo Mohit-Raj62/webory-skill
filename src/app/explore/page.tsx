@@ -123,7 +123,7 @@ export default function ExplorePage() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-[#020202] text-white pb-32 overflow-x-hidden selection:bg-blue-500/30 font-mono tracking-tighter">
+        <div className="min-h-screen bg-[#050505] text-white pb-10 overflow-x-hidden selection:bg-blue-500/30 font-mono tracking-tighter">
             
             {/* Masterpiece Nebula Backdrop */}
             <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
@@ -149,22 +149,32 @@ export default function ExplorePage() {
             </div>
 
             {/* Premium Header Control Rail */}
-            <div className="relative z-50 pt-safe px-6 pt-10">
+            <div className="relative z-50 pt-safe px-6 pt-16">
                 <header className="flex flex-col gap-8">
                     <div className="flex items-center justify-between">
-                         <motion.button 
-                            whileTap={{ scale: 0.9 }}
-                            onClick={() => router.back()}
-                            className="bg-white/[0.03] border border-white/10 px-4 py-2 rounded-full flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-all backdrop-blur-2xl"
-                        >
-                            <ArrowLeft size={14} />
-                            BACK
-                        </motion.button>
+                         <div className="flex items-center gap-3">
+                            <motion.button 
+                                whileTap={{ scale: 0.9 }}
+                                onClick={() => router.back()}
+                                className="bg-white/[0.03] border border-white/10 px-4 py-2 rounded-full flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-all backdrop-blur-2xl"
+                            >
+                                <ArrowLeft size={14} />
+                            </motion.button>
+                            <div className="w-px h-6 bg-white/10" />
+                            {/* Webory Branding Integration */}
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center font-black text-xs shadow-lg shadow-blue-500/20">W</div>
+                                <div className="flex flex-col -gap-1">
+                                    <span className="text-[10px] font-black tracking-tighter leading-none">WEBORY</span>
+                                    <span className="text-[8px] font-black text-blue-500 tracking-tighter leading-none">SKILLS</span>
+                                </div>
+                            </div>
+                         </div>
 
-                        <div className="flex items-center gap-4 bg-white/[0.03] border border-white/5 px-4 py-2 rounded-full backdrop-blur-3xl">
+                        <div className="flex items-center gap-4 bg-white/[0.03] border border-white/5 px-4 py-2 rounded-full backdrop-blur-3xl shadow-xl">
                             <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest leading-none flex items-center gap-2">
                                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.8)]" />
-                                CONSOLE ON
+                                ONLINE
                             </span>
                             <div className="w-px h-3 bg-white/10" />
                             <div className="flex items-center gap-2 text-gray-400">
@@ -175,15 +185,15 @@ export default function ExplorePage() {
                     </div>
 
                     <div className="flex items-center gap-5 mt-2">
-                         <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 border border-white/20 flex items-center justify-center shadow-2xl">
-                                <LayoutGrid size={28} className="text-white" />
-                                <div className="absolute inset-0 bg-blue-500/20 blur-xl -z-10" />
+                         <div className="relative w-14 h-14 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center shadow-2xl backdrop-blur-3xl">
+                                <LayoutGrid size={28} className="text-blue-500" />
+                                <div className="absolute inset-0 bg-blue-500/10 blur-xl -z-10" />
                          </div>
                          <div>
                             <h1 className="text-2xl font-black italic tracking-tighter uppercase text-white leading-none">
-                                EXPLORE <span className="text-blue-500">MENU</span>
+                                EXPLORE <span className="text-blue-400">INDEX</span>
                             </h1>
-                            <p className="text-[9px] font-bold text-gray-500 uppercase tracking-[0.4em] mt-2">Neural Navigation System v.5.0</p>
+                            <p className="text-[9px] font-bold text-gray-500 uppercase tracking-[0.4em] mt-2">Industrial Navigation Unit v.5</p>
                          </div>
                     </div>
                 </header>
@@ -216,7 +226,7 @@ export default function ExplorePage() {
                                 >
                                     <Link 
                                         href={item.href}
-                                        className="relative flex items-center justify-between p-4 rounded-2xl bg-white/[0.01] border border-white/5 hover:bg-white/[0.04] hover:border-blue-500/20 transition-all duration-300 backdrop-blur-3xl overflow-hidden"
+                                        className="relative flex items-center justify-between p-4 rounded-2xl bg-[#0A0A0A] border border-white/5 hover:bg-white/[0.04] hover:border-blue-500/20 transition-all duration-300 backdrop-blur-3xl overflow-hidden shadow-sm shadow-blue-500/5 group"
                                     >
                                         {/* Interaction Glow */}
                                         <div className="absolute inset-y-0 left-0 w-1 bg-blue-500/0 group-hover:bg-blue-500/60 transition-all" />
@@ -272,16 +282,25 @@ export default function ExplorePage() {
                             ))}
                         </div>
 
-                        <div className="flex flex-col items-center gap-4 text-center">
+                        <div className="flex flex-col items-center gap-6 text-center">
                              <div className="flex justify-center gap-6">
                                 {["PRIVACY", "TERMS", "SUPPORT"].map((l, i) => (
                                     <Link key={i} href="#" className="text-[9px] font-black text-gray-600 uppercase tracking-widest hover:text-blue-400 transition-colors italic">{l}</Link>
                                 ))}
                             </div>
-                            <div className="flex items-center gap-3 opacity-20">
-                                <div className="h-px w-8 bg-white/20" />
-                                <p className="text-[7px] font-black uppercase tracking-[0.5em] text-gray-400 italic">WEBORY_V5</p>
-                                <div className="h-px w-8 bg-white/20" />
+                            
+                            {/* Detailed Branding Hub */}
+                            <div className="flex flex-col items-center gap-3">
+                                <div className="flex items-center gap-3">
+                                     <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shadow-inner">
+                                        <div className="w-4 h-4 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-[10px] font-black">W</div>
+                                     </div>
+                                     <div className="flex flex-col items-start leading-none -gap-1">
+                                        <span className="text-sm font-black tracking-tighter italic">WEBORY <span className="text-blue-500">SKILLS</span></span>
+                                        <span className="text-[7px] font-bold text-gray-700 tracking-widest uppercase">Official Industry Platform</span>
+                                     </div>
+                                </div>
+                                <div className="h-px w-24 bg-gradient-to-r from-transparent via-white/10 to-transparent mx-auto opacity-50" />
                             </div>
                         </div>
                     </div>
@@ -302,4 +321,9 @@ export default function ExplorePage() {
             </main>
         </div>
     );
+}
+
+// Utility function
+function cn(...classes: (string | boolean | undefined)[]) {
+    return classes.filter(Boolean).join(" ");
 }
