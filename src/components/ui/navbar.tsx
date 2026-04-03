@@ -265,7 +265,18 @@ export function Navbar() {
                             exit={{ opacity: 0, height: 0 }}
                             transition={{ duration: 0.3, ease: "easeInOut" }}
                         >
-                            <div className="bg-black/90 backdrop-blur-2xl border-t border-white/[0.06] px-4 py-4 space-y-1">
+                            <div className="bg-black/90 backdrop-blur-2xl border-t border-white/[0.06] px-4 py-6 space-y-4">
+                                {/* Centered Explore Link */}
+                                <div className="flex justify-center pb-2">
+                                    <Link 
+                                        href="/explore" 
+                                        onClick={() => setIsOpen(false)}
+                                        className="w-full flex items-center justify-center gap-3 py-4 px-6 rounded-2xl bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 text-white shadow-lg shadow-blue-500/10 active:scale-[0.98] transition-all"
+                                    >
+                                        <Orbit size={20} className="text-blue-400 group-hover:animate-spin" />
+                                        <span className="text-sm font-black uppercase tracking-[0.2em] italic">Explore <span className="text-blue-400 font-black">Everything</span></span>
+                                    </Link>
+                                </div>
                                 <MobileNavLink href="/courses" icon={GraduationCap} badge="FREE" onClick={() => setIsOpen(false)} index={0}>
                                     Courses
                                 </MobileNavLink>
