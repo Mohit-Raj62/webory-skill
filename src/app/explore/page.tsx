@@ -149,7 +149,7 @@ export default function ExplorePage() {
             </div>
 
             {/* Premium Header Control Rail */}
-            <div className="relative z-50 pt-safe px-4 sm:px-6 pt-24">
+            <div className="relative z-50 pt-safe px-4 sm:px-6 pt-32">
                 <header className="flex flex-col gap-6 sm:gap-8">
                     <div className="flex items-center justify-between gap-2">
                          <div className="flex items-center gap-2 sm:gap-3">
