@@ -3,26 +3,33 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { Home, GraduationCap, Briefcase, Bot, BrainCircuit, Code, User, MessageSquare, Orbit } from "lucide-react";
+import { Home, GraduationCap, Briefcase, Bot, BrainCircuit, Code, User, MessageSquare, LayoutGrid } from "lucide-react";
 import { useAuth } from "@/components/auth/session-provider";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 
-const NavItem = ({ href, icon: Icon, label, isActive, onClick }: { 
+const NavItem = ({ href, icon: Icon, label, isActive, onClick, isCenter }: { 
     href?: string; 
     icon: any; 
     label: string; 
     isActive?: boolean;
     onClick?: () => void;
+    isCenter?: boolean;
 }) => {
     const content = (
-        <div className="flex flex-col items-center justify-center flex-1 h-full relative group cursor-pointer pt-1">
+        <div className={cn(
+            "flex flex-col items-center justify-center flex-1 relative group cursor-pointer transition-all duration-300",
+            isCenter ? "-mt-8 mb-4 h-16" : "h-full pt-1"
+        )}>
             <div className={cn(
-                "relative p-1 rounded-xl transition-all duration-300",
-                isActive ? "text-blue-400 bg-blue-500/10" : "text-gray-500 group-hover:text-gray-300"
+                "relative transition-all duration-300 flex items-center justify-center",
+                isCenter 
+                    ? "w-14 h-14 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 shadow-lg shadow-blue-500/40 text-white border-2 border-white/20"
+                    : "p-1 rounded-xl",
+                !isCenter && (isActive ? "text-blue-400 bg-blue-500/10" : "text-gray-500 group-hover:text-gray-300")
             )}>
-                <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
-                {isActive && (
+                <Icon size={isCenter ? 24 : 22} strokeWidth={isActive || isCenter ? 2.5 : 2} />
+                {isActive && !isCenter && (
                     <motion.div
                         layoutId="active-pill"
                         className="absolute inset-0 bg-blue-500/20 rounded-xl -z-10"
@@ -31,7 +38,8 @@ const NavItem = ({ href, icon: Icon, label, isActive, onClick }: {
                 )}
             </div>
             <span className={cn(
-                "text-[9px] sm:text-[10px] whitespace-nowrap font-bold mt-0.5 tracking-tight transition-colors duration-300",
+                "text-[9px] sm:text-[10px] whitespace-nowrap font-bold tracking-tight transition-colors duration-300",
+                isCenter ? "mt-1 text-gray-300" : "mt-0.5",
                 isActive ? "text-blue-400" : "text-gray-500"
             )}>
                 {label}
@@ -116,9 +124,10 @@ export function MobileBottomNav() {
 
                     <NavItem 
                         href="/explore" 
-                        icon={Orbit} 
+                        icon={LayoutGrid} 
                         label="Menu" 
-                        isActive={pathname === "/explore"} 
+                        isActive={pathname === "/explore"}
+                        isCenter={true} 
                     />
                 <NavItem 
                     href="/playground" 

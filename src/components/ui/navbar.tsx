@@ -288,10 +288,13 @@ export function Navbar() {
 
                                 {user && (
                                     <>
-                                        <MobileNavLink href="/ai-weboryskills" icon={Bot} onClick={() => setIsOpen(false)} index={2}>
+                                        <MobileNavLink href="/playground" icon={Code2} onClick={() => setIsOpen(false)} index={2}>
+                                            DevLab
+                                        </MobileNavLink>
+                                        <MobileNavLink href="/ai-weboryskills" icon={Bot} onClick={() => setIsOpen(false)} index={3}>
                                             Weboryskills AI
                                         </MobileNavLink>
-                                        <MobileNavLink href="/ai-prep" icon={BrainCircuit} badge="PRO" onClick={() => setIsOpen(false)} index={3}>
+                                        <MobileNavLink href="/ai-prep" icon={BrainCircuit} badge="PRO" onClick={() => setIsOpen(false)} index={4}>
                                             AI Nexus
                                         </MobileNavLink>
                                     </>
