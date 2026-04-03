@@ -252,40 +252,49 @@ export default function ExplorePage() {
                 ))}
 
                 {/* Final Professional Identity Rail */}
-                <footer className="pt-24 pb-12 space-y-16 border-t border-white/5">
-                    <div className="flex flex-col gap-10">
-                        <div className="flex flex-wrap justify-between gap-6">
+                <footer className="pt-12 pb-10 space-y-10 border-t border-white/5">
+                    <div className="flex flex-col items-center gap-10">
+                        {/* Premium Social Rail */}
+                        <div className="flex justify-center items-center gap-8 px-6 py-4 rounded-3xl bg-white/[0.02] border border-white/5 backdrop-blur-3xl shadow-2xl">
                             {SOCIALS.map((social, sIdx) => (
                                 <Link 
                                     key={sIdx} 
                                     href={social.href} 
-                                    className="flex items-center gap-3 text-[10px] font-black text-gray-600 hover:text-white uppercase tracking-widest transition-all group"
+                                    className="group flex flex-col items-center gap-2"
                                 >
-                                    <social.icon size={14} className="group-hover:scale-125 transition-transform" />
-                                    {social.name}
+                                    <div className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-gray-500 group-hover:text-blue-400 group-hover:bg-blue-500/10 group-hover:border-blue-500/20 group-hover:scale-110 transition-all duration-300 shadow-xl">
+                                        <social.icon size={20} strokeWidth={1.5} />
+                                    </div>
+                                    <span className="text-[7px] font-black uppercase tracking-[0.2em] text-gray-700 group-hover:text-blue-500 transition-colors">
+                                        {social.name}
+                                    </span>
                                 </Link>
                             ))}
                         </div>
 
-                        <div className="flex items-center justify-between opacity-30">
-                             <p className="text-[9px] font-black uppercase tracking-[0.5em] text-gray-400 italic font-mono">CONSOLE ID: WEBORY_NAV_V5</p>
-                             <div className="flex items-center gap-3">
-                                <Cpu size={14} className="text-gray-800" />
-                                <Activity size={14} className="text-gray-800" />
-                             </div>
+                        <div className="flex flex-col items-center gap-4 text-center">
+                             <div className="flex justify-center gap-6">
+                                {["PRIVACY", "TERMS", "SUPPORT"].map((l, i) => (
+                                    <Link key={i} href="#" className="text-[9px] font-black text-gray-600 uppercase tracking-widest hover:text-blue-400 transition-colors italic">{l}</Link>
+                                ))}
+                            </div>
+                            <div className="flex items-center gap-3 opacity-20">
+                                <div className="h-px w-8 bg-white/20" />
+                                <p className="text-[7px] font-black uppercase tracking-[0.5em] text-gray-400 italic">WEBORY_V5</p>
+                                <div className="h-px w-8 bg-white/20" />
+                            </div>
                         </div>
                     </div>
 
-                    <div className="text-center space-y-4">
-                         <div className="flex justify-center gap-8">
-                            {["PRIVACY", "TERMS", "SUPPORT"].map((l, i) => (
-                                <Link key={i} href="#" className="text-[9px] font-black text-gray-600 uppercase tracking-widest hover:text-blue-400 transition-colors italic">{l}</Link>
-                            ))}
-                        </div>
-                        <div className="h-px w-32 bg-gradient-to-r from-transparent via-white/10 to-transparent mx-auto opacity-50" />
+                    <div className="text-center space-y-5">
                         <div className="space-y-1.5 opacity-60">
                              <p className="text-[9px] font-black uppercase tracking-[0.6em] text-gray-700 italic">WEBORY TECHNOLOGIES INC.</p>
-                             <p className="text-[8px] text-gray-800 font-bold uppercase tracking-[0.2em] leading-none">Industrial Navigation Operating System • EST. 2024</p>
+                             <p className="text-[7px] text-gray-800 font-bold uppercase tracking-[0.2em] leading-none">Industrial Navigation Operating System • EST. 2024</p>
+                        </div>
+                        <div className="flex justify-center gap-6 opacity-20 group-hover:opacity-100 transition-all">
+                                <Cpu size={14} className="text-gray-800" />
+                                <Activity size={14} className="text-gray-800" />
+                                <Dna size={14} className="text-gray-800" />
                         </div>
                     </div>
                 </footer>
