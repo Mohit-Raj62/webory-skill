@@ -318,9 +318,19 @@ export default function HackathonJudgingPage() {
                         animate={{ opacity: 1 }}
                         className="py-40 flex flex-col items-center justify-center border border-dashed border-white/10 rounded-[3rem] bg-white/[0.01]"
                     >
-                        <Loader2 className="w-16 h-16 text-gray-800 mb-6 animate-spin" />
-                        <h3 className="text-xl font-black uppercase italic text-gray-700">Awaiting Shipments</h3>
-                        <p className="text-gray-800 font-medium">No projects match your search criteria yet.</p>
+                        {loading ? (
+                            <Loader2 className="w-16 h-16 text-blue-500/20 mb-6 animate-spin" />
+                        ) : (
+                            <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-6 border border-white/10">
+                                <Search className="w-8 h-8 text-gray-700" />
+                            </div>
+                        )}
+                        <h3 className="text-xl font-black uppercase italic text-gray-700">
+                            {loading ? "Scanning Frequency..." : "Awaiting Shipments"}
+                        </h3>
+                        <p className="text-gray-800 font-medium">
+                            {loading ? "Establishing connection to neural network..." : "No projects match your search criteria yet."}
+                        </p>
                     </motion.div>
                 )}
             </div>

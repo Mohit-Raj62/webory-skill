@@ -22,7 +22,8 @@ export async function GET(
 
     const submissions = await HackathonSubmission.find({ hackathonId: id })
       .populate("userId", "name email firstName lastName")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
     return NextResponse.json({
       success: true,

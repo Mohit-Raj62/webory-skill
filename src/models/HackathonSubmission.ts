@@ -5,11 +5,13 @@ const SubmissionSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Hackathon",
     required: true,
+    index: true,
   },
   userId: {
     type: Schema.Types.ObjectId,
     ref: "User",
     required: true,
+    index: true,
   },
   teamName: {
     type: String,
