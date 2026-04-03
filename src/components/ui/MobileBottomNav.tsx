@@ -23,11 +23,14 @@ const NavItem = ({ href, icon: Icon, label, isActive, onClick, isCenter }: {
             className="flex flex-col items-center justify-center flex-1 h-full relative group cursor-pointer pt-1 min-w-0"
         >
             <div className={cn(
-                "relative p-1 rounded-xl transition-all duration-300 flex items-center justify-center",
-                isActive ? "text-blue-400 bg-blue-500/10" : "text-gray-500 group-hover:text-gray-300"
+                "relative transition-all duration-300 flex items-center justify-center",
+                isCenter 
+                    ? "w-11 h-11 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 shadow-lg shadow-blue-500/40 text-white border border-white/20"
+                    : "p-1 rounded-xl",
+                !isCenter && (isActive ? "text-blue-400 bg-blue-500/10" : "text-gray-500 group-hover:text-gray-300")
             )}>
-                <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
-                {isActive && (
+                <Icon size={isCenter ? 22 : 22} strokeWidth={isActive || isCenter ? 2.5 : 2} />
+                {isActive && !isCenter && (
                     <motion.div
                         layoutId="active-pill"
                         className="absolute inset-0 bg-blue-500/20 rounded-xl -z-10"
@@ -37,7 +40,7 @@ const NavItem = ({ href, icon: Icon, label, isActive, onClick, isCenter }: {
             </div>
             <span className={cn(
                 "text-[8px] sm:text-[10px] whitespace-nowrap font-bold tracking-tight transition-colors duration-300 truncate w-full px-0.5 text-center mt-0.5",
-                isActive ? "text-blue-400" : "text-gray-500"
+                isCenter ? "text-gray-300" : (isActive ? "text-blue-400" : "text-gray-500")
             )}>
                 {label}
             </span>
@@ -124,6 +127,7 @@ export function MobileBottomNav() {
                         icon={LayoutGrid} 
                         label="Menu" 
                         isActive={pathname === "/explore"}
+                        isCenter={true}
                     />
                 <NavItem 
                     href="/playground" 
