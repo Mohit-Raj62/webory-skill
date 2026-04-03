@@ -31,7 +31,8 @@ import {
     Terminal,
     ChevronRight,
     LayoutGrid,
-    Clock
+    Clock,
+    Activity
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
