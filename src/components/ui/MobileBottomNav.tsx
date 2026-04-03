@@ -124,7 +124,6 @@ export function MobileBottomNav() {
                         icon={LayoutGrid} 
                         label="Menu" 
                         isActive={pathname === "/explore"}
-                        isCenter={true} 
                     />
                 <NavItem 
                     href="/playground" 
