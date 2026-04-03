@@ -96,7 +96,7 @@ export function MobileBottomNav() {
                 <motion.nav 
                     initial={{ y: 100, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    className="w-full bg-black/90 backdrop-blur-3xl border-t border-white/10 shadow-2xl pointer-events-auto flex items-center justify-between px-1 pb-[env(safe-area-inset-bottom,0px)] h-[calc(4.5rem+env(safe-area-inset-bottom,0px))] relative overflow-hidden"
+                    className="w-full bg-black/95 backdrop-blur-3xl border-t border-white/10 shadow-2xl pointer-events-auto flex items-center justify-between px-1 pb-[env(safe-area-inset-bottom,0px)] h-[calc(4.5rem+env(safe-area-inset-bottom,0px))] relative"
                 >
                     {/* Background Glow */}
                     <div className="absolute inset-0 bg-gradient-to-t from-blue-500/10 to-transparent pointer-events-none" />
