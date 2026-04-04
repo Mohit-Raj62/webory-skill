@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { MessageCircle, X, Send, Loader2, Minimize2, Bot, Terminal, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
@@ -24,12 +25,12 @@ export default function SupportChatbot() {
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [shouldShow, setShouldShow] = useState(true);
+  const pathname = usePathname();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   // Check if chatbot should be visible on current page
   useEffect(() => {
-    const path = window.location.pathname;
     const hiddenPaths = [
       "/admin",
       "/teacher",
@@ -40,11 +41,11 @@ export default function SupportChatbot() {
     ];
     
     const shouldHide = hiddenPaths.some((hiddenPath) =>
-      path.startsWith(hiddenPath)
+      pathname?.startsWith(hiddenPath)
     );
     
     setShouldShow(!shouldHide);
-  }, []);
+  }, [pathname]);
 
 
   // Auto-scroll to bottom when new messages arrive

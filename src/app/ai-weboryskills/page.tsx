@@ -344,15 +344,26 @@ export default function AIWeboryskillsPage() {
                                         <p className="text-[10px] text-gray-400">Ask about coding & tech</p>
                                     </div>
                                 </div>
-                                <button 
-                                    onClick={() => setMode("roadmap")} 
-                                    className="group flex items-center gap-1.5 md:gap-2 px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 rounded-xl transition-all duration-300"
-                                >
-                                    <span className="text-xs md:text-sm font-bold text-red-400">Exit</span>
-                                    <svg className="w-3.5 h-3.5 md:w-4 md:h-4 text-red-400 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
+                                <div className="flex items-center gap-2">
+                                    {chatHistory.length > 0 && (
+                                        <button 
+                                            type="button" 
+                                            onClick={() => setChatHistory([])} 
+                                            className="text-[10px] sm:text-xs text-gray-500 hover:text-red-400 transition-colors flex items-center gap-1 bg-white/5 hover:bg-white/10 px-2 sm:px-3 py-1.5 rounded-lg border border-white/10"
+                                        >
+                                            <Sparkles size={10} className="hidden sm:inline" /> Clear
+                                        </button>
+                                    )}
+                                    <button 
+                                        onClick={() => setMode("roadmap")}
+                                        className="group flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 transition-all duration-300 active:scale-95"
+                                    >
+                                        <span className="text-xs md:text-sm font-bold text-red-400">Exit</span>
+                                        <svg className="w-3.5 h-3.5 md:w-4 md:h-4 text-red-400 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="flex-1 bg-black/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl relative flex flex-col min-h-0">
@@ -369,13 +380,13 @@ export default function AIWeboryskillsPage() {
                                                         </div>
                                                     )}
                                                     <div className={`max-w-[85%] sm:max-w-[75%] ${msg.role === "user" ? "text-right" : "text-left"}`}>
-                                                        <div className={`inline-block p-4 sm:p-5 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl ${
+                                                        <div className={`inline-block p-4 sm:p-5 shadow-2xl backdrop-blur-md transition-all duration-300 hover:shadow-xl ${
                                                             msg.role === "user"
-                                                                ? "bg-gradient-to-br from-blue-600 to-purple-600 text-white rounded-2xl rounded-tr-sm border border-white/10"
-                                                                : "bg-white/5 text-gray-100 border border-white/10 rounded-2xl rounded-tl-sm hover:bg-white/10"
+                                                                ? "bg-gradient-to-br from-blue-600/90 to-purple-600/90 text-white rounded-2xl rounded-tr-sm border border-white/20"
+                                                                : "bg-white/[0.08] text-gray-100 border border-white/20 rounded-2xl rounded-tl-sm hover:bg-white/[0.12]"
                                                         }`}>
                                                             {msg.role === "assistant" ? (
-                                                                <div className="prose prose-invert prose-sm sm:prose-base max-w-none">
+                                                                <div className="prose prose-invert prose-xs sm:prose-sm md:prose-base max-w-none text-gray-100 leading-relaxed overflow-x-hidden">
                                                                     <ReactMarkdown>{msg.content}</ReactMarkdown>
                                                                 </div>
                                                             ) : (
@@ -463,17 +474,6 @@ export default function AIWeboryskillsPage() {
                                             </div>
                                         </div>
 
-                                        {chatHistory.length > 0 && (
-                                            <div className="absolute -top-10 right-0">
-                                                <button 
-                                                    type="button" 
-                                                    onClick={() => setChatHistory([])} 
-                                                    className="text-xs text-gray-500 hover:text-red-400 transition-colors flex items-center gap-1 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/5"
-                                                >
-                                                    <Sparkles size={10} /> Clear Chat
-                                                </button>
-                                            </div>
-                                        )}
                                     </form>
                                     {error && <div className="absolute -top-16 left-0 right-0 mx-4 p-3 bg-red-900/80 backdrop-blur-md border border-red-500/50 rounded-xl text-red-200 text-sm text-center animate-shake z-10">{error}</div>}
                                 </div>
