@@ -83,6 +83,7 @@ export default function AIWeboryskillsPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const chatEndRef = useRef<HTMLDivElement>(null);
+    const lastMessageRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
     const { user, loading: authLoading } = useAuth();
 
@@ -93,8 +94,18 @@ export default function AIWeboryskillsPage() {
         }
     }, [user, authLoading, router]);
 
+    // Intelligent Auto-Scroll: Show answers from the top
     useEffect(() => {
-        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        if (chatHistory.length > 0) {
+            const lastMessage = chatHistory[chatHistory.length - 1];
+            if (lastMessage.role === "assistant") {
+                // If the AI just replied, scroll to the START of the new answer
+                lastMessageRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+            } else {
+                // If it's the user's message, scroll to the bottom (to see "Thinking...")
+                chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+            }
+        }
     }, [chatHistory]);
 
     // Added Scroll Lock for Chat Mode
@@ -394,7 +405,7 @@ export default function AIWeboryskillsPage() {
                                     {chatHistory.length > 0 ? (
                                         <>
                                             {chatHistory.map((msg, idx) => (
-                                                <div key={idx} className={`flex gap-4 animate-fadeIn ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                                                <div key={idx} ref={idx === chatHistory.length - 1 ? lastMessageRef : null} className={`flex gap-4 animate-fadeIn ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                                                     {msg.role === "assistant" && (
                                                         <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg ring-2 ring-white/10">
                                                             <Bot className="text-white" size={20} />
