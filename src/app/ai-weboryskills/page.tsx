@@ -101,11 +101,14 @@ export default function AIWeboryskillsPage() {
     useEffect(() => {
         if (mode === "chat") {
             document.body.style.overflow = "hidden";
+            document.body.classList.add("hide-mobile-bottom-nav");
         } else {
             document.body.style.overflow = "unset";
+            document.body.classList.remove("hide-mobile-bottom-nav");
         }
         return () => {
             document.body.style.overflow = "unset";
+            document.body.classList.remove("hide-mobile-bottom-nav");
         };
     }, [mode]);
 
@@ -434,8 +437,8 @@ export default function AIWeboryskillsPage() {
                                     )}
                                 </div>
 
-                                {/* Input Area */}
-                                <div className="border-t border-white/10 bg-black/70 backdrop-blur-2xl p-4 sm:p-8 pb-[max(1rem,env(safe-area-inset-bottom))] rounded-b-[2.5rem] relative z-20">
+                                {/* Input Area - Fixed UI and Stacking for Mobile Apps */}
+                                <div className="border-t border-white/10 bg-black/90 backdrop-blur-3xl p-4 sm:p-8 pb-[max(1.5rem,env(safe-area-inset-bottom,1rem))] rounded-b-[2.5rem] relative z-[1050]">
                                     <form onSubmit={handleSubmit} className="relative group">
                                         <div className="relative">
                                             <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl opacity-10 blur-xl"></div>

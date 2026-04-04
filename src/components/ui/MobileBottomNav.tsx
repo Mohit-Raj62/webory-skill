@@ -64,6 +64,7 @@ const NavItem = ({ href, icon: Icon, label, isActive, onClick, isCenter }: {
 };
 
 export function MobileBottomNav() {
+    const [isHiddenByMain, setIsHiddenByMain] = useState(false);
     const pathname = usePathname();
     const { user } = useAuth();
     const [isStandalone, setIsStandalone] = useState(false);
@@ -78,15 +79,31 @@ export function MobileBottomNav() {
             document.body.classList.remove('pb-32');
         }
 
+        // Specific fix for AI Mentor immersive mode
+        const observer = new MutationAttributeObserver((mutations) => {
+            mutations.forEach((mutation) => {
+              if (mutation.type === "attributes" && mutation.attributeName === "class") {
+                setIsHiddenByMain(document.body.classList.contains("hide-mobile-bottom-nav"));
+              }
+            });
+          });
+          
+        observer.observe(document.body, { attributes: true });
+        setIsHiddenByMain(document.body.classList.contains("hide-mobile-bottom-nav"));
+
         return () => {
             document.body.classList.remove('pb-32');
+            observer.disconnect();
         };
     }, []);
 
+    // Helper class for MutationObserver (standard in modern browsers)
+    const MutationAttributeObserver = window.MutationObserver;
+
     // Only show on mobile AND in standalone mode
-    // Hide on admin and teacher pages
+    // Hide on admin and teacher pages, or when suppressed by main content
     const isRestrictedPage = pathname?.startsWith('/admin') || pathname?.startsWith('/teacher');
-    if (!isStandalone || isRestrictedPage) return null;
+    if (!isStandalone || isRestrictedPage || isHiddenByMain) return null;
     return (
         <>
             <div 
