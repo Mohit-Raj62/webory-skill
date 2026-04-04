@@ -294,186 +294,188 @@ export default function AIWeboryskillsPage() {
                         <Sparkles className="text-blue-400 animate-pulse" size={16} />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 font-semibold text-[10px] md:text-sm">AI-Powered Learning</span>
                     </div>
-                    <h1 className="text-3xl md:text-6xl font-bold mb-4 md:mb-5 px-2">
+                    <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold mb-4 md:mb-6 px-2 tracking-tight">
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">AI Mentor</span>
                     </h1>
-                    <p className="text-gray-400 text-xs md:text-lg max-w-2xl mx-auto px-4 leading-relaxed mb-6">
-                        Transform your learning journey with AI-powered personalized roadmaps and instant answers.
+                    <p className="text-gray-400 text-[13px] sm:text-base md:text-lg max-w-2xl mx-auto px-4 leading-relaxed mb-8 font-medium">
+                        Elevate your career with AI-driven personalized roadmaps and 24/7 senior mentor guidance tailored for your goals.
                     </p>
 
-                    <div className="inline-flex items-center gap-2 bg-black/30 p-1.5 rounded-2xl border border-white/10">
+                    <div className="inline-flex items-center gap-1.5 bg-white/5 backdrop-blur-md p-1.5 rounded-2xl border border-white/10 shadow-2xl">
                         <button
                             onClick={() => setMode("roadmap")}
-                            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
-                                mode === "roadmap" ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg" : "text-gray-400 hover:text-white"
+                            className={`flex items-center gap-2 px-4 sm:px-8 py-2.5 sm:py-3.5 rounded-xl font-bold transition-all duration-300 ${
+                                mode === "roadmap" ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.3)]" : "text-gray-500 hover:text-white"
                             }`}
                         >
-                            <Map size={18} />
-                            <span className="text-sm sm:text-base">Roadmap</span>
+                            <Map size={18} className={mode === "roadmap" ? "animate-bounce" : ""} />
+                            <span className="text-xs sm:text-base uppercase tracking-wider">Roadmap</span>
                         </button>
                         <button
                             onClick={() => setMode("chat")}
-                            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
-                                mode === "chat" ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg" : "text-gray-400 hover:text-white"
+                            className={`flex items-center gap-2 px-4 sm:px-8 py-2.5 sm:py-3.5 rounded-xl font-bold transition-all duration-300 ${
+                                mode === "chat" ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.3)]" : "text-gray-500 hover:text-white"
                             }`}
                         >
-                            <MessageCircle size={18} />
-                            <span className="text-sm sm:text-base">Webory Chat AI</span>
+                            <MessageCircle size={18} className={mode === "chat" ? "animate-pulse" : ""} />
+                            <span className="text-xs sm:text-base uppercase tracking-wider">Chat AI</span>
                         </button>
                     </div>
                 </div>
 
                 {/* Chat Mode Overlay */}
                 {mode === "chat" && (
-                    <div className="fixed inset-0 z-40 bg-gray-900/95 backdrop-blur-md pt-20 md:pt-28 pb-4 px-3 sm:px-6 flex flex-col animate-fadeIn">
-                        <div className="max-w-5xl mx-auto w-full flex-1 flex flex-col min-h-0 relative z-50">
-                        {/* Enhanced Header for Chat Mode */}
-                        <div className="flex items-center justify-between mb-3 md:mb-4 flex-shrink-0 glass-card p-3 md:p-4 rounded-xl border border-white/10">
-                             <div className="flex items-center gap-2 md:gap-3">
-                                <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
-                                    <Bot className="text-white w-4 h-4 md:w-5 md:h-5" />
+                    <div className="fixed inset-0 z-[150] bg-black/95 backdrop-blur-xl flex flex-col animate-fadeIn overflow-hidden">
+                        {/* Dynamic Safe Area Padding for Mobile Headers */}
+                        <div className="h-[env(safe-area-inset-top,20px)] w-full bg-black/50 md:hidden" />
+                        
+                        <div className="max-w-5xl mx-auto w-full flex-1 flex flex-col min-h-0 relative z-50 p-3 sm:p-6 lg:p-10">
+                            {/* Enhanced Header - Responsive for Mobile Applications */}
+                            <div className="flex items-center justify-between mb-3 md:mb-6 flex-shrink-0 bg-white/5 backdrop-blur-2xl p-3 md:p-5 rounded-2xl border border-white/10 shadow-xl">
+                                <div className="flex items-center gap-2 md:gap-3">
+                                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+                                        <Bot className="text-white w-4 h-4 md:w-5 md:h-5" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-sm md:text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">AI Mentor Chat</h2>
+                                        <p className="text-[10px] text-gray-400">Ask about coding & tech</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h2 className="text-sm md:text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">AI Mentor Chat</h2>
-                                    <p className="text-[10px] text-gray-400">Ask about coding & tech</p>
-                                </div>
-                             </div>
-                             <button 
-                                onClick={() => setMode("roadmap")} 
-                                className="group flex items-center gap-1.5 md:gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-gradient-to-r from-red-500/10 to-orange-500/10 hover:from-red-500/20 hover:to-orange-500/20 border border-red-500/20 hover:border-red-500/40 rounded-lg transition-all duration-300 hover:scale-105"
-                             >
-                                <span className="text-xs md:text-sm font-semibold text-red-400 group-hover:text-red-300">Exit</span>
-                                <svg className="w-3 h-3 md:w-4 md:h-4 text-red-400 group-hover:text-red-300 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                             </button>
-                        </div>
+                                <button 
+                                    onClick={() => setMode("roadmap")} 
+                                    className="group flex items-center gap-1.5 md:gap-2 px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 rounded-xl transition-all duration-300"
+                                >
+                                    <span className="text-xs md:text-sm font-bold text-red-400">Exit</span>
+                                    <svg className="w-3.5 h-3.5 md:w-4 md:h-4 text-red-400 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
 
-                        <div className="flex-1 bg-gray-900/50 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl relative flex flex-col min-h-0">
-                            
-                            {/* Messages Area - Grow to fill space */}
-                            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-transparent">
-                                {chatHistory.length > 0 ? (
-                                    <>
-                                        {chatHistory.map((msg, idx) => (
-                                            <div key={idx} className={`flex gap-4 animate-fadeIn ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                                                {msg.role === "assistant" && (
-                                                    <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg ring-2 ring-white/10">
+                            <div className="flex-1 bg-black/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl relative flex flex-col min-h-0">
+                                
+                                {/* Messages Area */}
+                                <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-6 scroll-smooth scrollbar-none">
+                                    {chatHistory.length > 0 ? (
+                                        <>
+                                            {chatHistory.map((msg, idx) => (
+                                                <div key={idx} className={`flex gap-4 animate-fadeIn ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                                                    {msg.role === "assistant" && (
+                                                        <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg ring-2 ring-white/10">
+                                                            <Bot className="text-white" size={20} />
+                                                        </div>
+                                                    )}
+                                                    <div className={`max-w-[85%] sm:max-w-[75%] ${msg.role === "user" ? "text-right" : "text-left"}`}>
+                                                        <div className={`inline-block p-4 sm:p-5 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl ${
+                                                            msg.role === "user"
+                                                                ? "bg-gradient-to-br from-blue-600 to-purple-600 text-white rounded-2xl rounded-tr-sm border border-white/10"
+                                                                : "bg-white/5 text-gray-100 border border-white/10 rounded-2xl rounded-tl-sm hover:bg-white/10"
+                                                        }`}>
+                                                            {msg.role === "assistant" ? (
+                                                                <div className="prose prose-invert prose-sm sm:prose-base max-w-none">
+                                                                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                                                                </div>
+                                                            ) : (
+                                                                <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap font-medium">{msg.content}</p>
+                                                            )}
+                                                        </div>
+                                                        <div className={`text-xs text-gray-400 mt-2 px-1 flex items-center gap-1 ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                                                            {msg.role === "user" ? (
+                                                                <>You <User size={10} /></>
+                                                            ) : (
+                                                                <><Bot size={10} /> AI Mentor</>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    {msg.role === "user" && (
+                                                        <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center border border-white/10 shadow-lg">
+                                                            <User className="text-gray-300" size={20} />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                            
+                                            {loading && (
+                                                <div className="flex gap-4 animate-pulse">
+                                                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg opacity-70">
                                                         <Bot className="text-white" size={20} />
                                                     </div>
-                                                )}
-                                                <div className={`max-w-[85%] sm:max-w-[75%] ${msg.role === "user" ? "text-right" : "text-left"}`}>
-                                                    <div className={`inline-block p-4 sm:p-5 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl ${
-                                                        msg.role === "user"
-                                                            ? "bg-gradient-to-br from-blue-600 to-purple-600 text-white rounded-2xl rounded-tr-sm border border-white/10"
-                                                            : "bg-white/5 text-gray-100 border border-white/10 rounded-2xl rounded-tl-sm hover:bg-white/10"
-                                                    }`}>
-                                                        {msg.role === "assistant" ? (
-                                                            <div className="prose prose-invert prose-sm sm:prose-base max-w-none">
-                                                                <ReactMarkdown>{msg.content}</ReactMarkdown>
-                                                            </div>
-                                                        ) : (
-                                                            <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap font-medium">{msg.content}</p>
-                                                        )}
-                                                    </div>
-                                                    <div className={`text-xs text-gray-400 mt-2 px-1 flex items-center gap-1 ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                                                        {msg.role === "user" ? (
-                                                            <>You <User size={10} /></>
-                                                        ) : (
-                                                            <><Bot size={10} /> AI Mentor</>
-                                                        )}
+                                                    <div className="bg-white/5 border border-white/10 rounded-2xl rounded-tl-sm p-4 flex items-center gap-2">
+                                                        <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                                                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                                                        <div className="w-2 h-2 bg-pink-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                                                        <span className="text-xs text-gray-400 ml-2 font-medium">Thinking...</span>
                                                     </div>
                                                 </div>
-                                                {msg.role === "user" && (
-                                                    <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center border border-white/10 shadow-lg">
-                                                        <User className="text-gray-300" size={20} />
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ))}
-                                        
-                                        {loading && (
-                                            <div className="flex gap-4 animate-pulse">
-                                                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg opacity-70">
-                                                    <Bot className="text-white" size={20} />
+                                            )}
+                                            <div ref={chatEndRef} />
+                                        </>
+                                    ) : (
+                                        <div className="flex items-center justify-center h-full">
+                                            <div className="text-center p-8 glass-card rounded-3xl border border-white/10 max-w-lg mx-auto transform hover:scale-105 transition-all duration-500">
+                                                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full mb-6 border border-white/10 shadow-[0_0_30px_rgba(59,130,246,0.2)]">
+                                                    <MessageCircle className="text-blue-400" size={36} />
                                                 </div>
-                                                <div className="bg-white/5 border border-white/10 rounded-2xl rounded-tl-sm p-4 flex items-center gap-2">
-                                                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                                                    <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                                                    <div className="w-2 h-2 bg-pink-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                                                    <span className="text-xs text-gray-400 ml-2 font-medium">Thinking...</span>
+                                                <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                                                    Senior Mentor AI
+                                                </h3>
+                                                <p className="text-gray-400 text-sm sm:text-base leading-relaxed mb-6">
+                                                    Ask complex technical questions, request code reviews, or get architecture advice. I'm here to help you master the craft.
+                                                </p>
+                                                <div className="flex flex-wrap gap-2 justify-center">
+                                                    {exampleQuestions.slice(0, 3).map((q) => (
+                                                        <button key={q} type="button" onClick={() => setTopic(q)} className="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs text-gray-300 transition-all hover:border-blue-500/50">
+                                                            {q}
+                                                        </button>
+                                                    ))}
                                                 </div>
                                             </div>
-                                        )}
-
-                                        <div ref={chatEndRef} />
-                                    </>
-                                ) : (
-                                    <div className="flex items-center justify-center h-full">
-                                        <div className="text-center p-8 glass-card rounded-3xl border border-white/10 max-w-lg mx-auto transform hover:scale-105 transition-all duration-500">
-                                            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full mb-6 border border-white/10 shadow-[0_0_30px_rgba(59,130,246,0.2)]">
-                                                <MessageCircle className="text-blue-400" size={36} />
-                                            </div>
-                                            <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                                                Senior Mentor AI
-                                            </h3>
-                                            <p className="text-gray-400 text-sm sm:text-base leading-relaxed mb-6">
-                                                Ask complex technical questions, request code reviews, or get architecture advice. I'm here to help you master the craft.
-                                            </p>
-                                            <div className="flex flex-wrap gap-2 justify-center">
-                                                {exampleQuestions.slice(0, 3).map((q) => (
-                                                    <button key={q} type="button" onClick={() => setTopic(q)} className="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs text-gray-300 transition-all hover:border-blue-500/50">
-                                                        {q}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Input Area - Sticky at Bottom */}
-                            <div className="border-t border-white/10 bg-black/60 backdrop-blur-xl p-4 sm:p-6 rounded-b-3xl relative z-20">
-                                <form onSubmit={handleSubmit} className="relative">
-                                    <div className="relative group">
-                                        <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl opacity-20 group-hover:opacity-40 transition duration-500 blur"></div>
-                                        <div className="relative flex gap-3 bg-gray-900 rounded-2xl p-2 border border-white/10">
-                                            <input
-                                                type="text"
-                                                value={topic}
-                                                onChange={(e) => setTopic(e.target.value)}
-                                                placeholder="Ask your mentor anything..."
-                                                className="flex-1 bg-transparent border-none focus:ring-0 px-4 py-3 text-white text-base placeholder-gray-500 outline-none"
-                                                disabled={loading}
-                                            />
-                                            <Button 
-                                                type="submit" 
-                                                disabled={loading || !topic.trim()} 
-                                                className={`h-auto px-6 rounded-xl transition-all duration-300 ${
-                                                    topic.trim() ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:shadow-lg hover:shadow-blue-500/20" : "bg-gray-800 text-gray-500"
-                                                }`}
-                                            >
-                                                {loading ? <Loader2 className="animate-spin" size={24} /> : <Send size={24} />}
-                                            </Button>
-                                        </div>
-                                    </div>
-
-                                    {chatHistory.length > 0 && (
-                                        <div className="absolute -top-10 right-0">
-                                            <button 
-                                                type="button" 
-                                                onClick={() => setChatHistory([])} 
-                                                className="text-xs text-gray-500 hover:text-red-400 transition-colors flex items-center gap-1 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/5"
-                                            >
-                                                <Sparkles size={10} /> Clear Chat
-                                            </button>
                                         </div>
                                     )}
-                                </form>
-                                {error && <div className="absolute -top-16 left-0 right-0 mx-4 p-3 bg-red-900/80 backdrop-blur-md border border-red-500/50 rounded-xl text-red-200 text-sm text-center animate-shake z-10">{error}</div>}
+                                </div>
+
+                                {/* Input Area */}
+                                <div className="border-t border-white/10 bg-black/70 backdrop-blur-2xl p-4 sm:p-8 pb-[max(1rem,env(safe-area-inset-bottom))] rounded-b-[2.5rem] relative z-20">
+                                    <form onSubmit={handleSubmit} className="relative group">
+                                        <div className="relative">
+                                            <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl opacity-10 blur-xl"></div>
+                                            <div className="relative flex gap-2 sm:gap-3 bg-white/5 rounded-2xl p-2 border border-white/10 focus-within:border-blue-500/50 transition-all duration-300 shadow-2xl">
+                                                <input
+                                                    type="text"
+                                                    value={topic}
+                                                    onChange={(e) => setTopic(e.target.value)}
+                                                    placeholder="Ask your senior mentor..."
+                                                    className="flex-1 bg-transparent border-none focus:ring-0 px-3 sm:px-5 py-3.5 text-white text-[15px] sm:text-base placeholder-gray-500 outline-none w-full"
+                                                    disabled={loading}
+                                                />
+                                                <Button 
+                                                    type="submit" 
+                                                    disabled={loading || !topic.trim()} 
+                                                    className={`aspect-square sm:aspect-auto sm:px-8 rounded-xl transition-all duration-300 flex items-center justify-center ${
+                                                        topic.trim() ? "bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg shadow-blue-500/40" : "bg-gray-800 text-gray-500 opacity-50"
+                                                    }`}
+                                                >
+                                                    {loading ? <Loader2 className="animate-spin" size={20} /> : <Send size={20} />}
+                                                </Button>
+                                            </div>
+                                        </div>
+
+                                        {chatHistory.length > 0 && (
+                                            <div className="absolute -top-10 right-0">
+                                                <button 
+                                                    type="button" 
+                                                    onClick={() => setChatHistory([])} 
+                                                    className="text-xs text-gray-500 hover:text-red-400 transition-colors flex items-center gap-1 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/5"
+                                                >
+                                                    <Sparkles size={10} /> Clear Chat
+                                                </button>
+                                            </div>
+                                        )}
+                                    </form>
+                                    {error && <div className="absolute -top-16 left-0 right-0 mx-4 p-3 bg-red-900/80 backdrop-blur-md border border-red-500/50 rounded-xl text-red-200 text-sm text-center animate-shake z-10">{error}</div>}
+                                </div>
                             </div>
                         </div>
-                    </div>
                     </div>
                 )}
 
@@ -487,28 +489,32 @@ export default function AIWeboryskillsPage() {
                                         <Rocket className="text-blue-400" size={20} />
                                         What is your Career Goal?
                                     </label>
-                                    <div className="flex flex-col md:flex-row gap-4">
-                                        <div className="flex-1">
+                                    <div className="flex flex-col gap-4">
+                                        <div className="relative group">
                                              <input 
                                                 type="text" 
                                                 value={topic} 
                                                 onChange={(e) => setTopic(e.target.value)} 
-                                                placeholder="e.g., Full Stack Developer, AI Engineer, Data Scientist..." 
-                                                className="w-full bg-black/30 border-2 border-white/10 focus:border-blue-500/50 rounded-2xl p-4 text-white text-sm sm:text-base placeholder-gray-500 outline-none transition-all" 
+                                                placeholder="e.g., Full Stack Developer, AI Engineer..." 
+                                                className="w-full bg-white/5 border border-white/10 focus:border-blue-500/50 rounded-2xl p-4 sm:p-5 text-white text-[15px] sm:text-base placeholder-gray-500 outline-none transition-all shadow-inner" 
                                                 disabled={loading} 
                                             />
+                                            <div className="absolute inset-0 rounded-2xl bg-blue-500/5 opacity-0 group-focus-within:opacity-100 pointer-events-none transition-opacity"></div>
                                         </div>
-                                        <div className="md:w-1/3">
+                                        <div className="relative">
                                             <select
-                                                className="w-full bg-black/30 border-2 border-white/10 focus:border-blue-500/50 rounded-2xl p-4 text-white text-sm sm:text-base outline-none transition-all appearance-none cursor-pointer"
+                                                className="w-full bg-white/5 border border-white/10 focus:border-blue-500/50 rounded-2xl p-4 sm:p-5 text-white text-[15px] sm:text-base outline-none transition-all appearance-none cursor-pointer shadow-inner"
                                                 disabled={loading}
                                                 value={level}
                                                 onChange={(e) => setLevel(e.target.value)}
                                             >
                                                 <option value="Beginner" className="bg-gray-900">Beginner (Student)</option>
-                                                <option value="Intermediate" className="bg-gray-900">Intermediate (Working Pro)</option>
+                                                <option value="Intermediate" className="bg-gray-900">Intermediate (Pro)</option>
                                                 <option value="Advanced" className="bg-gray-900">Advanced (Expert)</option>
                                             </select>
+                                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                                                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -597,20 +603,27 @@ export default function AIWeboryskillsPage() {
 
                                     <div className="space-y-8">
                                         {roadmapData.map((phase, idx) => (
-                                            <div key={idx} className="relative group">
-                                                {idx < roadmapData.length - 1 && <div className="absolute left-1/2 top-full h-8 w-1 bg-gradient-to-b from-white/30 to-transparent transform -translate-x-1/2 z-0"></div>}
+                                            <div key={idx} className="relative group/phase">
+                                                {/* Desktop Connector */}
+                                                {idx < roadmapData.length - 1 && <div className="hidden md:block absolute left-1/2 top-full h-8 w-0.5 bg-gradient-to-b from-white/20 to-transparent transform -translate-x-1/2 z-0"></div>}
+                                                {/* Mobile Connector */}
+                                                {idx < roadmapData.length - 1 && <div className="md:hidden absolute left-8 top-full h-8 w-0.5 bg-gradient-to-b from-white/20 to-transparent z-0"></div>}
 
-                                                <div className={`relative bg-gradient-to-r ${phase.color} p-[3px] rounded-2xl sm:rounded-3xl hover:scale-[1.02] transition-all`}>
-                                                    <div className="bg-black/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-6 sm:p-8">
-                                                        <div className="flex items-start sm:items-center justify-between mb-6 gap-4">
-                                                            <div className="flex-1 min-w-0">
-                                                                <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2">Phase {idx + 1}: {phase.phase}</h3>
-                                                                <div className="flex items-center gap-2 text-gray-400">
-                                                                    <Clock size={16} className="flex-shrink-0" />
-                                                                    <span className="text-sm sm:text-base font-medium">{phase.duration}</span>
+                                                <div className={`relative bg-gradient-to-r ${phase.color} p-[1px] sm:p-[2px] rounded-[2rem] hover:scale-[1.01] transition-all duration-500 shadow-xl`}>
+                                                    <div className="bg-[#0a0a0a] backdrop-blur-2xl rounded-[2rem] p-5 sm:p-8 md:p-10">
+                                                        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-6">
+                                                            <div className="flex-1 min-w-0 order-2 md:order-1">
+                                                                <h3 className="text-xl sm:text-3xl font-extrabold text-white mb-3 tracking-tight">Phase {idx + 1}: {phase.phase}</h3>
+                                                                <div className="flex items-center gap-2.5 text-gray-400">
+                                                                    <div className="p-1.5 bg-white/5 rounded-lg">
+                                                                        <Clock size={14} className="text-blue-400" />
+                                                                    </div>
+                                                                    <span className="text-[13px] sm:text-base font-bold uppercase tracking-widest">{phase.duration}</span>
                                                                 </div>
                                                             </div>
-                                                            <div className={`w-14 h-14 sm:w-16 sm:h-16 flex-shrink-0 rounded-2xl bg-gradient-to-br ${phase.color} flex items-center justify-center text-white font-bold text-2xl shadow-lg`}>{idx + 1}</div>
+                                                            <div className={`w-14 h-14 sm:w-20 sm:h-20 flex-shrink-0 rounded-[1.5rem] bg-gradient-to-br ${phase.color} flex items-center justify-center text-white font-black text-2xl sm:text-4xl shadow-2xl order-1 md:order-2 self-start md:self-center transform group-hover/phase:rotate-12 transition-transform duration-500`}>
+                                                                {idx + 1}
+                                                            </div>
                                                         </div>
 
                                                         <div className="mb-6">
@@ -618,29 +631,27 @@ export default function AIWeboryskillsPage() {
                                                                 <Zap size={20} className="text-yellow-400" />
                                                                 Topics to Master
                                                             </h4>
-                                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                                                                 {phase.topics.map((topic, topicIdx) => (
-                                                                    <div key={topicIdx} className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 hover:border-white/20 transition-all hover:scale-105">
-                                                                        <div className="space-y-2">
+                                                                    <div key={topicIdx} className="group/topic bg-white/[0.03] border border-white/10 rounded-2xl p-5 hover:bg-white/[0.08] hover:border-blue-500/30 transition-all duration-300">
+                                                                        <div className="space-y-3">
                                                                             {(() => {
-                                                                                // Parse topic: "**Name**: Description" or "Name: Description"
                                                                                 const match = topic.match(/\*\*(.+?)\*\*:(.+)/);
                                                                                 if (match) {
                                                                                     return (
                                                                                         <>
-                                                                                            <h5 className="text-white font-bold text-base flex items-start gap-2">
-                                                                                                <div className="w-2 h-2 bg-blue-400 rounded-full mt-1.5 flex-shrink-0"></div>
+                                                                                            <h5 className="text-white font-bold text-[15px] sm:text-lg flex items-start gap-2.5 leading-snug">
+                                                                                                <div className="w-2.5 h-2.5 bg-blue-500 rounded-full mt-1.5 flex-shrink-0 group-hover/topic:scale-125 transition-transform"></div>
                                                                                                 {match[1].trim()}
                                                                                             </h5>
-                                                                                            <p className="text-gray-300 text-sm leading-relaxed pl-4">{match[2].trim()}</p>
+                                                                                            <p className="text-gray-400 text-[13px] sm:text-sm leading-relaxed pl-5 font-medium">{match[2].trim()}</p>
                                                                                         </>
                                                                                     );
                                                                                 }
-                                                                                // Fallback: show as-is
                                                                                 return (
-                                                                                    <div className="flex items-start gap-2">
-                                                                                        <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
-                                                                                        <span className="text-gray-300 text-sm font-medium">{topic}</span>
+                                                                                    <div className="flex items-start gap-3">
+                                                                                        <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                                                                                        <span className="text-gray-300 text-sm font-bold">{topic}</span>
                                                                                     </div>
                                                                                 );
                                                                             })()}
@@ -702,27 +713,31 @@ export default function AIWeboryskillsPage() {
                                             <h2 className="text-2xl sm:text-3xl font-bold text-white">Recommended Courses from WeborySkills</h2>
                                         </div>
                                         <p className="text-gray-400 text-sm mb-6">Start learning with our curated courses that match your roadmap!</p>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
                                             {recommendedCourses.map((course: any) => (
-                                                <div key={course.id} className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border border-white/10 rounded-2xl overflow-hidden hover:border-blue-500/50 transition-all hover:scale-105 group">
+                                                <div key={course.id} className="bg-white/[0.02] backdrop-blur-md border border-white/10 rounded-[2rem] overflow-hidden hover:border-blue-500/50 transition-all duration-500 hover:translate-y-[-8px] group shadow-2xl">
                                                     {course.thumbnail && (
-                                                        <div className="h-40 overflow-hidden bg-gray-800 relative">
+                                                        <div className="h-48 sm:h-56 overflow-hidden bg-gray-900 relative">
                                                             <Image 
                                                                 src={course.thumbnail} 
                                                                 alt={course.title} 
                                                                 fill
-                                                                className="object-cover group-hover:scale-110 transition-transform duration-300"
+                                                                className="object-cover group-hover:scale-110 transition-transform duration-700 opacity-80 group-hover:opacity-100"
                                                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                                             />
+                                                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
                                                         </div>
                                                     )}
-                                                    <div className="p-5">
-                                                        <h3 className="text-lg font-bold text-white mb-2 line-clamp-2">{course.title}</h3>
-                                                        <p className="text-gray-400 text-sm mb-4 line-clamp-3">{course.description}</p>
-                                                        <div className="flex items-center justify-between">
-                                                            <span className="text-2xl font-bold text-blue-400">₹{course.price}</span>
-                                                            <a href={`/courses/${course.id}`} className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm font-semibold rounded-xl transition-all hover:scale-105">
-                                                                Enroll Now
+                                                    <div className="p-6 sm:p-8">
+                                                        <h3 className="text-lg sm:text-xl font-bold text-white mb-3 line-clamp-2 leading-tight group-hover:text-blue-400 transition-colors">{course.title}</h3>
+                                                        <p className="text-gray-400 text-sm mb-6 line-clamp-3 font-medium leading-relaxed">{course.description}</p>
+                                                        <div className="flex items-center justify-between mt-auto">
+                                                            <div className="flex flex-col">
+                                                                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Starting at</span>
+                                                                <span className="text-2xl sm:text-3xl font-black text-white tracking-tight">₹{course.price}</span>
+                                                            </div>
+                                                            <a href={`/courses/${course.id}`} className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white text-sm font-black rounded-2xl transition-all shadow-lg shadow-blue-500/20 active:scale-95">
+                                                                JOIN NOW
                                                             </a>
                                                         </div>
                                                     </div>

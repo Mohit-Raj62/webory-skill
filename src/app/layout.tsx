@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Outfit, Great_Vibes } from "next/font/google";
+import { Inter, Outfit, Great_Vibes, Poppins } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
 import { cn } from "@/lib/utils";
@@ -16,6 +16,11 @@ import { GlobalClientBootstrap } from "@/components/GlobalClientBootstrap";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
+const poppins = Poppins({ 
+    weight: ["400", "500", "600", "700", "800", "900"],
+    subsets: ["latin"], 
+    variable: "--font-poppins" 
+});
 const greatVibes = Great_Vibes({
     weight: "400",
     subsets: ["latin"],
@@ -105,6 +110,7 @@ export default function RootLayout({
                 "min-h-screen bg-background font-sans antialiased",
                 inter.variable,
                 outfit.variable,
+                poppins.variable,
                 greatVibes.variable
             )}>
                 <script
