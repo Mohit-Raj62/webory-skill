@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
-import { Send, Sparkles, BookOpen, Loader2, CheckCircle, Clock, Target, Zap, Award, TrendingUp, Rocket, MessageCircle, Map, User, Bot, Star, Code, Terminal } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+import { Send, Sparkles, BookOpen, Loader2, CheckCircle, Clock, Target, Zap, Award, TrendingUp, Rocket, MessageCircle, Map, User, Bot, Star, Code, Terminal, ChevronRight, Dot } from "lucide-react";
+import ReactMarkdown, { Components } from "react-markdown";
 import { BackgroundCodeAnimation } from "@/components/ui/background-code-animation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/components/auth/session-provider";
@@ -280,6 +280,27 @@ export default function AIWeboryskillsPage() {
     const exampleTopics = ["React.js", "Python", "Machine Learning", "Full Stack", "DevOps", "Blockchain"];
     const exampleQuestions = ["What is React?", "How to learn Python?", "Explain AI vs ML", "Best coding practices?"];
 
+    // Custom Markdown Components for Premium Chat Styling
+    const MarkdownComponents: Components = {
+        h1: ({ children }) => <h1 className="text-xl font-bold text-white mb-4 mt-2 border-l-4 border-blue-500 pl-3 leading-tight break-words">{children}</h1>,
+        h2: ({ children }) => <h2 className="text-lg font-bold text-blue-400 mb-3 mt-4 flex items-center gap-2 break-words"><Sparkles size={16} className="flex-shrink-0" /> {children}</h2>,
+        h3: ({ children }) => <h3 className="text-base font-bold text-purple-400 mb-2 mt-3 break-words">{children}</h3>,
+        p: ({ children }) => <p className="text-gray-200 leading-relaxed mb-4 sm:mb-5 font-medium break-words overflow-hidden">{children}</p>,
+        ul: ({ children }) => <ul className="space-y-3 mb-6 mt-2 max-w-full overflow-hidden">{children}</ul>,
+        ol: ({ children }) => <ol className="space-y-3 mb-6 mt-2 list-decimal list-inside max-w-full overflow-hidden">{children}</ol>,
+        li: ({ children }) => (
+            <li className="flex items-start gap-2 text-gray-300 group max-w-full">
+                <div className="mt-1.5 flex-shrink-0">
+                    <ChevronRight size={14} className="text-blue-500 group-hover:translate-x-1 transition-transform" />
+                </div>
+                <div className="flex-1 text-[13px] sm:text-base leading-snug break-words overflow-hidden">{children}</div>
+            </li>
+        ),
+        strong: ({ children }) => <strong className="font-bold text-blue-400 bg-blue-500/10 px-1 rounded-md break-words">{children}</strong>,
+        code: ({ children }) => <code className="bg-black/50 text-blue-300 px-1.5 py-0.5 rounded-md font-mono text-xs border border-white/10 break-words overflow-wrap-anywhere">{children}</code>,
+        pre: ({ children }) => <pre className="bg-black/80 border border-white/10 rounded-xl p-4 my-4 overflow-x-auto shadow-inner max-w-full">{children}</pre>,
+    };
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
             {mode !== "chat" && <Navbar />}
@@ -379,15 +400,15 @@ export default function AIWeboryskillsPage() {
                                                             <Bot className="text-white" size={20} />
                                                         </div>
                                                     )}
-                                                    <div className={`max-w-[85%] sm:max-w-[75%] ${msg.role === "user" ? "text-right" : "text-left"}`}>
-                                                        <div className={`inline-block p-4 sm:p-5 shadow-2xl backdrop-blur-md transition-all duration-300 hover:shadow-xl ${
+                                                    <div className={`flex flex-col max-w-[85%] sm:max-w-[75%] min-w-0 ${msg.role === "user" ? "items-end" : "items-start"}`}>
+                                                        <div className={`block w-full p-4 sm:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-2xl transition-all duration-500 hover:shadow-[0_20px_70px_rgba(0,0,0,0.7)] break-words overflow-hidden ${
                                                             msg.role === "user"
-                                                                ? "bg-gradient-to-br from-blue-600/90 to-purple-600/90 text-white rounded-2xl rounded-tr-sm border border-white/20"
-                                                                : "bg-white/[0.08] text-gray-100 border border-white/20 rounded-2xl rounded-tl-sm hover:bg-white/[0.12]"
+                                                                ? "bg-gradient-to-br from-blue-600/90 to-purple-600/90 text-white rounded-3xl rounded-tr-sm border border-white/30"
+                                                                : "bg-white/[0.07] text-gray-100 border border-white/10 rounded-3xl rounded-tl-sm hover:bg-white/[0.12] ring-1 ring-white/5"
                                                         }`}>
                                                             {msg.role === "assistant" ? (
                                                                 <div className="prose prose-invert prose-xs sm:prose-sm md:prose-base max-w-none text-gray-100 leading-relaxed overflow-x-hidden">
-                                                                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                                                                    <ReactMarkdown components={MarkdownComponents}>{msg.content}</ReactMarkdown>
                                                                 </div>
                                                             ) : (
                                                                 <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap font-medium">{msg.content}</p>
