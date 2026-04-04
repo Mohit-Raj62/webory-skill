@@ -279,7 +279,7 @@ export default function AIWeboryskillsPage() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
-            <Navbar />
+            {mode !== "chat" && <Navbar />}
             
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-1/4 -left-48 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
@@ -325,9 +325,9 @@ export default function AIWeboryskillsPage() {
 
                 {/* Chat Mode Overlay */}
                 {mode === "chat" && (
-                    <div className="fixed inset-0 z-[150] bg-black/95 backdrop-blur-xl flex flex-col animate-fadeIn overflow-hidden">
+                    <div className="fixed inset-0 z-[1000] bg-black/95 backdrop-blur-3xl flex flex-col animate-fadeIn overflow-hidden">
                         {/* Dynamic Safe Area Padding for Mobile Headers */}
-                        <div className="h-[env(safe-area-inset-top,20px)] w-full bg-black/50 md:hidden" />
+                        <div className="h-[env(safe-area-inset-top,0px)] w-full bg-black/20 md:hidden" />
                         
                         <div className="max-w-5xl mx-auto w-full flex-1 flex flex-col min-h-0 relative z-50 p-3 sm:p-6 lg:p-10">
                             {/* Enhanced Header - Responsive for Mobile Applications */}
@@ -411,20 +411,20 @@ export default function AIWeboryskillsPage() {
                                             <div ref={chatEndRef} />
                                         </>
                                     ) : (
-                                        <div className="flex items-center justify-center h-full">
-                                            <div className="text-center p-8 glass-card rounded-3xl border border-white/10 max-w-lg mx-auto transform hover:scale-105 transition-all duration-500">
-                                                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full mb-6 border border-white/10 shadow-[0_0_30px_rgba(59,130,246,0.2)]">
-                                                    <MessageCircle className="text-blue-400" size={36} />
+                                        <div className="flex items-center justify-center h-full sm:px-6">
+                                            <div className="text-center p-6 sm:p-10 glass-card rounded-[2rem] border border-white/10 max-w-lg mx-4 sm:mx-auto transform transition-all duration-500 hover:scale-[1.02]">
+                                                <div className="inline-flex items-center justify-center w-16 h-16 sm:w-24 sm:h-24 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-3xl mb-4 sm:mb-8 border border-white/10 shadow-[0_0_40px_rgba(59,130,246,0.15)] ring-1 ring-white/20">
+                                                    <MessageCircle className="text-blue-400 w-8 h-8 sm:w-12 sm:h-12" />
                                                 </div>
-                                                <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                                                <h3 className="text-xl sm:text-3xl font-bold text-white mb-3 sm:mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-blue-200 to-purple-400">
                                                     Senior Mentor AI
                                                 </h3>
-                                                <p className="text-gray-400 text-sm sm:text-base leading-relaxed mb-6">
-                                                    Ask complex technical questions, request code reviews, or get architecture advice. I'm here to help you master the craft.
+                                                <p className="text-gray-400 text-[13px] sm:text-base leading-relaxed mb-6 sm:mb-8 max-w-[280px] sm:max-w-md mx-auto font-medium">
+                                                    Ask complex technical questions, request code reviews, or get architecture advice anytime.
                                                 </p>
-                                                <div className="flex flex-wrap gap-2 justify-center">
+                                                <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:justify-center">
                                                     {exampleQuestions.slice(0, 3).map((q) => (
-                                                        <button key={q} type="button" onClick={() => setTopic(q)} className="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs text-gray-300 transition-all hover:border-blue-500/50">
+                                                        <button key={q} type="button" onClick={() => setTopic(q)} className="px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs sm:text-sm text-gray-300 transition-all hover:border-blue-500/40 text-center font-bold">
                                                             {q}
                                                         </button>
                                                     ))}
@@ -489,21 +489,21 @@ export default function AIWeboryskillsPage() {
                                         <Rocket className="text-blue-400" size={20} />
                                         What is your Career Goal?
                                     </label>
-                                    <div className="flex flex-col gap-4">
+                                    <div className="flex flex-col gap-3 sm:gap-4">
                                         <div className="relative group">
                                              <input 
                                                 type="text" 
                                                 value={topic} 
                                                 onChange={(e) => setTopic(e.target.value)} 
                                                 placeholder="e.g., Full Stack Developer, AI Engineer..." 
-                                                className="w-full bg-white/5 border border-white/10 focus:border-blue-500/50 rounded-2xl p-4 sm:p-5 text-white text-[15px] sm:text-base placeholder-gray-500 outline-none transition-all shadow-inner" 
+                                                className="w-full bg-white/5 border border-white/10 focus:border-blue-500/50 rounded-2xl p-3.5 sm:p-5 text-white text-sm sm:text-base placeholder-gray-500 outline-none transition-all shadow-inner" 
                                                 disabled={loading} 
                                             />
                                             <div className="absolute inset-0 rounded-2xl bg-blue-500/5 opacity-0 group-focus-within:opacity-100 pointer-events-none transition-opacity"></div>
                                         </div>
                                         <div className="relative">
                                             <select
-                                                className="w-full bg-white/5 border border-white/10 focus:border-blue-500/50 rounded-2xl p-4 sm:p-5 text-white text-[15px] sm:text-base outline-none transition-all appearance-none cursor-pointer shadow-inner"
+                                                className="w-full bg-white/5 border border-white/10 focus:border-blue-500/50 rounded-2xl p-3.5 sm:p-5 text-white text-sm sm:text-base outline-none transition-all appearance-none cursor-pointer shadow-inner"
                                                 disabled={loading}
                                                 value={level}
                                                 onChange={(e) => setLevel(e.target.value)}
@@ -519,8 +519,8 @@ export default function AIWeboryskillsPage() {
                                     </div>
                                 </div>
 
-                                <div className="flex justify-end">
-                                    <Button type="submit" disabled={loading || !topic.trim()} className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 px-8 sm:px-10 w-full md:w-auto h-14 text-base font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-105">
+                                <div className="flex justify-end pt-2">
+                                    <Button type="submit" disabled={loading || !topic.trim()} className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 px-6 sm:px-10 w-full md:w-auto h-12 sm:h-14 text-sm sm:text-base font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] active:scale-95">
                                         {loading ? (
                                             <>
                                                 <Loader2 className="animate-spin mr-2" size={20} />
@@ -609,31 +609,31 @@ export default function AIWeboryskillsPage() {
                                                 {/* Mobile Connector */}
                                                 {idx < roadmapData.length - 1 && <div className="md:hidden absolute left-8 top-full h-8 w-0.5 bg-gradient-to-b from-white/20 to-transparent z-0"></div>}
 
-                                                <div className={`relative bg-gradient-to-r ${phase.color} p-[1px] sm:p-[2px] rounded-[2rem] hover:scale-[1.01] transition-all duration-500 shadow-xl`}>
-                                                    <div className="bg-[#0a0a0a] backdrop-blur-2xl rounded-[2rem] p-5 sm:p-8 md:p-10">
-                                                        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-6">
+                                                <div className={`relative bg-gradient-to-r ${phase.color} p-[1px] rounded-[1.5rem] sm:rounded-[2.5rem] hover:scale-[1.01] transition-all duration-500 shadow-xl`}>
+                                                    <div className="bg-[#0a0a0a] backdrop-blur-2xl rounded-[1.5rem] sm:rounded-[2.5rem] p-4 sm:p-8 md:p-10">
+                                                        <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6">
                                                             <div className="flex-1 min-w-0 order-2 md:order-1">
-                                                                <h3 className="text-xl sm:text-3xl font-extrabold text-white mb-3 tracking-tight">Phase {idx + 1}: {phase.phase}</h3>
-                                                                <div className="flex items-center gap-2.5 text-gray-400">
-                                                                    <div className="p-1.5 bg-white/5 rounded-lg">
-                                                                        <Clock size={14} className="text-blue-400" />
+                                                                <h3 className="text-xl sm:text-3xl font-extrabold text-white mb-2 sm:mb-3 tracking-tight">Phase {idx + 1}: {phase.phase}</h3>
+                                                                <div className="flex items-center gap-2 text-gray-400">
+                                                                    <div className="p-1 sm:p-1.5 bg-white/5 rounded-lg border border-white/10">
+                                                                        <Clock size={12} className="text-blue-400" />
                                                                     </div>
-                                                                    <span className="text-[13px] sm:text-base font-bold uppercase tracking-widest">{phase.duration}</span>
+                                                                    <span className="text-[11px] sm:text-base font-bold uppercase tracking-widest">{phase.duration}</span>
                                                                 </div>
                                                             </div>
-                                                            <div className={`w-14 h-14 sm:w-20 sm:h-20 flex-shrink-0 rounded-[1.5rem] bg-gradient-to-br ${phase.color} flex items-center justify-center text-white font-black text-2xl sm:text-4xl shadow-2xl order-1 md:order-2 self-start md:self-center transform group-hover/phase:rotate-12 transition-transform duration-500`}>
+                                                            <div className={`w-10 h-10 sm:w-20 sm:h-20 flex-shrink-0 rounded-xl sm:rounded-[1.5rem] bg-gradient-to-br ${phase.color} flex items-center justify-center text-white font-black text-lg sm:text-4xl shadow-2xl order-1 md:order-2 self-start md:self-center transform group-hover/phase:rotate-6 transition-transform duration-500`}>
                                                                 {idx + 1}
                                                             </div>
                                                         </div>
 
                                                         <div className="mb-6">
-                                                            <h4 className="text-white font-bold mb-4 flex items-center gap-2 text-base sm:text-lg">
-                                                                <Zap size={20} className="text-yellow-400" />
+                                                            <h4 className="text-white font-bold mb-4 flex items-center gap-2 text-sm sm:text-lg">
+                                                                <Zap size={18} className="text-yellow-400" />
                                                                 Topics to Master
                                                             </h4>
-                                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
                                                                 {phase.topics.map((topic, topicIdx) => (
-                                                                    <div key={topicIdx} className="group/topic bg-white/[0.03] border border-white/10 rounded-2xl p-5 hover:bg-white/[0.08] hover:border-blue-500/30 transition-all duration-300">
+                                                                    <div key={topicIdx} className="group/topic bg-white/[0.04] border border-white/10 rounded-xl sm:rounded-2xl p-4 sm:p-5 hover:bg-white/[0.08] hover:border-blue-500/30 transition-all duration-300">
                                                                         <div className="space-y-3">
                                                                             {(() => {
                                                                                 const match = topic.match(/\*\*(.+?)\*\*:(.+)/);
@@ -728,7 +728,7 @@ export default function AIWeboryskillsPage() {
                                                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
                                                         </div>
                                                     )}
-                                                    <div className="p-6 sm:p-8">
+                                                    <div className="p-5 sm:p-8">
                                                         <h3 className="text-lg sm:text-xl font-bold text-white mb-3 line-clamp-2 leading-tight group-hover:text-blue-400 transition-colors">{course.title}</h3>
                                                         <p className="text-gray-400 text-sm mb-6 line-clamp-3 font-medium leading-relaxed">{course.description}</p>
                                                         <div className="flex items-center justify-between mt-auto">
@@ -748,7 +748,7 @@ export default function AIWeboryskillsPage() {
                                 )}
 
                                 <div className="flex gap-4 justify-center pt-4">
-                                    <Button onClick={() => { setTopic(""); setRoadmapData([]); setOverview(""); setPrerequisites([]); setCareerPaths([]); }} className="bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700 px-8 py-3 rounded-xl font-semibold transition-all hover:scale-105">
+                                    <Button onClick={() => { setTopic(""); setRoadmapData([]); setOverview(""); setPrerequisites([]); setCareerPaths([]); }} className="bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700 px-8 py-3 w-full sm:w-auto rounded-xl font-bold transition-all hover:scale-105 active:scale-95">
                                         Generate Another
                                     </Button>
                                 </div>

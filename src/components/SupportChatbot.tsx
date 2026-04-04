@@ -35,6 +35,7 @@ export default function SupportChatbot() {
       "/teacher",
       "/payment",
       "/checkout",
+      "/ai-weboryskills",
       "/api",
     ];
     
