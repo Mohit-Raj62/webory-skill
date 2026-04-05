@@ -38,11 +38,11 @@ import { INDIAN_STATES, INDIAN_STATES_CITIES } from "@/lib/data/india";
 
 // --- Constants ---
 const STEPS = [
-  "Category",
+  "Category Selection",
   "Education Level",
   "Field Type",
-  "Personal Details",
-  "Final Profile"
+  "Academic/Professional Details",
+  "Identity Hub"
 ];
 
 // --- Types ---
@@ -121,7 +121,7 @@ PremiumSelect.displayName = "PremiumSelect";
 
 // --- Step Components (Dark Theme) ---
 
-const CategoryStep = memo(({ formData, updateField, nextStep }: { formData: FormData, updateField: any, nextStep: any }) => (
+const CategoryStep = memo(({ formData, updateField, nextStep }: { formData: FormData, updateField: any, nextStep: (cat?: string) => void }) => (
   <div className="space-y-10">
     <div className="text-center space-y-2 lg:space-y-3 px-2">
       <div className="flex items-center justify-center gap-2 mb-2">
@@ -143,7 +143,7 @@ const CategoryStep = memo(({ formData, updateField, nextStep }: { formData: Form
           <button
             key={item.id}
             type="button"
-            onClick={() => { updateField("category", item.id); nextStep(); }}
+            onClick={() => { updateField("category", item.id); nextStep(item.id); }}
             className={`flex items-center gap-4 lg:gap-6 p-5 lg:p-7 rounded-[2rem] lg:rounded-[2.5rem] border transition-all text-left relative overflow-hidden group ${
               isActive ? "border-orange-500/50 bg-orange-500/5 shadow-2xl shadow-orange-500/10" : "border-white/5 hover:border-white/10 bg-white/[0.02]"
             }`}
@@ -512,8 +512,9 @@ export default function AmbassadorRegisterPage() {
     }
   }, [formData, router]);
 
-  const nextStep = useCallback(() => {
-    if (currentStep === 1 && formData.category !== "student") {
+  const nextStep = useCallback((categoryOverride?: string) => {
+    const category = categoryOverride || formData.category;
+    if (currentStep === 1 && category !== "student") {
       setCurrentStep(4);
     } else {
       setCurrentStep(prev => Math.min(prev + 1, 5));
