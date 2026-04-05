@@ -4,7 +4,7 @@ import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, Lock, Mail, Shield, ArrowRight, Loader2 } from "lucide-react";
 import { useAuth } from "@/components/auth/session-provider";
@@ -14,13 +14,22 @@ function LoginContent() {
     const [loginMethod, setLoginMethod] = useState < "password" | "otp" > ("password");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [otp, setOtp] = useState("");
+    const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+    const [timer, setTimer] = useState(0);
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [otpSent, setOtpSent] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [focusedField, setFocusedField] = useState<string | null>(null);
+    const otpRefs = [
+        useRef<HTMLInputElement>(null),
+        useRef<HTMLInputElement>(null),
+        useRef<HTMLInputElement>(null),
+        useRef<HTMLInputElement>(null),
+        useRef<HTMLInputElement>(null),
+        useRef<HTMLInputElement>(null)
+    ];
 
     const router = useRouter();
     const { refreshAuth } = useAuth();
@@ -107,11 +116,18 @@ function LoginContent() {
         setLoading(true);
         setError("");
 
+        const otpString = otp.join("");
+        if (otpString.length !== 6) {
+            setError("Please enter the full 6-digit code.");
+            setLoading(false);
+            return;
+        }
+
         try {
             const res = await fetch("/api/auth/verify-otp", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, otp }),
+                body: JSON.stringify({ email, otp: otpString }),
             });
 
             const data = await res.json();
@@ -134,6 +150,63 @@ function LoginContent() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleOtpChange = (index: number, value: string) => {
+        // Only allow numbers
+        if (value && !/^\d+$/.test(value)) return;
+
+        const newOtp = [...otp];
+        // Handle multi-digit input (paste)
+        if (value.length > 1) {
+            const pastedValue = value.slice(0, 6).split("");
+            for (let i = 0; i < 6; i++) {
+                if (pastedValue[i]) newOtp[i] = pastedValue[i];
+            }
+            setOtp(newOtp);
+            // Focus last filled box or next empty one
+            const nextIdx = Math.min(newOtp.findIndex(v => v === "") === -1 ? 5 : newOtp.findIndex(v => v === ""), 5);
+            otpRefs[nextIdx].current?.focus();
+        } else {
+            newOtp[index] = value;
+            setOtp(newOtp);
+            if (value && index < 5) {
+                otpRefs[index + 1].current?.focus();
+            }
+        }
+    };
+
+    const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Backspace" && !otp[index] && index > 0) {
+            otpRefs[index - 1].current?.focus();
+        } else if (e.key === "ArrowLeft" && index > 0) {
+            otpRefs[index - 1].current?.focus();
+        } else if (e.key === "ArrowRight" && index < 5) {
+            otpRefs[index + 1].current?.focus();
+        }
+    };
+
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+        if (timer > 0) {
+            interval = setInterval(() => {
+                setTimer((prev) => prev - 1);
+            }, 1000);
+        }
+        return () => clearInterval(interval);
+    }, [timer]);
+
+    const startTimer = () => setTimer(60);
+
+    const onOtpSent = () => {
+        setOtpSent(true);
+        startTimer();
+    };
+
+    const originalHandleSendOtp = handleSendOtp;
+    const wrappedHandleSendOtp = async (e: React.FormEvent) => {
+        await originalHandleSendOtp(e);
+        if (!error) startTimer();
     };
 
     return (
@@ -170,7 +243,9 @@ function LoginContent() {
                                     setLoginMethod("password");
                                     setError("");
                                     setSuccess("");
+                                    setSuccess("");
                                     setOtpSent(false);
+                                    setOtp(["", "", "", "", "", ""]);
                                 }}
                                 className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${loginMethod === "password"
                                     ? "bg-white/10 text-white shadow-lg border border-white/10"
@@ -186,7 +261,9 @@ function LoginContent() {
                                     setLoginMethod("otp");
                                     setError("");
                                     setSuccess("");
+                                    setSuccess("");
                                     setOtpSent(false);
+                                    setOtp(["", "", "", "", "", ""]);
                                 }}
                                 className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${loginMethod === "otp"
                                     ? "bg-white/10 text-white shadow-lg border border-white/10"
@@ -324,6 +401,7 @@ function LoginContent() {
                                         <Button
                                             type="submit"
                                             disabled={loading}
+                                            onClick={wrappedHandleSendOtp as any}
                                             className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 py-6 text-base font-semibold shadow-lg shadow-blue-500/20 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
                                         >
                                             {loading ? (
@@ -339,46 +417,121 @@ function LoginContent() {
                                     </form>
                                 ) : (
                                     <form onSubmit={handleVerifyOtp} className="space-y-6">
-                                        <div className="space-y-4">
+                                        <div className="space-y-8">
                                             <div className="text-center">
-                                                <p className="text-sm text-gray-400 mb-1">Enter code sent to</p>
-                                                <p className="text-white font-medium">{email}</p>
+                                                <p className="text-sm text-gray-400 mb-1">Enter the 6-digit code sent to</p>
+                                                <p className="text-white font-semibold flex items-center justify-center gap-2">
+                                                    <Mail size={14} className="text-blue-400" />
+                                                    {email}
+                                                </p>
                                             </div>
                                             
-                                            <div className="flex justify-center">
-                                                <input
-                                                    type="text"
-                                                    required
-                                                    value={otp}
-                                                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                                                    className="w-48 bg-black/30 border border-white/20 rounded-xl py-3 text-center text-3xl tracking-[0.5em] font-mono text-white focus:border-blue-500/50 focus:outline-none transition-colors"
-                                                    placeholder="000000"
-                                                    maxLength={6}
-                                                    autoFocus
-                                                />
+                                            <div className="flex justify-center items-center gap-2 sm:gap-3">
+                                                <div className="flex gap-1.5 sm:gap-2">
+                                                    {[0, 1, 2].map((idx) => (
+                                                        <motion.div
+                                                            key={idx}
+                                                            initial={{ opacity: 0, y: 10 }}
+                                                            animate={{ opacity: 1, y: 0 }}
+                                                            transition={{ delay: idx * 0.05 }}
+                                                            className="relative"
+                                                        >
+                                                            <input
+                                                                ref={otpRefs[idx]}
+                                                                type="text"
+                                                                maxLength={1}
+                                                                value={otp[idx]}
+                                                                onChange={(e) => handleOtpChange(idx, e.target.value)}
+                                                                onKeyDown={(e) => handleKeyDown(idx, e)}
+                                                                onFocus={() => setFocusedField(`otp-${idx}`)}
+                                                                onBlur={() => setFocusedField(null)}
+                                                                inputMode="numeric"
+                                                                className={`w-9 h-12 sm:w-12 sm:h-16 text-xl sm:text-2xl font-bold bg-white/5 border rounded-xl text-white outline-none transition-all duration-300 ${
+                                                                    otp[idx] 
+                                                                        ? 'border-blue-500/50 shadow-[0_0_20px_-5px_rgba(59,130,246,0.3)]' 
+                                                                        : focusedField === `otp-${idx}`
+                                                                            ? 'border-purple-500 shadow-[0_0_20px_-5px_rgba(168,85,247,0.4)] bg-white/10'
+                                                                            : 'border-white/10 hover:border-white/20'
+                                                                }`}
+                                                            />
+                                                        </motion.div>
+                                                    ))}
+                                                </div>
+
+                                                <div className="w-1 h-0.5 bg-white/20 rounded-full shrink-0 mx-0.5 sm:mx-1" />
+
+                                                <div className="flex gap-1.5 sm:gap-2">
+                                                    {[3, 4, 5].map((idx) => (
+                                                        <motion.div
+                                                            key={idx}
+                                                            initial={{ opacity: 0, y: 10 }}
+                                                            animate={{ opacity: 1, y: 0 }}
+                                                            transition={{ delay: idx * 0.05 }}
+                                                            className="relative"
+                                                        >
+                                                            <input
+                                                                ref={otpRefs[idx]}
+                                                                type="text"
+                                                                maxLength={1}
+                                                                value={otp[idx]}
+                                                                onChange={(e) => handleOtpChange(idx, e.target.value)}
+                                                                onKeyDown={(e) => handleKeyDown(idx, e)}
+                                                                onFocus={() => setFocusedField(`otp-${idx}`)}
+                                                                onBlur={() => setFocusedField(null)}
+                                                                inputMode="numeric"
+                                                                className={`w-9 h-12 sm:w-12 sm:h-16 text-xl sm:text-2xl font-bold bg-white/5 border rounded-xl text-white outline-none transition-all duration-300 ${
+                                                                    otp[idx] 
+                                                                        ? 'border-blue-500/50 shadow-[0_0_20px_-5px_rgba(59,130,246,0.3)]' 
+                                                                        : focusedField === `otp-${idx}`
+                                                                            ? 'border-purple-500 shadow-[0_0_20px_-5px_rgba(168,85,247,0.4)] bg-white/10'
+                                                                            : 'border-white/10 hover:border-white/20'
+                                                                }`}
+                                                            />
+                                                        </motion.div>
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
 
                                         <Button
                                             type="submit"
-                                            disabled={loading || otp.length !== 6}
+                                            disabled={loading || otp.some(v => !v)}
                                             className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 py-6 text-base font-semibold shadow-lg shadow-blue-500/20 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:scale-100"
                                         >
                                             {loading ? "Verifying..." : "Verify & Login"}
                                         </Button>
 
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setOtpSent(false);
-                                                setOtp("");
-                                                setError("");
-                                                setSuccess("");
-                                            }}
-                                            className="w-full text-xs text-gray-500 hover:text-gray-300 transition-colors"
-                                        >
-                                            ← Change email or resend OTP
-                                        </button>
+                                        <div className="text-center space-y-4">
+                                            {timer > 0 ? (
+                                                <p className="text-xs text-gray-500">
+                                                    Resend OTP in <span className="text-blue-400 font-mono">{timer}s</span>
+                                                </p>
+                                            ) : (
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        handleSendOtp(e);
+                                                        startTimer();
+                                                    }}
+                                                    className="text-xs text-blue-400 hover:text-blue-300 transition-colors font-medium"
+                                                >
+                                                    Didn't receive code? Resend OTP
+                                                </button>
+                                            )}
+                                            
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setOtpSent(false);
+                                                    setOtp(["", "", "", "", "", ""]);
+                                                    setError("");
+                                                    setSuccess("");
+                                                }}
+                                                className="block w-full text-xs text-gray-500 hover:text-gray-300 transition-colors"
+                                            >
+                                                ← Change email address
+                                            </button>
+                                        </div>
                                     </form>
                                 )}
                             </div>
