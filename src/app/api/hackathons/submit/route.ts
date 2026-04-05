@@ -114,7 +114,10 @@ export async function POST(req: Request) {
         // 1. Award +50 XP to the user
         await User.findByIdAndUpdate(userId, { $inc: { xp: 50 } });
         
-        // 2. Create Activity Record for dashboard visualization
+        // 2. Award +50 XP to the global hackathon stats
+        await Hackathon.findByIdAndUpdate(hackathonId, { $inc: { totalXpDistributed: 50 } });
+        
+        // 3. Create Activity Record for dashboard visualization
         await Activity.create({
           student: userId,
           type: "hackathon_submitted",
@@ -159,6 +162,7 @@ export async function POST(req: Request) {
     // Award XP if it's an immediate final submission
     if (!isDraft) {
       await User.findByIdAndUpdate(userId, { $inc: { xp: 50 } });
+      await Hackathon.findByIdAndUpdate(hackathonId, { $inc: { totalXpDistributed: 50 } });
       
       // Create Activity Record
       await Activity.create({
