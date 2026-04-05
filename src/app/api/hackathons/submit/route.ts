@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Hackathon from "@/models/Hackathon";
 import HackathonSubmission from "@/models/HackathonSubmission";
+import User from "@/models/User";
 import { getDataFromToken } from "@/helpers/getDataFromToken";
 
 // GET: Fetch existing submission for the logged-in user
@@ -106,12 +107,20 @@ export async function POST(req: Request) {
       if (demoUrl) existingSubmission.demoUrl = demoUrl;
       if (techStack) existingSubmission.techStack = techStack;
       
+      // Award XP if transitioning from draft to submitted for the first time
+      let xpMessage = "";
+      if (existingSubmission.status === "draft" && newStatus === "submitted" && (existingSubmission.xpAwarded || 0) === 0) {
+        await User.findByIdAndUpdate(userId, { $inc: { xp: 50 } });
+        existingSubmission.xpAwarded = 50;
+        xpMessage = " +50 XP Earned!";
+      }
+
       existingSubmission.status = newStatus;
       await existingSubmission.save();
 
       return NextResponse.json({
         success: true,
-        message: isDraft ? "Draft saved successfully!" : "Submission updated successfully!",
+        message: isDraft ? (xpMessage ? "Draft saved!" + xpMessage : "Draft saved successfully!") : ("Submission updated successfully!" + xpMessage),
         data: existingSubmission,
         updated: true,
       });
@@ -130,11 +139,17 @@ export async function POST(req: Request) {
       demoUrl: demoUrl || "",
       techStack: techStack || [],
       status: newStatus,
+      xpAwarded: !isDraft ? 50 : 0
     });
+
+    // Award XP if it's an immediate final submission
+    if (!isDraft) {
+      await User.findByIdAndUpdate(userId, { $inc: { xp: 50 } });
+    }
 
     return NextResponse.json({
       success: true,
-      message: isDraft ? "Team registered successfully!" : "Project submitted successfully!",
+      message: isDraft ? "Team registered successfully!" : "Project submitted successfully! +50 XP Earned!",
       data: submission,
       updated: false,
     });
