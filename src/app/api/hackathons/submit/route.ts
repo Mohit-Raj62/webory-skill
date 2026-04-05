@@ -3,6 +3,7 @@ import dbConnect from "@/lib/db";
 import Hackathon from "@/models/Hackathon";
 import HackathonSubmission from "@/models/HackathonSubmission";
 import User from "@/models/User";
+import Activity from "@/models/Activity";
 import { getDataFromToken } from "@/helpers/getDataFromToken";
 
 // GET: Fetch existing submission for the logged-in user
@@ -107,10 +108,23 @@ export async function POST(req: Request) {
       if (demoUrl) existingSubmission.demoUrl = demoUrl;
       if (techStack) existingSubmission.techStack = techStack;
       
-      // Award XP if transitioning from draft to submitted for the first time
+      // Award XP if project is submitted and no XP has been awarded yet
       let xpMessage = "";
-      if (existingSubmission.status === "draft" && newStatus === "submitted" && (existingSubmission.xpAwarded || 0) === 0) {
+      if (newStatus === "submitted" && (existingSubmission.xpAwarded || 0) === 0) {
+        // 1. Award +50 XP to the user
         await User.findByIdAndUpdate(userId, { $inc: { xp: 50 } });
+        
+        // 2. Create Activity Record for dashboard visualization
+        await Activity.create({
+          student: userId,
+          type: "hackathon_submitted",
+          category: "hackathon",
+          relatedId: hackathonId,
+          metadata: {
+             internshipName: hackathon.title // Re-using field for display consistency
+          }
+        });
+
         existingSubmission.xpAwarded = 50;
         xpMessage = " +50 XP Earned!";
       }
@@ -145,6 +159,17 @@ export async function POST(req: Request) {
     // Award XP if it's an immediate final submission
     if (!isDraft) {
       await User.findByIdAndUpdate(userId, { $inc: { xp: 50 } });
+      
+      // Create Activity Record
+      await Activity.create({
+        student: userId,
+        type: "hackathon_submitted",
+        category: "hackathon",
+        relatedId: hackathonId,
+        metadata: {
+           internshipName: hackathon.title
+        }
+      });
     }
 
     return NextResponse.json({

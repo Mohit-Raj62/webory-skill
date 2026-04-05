@@ -15,12 +15,13 @@ const ActivitySchema = new Schema({
       "internship_applied",
       "internship_task_submitted",
       "course_viewed",
+      "hackathon_submitted",
     ],
     required: true,
   },
   category: {
     type: String,
-    enum: ["course", "internship"],
+    enum: ["course", "internship", "hackathon"],
     required: true,
   },
   relatedId: {

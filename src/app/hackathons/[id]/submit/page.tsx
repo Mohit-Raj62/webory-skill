@@ -188,8 +188,9 @@ export default function HackathonSubmissionPage() {
 
       const data = await res.json();
       if (res.ok) {
-        toast.success(data.updated ? "Submission updated successfully! ✅" : "Project submitted successfully! 🚀");
+        toast.success(data.message || (data.updated ? "Submission updated successfully! ✅" : "Project submitted successfully! 🚀"));
         router.push("/hackathons");
+        router.refresh();
       } else {
         toast.error(data.error || "Submission failed");
       }
