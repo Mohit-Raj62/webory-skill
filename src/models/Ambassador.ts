@@ -39,6 +39,7 @@ const ambassadorSchema = new mongoose.Schema({
     type: String,
     enum: ["student", "business-owner", "working-professional"],
     required: true,
+    default: "student",
   },
   studyLevel: {
     type: String,

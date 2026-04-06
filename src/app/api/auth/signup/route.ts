@@ -35,6 +35,12 @@ export async function POST(req: Request) {
         // Award Points (e.g., 10 points per signup)
         ambassador.points += 10;
         ambassador.totalSignups += 1;
+        
+        // Safety fallback for records missing 'category' (prevents validation error)
+        if (!ambassador.category) {
+          ambassador.category = "student";
+        }
+
         await ambassador.save();
         console.log(
           `✅ Referral applied: ${referralCode} for ambassador ${ambassador._id}`,
