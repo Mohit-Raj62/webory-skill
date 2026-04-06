@@ -694,19 +694,33 @@ export function SessionContent() {
                     {/* Feedback / Info Panel (Side) */}
                     <div className="lg:col-span-4 flex flex-col h-full gap-4 min-h-0">
                          {/* Previous Feedback Card */}
-                        <div className={`flex-1 rounded-[2rem] p-6 border border-white/10 relative overflow-hidden backdrop-blur-md ${
+                        <div className={`flex-1 rounded-[2rem] p-6 border border-white/10 relative overflow-hidden backdrop-blur-md transition-colors duration-500 ${
                             currentQuestion?.feedback 
-                            ? (currentQuestion.feedback.toLowerCase().includes("correct") ? "bg-green-500/5 border-green-500/20" : "bg-orange-500/5 border-orange-500/20")
+                            ? (
+                                // Logic: If aptitude, use isCorrect. If interview/tech, use score threshold.
+                                // Note: currentQuestion here contains feedback for the PREVIOUS answer.
+                                (mode === "aptitude" ? history[history.length - 1]?.isCorrect : (history[history.length - 1]?.score >= 6))
+                                ? "bg-green-500/10 border-green-500/30 shadow-[0_0_30px_rgba(34,197,94,0.1)]" 
+                                : "bg-red-500/10 border-red-500/30 shadow-[0_0_30px_rgba(239,68,68,0.1)]"
+                            )
                             : "bg-white/5 opacity-50 flex items-center justify-center"
                         }`}>
                             {currentQuestion?.feedback ? (
                                 <div className="h-full overflow-y-auto custom-scrollbar">
                                     <div className="flex items-center gap-2 mb-4">
-                                        <div className={`p-2 rounded-lg ${currentQuestion.feedback.toLowerCase().includes("correct") ? "bg-green-500/20 text-green-400" : "bg-orange-500/20 text-orange-400"}`}>
+                                        <div className={`p-2 rounded-lg ${
+                                            (mode === "aptitude" ? history[history.length - 1]?.isCorrect : (history[history.length - 1]?.score >= 6))
+                                            ? "bg-green-500/20 text-green-400" 
+                                            : "bg-red-500/20 text-red-400"
+                                        }`}>
                                             <Trophy className="w-5 h-5" />
                                         </div>
-                                        <span className={`text-sm font-bold uppercase tracking-wider ${currentQuestion.feedback.toLowerCase().includes("correct") ? "text-green-400" : "text-orange-400"}`}>
-                                            Analysis Report
+                                        <span className={`text-sm font-bold uppercase tracking-wider ${
+                                            (mode === "aptitude" ? history[history.length - 1]?.isCorrect : (history[history.length - 1]?.score >= 6))
+                                            ? "text-green-400" 
+                                            : "text-red-400"
+                                        }`}>
+                                            { (mode === "aptitude" ? history[history.length - 1]?.isCorrect : (history[history.length - 1]?.score >= 6)) ? "Success Report" : "Analysis Alert" }
                                         </span>
                                     </div>
                                     
