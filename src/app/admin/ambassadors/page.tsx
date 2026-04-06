@@ -3,8 +3,9 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, CheckCircle, XCircle, Clock, Linkedin, Users, ExternalLink, CreditCard, Upload } from "lucide-react";
+import { Loader2, CheckCircle, XCircle, Clock, Linkedin, Users, ExternalLink, CreditCard, Upload, Download, X } from "lucide-react";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link"; // Import Link correctly
 
 interface AmbassadorApp {
@@ -44,6 +45,7 @@ export default function AdminAmbassadorsPage() {
   const [ambassadors, setAmbassadors] = useState<AmbassadorApp[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAmbassadors();
@@ -231,17 +233,28 @@ export default function AdminAmbassadorsPage() {
                                                     <ExternalLink size={10} className="ml-2 opacity-50 group-hover:opacity-100" />
                                                 </a>
                                                 
-                                                <div className="relative group/img w-full max-w-[280px] aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 bg-white/5 shadow-2xl">
+                                                <div 
+                                                    onClick={() => setPreviewImage(app.collegeIdCardUrl)}
+                                                    className="relative group/img w-full max-w-[320px] aspect-[3/2] rounded-2xl overflow-hidden border border-white/10 bg-[#050505] shadow-2xl cursor-zoom-in"
+                                                >
+                                                    {/* Blurred background for premium letterboxing */}
+                                                    <img 
+                                                        src={app.collegeIdCardUrl} 
+                                                        alt="" 
+                                                        className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-40 scale-110 pointer-events-none"
+                                                    />
+                                                    
+                                                    {/* Sharp foreground image */}
                                                     <img 
                                                         src={app.collegeIdCardUrl} 
                                                         alt="College ID Card" 
-                                                        className="w-full h-full object-contain p-2 transition-transform duration-500 group-hover/img:scale-110" 
+                                                        className="relative z-10 w-full h-full object-contain transition-transform duration-500 group-hover/img:scale-105" 
                                                     />
-                                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                                                    
+                                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center pointer-events-none z-20">
                                                         <ExternalLink className="text-white" size={24} />
                                                     </div>
                                                 </div>
-                                                <p className="text-[9px] text-gray-500 italic">Aspect ratio preserved to prevent cropping</p>
                                             </div>
                                         ) : (
                                             <div className="text-xs text-red-400/50 italic px-3 py-2 border border-red-400/10 rounded-lg w-fit">
@@ -303,6 +316,58 @@ export default function AdminAmbassadorsPage() {
             </div>
         )}
       </div>
+
+      {/* Lightbox Modal */}
+      <AnimatePresence>
+        {previewImage && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setPreviewImage(null)}
+              className="absolute inset-0 bg-black/95 backdrop-blur-xl"
+            />
+            
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center"
+            >
+              <div className="absolute -top-14 right-0 flex gap-4">
+                <a 
+                    href={previewImage} 
+                    download 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all flex items-center gap-2 px-5 text-sm font-bold uppercase tracking-widest"
+                >
+                    <Download size={20} /> Download
+                </a>
+                <button
+                    onClick={() => setPreviewImage(null)}
+                    className="p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all"
+                >
+                    <X size={20} />
+                </button>
+              </div>
+
+              <div className="w-full h-full rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-black/40 relative">
+                 <img 
+                    src={previewImage} 
+                    alt="ID Card Preview" 
+                    className="w-full h-full object-contain max-h-[80vh]" 
+                 />
+              </div>
+              
+              <p className="mt-6 text-gray-500 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                 <ExternalLink size={12} /> Press ESC or click backdrop to close
+              </p>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }

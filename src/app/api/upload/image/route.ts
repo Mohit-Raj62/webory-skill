@@ -21,28 +21,39 @@ export async function POST(req: Request) {
 
     const formData: any = await req.formData();
     const file = formData.get("file") as File;
+    const folder = formData.get("folder") as string || "course-thumbnails";
+    const noCrop = formData.get("noCrop") === "true";
 
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    console.log("Uploading image:", file.name, "Size:", file.size, "bytes");
+    console.log(`Uploading image to ${folder}:`, file.name, "Size:", file.size, "bytes");
 
     // Convert file to buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
+
+    // Dynamic transformation based on noCrop
+    const transformation = noCrop 
+      ? [
+          { width: 2000, height: 2000, crop: "limit" }, // Preserve original ratio, just resize if massive
+          { quality: "auto" },
+          { fetch_format: "auto" },
+        ]
+      : [
+          { width: 1200, height: 630, crop: "fill" }, // Default course thumbnail crop
+          { quality: "auto" },
+          { fetch_format: "auto" },
+        ];
 
     // Upload using upload_stream
     const result = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
           resource_type: "image",
-          folder: "course-thumbnails",
-          transformation: [
-            { width: 1200, height: 630, crop: "fill" }, // Optimize for course thumbnails
-            { quality: "auto" },
-            { fetch_format: "auto" },
-          ],
+          folder: folder,
+          transformation: transformation,
         },
         (error, result) => {
           if (error) reject(error);

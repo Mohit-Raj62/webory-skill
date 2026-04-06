@@ -676,6 +676,8 @@ export default function BroadcastPage() {
                                     if (!file) return;
                                     const formData = new FormData();
                                     formData.append("file", file);
+                                    formData.append("folder", "broadcast-assets");
+                                    formData.append("noCrop", "true");
                                     try {
                                         const res = await fetch("/api/upload/image", {
                                             method: "POST",

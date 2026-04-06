@@ -455,6 +455,8 @@ export default function AmbassadorRegisterPage() {
     setUploading(true);
     const uploadData = new FormData();
     uploadData.append("file", file);
+    uploadData.append("folder", "ambassador-ids");
+    uploadData.append("noCrop", "true");
 
     try {
       const res = await fetch("/api/upload/image", { method: "POST", body: uploadData });
