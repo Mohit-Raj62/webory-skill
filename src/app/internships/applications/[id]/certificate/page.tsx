@@ -39,34 +39,31 @@ export default function CertificatePage() {
 
     const [application, setApplication] = useState < Application | null > (null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState < string | null > (null);
 
     useEffect(() => {
         const fetchApplication = async () => {
+            setLoading(true);
+            setError(null);
             try {
-                // Optimized: Fetch only the specific application data instead of full dashboard
                 const res = await fetch(`/api/internships/applications/${id}/certificate`);
+                const data = await res.json();
                 
                 if (!res.ok) {
-                    const error = await res.json();
-                    console.error("API Error:", error);
-                    alert("Failed to load certificate data");
-                    router.push('/profile');
+                    console.error("API Error:", data);
+                    setError(data.error || "Failed to load certificate data");
                     return;
                 }
 
-                const fullApp = await res.json();
-
-                if (fullApp.status !== 'completed') {
-                    alert("Certificate not available yet. Internship must be marked as completed.");
-                    router.push('/profile');
+                if (data.status !== 'completed') {
+                    setError("Certificate not available yet. Your internship must be marked as 'Completed' by the administrator.");
                     return;
                 }
 
-                setApplication(fullApp);
-            } catch (error) {
-                console.error("Error fetching certificate data:", error);
-                alert("Failed to load certificate");
-                router.push('/profile');
+                setApplication(data);
+            } catch (err: any) {
+                console.error("Fetch Error:", err);
+                setError("A network error occurred. Please check your connection and try again.");
             } finally {
                 setLoading(false);
             }
@@ -81,8 +78,40 @@ export default function CertificatePage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
-                Loading Certificate...
+            <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white gap-4">
+                <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                <p className="font-mono text-sm animate-pulse text-gray-400 uppercase tracking-widest">Verifying Certificate Data...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white p-4">
+                <div className="max-w-md w-full bg-gray-800/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 text-center shadow-2xl">
+                    <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-red-500/20">
+                        <Award className="w-10 h-10 text-red-500" />
+                    </div>
+                    <h2 className="text-2xl font-bold mb-4">Document Unavailable</h2>
+                    <p className="text-gray-400 mb-8 leading-relaxed">
+                        {error}
+                    </p>
+                    <div className="flex flex-col gap-3">
+                        <Button 
+                            onClick={() => window.location.reload()} 
+                            className="w-full bg-white text-black hover:bg-gray-200 font-bold py-6 rounded-xl"
+                        >
+                            Retry Loading
+                        </Button>
+                        <Button 
+                            variant="ghost" 
+                            onClick={() => router.push('/profile')} 
+                            className="w-full text-gray-400 hover:text-white"
+                        >
+                            Back to Profile
+                        </Button>
+                    </div>
+                </div>
             </div>
         );
     }

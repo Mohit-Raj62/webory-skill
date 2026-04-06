@@ -29,35 +29,28 @@ export default function OfferLetterPage() {
     const router = useRouter();
     const [data, setData] = useState < OfferLetterData | null > (null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState < string | null > (null);
 
     useEffect(() => {
         const fetchOfferLetter = async () => {
+            setLoading(true);
+            setError(null);
             try {
-                console.log("=== FETCHING OFFER LETTER ===");
-                console.log("Application ID:", params.id);
-
+                console.log(`[Offer Letter] Fetching for App: ${params.id}`);
                 const res = await fetch(`/api/internships/applications/${params.id}/offer-letter`);
-                console.log("Response status:", res.status);
+                const json = await res.json();
 
                 if (!res.ok) {
-                    const errorData = await res.json().catch(() => ({}));
-                    console.error("API Error Response:", errorData);
-                    throw new Error(errorData.error || `HTTP ${res.status}: Failed to fetch offer letter`);
+                    console.error("[Offer Letter] API Error:", json);
+                    setError(json.error || `Error ${res.status}: Failed to load offer letter`);
+                    return;
                 }
 
-                const offerData = await res.json();
-                console.log("Offer letter data received:", offerData);
-                setData(offerData);
-            } catch (error: any) {
-                console.error("=== OFFER LETTER ERROR ===");
-                console.error("Error object:", error);
-                console.error("Error message:", error.message);
-                console.error("Error name:", error.name);
-                console.error("Application ID:", params.id);
-                console.error("========================");
-
-                alert(`Error: ${error.message || "Unknown error"}\n\nApplication ID: ${params.id}\n\nPlease check:\n1. Application exists in database\n2. You are logged in\n3. This is your application`);
-                router.push("/profile");
+                setData(json);
+                console.log("[Offer Letter] Data loaded successfully");
+            } catch (err: any) {
+                console.error("[Offer Letter] Fetch Exception:", err);
+                setError("A network error occurred. Please check your internet connection.");
             } finally {
                 setLoading(false);
             }
@@ -72,8 +65,43 @@ export default function OfferLetterPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-background flex items-center justify-center">
-                <div className="text-white">Loading offer letter...</div>
+            <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center gap-4 px-4">
+                <div className="w-10 h-10 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                <div className="flex flex-col items-center">
+                    <p className="text-gray-400 font-mono text-xs uppercase tracking-widest animate-pulse">Initializing Document Protocol...</p>
+                    <p className="text-[10px] text-gray-600 font-mono mt-1">ID: {params.id}</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen bg-[#111] flex items-center justify-center p-4">
+                <div className="max-w-md w-full bg-black/40 backdrop-blur-2xl border border-white/5 rounded-[2rem] p-10 text-center shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+                    <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto mb-8 border border-red-500/20 rotate-3">
+                        <Printer className="w-8 h-8 text-red-500" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-white mb-4">Letter Unavailable</h2>
+                    <p className="text-gray-500 text-sm mb-10 leading-relaxed font-mono">
+                        {error}
+                    </p>
+                    <div className="space-y-3">
+                        <Button 
+                            onClick={() => window.location.reload()} 
+                            className="w-full bg-white text-black hover:bg-gray-200 h-14 rounded-xl font-bold text-lg"
+                        >
+                            Retry Connection
+                        </Button>
+                        <Button 
+                            variant="ghost" 
+                            onClick={() => router.push('/profile')} 
+                            className="w-full text-gray-500 hover:text-white h-12"
+                        >
+                            Back to Dashboard
+                        </Button>
+                    </div>
+                </div>
             </div>
         );
     }

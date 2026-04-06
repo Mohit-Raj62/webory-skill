@@ -29,25 +29,34 @@ export async function GET(
 ) {
   try {
     const params = await props.params;
-    logDebug("=== API CALLED ===");
-    logDebug("Params ID:", params.id);
+    const { id: applicationId } = params;
+    
+    console.log(`[Offer Letter API] Fetching application: ${applicationId}`);
 
     await dbConnect();
-    logDebug("DB Connected");
-    const { id: applicationId } = params;
+
+    // ID Check
+    if (!applicationId || applicationId === "undefined") {
+        return NextResponse.json({ error: "Invalid Application ID" }, { status: 400 });
+    }
+
+    // Auth Check
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
 
     if (!token) {
-      console.error("No token found");
+      console.warn("[Offer Letter API] No token found");
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
-      userId: string;
-    };
-    const userId = decoded.userId;
-    console.log("User ID:", userId);
+    let userId: string;
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+      userId = decoded.userId;
+    } catch (err) {
+      console.error("[Offer Letter API] Token verification failed");
+      return NextResponse.json({ error: "Invalid session" }, { status: 401 });
+    }
 
     // Find application and populate internship and student details
     const application = await Application.findById(applicationId)
@@ -55,46 +64,27 @@ export async function GET(
       .populate("student")
       .lean();
 
-    console.log("Application found:", application ? "Yes" : "No");
-
-    // If application not found, return demo data for testing
     if (!application) {
-      console.log("Application not found in database, returning demo data");
-      return NextResponse.json({
-        student: {
-          firstName: "Demo",
-          lastName: "Student",
-          email: "demo@example.com",
-        },
-        internship: {
-          title: "Frontend Developer Intern",
-          company: "Tech Company Pvt Ltd",
-          location: "Remote / Bangalore",
-          type: "Full-time",
-          stipend: "₹15,000 - ₹20,000/month",
-        },
-        startDate: new Date(),
-        duration: "3 months",
-        appliedAt: new Date(),
-        isDemo: true, // Flag to indicate this is demo data
-      });
+      console.warn(`[Offer Letter API] Application NOT found in DB: ${applicationId}`);
+      return NextResponse.json(
+        { error: "Application record not found" },
+        { status: 404 }
+      );
     }
 
-    // Safety check for student and internship existence before access
+    // Safety check for student and internship existence
     if (!application.student) {
-      console.error("Student data missing in application");
-      return NextResponse.json({ error: "Student data not found" }, { status: 404 });
+      console.error("[Offer Letter API] Student data missing in application");
+      return NextResponse.json({ error: "Student data not found in application record" }, { status: 404 });
     }
 
     // Verify application belongs to user
     const studentId = application.student._id ? application.student._id.toString() : application.student.toString();
     
     if (studentId !== userId) {
-      console.error("Unauthorized access attempt");
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      console.warn(`[Offer Letter API] Unauthorized access by ${userId} for app ${applicationId}`);
+      return NextResponse.json({ error: "Unauthorized access to this offer letter" }, { status: 403 });
     }
-
-    console.log("Application status:", application.status);
 
     // Return offer letter data with safe fallbacks
     const responseData = {
@@ -105,8 +95,8 @@ export async function GET(
       },
       internship: {
         title: application.internship?.title || "Internship Position",
-        company: application.internship?.company || "Company Name",
-        location: application.internship?.location || "Location",
+        company: application.internship?.company || "Webory Skills",
+        location: application.internship?.location || "Remote",
         type: application.internship?.type || "Full-time",
         stipend: application.internship?.stipend || "To be discussed",
       },
@@ -118,20 +108,17 @@ export async function GET(
       offerDate: application.offerDate || application.appliedAt || new Date(),
       duration: application.duration || "3 months",
       appliedAt: application.appliedAt || new Date(),
+      status: application.status,
       isDemo: false,
     };
 
-    console.log("Returning real application data successfully");
     return NextResponse.json(responseData);
   } catch (error: any) {
-    console.error("=== OFFER LETTER API ERROR ===");
-    console.error("Error:", error);
-    console.error("Error message:", error.message);
-
-    // Return error with details
+    console.error("=== OFFER LETTER API Critical Error ===");
+    console.error(error);
     return NextResponse.json(
       {
-        error: "Failed to fetch offer letter",
+        error: "Server error while generating offer letter data",
         details: error.message,
       },
       { status: 500 }

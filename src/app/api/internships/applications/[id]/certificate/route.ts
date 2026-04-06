@@ -14,55 +14,72 @@ export async function GET(
 ) {
   try {
     const params = await props.params;
-    await dbConnect();
     const { id: applicationId } = params;
+    
+    console.log(`[Certificate API] Fetching application: ${applicationId}`);
 
-    // Auth Check (Manual for reliability)
+    await dbConnect();
+
+    // Auth Check
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
 
     if (!token) {
+      console.warn("[Certificate API] No token found");
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
-      userId: string;
-    };
-    const userId = decoded.userId;
+    let userId: string;
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+      userId = decoded.userId;
+    } catch (err) {
+      console.error("[Certificate API] Token verification failed");
+      return NextResponse.json({ error: "Invalid session" }, { status: 401 });
+    }
 
-    // Fetch Application
+    // Fetch Application with explicit data for Certificate
+    // Note: Implicitly registers User and Internship models via imports
     const application = await Application.findById(applicationId)
-      .populate("internship", "title company")
-      .populate("student", "firstName lastName")
-      .select(
-        "student internship status startDate appliedAt duration completedAt certificateId certificateKey offerDate"
-      )
+      .populate("internship", "title company location stipend type")
+      .populate("student", "firstName lastName email")
       .lean();
 
     if (!application) {
+      console.warn(`[Certificate API] Application not found: ${applicationId}`);
       return NextResponse.json(
-        { error: "Application not found" },
+        { error: "Application record not found in database" },
         { status: 404 }
       );
     }
 
-    // Verify ownership and existence
+    // Safety check for student existence
     if (!application.student) {
-      return NextResponse.json({ error: "Student data not found in application" }, { status: 404 });
+      console.error("[Certificate API] Student data missing in application object");
+      return NextResponse.json({ error: "Associated student data not found" }, { status: 404 });
     }
 
-    // Safety check for student ID
+    // Verify ownership: studentId vs userId
     const studentId = application.student._id ? application.student._id.toString() : application.student.toString();
 
     if (studentId !== userId) {
-      return NextResponse.json({ error: "Unauthorized access" }, { status: 403 });
+      console.warn(`[Certificate API] Unauthorized access attempt by user ${userId} for application ${applicationId}`);
+      return NextResponse.json({ error: "Unauthorized: You do not own this application" }, { status: 403 });
     }
+
+    // Status Check (Optional but helpful for debugging)
+    console.log(`[Certificate API] Application status: ${application.status}`);
 
     return NextResponse.json(application);
   } catch (error: any) {
-    console.error("Certificate API Error:", error);
+    console.error("=== Certificate API Critical Error ===");
+    console.error(error);
     return NextResponse.json(
-      { error: "Failed to fetch certificate", details: error.message },
+      { 
+        error: "Server-side error while fetching certificate", 
+        details: error.message,
+        path: "/api/internships/applications/[id]/certificate"
+      },
       { status: 500 }
     );
   }
