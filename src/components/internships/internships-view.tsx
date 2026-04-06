@@ -10,6 +10,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { PaymentModal } from "@/components/courses/payment-modal";
 import { Invoice } from "@/components/courses/invoice";
 import { toast } from "sonner";
+import { LeadCaptureModal } from "./lead-capture-modal";
+import { useEffect } from "react";
 
 interface InternshipsViewProps {
     internships: any[];
@@ -42,6 +44,8 @@ export function InternshipsView({ internships, user, userApplications }: Interns
     const [showPayment, setShowPayment] = useState(false);
     const [showInvoice, setShowInvoice] = useState(false);
     const [transactionData, setTransactionData] = useState<any>(null);
+    const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
+    const [hasTriggeredLeadPopup, setHasTriggeredLeadPopup] = useState(false);
     const router = useRouter();
 
     // ... (filteredInternships useMemo remains same) ...
@@ -71,8 +75,10 @@ export function InternshipsView({ internships, user, userApplications }: Interns
 
 
     const handleApplyClick = (id: string) => {
+        const internship = internships.find(i => i._id === id);
         if (!user) {
-            router.push("/login");
+            setSelectedInternship(id); // Set selected so we know WHICH internship they were looking at
+            setIsLeadModalOpen(true);
             return;
         }
         if (id.length < 24) {
@@ -80,7 +86,40 @@ export function InternshipsView({ internships, user, userApplications }: Interns
             return;
         }
         setSelectedInternship(id);
+        
+        // Track view activity for logged-in user when they click apply
+        trackActivity(id, internship?.title);
     };
+
+    const trackActivity = async (internshipId: string, internshipName: string) => {
+        if (!user) return;
+        try {
+            await fetch("/api/analytics/track", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    relatedId: internshipId,
+                    category: "internship",
+                    metadata: { internshipName }
+                })
+            });
+        } catch (e) {
+            console.error("Tracking error:", e);
+        }
+    };
+
+    // Auto-trigger lead popup after 15 seconds for guest users
+    useEffect(() => {
+        if (!user && !hasTriggeredLeadPopup) {
+            const timer = setTimeout(() => {
+                if (!isLeadModalOpen) {
+                    setIsLeadModalOpen(true);
+                    setHasTriggeredLeadPopup(true);
+                }
+            }, 15000);
+            return () => clearTimeout(timer);
+        }
+    }, [user, hasTriggeredLeadPopup, isLeadModalOpen]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -696,6 +735,13 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            <LeadCaptureModal
+                isOpen={isLeadModalOpen}
+                onClose={() => setIsLeadModalOpen(false)}
+                internshipId={selectedInternship || undefined}
+                internshipTitle={internships.find(i => i._id === selectedInternship)?.title}
+            />
 
             {selectedInternship && user && (
                 <PaymentModal

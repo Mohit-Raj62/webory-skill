@@ -22,37 +22,36 @@ export async function POST(req: NextRequest) {
     }
     const userId = decoded.userId;
 
-    const { courseId, courseName } = await req.json();
+    const { relatedId, category, metadata } = await req.json();
 
-    if (!courseId) {
+    if (!relatedId || !category) {
       return NextResponse.json(
-        { error: "Course ID is required" },
+        { error: "Related ID and Category are required" },
         { status: 400 },
       );
     }
 
     await connectToDB();
 
+    const activityType = `${category}_viewed`;
+
     // Check if viewed in the last 1 minute (prevent spam, but allow re-visits)
     const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
 
     const existingView = await Activity.findOne({
       student: new mongoose.Types.ObjectId(userId),
-      relatedId: new mongoose.Types.ObjectId(courseId),
-      type: "course_viewed",
+      relatedId: new mongoose.Types.ObjectId(relatedId),
+      type: activityType,
       date: { $gte: oneMinuteAgo },
     });
-    // const existingView = null; // Debug line removed
 
     if (!existingView) {
       await Activity.create({
         student: new mongoose.Types.ObjectId(userId),
-        type: "course_viewed",
-        category: "course",
-        relatedId: new mongoose.Types.ObjectId(courseId),
-        metadata: {
-          courseName,
-        },
+        type: activityType,
+        category,
+        relatedId: new mongoose.Types.ObjectId(relatedId),
+        metadata,
       });
     }
 

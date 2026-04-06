@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Plus, Edit, Trash2, Search, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { InternshipActivityFeed } from "@/components/admin/internship-activity-feed";
 
 interface Internship {
     _id: string;
@@ -87,6 +88,9 @@ export default function InternshipsAdminPage() {
                     </Button>
                 </Link>
             </div>
+
+            {/* Live Activity & Leads */}
+            <InternshipActivityFeed />
 
             {/* Search */}
             <div className="glass-card p-4 rounded-2xl mb-6">

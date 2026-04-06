@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectToDB from "@/lib/db";
 import Activity from "@/models/Activity";
+import Lead from "@/models/Lead";
 import User from "@/models/User";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
@@ -22,29 +23,50 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Invalid Token" }, { status: 401 });
     }
 
+    const category = req.nextUrl.searchParams.get("category");
+
     await connectToDB();
 
-    // Aggregation Pipeline to group by User and Course
-    const activities = await Activity.aggregate([
-      {
-        $match: {
-          type: "course_viewed",
-          // Optional: Filter by last 7 days vs all time? Let's keep all time for 'High Interest'
+    // 1. Fetch Guest Leads from 'Lead' collection
+    let guestLeads: any[] = [];
+    if (!category || category === "internship") {
+      const leads = await Lead.find({ internshipId: { $ne: null } })
+        .sort({ createdAt: -1 })
+        .limit(20)
+        .lean();
+      guestLeads = leads.map((l: any) => ({
+        type: "guest_lead",
+        student: {
+          firstName: l.name,
+          lastName: "(Guest)",
+          phone: l.phone,
         },
-      },
+        name: "Requested Information",
+        count: 1,
+        lastViewed: l.createdAt,
+      }));
+    }
+
+    // 2. Fetch Logged-in Activity
+    const matchStage: any = {
+      type: category ? `${category}_viewed` : { $in: ["course_viewed", "internship_viewed"] }
+    };
+
+    const activities = await Activity.aggregate([
+      { $match: matchStage },
       {
         $group: {
           _id: {
             student: "$student",
-            courseId: "$relatedId",
-            courseName: "$metadata.courseName",
+            relatedId: "$relatedId",
+            name: { $ifNull: ["$metadata.courseName", "$metadata.internshipName"] },
           },
           count: { $sum: 1 },
           lastViewed: { $max: "$date" },
         },
       },
       { $sort: { lastViewed: -1 } },
-      { $limit: 50 },
+      { $limit: 40 },
       {
         $lookup: {
           from: "users",
@@ -69,15 +91,21 @@ export async function GET(req: NextRequest) {
             phone: "$studentInfo.phone",
             avatar: "$studentInfo.avatar",
           },
-          courseName: "$_id.courseName",
-          courseId: "$_id.courseId",
+          name: "$_id.name",
+          relatedId: "$_id.relatedId",
+          type: { $literal: "logged_activity" },
           count: "$count",
           lastViewed: "$lastViewed",
         },
       },
     ]);
 
-    return NextResponse.json({ success: true, activities });
+    // 3. Combine and Sort
+    const combined = [...guestLeads, ...activities].sort((a, b) => 
+      new Date(b.lastViewed).getTime() - new Date(a.lastViewed).getTime()
+    );
+
+    return NextResponse.json({ success: true, activities: combined });
   } catch (error) {
     console.error("Error fetching activity:", error);
     return NextResponse.json(

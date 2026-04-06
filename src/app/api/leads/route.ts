@@ -4,7 +4,7 @@ import Lead from "@/models/Lead";
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, phone, courseId, pageUrl } = await req.json();
+    const { name, phone, courseId, internshipId, pageUrl } = await req.json();
 
     if (!name || !phone) {
       return NextResponse.json(
@@ -19,6 +19,7 @@ export async function POST(req: NextRequest) {
       name,
       phone,
       courseId,
+      internshipId,
       pageUrl,
       ip: req.headers.get("x-forwarded-for") || "unknown",
     });

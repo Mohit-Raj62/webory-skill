@@ -13,6 +13,10 @@ const LeadSchema = new Schema({
     type: String, // Storing as String to be flexible (can be ID or Slug)
     default: null,
   },
+  internshipId: {
+    type: String,
+    default: null,
+  },
   pageUrl: {
     type: String,
     default: "",

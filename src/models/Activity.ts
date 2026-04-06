@@ -15,6 +15,7 @@ const ActivitySchema = new Schema({
       "internship_applied",
       "internship_task_submitted",
       "course_viewed",
+      "internship_viewed",
       "hackathon_submitted",
     ],
     required: true,
