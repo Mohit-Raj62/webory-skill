@@ -5,6 +5,7 @@ import User from "@/models/User";
 import Internship from "@/models/Internship";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
+import mongoose from "mongoose";
 
 export const dynamic = "force-dynamic";
 
@@ -38,11 +39,21 @@ export async function GET(
       return NextResponse.json({ error: "Invalid session" }, { status: 401 });
     }
 
-    // Fetch Application with explicit data for Certificate
-    // Note: Implicitly registers User and Internship models via imports
+    // ID Validation
+    if (!applicationId || applicationId.length !== 24) {
+      console.warn(`[Certificate API] Invalid ID format: ${applicationId}`);
+      return NextResponse.json({ error: "Invalid Application ID format" }, { status: 400 });
+    }
+
+    // Explicitly ensure models are registered to prevent population failures
+    // This is a common fix for Next.js API routes when using Populate
+    if (!mongoose.models.User) mongoose.model("User", User.schema);
+    if (!mongoose.models.Internship) mongoose.model("Internship", Internship.schema);
+    if (!mongoose.models.Application) mongoose.model("Application", Application.schema);
+
     const application = await Application.findById(applicationId)
-      .populate("internship", "title company location stipend type")
-      .populate("student", "firstName lastName email")
+      .populate({ path: "internship", model: Internship, select: "title company location stipend type" })
+      .populate({ path: "student", model: User, select: "firstName lastName email" })
       .lean();
 
     if (!application) {
@@ -76,8 +87,8 @@ export async function GET(
     console.error(error);
     return NextResponse.json(
       { 
-        error: "Server-side error while fetching certificate", 
-        details: error.message,
+        error: `Server-side error: ${error.message}`, 
+        details: error.stack,
         path: "/api/internships/applications/[id]/certificate"
       },
       { status: 500 }

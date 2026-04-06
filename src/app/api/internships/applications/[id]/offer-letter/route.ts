@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import fs from "fs";
 import path from "path";
+import mongoose from "mongoose";
 
 export const dynamic = "force-dynamic";
 
@@ -58,10 +59,16 @@ export async function GET(
       return NextResponse.json({ error: "Invalid session" }, { status: 401 });
     }
 
-    // Find application and populate internship and student details
+    // Explicitly ensure models are registered to prevent population failures 
+    // especially during Next.js cold starts
+    if (!mongoose.models.User) mongoose.model("User", User.schema);
+    if (!mongoose.models.Internship) mongoose.model("Internship", Internship.schema);
+    if (!mongoose.models.Application) mongoose.model("Application", Application.schema);
+
+    // Find application and populate internship and student details with explicit models
     const application = await Application.findById(applicationId)
-      .populate("internship")
-      .populate("student")
+      .populate({ path: "internship", model: Internship })
+      .populate({ path: "student", model: User })
       .lean();
 
     if (!application) {
@@ -118,8 +125,8 @@ export async function GET(
     console.error(error);
     return NextResponse.json(
       {
-        error: "Server error while generating offer letter data",
-        details: error.message,
+        error: `Server error: ${error.message}`,
+        details: error.stack,
       },
       { status: 500 }
     );
