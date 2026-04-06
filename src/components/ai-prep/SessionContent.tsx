@@ -21,6 +21,7 @@ interface Question {
     intro?: string;
     score?: number;
     feedback?: string;
+    solution?: string; // New field for technical solutions
     voiceAnalysis?: string; // New field for voice tone feedback
 }
 
@@ -28,11 +29,12 @@ export function SessionContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { user, loading: authLoading } = useAuth();
-    const mode = searchParams.get("mode") as "interview" | "aptitude";
+    const mode = searchParams.get("mode") as "interview" | "aptitude" | "technical";
 
     // Config State
     const [topic, setTopic] = useState("");
     const [level, setLevel] = useState("Beginner");
+    const [language, setLanguage] = useState("JavaScript"); // Default for technical
     const [started, setStarted] = useState(false);
     
     // Session State
@@ -235,7 +237,7 @@ export function SessionContent() {
             const res = await fetch("/api/ai/practice", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ mode, topic, level, action: "start" })
+                body: JSON.stringify({ mode, topic, level, language, action: "start" })
             });
             const data = await res.json();
             if (data.error) throw new Error(data.error);
@@ -281,7 +283,8 @@ export function SessionContent() {
                     userAnswer: answer,
                     history: history, // Pass history to prevent repetition
                     speechMetrics: finalMetrics,
-                    fillerWordCount: fillerWordCount // Pass filler count to backend
+                    fillerWordCount: fillerWordCount, // Pass filler count to backend
+                    language: language // Pass language context
                 })
             });
             const data = await res.json();
@@ -305,6 +308,7 @@ export function SessionContent() {
                     question: data.nextQuestion,
                     options: data.options,
                     feedback: data.feedback, // Show feedback for previous
+                    solution: data.solution, // Provide solution for previous
                     voiceAnalysis: data.voiceAnalysis
                 });
                 setQuestionCount(prev => prev + 1);
@@ -383,6 +387,27 @@ export function SessionContent() {
                                     </div>
                                 </div>
                                 
+                                {mode === "technical" && (
+                                    <div>
+                                        <label className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2 block pl-1">Target Language</label>
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+                                            {["JavaScript", "Python", "Java", "C++", "PHP", "SQL"].map(lang => (
+                                                <button
+                                                    key={lang}
+                                                    onClick={() => setLanguage(lang)}
+                                                    className={`py-2 rounded-lg text-[10px] font-bold uppercase transition-all border ${
+                                                        language === lang 
+                                                        ? "bg-amber-500/10 border-amber-500/50 text-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.2)]" 
+                                                        : "bg-zinc-900 border-zinc-800 text-zinc-500 hover:text-zinc-300"
+                                                    }`}
+                                                >
+                                                    {lang}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
                                 <div>
                                     <label className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2 block pl-1">Difficulty</label>
                                     <div className="grid grid-cols-3 gap-2 p-1 bg-zinc-900 rounded-xl border border-zinc-800">
@@ -409,6 +434,8 @@ export function SessionContent() {
                                 className={`w-full mt-10 h-14 text-sm font-bold tracking-widest uppercase rounded-xl transition-all hover:opacity-90 ${
                                     mode === "interview" 
                                     ? "bg-indigo-600 hover:bg-indigo-700 text-white" 
+                                    : mode === "technical"
+                                    ? "bg-amber-600 hover:bg-amber-700 text-white shadow-amber-900/20"
                                     : "bg-blue-600 hover:bg-blue-700 text-white"
                                 }`}
                             >
@@ -445,10 +472,10 @@ export function SessionContent() {
                         </Button>
                         <div>
                             <div className="flex items-center gap-1.5 md:gap-2 mb-0.5 md:mb-1">
-                                <span className={`w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${mode === "interview" ? "bg-purple-500 animate-pulse" : "bg-blue-500 animate-pulse"}`} />
+                                <span className={`w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${mode === "interview" ? "bg-purple-500 animate-pulse" : mode === "technical" ? "bg-amber-500 animate-pulse" : "bg-blue-500 animate-pulse"}`} />
                                 <span className="text-[8px] md:text-[10px] font-bold text-gray-500 uppercase tracking-widest">Live Session</span>
                             </div>
-                            <h2 className="text-base md:text-xl font-black text-white uppercase tracking-tight leading-none">{topic}</h2>
+                            <h2 className="text-base md:text-xl font-black text-white uppercase tracking-tight leading-none">{topic} {mode === "technical" && `(${language})`}</h2>
                         </div>
                     </div>
 
@@ -462,7 +489,7 @@ export function SessionContent() {
                                         key={i} 
                                         className={`h-1.5 w-3 rounded-sm transition-all ${
                                             i < questionCount 
-                                            ? (mode === "interview" ? "bg-purple-500 shadow-[0_0_8px_#a855f7]" : "bg-blue-500 shadow-[0_0_8px_#3b82f6]") 
+                                            ? (mode === "interview" ? "bg-purple-500 shadow-[0_0_8px_#a855f7]" : mode === "technical" ? "bg-amber-500 shadow-[0_0_8px_#f59e0b]" : "bg-blue-500 shadow-[0_0_8px_#3b82f6]") 
                                             : "bg-white/10"
                                         }`} 
                                     />
@@ -600,6 +627,30 @@ export function SessionContent() {
                                     )}
                                 </div>
                             )}
+
+                            {/* Technical Input Area (Text based) */}
+                            {mode === "technical" && (
+                                <div className="p-6 bg-black/20 border-t border-white/5">
+                                    <div className="relative bg-white/5 rounded-2xl border border-white/10 focus-within:border-amber-500/50 focus-within:bg-white/10 transition-all">
+                                        <textarea
+                                            value={userAnswer}
+                                            onChange={(e) => setUserAnswer(e.target.value)}
+                                            placeholder={`Type your ${language} explanation or code snippet...`}
+                                            className="w-full bg-transparent border-none text-white placeholder:text-gray-500/50 resize-none p-5 min-h-[140px] focus:ring-0 outline-none font-mono text-sm"
+                                        />
+                                        
+                                        <div className="absolute bottom-3 right-3 flex items-center gap-3">
+                                            <Button 
+                                                onClick={() => handleSubmitAnswer()} 
+                                                disabled={loading || !userAnswer.trim()}
+                                                className="h-10 px-4 bg-amber-600 hover:bg-amber-700 text-white rounded-xl shadow-lg shadow-amber-500/20 font-bold text-xs uppercase tracking-wider transition-all hover:scale-105"
+                                            >
+                                                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span className="flex items-center gap-2">Submit Code <Send className="w-3 h-3" /></span>}
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -637,6 +688,21 @@ export function SessionContent() {
                                     <p className="text-gray-300 leading-relaxed text-sm">
                                         {currentQuestion.feedback}
                                     </p>
+
+                                    {/* Expert Solution Section */}
+                                    {currentQuestion.solution && (
+                                        <div className="mt-6 p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
+                                            <div className="flex items-center gap-2 mb-3 text-amber-400 text-xs font-black uppercase tracking-[0.2em]">
+                                                <Activity className="w-3 h-3" /> Master Solution
+                                            </div>
+                                            <pre className="text-[11px] md:text-xs text-gray-300 font-mono bg-black/40 p-3 rounded-lg overflow-x-auto border border-white/5 whitespace-pre-wrap">
+                                                <code>{currentQuestion.solution}</code>
+                                            </pre>
+                                            <p className="text-[10px] text-gray-500 mt-3 italic">
+                                                * Compare your approach with this optimized solution.
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             ) : (
                                 <div className="text-center">

@@ -11,7 +11,7 @@ import { useAuth } from "@/components/auth/session-provider";
 export default function AIPrepLandingPage() {
     const router = useRouter();
     const { user, loading } = useAuth();
-    const [selectedMode, setSelectedMode] = useState<"interview" | "aptitude" | null>(null);
+    const [selectedMode, setSelectedMode] = useState<"interview" | "aptitude" | "technical" | null>(null);
 
     // Auth Protection
     useEffect(() => {
@@ -33,7 +33,7 @@ export default function AIPrepLandingPage() {
 
     if (!user) return null;
 
-    const handleStart = (mode: "interview" | "aptitude") => {
+    const handleStart = (mode: "interview" | "aptitude" | "technical") => {
         router.push(`/ai-prep/session?mode=${mode}`);
     };
 
@@ -63,7 +63,7 @@ export default function AIPrepLandingPage() {
                         </p>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-6 md:gap-10 max-w-5xl mx-auto">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10 max-w-6xl mx-auto">
                         {/* Mock Interview Command Module */}
                         <div 
                             className="group relative h-full bg-gray-900/40 backdrop-blur-xl border border-white/10 rounded-2xl md:rounded-[2.5rem] p-0.5 overflow-hidden hover:border-purple-500/50 transition-all duration-500 hover:shadow-[0_0_50px_rgba(168,85,247,0.2)] cursor-pointer"
@@ -144,6 +144,47 @@ export default function AIPrepLandingPage() {
 
                                 <Button className="w-full h-12 md:h-14 bg-white/5 hover:bg-cyan-600 text-white border border-white/10 hover:border-cyan-500/50 rounded-lg md:rounded-xl group-hover:shadow-[0_0_30px_rgba(6,182,212,0.4)] transition-all duration-300 mt-auto text-sm md:text-lg font-bold tracking-wide uppercase">
                                     Begin Diagnostics
+                                </Button>
+                            </div>
+                        </div>
+                        {/* Technical Practice Command Module */}
+                        <div 
+                            className="group relative h-full bg-gray-900/40 backdrop-blur-xl border border-white/10 rounded-2xl md:rounded-[2.5rem] p-0.5 overflow-hidden hover:border-amber-500/50 transition-all duration-500 hover:shadow-[0_0_50px_rgba(245,158,11,0.2)] cursor-pointer"
+                            onClick={() => handleStart("technical")}
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-b from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            
+                            <div className="h-full bg-[#0a0a0a]/80 rounded-2xl md:rounded-[2.3rem] p-6 md:p-10 flex flex-col relative z-10 hover:bg-[#0a0a0a]/60 transition-colors">
+                                <div className="flex justify-between items-start mb-6 md:mb-10">
+                                    <div className="p-4 md:p-5 bg-amber-500/10 rounded-xl border border-amber-500/20 text-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.1)] group-hover:scale-110 group-hover:bg-amber-500/20 transition-all duration-500">
+                                        <Bot size={32} className="md:w-10 md:h-10" />
+                                    </div>
+                                    <div className="flex flex-col items-end">
+                                        <span className="text-[8px] md:text-[10px] text-gray-500 uppercase tracking-wider font-bold mb-1">Protocol</span>
+                                        <span className="text-[10px] md:text-xs font-mono text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">TECH_CORE_V1</span>
+                                    </div>
+                                </div>
+
+                                <h3 className="text-xl md:text-3xl font-bold text-white mb-3 md:mb-4 group-hover:text-amber-300 transition-colors">Technical Practice</h3>
+                                <p className="text-xs md:text-gray-400 mb-6 md:mb-8 leading-relaxed">
+                                    Deep dive into programming concepts. Code explanations, architecture probes, and multi-language technical challenges.
+                                </p>
+                                
+                                <div className="space-y-3 md:space-y-4 mb-8 md:mb-10">
+                                    {[
+                                        "Multi-Language Support",
+                                        "Deep Logic Probing",
+                                        "Expert Solutions Included"
+                                    ].map((item, i) => (
+                                        <div key={i} className="flex items-center text-[11px] md:text-sm text-gray-300 group-hover:text-white transition-colors">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mr-2.5 shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
+                                            {item}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <Button className="w-full h-12 md:h-14 bg-white/5 hover:bg-amber-600 text-white border border-white/10 hover:border-amber-500/50 rounded-lg md:rounded-xl group-hover:shadow-[0_0_30px_rgba(245,158,11,0.4)] transition-all duration-300 mt-auto text-sm md:text-lg font-bold tracking-wide uppercase">
+                                    Sync Command
                                 </Button>
                             </div>
                         </div>

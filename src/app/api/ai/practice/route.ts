@@ -27,6 +27,7 @@ export async function POST(req: Request) {
       mode,
       topic,
       level,
+      language, // Support for chosen programming language
       action,
       currentQuestion,
       userAnswer,
@@ -105,14 +106,15 @@ export async function POST(req: Request) {
       }
 
       const prompt = `
-            You are an expert AI Interviewer and Aptitude Trainer.
-            Mode: ${mode === "interview" ? "Mock Interview" : "Aptitude Test"}
+            You are an expert AI Interviewer and Technical Mentor.
+            Mode: ${mode === "interview" ? "Mock Interview" : mode === "technical" ? "Technical Practice" : "Aptitude Test"}
             Topic: ${topic}
+            ${mode === "technical" ? `Programming Language: ${language}` : ""}
             Level: ${level}
             
             ${mode === "interview" ? resumeContext : ""}
 
-            TASK: Generate the FIRST ${mode === "interview" ? "technical interview question" : "aptitude question"} for this session.
+            TASK: Generate the FIRST ${mode === "interview" ? "technical interview question" : mode === "technical" ? `deep ${language} technical question` : "aptitude question"} for this session.
 
             REQUIREMENTS:
             1. Question must be relevant to the topic and level.
@@ -183,6 +185,8 @@ export async function POST(req: Request) {
                 : ""
             }
             
+            ${mode === "technical" ? `CORE FOCUS: Deep technical accuracy, best practices, and ${language} specific optimizations.` : ""}
+            
             PREVIOUS QUESTIONS (DO NOT REPEAT THESE):
             - ${currentQuestion}
             - ${previousQuestions}
@@ -197,7 +201,8 @@ export async function POST(req: Request) {
             OUTPUT FORMAT (JSON):
             {
                 "feedback": "Brief feedback on the answer (Correct/Incorrect and why).",
-                ${usedVoice && mode === "interview" ? `"voiceAnalysis": "Feedback on tone, pace, and fluency. If filler words are high, advise on pausing instead.",` : ""}
+                ${usedVoice && (mode === "interview" || mode === "technical") ? `"voiceAnalysis": "Feedback on tone, pace, and fluency. If filler words are high, advise on pausing instead.",` : ""}
+                ${mode === "technical" ? `"solution": "The complete expert answer or reference code in ${language}",` : ""}
                 "score": 0-10 (Rating for this specific answer),
                 "nextQuestion": "The next question text",
                 ${mode === "aptitude" ? '"options": ["A) ...", "B) ...", "C) ...", "D) ..."],' : ""}
