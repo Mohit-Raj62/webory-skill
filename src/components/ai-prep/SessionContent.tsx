@@ -43,8 +43,10 @@ export function SessionContent() {
     const [userAnswer, setUserAnswer] = useState("");
     const [history, setHistory] = useState<any[]>([]);
     const [questionCount, setQuestionCount] = useState(0);
-    const [timeLeft, setTimeLeft] = useState(60); // 60s per aptitude question
+    const [timeLeft, setTimeLeft] = useState(60); // Per-question for aptitude
+    const [totalTimeLeft, setTotalTimeLeft] = useState(1800); // 30 mins for tech/interview
     const timerRef = useRef<any>(null);
+    const totalTimerRef = useRef<any>(null);
 
     // Voice & Tone State
     const [isRecording, setIsRecording] = useState(false);
@@ -190,25 +192,51 @@ export function SessionContent() {
         }
     };
 
-    // Timer Logic for Aptitude
+    // --- Timer Logic (Unified) ---
     useEffect(() => {
-        if (mode === "aptitude" && currentQuestion && !loading) {
-            setTimeLeft(60);
-            timerRef.current = setInterval(() => {
-                setTimeLeft(prev => {
-                    if (prev <= 1) {
-                        clearInterval(timerRef.current!);
-                        handleTimeout();
-                        return 0;
-                    }
-                    return prev - 1;
-                });
-            }, 1000);
+        if (started && !loading) {
+            // Mode-specific timers
+            if (mode === "aptitude" && currentQuestion) {
+                setTimeLeft(60);
+                timerRef.current = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 1) {
+                            clearInterval(timerRef.current!);
+                            handleTimeout();
+                            return 0;
+                        }
+                        return prev - 1;
+                    });
+                }, 1000);
+            }
+
+            // Session-wide timer for Technical/Interview
+            if ((mode === "technical" || mode === "interview") && !totalTimerRef.current) {
+                totalTimerRef.current = setInterval(() => {
+                    setTotalTimeLeft(prev => {
+                        if (prev <= 1) {
+                            clearInterval(totalTimerRef.current!);
+                            toast.warning("Session Time Limit Reached! Results are being finalized.", { duration: 5000 });
+                            finishSession(history);
+                            return 0;
+                        }
+                        return prev - 1;
+                    });
+                }, 1000);
+            }
         }
+
         return () => {
-             if (timerRef.current) clearInterval(timerRef.current);
+            if (timerRef.current) clearInterval(timerRef.current);
         };
-    }, [currentQuestion, loading, mode]);
+    }, [currentQuestion, loading, mode, started]);
+
+    // Cleanup session timer on unmount
+    useEffect(() => {
+        return () => {
+             if (totalTimerRef.current) clearInterval(totalTimerRef.current);
+        };
+    }, []);
 
     if (authLoading) {
         return (
@@ -497,14 +525,23 @@ export function SessionContent() {
                             </div>
                          </div>
 
-                        {mode === "aptitude" && (
-                            <div className="bg-[#0f1115] border border-white/10 rounded-lg md:rounded-xl px-3 py-1.5 md:px-5 md:py-2.5 flex items-center gap-2 md:gap-3 shadow-lg">
-                                <div className={`text-lg md:text-2xl font-mono font-bold tracking-widest ${timeLeft < 10 ? "text-red-500 animate-pulse" : "text-blue-400"}`}>
-                                    {timeLeft < 10 ? `0${timeLeft}` : timeLeft}
-                                </div>
-                                <span className="text-[8px] md:text-[10px] font-bold text-gray-600 uppercase -rotate-90 origin-center">SEC</span>
+                        {/* Timer HUD */}
+                        <div className="bg-[#0f1115] border border-white/10 rounded-lg md:rounded-xl px-3 py-1.5 md:px-5 md:py-2.5 flex items-center gap-2 md:gap-3 shadow-lg">
+                            <div className={`text-lg md:text-2xl font-mono font-bold tracking-widest ${
+                                (mode === "aptitude" ? timeLeft < 10 : totalTimeLeft < 120) 
+                                ? "text-red-500 animate-pulse" 
+                                : "text-blue-400"
+                            }`}>
+                                {mode === "aptitude" ? (
+                                    timeLeft < 10 ? `0${timeLeft}` : timeLeft
+                                ) : (
+                                    `${Math.floor(totalTimeLeft / 60)}:${(totalTimeLeft % 60).toString().padStart(2, '0')}`
+                                )}
                             </div>
-                        )}
+                            <span className="text-[8px] md:text-[10px] font-bold text-gray-600 uppercase -rotate-90 origin-center">
+                                {mode === "aptitude" ? "SEC" : "TIME"}
+                            </span>
+                        </div>
                     </div>
                 </header>
 

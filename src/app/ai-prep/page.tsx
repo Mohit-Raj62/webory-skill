@@ -56,10 +56,10 @@ export default function AIPrepLandingPage() {
                             <span className="text-[10px] md:text-sm font-medium text-gray-300">Level Up with Webory AI Nexus</span>
                         </div>
                         <h1 className="text-2xl md:text-6xl font-bold mb-4 md:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-200 to-gray-400 leading-tight">
-                            AI INTERVIEW <br className="hidden md:block" /> & APTITUDE
+                            AI INTERVIEW, APTITUDE <br className="hidden md:block" /> & TECHNICAL
                         </h1>
                         <p className="text-sm md:text-xl text-gray-400 max-w-2xl mx-auto mb-8 md:mb-10 px-4">
-                            Master your technical interviews and sharpen your logical reasoning with our intelligent AI mentor.
+                            Master your technical interviews, sharpen logical reasoning, and practice coding with our intelligent AI mentor and real-time timer.
                         </p>
                     </div>
 
@@ -132,7 +132,7 @@ export default function AIPrepLandingPage() {
                                 <div className="space-y-3 md:space-y-4 mb-8 md:mb-10">
                                     {[
                                         "Adaptive Difficulty",
-                                        "Timed Speed Tests",
+                                        "Real-Time Timer HUD",
                                         "Detailed Solution Breakdown"
                                     ].map((item, i) => (
                                         <div key={i} className="flex items-center text-[11px] md:text-sm text-gray-300 group-hover:text-white transition-colors">
@@ -173,7 +173,7 @@ export default function AIPrepLandingPage() {
                                 <div className="space-y-3 md:space-y-4 mb-8 md:mb-10">
                                     {[
                                         "Multi-Language Support",
-                                        "Deep Logic Probing",
+                                        "Real-Time Timer HUD",
                                         "Expert Solutions Included"
                                     ].map((item, i) => (
                                         <div key={i} className="flex items-center text-[11px] md:text-sm text-gray-300 group-hover:text-white transition-colors">

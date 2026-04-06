@@ -309,10 +309,11 @@ export async function POST(req: Request) {
         const questionsAnswered = history ? history.length : 0;
         let xpEarned = 0;
 
-        if (mode === "interview") {
+        if (mode === "interview" || mode === "technical") {
+          // Flat 50 XP for completing a deep technical or interview session
           xpEarned = 50;
         } else {
-          // For Aptitude: 1 XP per CORRECT answer
+          // For Aptitude: 1 XP per CORRECT answer (score >= 7 or isCorrect true)
           const correctAnswers = history
             ? history.filter((h: any) => h.isCorrect === true || h.score >= 7)
                 .length
