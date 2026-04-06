@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useState, useEffect, Suspense, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Eye, EyeOff, Lock, Mail, Shield, ArrowRight, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, Shield, ArrowRight, Loader2, Sparkles } from "lucide-react";
 import { useAuth } from "@/components/auth/session-provider";
 import { motion } from "framer-motion";
 
@@ -277,23 +277,33 @@ function LoginContent() {
 
                         {error && (
                             <motion.div 
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl mb-6 text-sm flex items-center gap-3"
+                                initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                className="relative group mb-6"
                             >
-                                <div className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></div>
-                                {error}
+                                <div className="absolute -inset-0.5 bg-red-500/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                                <div className="relative bg-red-500/10 backdrop-blur-xl border border-red-500/20 text-red-100 px-5 py-4 rounded-2xl text-xs flex items-center gap-4 shadow-2xl">
+                                    <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
+                                        <Shield size={16} className="text-red-400" />
+                                    </div>
+                                    <span className="font-medium">{error}</span>
+                                </div>
                             </motion.div>
                         )}
 
                         {success && (
                             <motion.div 
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="bg-green-500/10 border border-green-500/20 text-green-400 px-4 py-3 rounded-xl mb-6 text-sm flex items-center gap-3"
+                                initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                className="relative group mb-6"
                             >
-                                <div className="w-1.5 h-1.5 rounded-full bg-green-500 shrink-0"></div>
-                                {success}
+                                <div className="absolute -inset-0.5 bg-green-500/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                                <div className="relative bg-green-500/10 backdrop-blur-xl border border-green-500/20 text-green-100 px-5 py-4 rounded-2xl text-xs flex items-center gap-4 shadow-2xl">
+                                    <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
+                                        <Sparkles size={16} className="text-green-400" />
+                                    </div>
+                                    <span className="font-medium">{success}</span>
+                                </div>
                             </motion.div>
                         )}
 
@@ -417,23 +427,23 @@ function LoginContent() {
                                     </form>
                                 ) : (
                                     <form onSubmit={handleVerifyOtp} className="space-y-6">
-                                        <div className="space-y-8">
-                                            <div className="text-center">
-                                                <p className="text-sm text-gray-400 mb-1">Enter the 6-digit code sent to</p>
-                                                <p className="text-white font-semibold flex items-center justify-center gap-2">
-                                                    <Mail size={14} className="text-blue-400" />
-                                                    {email}
-                                                </p>
+                                        <div className="space-y-10">
+                                            <div className="text-center group">
+                                                <p className="text-xs text-gray-500 mb-2 uppercase tracking-[0.2em] font-black opacity-60">Verification Code</p>
+                                                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/10 group-hover:border-blue-500/30 transition-colors">
+                                                    <Mail size={12} className="text-blue-400" />
+                                                    <span className="text-xs text-white/80 font-bold">{email}</span>
+                                                </div>
                                             </div>
                                             
-                                            <div className="flex justify-center items-center gap-2 sm:gap-3">
-                                                <div className="flex gap-1.5 sm:gap-2">
+                                            <div className="flex justify-center items-center gap-3 sm:gap-4">
+                                                <div className="flex gap-2 sm:gap-3">
                                                     {[0, 1, 2].map((idx) => (
                                                         <motion.div
                                                             key={idx}
-                                                            initial={{ opacity: 0, y: 10 }}
-                                                            animate={{ opacity: 1, y: 0 }}
-                                                            transition={{ delay: idx * 0.05 }}
+                                                            initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                                                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                            transition={{ delay: idx * 0.05, type: "spring", stiffness: 200 }}
                                                             className="relative"
                                                         >
                                                             <input
@@ -446,27 +456,34 @@ function LoginContent() {
                                                                 onFocus={() => setFocusedField(`otp-${idx}`)}
                                                                 onBlur={() => setFocusedField(null)}
                                                                 inputMode="numeric"
-                                                                className={`w-9 h-12 sm:w-12 sm:h-16 text-xl sm:text-2xl font-bold bg-white/5 border rounded-xl text-white outline-none transition-all duration-300 ${
+                                                                className={`w-11 h-14 sm:w-14 sm:h-18 text-2xl sm:text-3xl font-black bg-white/[0.02] border rounded-2xl text-white outline-none transition-all duration-500 text-center selection:bg-blue-500/50 ${
                                                                     otp[idx] 
-                                                                        ? 'border-blue-500/50 shadow-[0_0_20px_-5px_rgba(59,130,246,0.3)]' 
+                                                                        ? 'border-blue-500/60 shadow-[0_0_30px_-5px_rgba(59,130,246,0.3)] bg-blue-500/[0.03]' 
                                                                         : focusedField === `otp-${idx}`
-                                                                            ? 'border-purple-500 shadow-[0_0_20px_-5px_rgba(168,85,247,0.4)] bg-white/10'
+                                                                            ? 'border-purple-500 shadow-[0_0_40px_-5px_rgba(168,85,247,0.4)] bg-white/10 scale-105'
                                                                             : 'border-white/10 hover:border-white/20'
                                                                 }`}
                                                             />
+                                                            {otp[idx] && (
+                                                                <motion.div 
+                                                                    initial={{ scale: 0 }}
+                                                                    animate={{ scale: 1 }}
+                                                                    className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]"
+                                                                />
+                                                            )}
                                                         </motion.div>
                                                     ))}
                                                 </div>
 
-                                                <div className="w-1 h-0.5 bg-white/20 rounded-full shrink-0 mx-0.5 sm:mx-1" />
+                                                <div className="w-px h-10 bg-white/10 rounded-full shrink-0 mx-1 opacity-40 shadow-[0_0_10px_rgba(255,255,255,0.1)]" />
 
-                                                <div className="flex gap-1.5 sm:gap-2">
+                                                <div className="flex gap-2 sm:gap-3">
                                                     {[3, 4, 5].map((idx) => (
                                                         <motion.div
                                                             key={idx}
-                                                            initial={{ opacity: 0, y: 10 }}
-                                                            animate={{ opacity: 1, y: 0 }}
-                                                            transition={{ delay: idx * 0.05 }}
+                                                            initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                                                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                            transition={{ delay: idx * 0.05, type: "spring", stiffness: 200 }}
                                                             className="relative"
                                                         >
                                                             <input
@@ -479,58 +496,78 @@ function LoginContent() {
                                                                 onFocus={() => setFocusedField(`otp-${idx}`)}
                                                                 onBlur={() => setFocusedField(null)}
                                                                 inputMode="numeric"
-                                                                className={`w-9 h-12 sm:w-12 sm:h-16 text-xl sm:text-2xl font-bold bg-white/5 border rounded-xl text-white outline-none transition-all duration-300 ${
+                                                                className={`w-11 h-14 sm:w-14 sm:h-18 text-2xl sm:text-3xl font-black bg-white/[0.02] border rounded-2xl text-white outline-none transition-all duration-500 text-center selection:bg-blue-500/50 ${
                                                                     otp[idx] 
-                                                                        ? 'border-blue-500/50 shadow-[0_0_20px_-5px_rgba(59,130,246,0.3)]' 
+                                                                        ? 'border-blue-500/60 shadow-[0_0_30px_-5px_rgba(59,130,246,0.3)] bg-blue-500/[0.03]' 
                                                                         : focusedField === `otp-${idx}`
-                                                                            ? 'border-purple-500 shadow-[0_0_20px_-5px_rgba(168,85,247,0.4)] bg-white/10'
+                                                                            ? 'border-purple-500 shadow-[0_0_40px_-5px_rgba(168,85,247,0.4)] bg-white/10 scale-105'
                                                                             : 'border-white/10 hover:border-white/20'
                                                                 }`}
                                                             />
+                                                            {otp[idx] && (
+                                                                <motion.div 
+                                                                    initial={{ scale: 0 }}
+                                                                    animate={{ scale: 1 }}
+                                                                    className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]"
+                                                                />
+                                                            )}
                                                         </motion.div>
                                                     ))}
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        <Button
-                                            type="submit"
-                                            disabled={loading || otp.some(v => !v)}
-                                            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 py-6 text-base font-semibold shadow-lg shadow-blue-500/20 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:scale-100"
-                                        >
-                                            {loading ? "Verifying..." : "Verify & Login"}
-                                        </Button>
-
-                                        <div className="text-center space-y-4">
-                                            {timer > 0 ? (
-                                                <p className="text-xs text-gray-500">
-                                                    Resend OTP in <span className="text-blue-400 font-mono">{timer}s</span>
-                                                </p>
-                                            ) : (
-                                                <button
-                                                    type="button"
-                                                    onClick={(e) => {
-                                                        handleSendOtp(e);
-                                                        startTimer();
-                                                    }}
-                                                    className="text-xs text-blue-400 hover:text-blue-300 transition-colors font-medium"
+                                            <div className="space-y-4 pt-4">
+                                                <motion.div
+                                                    whileHover={{ scale: 1.01 }}
+                                                    whileTap={{ scale: 0.98 }}
                                                 >
-                                                    Didn't receive code? Resend OTP
-                                                </button>
-                                            )}
-                                            
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    setOtpSent(false);
-                                                    setOtp(["", "", "", "", "", ""]);
-                                                    setError("");
-                                                    setSuccess("");
-                                                }}
-                                                className="block w-full text-xs text-gray-500 hover:text-gray-300 transition-colors"
-                                            >
-                                                ← Change email address
-                                            </button>
+                                                    <Button
+                                                        type="submit"
+                                                        disabled={loading || otp.some(v => !v)}
+                                                        className="w-full relative group overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:via-indigo-500 hover:to-purple-500 border-0 py-7 text-sm font-black uppercase tracking-[0.2em] shadow-[0_20px_50px_rgba(37,99,235,0.2)] rounded-2xl transition-all duration-500 disabled:opacity-50 disabled:scale-100"
+                                                    >
+                                                        {/* High-end Shine Effect */}
+                                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
+                                                        
+                                                        {loading ? (
+                                                            <span className="flex items-center justify-center gap-3">
+                                                                <Loader2 className="animate-spin" size={20} /> Verifying...
+                                                            </span>
+                                                        ) : (
+                                                            <span className="flex items-center justify-center gap-2">
+                                                                Verify & Login <ArrowRight className="inline group-hover:translate-x-1 transition-transform" size={18} />
+                                                            </span>
+                                                        )}
+                                                    </Button>
+                                                </motion.div>
+
+                                                <div className="flex items-center justify-center gap-6">
+                                                   <button 
+                                                        type="button"
+                                                        disabled={timer > 0 || loading}
+                                                        onClick={(e) => {
+                                                            handleSendOtp(e);
+                                                            startTimer();
+                                                        }}
+                                                        className="text-[10px] font-black uppercase tracking-widest text-blue-400 hover:text-blue-300 disabled:text-gray-600 transition-colors flex items-center gap-2"
+                                                    >
+                                                        Resend OTP {timer > 0 && <span className="text-gray-500 text-[9px] lowercase font-medium italic opacity-60">in {timer}s</span>}
+                                                    </button>
+                                                    <div className="w-1 h-1 rounded-full bg-white/10" />
+                                                    <button 
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setOtpSent(false);
+                                                            setOtp(["", "", "", "", "", ""]);
+                                                            setError("");
+                                                            setSuccess("");
+                                                        }}
+                                                        className="text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-gray-300 transition-colors"
+                                                    >
+                                                        Change Email
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </form>
                                 )}

@@ -20,12 +20,19 @@ export function UserManagementClient({ initialUsers, initialPagination }: { init
     const [totalPages, setTotalPages] = useState<number>(initialPagination.pages);
     const [totalUsers, setTotalUsers] = useState<number>(initialPagination.total);
     const [loading, setLoading] = useState(false);
+    const [isInitialMount, setIsInitialMount] = useState(true);
 
     const ITEMS_PER_PAGE = 10;
 
     useEffect(() => {
+        // Skip the very first fetch on mount because we already have initialUsers from props
+        if (isInitialMount) {
+            setIsInitialMount(false);
+            return;
+        }
+
         const timer = setTimeout(() => {
-            if (searchTerm !== "") fetchUsers();
+            fetchUsers();
         }, 500);
         return () => clearTimeout(timer);
     }, [currentPage, searchTerm]);
@@ -107,6 +114,23 @@ export function UserManagementClient({ initialUsers, initialPagination }: { init
             </div>
 
             <div className="overflow-auto max-h-[600px] relative">
+                {/* Loading Overlay */}
+                <AnimatePresence>
+                    {loading && (
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="absolute inset-0 z-20 bg-black/40 backdrop-blur-sm flex items-center justify-center"
+                        >
+                            <div className="flex flex-col items-center gap-4">
+                                <div className="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
+                                <p className="text-blue-400 font-black uppercase tracking-widest text-[10px]">Updating User List...</p>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
                 <Table>
                     <TableHeader className="bg-white/5 sticky top-0 z-10 backdrop-blur-md font-bold">
                         <TableRow className="border-white/10">

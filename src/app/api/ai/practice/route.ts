@@ -13,6 +13,7 @@ const groq = new Groq({
 
 export async function POST(req: Request) {
   try {
+    await dbConnect(); // Ensure connection is ready before any queries
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
 

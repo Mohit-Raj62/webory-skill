@@ -219,13 +219,34 @@ export default function AdminAmbassadorsPage() {
                                             </div>
                                         )}
                                         {app.collegeIdCardUrl ? (
-                                            <a href={app.collegeIdCardUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 px-3 py-2 rounded-lg border border-orange-500/20 transition-all group">
-                                                <Upload size={14} /> 
-                                                <span className="font-bold">View College ID Card</span>
-                                                <ExternalLink size={10} className="ml-auto opacity-50 group-hover:opacity-100" />
-                                            </a>
+                                            <div className="space-y-3">
+                                                <a 
+                                                    href={app.collegeIdCardUrl} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer" 
+                                                    className="flex items-center gap-2 text-[10px] font-black tracking-widest uppercase bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 px-3 py-2 rounded-lg border border-orange-500/20 transition-all group w-fit"
+                                                >
+                                                    <Upload size={12} /> 
+                                                    <span>View Full ID Card</span>
+                                                    <ExternalLink size={10} className="ml-2 opacity-50 group-hover:opacity-100" />
+                                                </a>
+                                                
+                                                <div className="relative group/img w-full max-w-[280px] aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 bg-white/5 shadow-2xl">
+                                                    <img 
+                                                        src={app.collegeIdCardUrl} 
+                                                        alt="College ID Card" 
+                                                        className="w-full h-full object-contain p-2 transition-transform duration-500 group-hover/img:scale-110" 
+                                                    />
+                                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                                                        <ExternalLink className="text-white" size={24} />
+                                                    </div>
+                                                </div>
+                                                <p className="text-[9px] text-gray-500 italic">Aspect ratio preserved to prevent cropping</p>
+                                            </div>
                                         ) : (
-                                            <div className="text-xs text-red-400/50 italic px-3 py-2 border border-red-400/10 rounded-lg">No ID Card uploaded</div>
+                                            <div className="text-xs text-red-400/50 italic px-3 py-2 border border-red-400/10 rounded-lg w-fit">
+                                                No ID Card uploaded
+                                            </div>
                                         )}
                                      </div>
                                 </div>

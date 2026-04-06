@@ -38,12 +38,16 @@ async function dbConnect() {
 
   if (!cached.promise) {
     const opts = {
-      bufferCommands: true,
+      bufferCommands: false, // Disable buffering to prevent 10s hangs; fail fast or wait for explicit dbConnect
       maxPoolSize: 20,
       autoIndex: true,
+      serverSelectionTimeoutMS: 10000, // 10s timeout to find server
+      connectTimeoutMS: 10000, // 10s timeout for initial connection
+      socketTimeoutMS: 45000, // 45s for long-running queries
     };
 
     cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
+      console.log("MongoDB Connected Successfully");
       return mongoose;
     });
   }
@@ -51,7 +55,8 @@ async function dbConnect() {
   try {
     cached.conn = await cached.promise;
   } catch (e) {
-    cached.promise = null;
+    console.error("MongoDB Connection Error:", e);
+    cached.promise = null; // Reset promise so we can retry on next call
     throw e;
   }
 
