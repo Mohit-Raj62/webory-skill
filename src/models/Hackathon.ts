@@ -26,6 +26,10 @@ const HackathonSchema = new Schema({
     type: String,
     required: true, // e.g., "AI & Automation", "MERN Stack"
   },
+  domains: {
+    type: [String],
+    default: [],
+  },
   startDate: {
     type: Date,
     required: true,
@@ -59,8 +63,15 @@ const HackathonSchema = new Schema({
     default: null,
   },
   registeredUsers: [{
-    type: Schema.Types.ObjectId,
-    ref: "User",
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    domain: String,
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
   }],
   isArchived: {
     type: Boolean,

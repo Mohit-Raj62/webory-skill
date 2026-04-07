@@ -23,21 +23,22 @@ export async function GET(
     }
 
     const { id } = await params;
-    const hackathon = await Hackathon.findById(id).populate("registeredUsers", "firstName lastName email phone xp createdAt");
+    const hackathon = await Hackathon.findById(id).populate("registeredUsers.user", "firstName lastName email phone xp");
 
     if (!hackathon) {
       return NextResponse.json({ error: "Hackathon not found" }, { status: 404 });
     }
 
     // Generate CSV
-    const headers = ["First Name", "Last Name", "Email", "Phone", "XP", "Registration Date"];
-    const rows = (hackathon.registeredUsers || []).map((user: any) => [
-      user.firstName || "N/A",
-      user.lastName || "N/A",
-      user.email || "N/A",
-      user.phone || "N/A",
-      user.xp || 0,
-      user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A"
+    const headers = ["First Name", "Last Name", "Email", "Phone", "XP", "Selected Domain", "Registration Date"];
+    const rows = (hackathon.registeredUsers || []).map((item: any) => [
+      item.user?.firstName || "N/A",
+      item.user?.lastName || "N/A",
+      item.user?.email || "N/A",
+      item.user?.phone || "N/A",
+      item.user?.xp || 0,
+      item.domain || "Default",
+      item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A"
     ]);
 
     const csvContent = [

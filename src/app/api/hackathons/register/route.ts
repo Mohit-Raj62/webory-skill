@@ -10,9 +10,9 @@ export async function POST(req: Request) {
     
     // Auth Check
     const userId = await getDataFromToken(req);
-    const { hackathonId } = await req.json();
+    const { hackathonId, domain } = await req.json();
 
-    console.log("DEBUG_REGISTRATION_START:", { userId, hackathonId });
+    console.log("DEBUG_REGISTRATION_START:", { userId, hackathonId, domain });
 
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized. Please login first." }, { status: 401 });
@@ -23,8 +23,18 @@ export async function POST(req: Request) {
     }
 
     const hackathon = await Hackathon.findById(hackathonId);
-    if (!hackathon || (hackathon.isHidden && !hackathon.registeredUsers.includes(userId))) {
+    if (!hackathon || (hackathon.isHidden && !hackathon.registeredUsers.some((reg: any) => reg.user.toString() === userId))) {
       return NextResponse.json({ error: "Hackathon not found or is currently hidden." }, { status: 404 });
+    }
+
+    // Validate Domain if hackathon has domains
+    if (hackathon.domains && hackathon.domains.length > 0) {
+      if (!domain) {
+        return NextResponse.json({ error: "Please select a domain to register." }, { status: 400 });
+      }
+      if (!hackathon.domains.includes(domain)) {
+        return NextResponse.json({ error: "Invalid domain selected." }, { status: 400 });
+      }
     }
 
     // Check if registration is open
@@ -36,18 +46,18 @@ export async function POST(req: Request) {
     // Check if already registered
     const isRegistered = await Hackathon.findOne({
       _id: hackathonId,
-      registeredUsers: userId
+      "registeredUsers.user": userId
     });
     
     if (isRegistered) {
       return NextResponse.json({ error: "You are already registered for this hackathon." }, { status: 400 });
     }
 
-    // TODO: Add Simulator Prerequisite Check here if needed
-    // if (hackathon.simulatorPrerequisite) { ... }
-
-    // Register User
-    hackathon.registeredUsers.push(userId);
+    // Register User with domain
+    hackathon.registeredUsers.push({
+      user: userId,
+      domain: domain || hackathon.theme || "General"
+    });
     await hackathon.save();
 
     return NextResponse.json({

@@ -121,6 +121,7 @@ interface Hackathon {
   slug: string;
   description: string;
   theme: string;
+  domains: string[];
   startDate: string;
   endDate: string;
   status: "upcoming" | "live" | "completed";
@@ -162,6 +163,11 @@ export default function HackathonArena() {
   const [loading, setLoading] = useState(true);
   const [joiningId, setJoiningId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  
+  const [isDomainModalOpen, setIsDomainModalOpen] = useState(false);
+  const [selectedDomain, setSelectedDomain] = useState("");
+  const [targetHackathon, setTargetHackathon] = useState<Hackathon | null>(null);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -190,9 +196,23 @@ export default function HackathonArena() {
     fetchData();
   }, []);
 
-  const handleJoin = async (hackathonId: string) => {
+  const handleJoin = async (hackathonId: string, domain?: string) => {
     if (hackathonId === "preview_1") {
         return toast.info("This is a preview Hackathon. Real events will appear once published by Admin.");
+    }
+
+    const hackathon = hackathons.find(h => h._id === hackathonId);
+    if (!hackathon) return;
+
+    // Multiple domains check
+    if (!domain && hackathon.domains && hackathon.domains.length > 0) {
+        if (hackathon.domains.length === 1) {
+            // Auto-join with the only domain
+            return handleJoin(hackathonId, hackathon.domains[0]);
+        }
+        setTargetHackathon(hackathon);
+        setIsDomainModalOpen(true);
+        return;
     }
     
     setJoiningId(hackathonId);
@@ -200,7 +220,10 @@ export default function HackathonArena() {
       const res = await fetch("/api/hackathons/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ hackathonId })
+        body: JSON.stringify({ 
+            hackathonId, 
+            domain: domain || hackathon.theme || "General" 
+        })
       });
 
       const data = await res.json();
@@ -212,7 +235,7 @@ export default function HackathonArena() {
 
       if (res.ok) {
         toast.success(data.message || "Welcome to the Battle! 🚀");
-        // Redirect to submission page for this hackathon
+        setIsDomainModalOpen(false);
         router.push(`/hackathons/${hackathonId}/submit`);
       } else {
         toast.error(data.error || "Failed to join");
@@ -686,6 +709,66 @@ export default function HackathonArena() {
               </div>
           </div>
       </div>
+
+      {/* ═══════ DOMAIN SELECTION MODAL ═══════ */}
+      <AnimatePresence>
+        {isDomainModalOpen && targetHackathon && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-[#0A0A0A] border border-white/10 rounded-3xl p-8 max-w-md w-full shadow-2xl relative"
+            >
+              <button 
+                onClick={() => setIsDomainModalOpen(false)}
+                className="absolute top-6 right-6 text-gray-500 hover:text-white"
+              >
+                ✕
+              </button>
+              
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-black uppercase tracking-tight italic">Select Domain</h3>
+                  <p className="text-xs font-medium text-gray-500">Pick a category for <span className="text-orange-500">{targetHackathon.title}</span>. You cannot change this later.</p>
+                </div>
+                
+                <div className="grid grid-cols-1 gap-3 max-h-[300px] overflow-y-auto pr-2">
+                  {targetHackathon.domains.map((domain, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setSelectedDomain(domain)}
+                      className={`p-4 rounded-2xl border transition-all text-left group ${
+                        selectedDomain === domain 
+                          ? 'bg-orange-600/10 border-orange-500 text-white' 
+                          : 'bg-white/5 border-white/5 text-gray-400 hover:border-white/20'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-extrabold uppercase tracking-tight text-xs">{domain}</span>
+                        {selectedDomain === domain && <CheckCircle2 size={16} className="text-orange-500" />}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+                
+                <Button 
+                  onClick={() => handleJoin(targetHackathon._id, selectedDomain)}
+                  disabled={!selectedDomain || joiningId !== null}
+                  className="w-full h-14 bg-white text-black font-black uppercase rounded-2xl hover:bg-orange-600 hover:text-white transition-all shadow-xl"
+                >
+                  {joiningId ? <Loader2 className="animate-spin" /> : "Confirm Registration"}
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <Footer />
     </main>

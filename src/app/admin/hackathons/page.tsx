@@ -35,10 +35,11 @@ interface Hackathon {
   _id: string;
   title: string;
   theme: string;
+  domains: string[];
   startDate: string;
   endDate: string;
   status: "upcoming" | "live" | "completed";
-  registeredUsers: string[];
+  registeredUsers: any[];
   problemStatement?: string;
   prizes?: { title: string; reward: string; value: number }[];
   rules?: string[];
@@ -64,6 +65,7 @@ export default function AdminHackathonsPage() {
     endDate: "",
     registrationDeadline: "",
     bannerImage: "",
+    domains: [] as string[],
     prizes: [] as { title: string; reward: string; value: number }[],
     rules: [] as string[],
     simulatorPrerequisite: false,
@@ -198,6 +200,7 @@ export default function AdminHackathonsPage() {
         endDate: h.endDate.split('T')[0],
         registrationDeadline: h.registrationDeadline ? h.registrationDeadline.split('T')[0] : "",
         bannerImage: h.bannerImage || "",
+        domains: h.domains || [],
         prizes: h.prizes || [],
         rules: h.rules || [],
         simulatorPrerequisite: h.simulatorPrerequisite || false,
@@ -279,10 +282,51 @@ export default function AdminHackathonsPage() {
                                   <Input value={formH.title} onChange={e => setFormH({...formH, title: e.target.value})} placeholder="e.g., MERN Masterclass" className="bg-white/[0.03] border-white/10 h-12 text-white placeholder:text-gray-700 font-bold" />
                               </div>
                               <div className="space-y-2">
-                                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 flex items-center gap-2"><Trophy size={10} /> Theme / Domain</label>
+                                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 flex items-center gap-2"><Trophy size={10} /> Primary Theme</label>
                                   <Input value={formH.theme} onChange={e => setFormH({...formH, theme: e.target.value})} placeholder="e.g., AI & ML" className="bg-white/[0.03] border-white/10 h-12 text-white placeholder:text-gray-700 font-bold" />
                               </div>
                           </div>
+
+                          {/* Domains Management */}
+                          <div className="space-y-4 p-6 rounded-[2rem] bg-white/[0.02] border border-white/5">
+                              <div className="flex items-center justify-between">
+                                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 flex items-center gap-2">
+                                      <ListChecks size={14} className="text-orange-500" /> Multiple Domains / Categories
+                                  </label>
+                              </div>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                  {(formH.domains || []).map((domain, idx) => (
+                                      <div key={idx} className="flex gap-2">
+                                          <Input 
+                                              value={domain} 
+                                              onChange={e => {
+                                                  const newDomains = [...(formH.domains || [])];
+                                                  newDomains[idx] = e.target.value;
+                                                  setFormH({...formH, domains: newDomains});
+                                              }}
+                                              placeholder={`Domain ${idx + 1}`}
+                                              className="bg-white/5 border-white/10 h-10 text-xs"
+                                          />
+                                          <Button 
+                                              onClick={() => {
+                                                  const newDomains = (formH.domains || []).filter((_, i) => i !== idx);
+                                                  setFormH({...formH, domains: newDomains});
+                                              }}
+                                              variant="ghost" className="text-red-500 bg-red-500/10 hover:bg-red-500/20 h-10 px-3"
+                                          >
+                                              <X size={14} />
+                                          </Button>
+                                      </div>
+                                  ))}
+                                  <Button 
+                                      onClick={() => setFormH({...formH, domains: [...(formH.domains || []), ""]})}
+                                      className="bg-white/5 border border-dashed border-white/10 hover:bg-white/10 text-white text-[10px] font-black uppercase h-10"
+                                  >
+                                      <Plus size={14} className="mr-2" /> Add Domain
+                                  </Button>
+                              </div>
+                          </div>
+
                           <div className="space-y-2">
                               <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 flex items-center gap-2"><Files size={10} /> Short Description</label>
                               <textarea 
