@@ -337,10 +337,13 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                             const isPaidJob = (job.price || 0) > 0;
                                             
                                             if (app) {
-                                                if (app.status === 'accepted' || app.status === 'completed' || app.status === 'interview_scheduled') {
+                                                if (app.status === 'accepted' || app.status === 'completed' || app.status === 'interview_scheduled' || app.status === 'interview_pending') {
+                                                    const statusLabel = app.status === 'interview_pending' ? 'Interview Pending' : 
+                                                                       app.status === 'interview_scheduled' ? 'Interview Scheduled' : 
+                                                                       'Applied Successfully';
                                                     return (
-                                                        <Button disabled className="w-full bg-slate-800/50 text-slate-500 border border-slate-700/50 h-11 rounded-xl font-black uppercase tracking-widest text-[9px] shadow-inner">
-                                                            <CheckCircle2 className="mr-2 h-3.5 w-3.5" /> Applied Successfully
+                                                        <Button disabled className={`w-full ${app.status === 'interview_pending' ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30' : 'bg-slate-800/50 text-slate-500 border-slate-700/50'} h-11 rounded-xl font-black uppercase tracking-widest text-[9px] shadow-inner border`}>
+                                                            {app.status === 'interview_pending' ? <Clock className="mr-2 h-3.5 w-3.5" /> : <CheckCircle2 className="mr-2 h-3.5 w-3.5" />} {statusLabel}
                                                         </Button>
                                                     );
                                                 } else if (app.status === 'pending') {
@@ -414,7 +417,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                             initial={{ scale: 0.95, opacity: 0, y: 20 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                            className="bg-[#0f1014] w-full max-w-4xl rounded-3xl overflow-hidden border border-white/10 shadow-2xl flex flex-col md:flex-row h-[90vh]"
+                            className="bg-[#0f1014] w-full max-w-4xl rounded-3xl overflow-hidden border border-white/10 shadow-2xl flex flex-col md:flex-row h-[92vh] md:h-[90vh]"
                         >
                             {/* LEFT SIDE: Internship Details / Perks (Hidden on Mobile) */}
                             <div className="hidden md:flex w-2/5 bg-gradient-to-br from-emerald-950/30 to-black p-8 relative flex-col justify-between border-r border-white/5">
@@ -718,7 +721,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                     </form>
                                 </div>
 
-                                <div className="p-6 border-t border-white/10 bg-[#0f1014] z-20 shrink-0 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+                                <div className="p-6 pb-12 md:pb-6 border-t border-white/10 bg-[#0f1014] z-20 shrink-0 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
                                      <Button
                                         onClick={handleSubmit}
                                         disabled={submitting || (uploading && resumeType === 'file')}
@@ -726,7 +729,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                     >
                                         {uploading ? "Uploading File..." : submitting ? "Processing Application..." : `Proceed to Payment (₹${internships.find(i => i._id === selectedInternship)?.price})`}
                                     </Button>
-                                    <p className="text-[10px] text-center text-gray-500 mt-3">
+                                    <p className="text-[10px] text-center text-gray-500 mt-3 mb-2 md:mb-0">
                                         Secure Payment via Razorpay/PhonePe • 100% Secure
                                     </p>
                                 </div>

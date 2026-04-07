@@ -272,7 +272,7 @@ export default function ApplicationsPage() {
                         />
                     </div>
                     <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
-                        {["all", "pending_review", "pending_payment", "interview_scheduled", "accepted", "rejected"].map((f) => (
+                        {["all", "pending_review", "pending_payment", "interview_pending", "interview_scheduled", "accepted", "rejected"].map((f) => (
                             <button
                                 key={f}
                                 onClick={() => setFilter(f)}
@@ -280,9 +280,10 @@ export default function ApplicationsPage() {
                                     ? f === "all" ? "bg-blue-600 text-white" :
                                         f === "pending_review" ? "bg-yellow-600 text-white" :
                                             f === "pending_payment" ? "bg-orange-600 text-white" :
-                                                f === "interview_scheduled" ? "bg-purple-600 text-white" :
-                                                    f === "accepted" ? "bg-green-600 text-white" :
-                                                        "bg-red-600 text-white"
+                                                f === "interview_pending" ? "bg-indigo-600 text-white" :
+                                                    f === "interview_scheduled" ? "bg-purple-600 text-white" :
+                                                        f === "accepted" ? "bg-green-600 text-white" :
+                                                            "bg-red-600 text-white"
                                     : "bg-white/5 text-gray-400 hover:bg-white/10"
                                     }`}
                             >
@@ -347,15 +348,18 @@ export default function ApplicationsPage() {
                                             ? (app.internship?.price || 0) > 0 
                                                 ? "bg-orange-500/20 text-orange-300 border border-orange-500/30"
                                                 : "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30"
-                                            : app.status === "interview_scheduled"
-                                                ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
-                                                : app.status === "accepted"
-                                                    ? "bg-green-500/20 text-green-300 border border-green-500/30"
-                                                    : "bg-red-500/20 text-red-300 border border-red-500/30"
+                                            : app.status === "interview_pending"
+                                                ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
+                                                : app.status === "interview_scheduled"
+                                                    ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
+                                                    : app.status === "accepted"
+                                                        ? "bg-green-500/20 text-green-300 border border-green-500/30"
+                                                        : "bg-red-500/20 text-red-300 border border-red-500/30"
                                             }`}
                                     >
                                         {app.status === 'pending' 
                                             ? (app.internship?.price || 0) > 0 ? 'PAYMENT PENDING' : 'REVIEW NEEDED'
+                                            : app.status === 'interview_pending' ? 'INTERVIEW PENDING'
                                             : app.status === 'accepted' && (app.internship?.price || 0) > 0 ? 'PAYMENT COMPLETE'
                                             : app.status.toUpperCase().replace('_', ' ')
                                         }
@@ -396,7 +400,7 @@ export default function ApplicationsPage() {
                                     </Button>
                                 )}
 
-                                {(app.status === "pending" || app.status === "interview_scheduled") && (
+                                {(app.status === "pending" || app.status === "interview_pending" || app.status === "interview_scheduled") && (
                                     <>
                                         <Button
                                             onClick={() => handleStatusChange(app._id, "accepted")}
@@ -582,6 +586,7 @@ export default function ApplicationsPage() {
                                     className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-blue-500 outline-none"
                                 >
                                     <option value="pending" className="bg-slate-800">Pending</option>
+                                    <option value="interview_pending" className="bg-slate-800">Interview Pending</option>
                                     <option value="interview_scheduled" className="bg-slate-800">Interview Scheduled</option>
                                     <option value="accepted" className="bg-slate-800">Accepted</option>
                                     <option value="rejected" className="bg-slate-800">Rejected</option>

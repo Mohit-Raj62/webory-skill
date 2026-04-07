@@ -164,17 +164,17 @@ export async function PUT(
         });
 
         if (application) {
-          // Update existing application to accepted status
-          application.status = "accepted";
+          // Update existing application to interview_pending status
+          application.status = "interview_pending";
           await application.save();
         } else {
-          // Create a new application with accepted status
+          // Create a new application with interview_pending status
           application = await Application.create({
             student: paymentProof.student,
             internship: paymentProof.internship,
-            status: "accepted",
+            status: "interview_pending",
             resume: "Pending Upload",
-            coverLetter: "Payment verified - enrollment confirmed",
+            coverLetter: "Payment verified - interview pending",
             appliedAt: new Date(),
           });
 
@@ -193,34 +193,19 @@ export async function PUT(
           });
         }
 
-        // Send acceptance and invoice emails
+        // Send payment confirmation (invoice) email
         try {
           const user = await User.findById(paymentProof.student);
           const internship = await Internship.findById(paymentProof.internship);
 
           if (user && internship) {
-            const offerLink = `${
-              process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in"
-            }/profile`;
-
-            // Send acceptance email
-            await sendEmail(
-              user.email,
-              `Congratulations! You're Hired! 🎉`,
-              emailTemplates.applicationAccepted(
-                user.firstName,
-                internship.title,
-                offerLink
-              )
-            );
-
             // Send invoice email
             const invoiceTransactionId = `TXN${application._id
               .toString()
               .substring(0, 12)}`;
             await sendEmail(
               user.email,
-              `Invoice - ${internship.title}`,
+              `Payment Verified - ${internship.title}`,
               emailTemplates.invoice(
                 user.firstName + " " + user.lastName,
                 internship.title,
@@ -232,17 +217,17 @@ export async function PUT(
             );
 
             console.log(
-              "✅ Acceptance and invoice emails sent to:",
+              "✅ Payment verification email (invoice) sent to:",
               user.email
             );
           }
         } catch (emailError) {
-          console.error("❌ Failed to send acceptance emails:", emailError);
+          console.error("❌ Failed to send payment confirmation email:", emailError);
         }
 
         return NextResponse.json({
           message:
-            "Payment verified and student enrolled in internship successfully",
+            "Payment verified and application updated to interview pending status",
           paymentProof,
           application,
         });

@@ -79,8 +79,21 @@ export function AppliedInternships() {
                             </div>
 
                             <div className="pt-4 border-t border-white/10">
-                                <p className="text-xs text-gray-500">
-                                    Status: <span className="text-yellow-400">Under Review</span>
+                                <p className="text-xs text-gray-400 font-medium">
+                                    Status: <span className={`${
+                                        application.status === 'accepted' ? 'text-green-400' :
+                                        application.status === 'rejected' ? 'text-red-400' :
+                                        application.status === 'interview_scheduled' ? 'text-purple-400' :
+                                        application.status === 'interview_pending' ? 'text-indigo-400' :
+                                        'text-yellow-400'
+                                    }`}>
+                                        {application.status === 'interview_pending' ? 'Interview Pending' : 
+                                         application.status === 'interview_scheduled' ? 'Interview Scheduled' : 
+                                         application.status === 'accepted' ? 'Accepted' : 
+                                         application.status === 'rejected' ? 'Rejected' : 
+                                         application.status === 'completed' ? 'Completed' : 
+                                         'Under Review'}
+                                    </span>
                                 </p>
                             </div>
                         </motion.div>

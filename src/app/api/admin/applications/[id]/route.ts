@@ -48,6 +48,7 @@ export async function PATCH(
       status &&
       ![
         "pending",
+        "interview_pending",
         "accepted",
         "rejected",
         "interview_scheduled",

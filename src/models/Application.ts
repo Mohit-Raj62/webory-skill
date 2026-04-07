@@ -41,6 +41,7 @@ const ApplicationSchema = new Schema({
     type: String,
     enum: [
       "pending",
+      "interview_pending",
       "accepted",
       "rejected",
       "interview_scheduled",
