@@ -11,11 +11,10 @@ import {
     Star,
     Trash2,
     Eye,
-    Clock,
-    User,
-    ChevronDown,
-    AlertCircle,
     EyeOff,
+    Maximize,
+    ChevronLeft,
+    ChevronRight,
 } from "lucide-react";
 
 interface Blog {
@@ -38,6 +37,8 @@ interface Blog {
     };
     createdAt: string;
     publishedAt: string | null;
+    content: string;
+    tags: string[];
 }
 
 interface Stats {
@@ -63,6 +64,7 @@ export default function AdminBlogsPage() {
     const [rejectingId, setRejectingId] = useState<string | null>(null);
     const [rejectReason, setRejectReason] = useState("");
     const [actionLoading, setActionLoading] = useState<string | null>(null);
+    const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
 
     const fetchBlogs = async () => {
         try {
@@ -224,42 +226,46 @@ export default function AdminBlogsPage() {
                                         </div>
 
                                         {/* Info */}
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-start justify-between gap-4 mb-2">
-                                                <div className="flex items-center gap-2 flex-wrap">
-                                                    <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusInfo.bg} ${statusInfo.color}`}>
-                                                        {statusInfo.label}
-                                                    </span>
-                                                    {blog.isFeatured && (
-                                                        <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-amber-500/20 text-amber-300">
-                                                            ⭐ Featured
+                                            <div 
+                                                className="flex-1 min-w-0 cursor-pointer"
+                                                onClick={() => setSelectedBlog(blog)}
+                                            >
+                                                <div className="flex items-start justify-between gap-4 mb-2">
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusInfo.bg} ${statusInfo.color}`}>
+                                                            {statusInfo.label}
                                                         </span>
-                                                    )}
-                                                    <span className="text-xs text-gray-500">{blog.category}</span>
+                                                        {blog.isFeatured && (
+                                                            <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-amber-500/20 text-amber-300">
+                                                                ⭐ Featured
+                                                            </span>
+                                                        )}
+                                                        <span className="text-xs text-gray-500">{blog.category}</span>
+                                                    </div>
+                                                </div>
+
+                                                <h3 className="text-lg font-bold text-white mb-1 truncate group-hover:text-blue-400 transition-colors">{blog.title}</h3>
+                                                <p className="text-gray-400 text-sm mb-3 line-clamp-1">{blog.excerpt}</p>
+
+                                                {/* Author & Meta */}
+                                                <div className="flex items-center gap-4 text-xs text-gray-500">
+                                                    <span className="flex items-center gap-1">
+                                                        <Maximize size={12} className="text-blue-400" /> View Full Blog
+                                                    </span>
+                                                    <span>•</span>
+                                                    <span className="flex items-center gap-1">
+                                                        {blog.author?.firstName} {blog.author?.lastName}
+                                                    </span>
+                                                    <span>•</span>
+                                                    <span>
+                                                        {new Date(blog.createdAt).toLocaleDateString("en-IN", {
+                                                            day: "numeric",
+                                                            month: "short",
+                                                            year: "numeric",
+                                                        })}
+                                                    </span>
                                                 </div>
                                             </div>
-
-                                            <h3 className="text-lg font-bold text-white mb-1 truncate">{blog.title}</h3>
-                                            <p className="text-gray-400 text-sm mb-3 line-clamp-1">{blog.excerpt}</p>
-
-                                            {/* Author & Meta */}
-                                            <div className="flex items-center gap-4 text-xs text-gray-500">
-                                                <span className="flex items-center gap-1">
-                                                    <User size={12} />
-                                                    {blog.author?.firstName} {blog.author?.lastName}
-                                                </span>
-                                                <span className="flex items-center gap-1">
-                                                    <Clock size={12} /> {blog.readTime} min read
-                                                </span>
-                                                <span>
-                                                    {new Date(blog.createdAt).toLocaleDateString("en-IN", {
-                                                        day: "numeric",
-                                                        month: "short",
-                                                        year: "numeric",
-                                                    })}
-                                                </span>
-                                            </div>
-                                        </div>
 
                                         {/* Actions */}
                                         <div className="flex md:flex-col items-center gap-2 flex-shrink-0">
@@ -362,6 +368,143 @@ export default function AdminBlogsPage() {
                     </AnimatePresence>
                 </div>
             )}
+
+            {/* Blog Quick-View Modal */}
+            <AnimatePresence>
+                {selectedBlog && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 bg-black/80 backdrop-blur-sm"
+                        onClick={() => setSelectedBlog(null)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            className="bg-slate-900 border border-white/10 w-full max-w-5xl max-h-[90vh] rounded-3xl overflow-hidden shadow-2xl flex flex-col"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {/* Modal Header */}
+                            <div className="relative h-48 md:h-64 shrink-0">
+                                {selectedBlog.coverImage ? (
+                                    <img 
+                                        src={selectedBlog.coverImage} 
+                                        alt={selectedBlog.title} 
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full bg-gradient-to-r from-blue-600/30 to-purple-600/30 flex items-center justify-center">
+                                        <FileText size={64} className="text-white/10" />
+                                    </div>
+                                )}
+                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
+                                
+                                {/* Close Button */}
+                                <button
+                                    onClick={() => setSelectedBlog(null)}
+                                    className="absolute top-4 right-4 p-2 bg-black/50 hover:bg-black/80 text-white rounded-full transition-all backdrop-blur-md border border-white/10"
+                                >
+                                    <X size={20} />
+                                </button>
+
+                                <div className="absolute bottom-6 left-6 right-6">
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${statusConfig[selectedBlog.status].bg} ${statusConfig[selectedBlog.status].color}`}>
+                                            {statusConfig[selectedBlog.status].label}
+                                        </span>
+                                        <span className="px-2.5 py-1 rounded-full bg-white/10 text-white/70 text-[10px] font-bold uppercase tracking-widest border border-white/5">
+                                            {selectedBlog.category}
+                                        </span>
+                                    </div>
+                                    <h2 className="text-2xl md:text-4xl font-black text-white leading-tight">
+                                        {selectedBlog.title}
+                                    </h2>
+                                </div>
+                            </div>
+
+                            {/* Modal Content */}
+                            <div className="flex-1 overflow-y-auto p-6 md:p-10 custom-scrollbar bg-slate-900">
+                                {/* Author info row */}
+                                <div className="flex items-center justify-between mb-8 pb-8 border-b border-white/5">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/30">
+                                            <span className="text-blue-400 font-bold uppercase">{selectedBlog.author?.firstName?.[0]}</span>
+                                        </div>
+                                        <div>
+                                            <p className="text-white font-bold">{selectedBlog.author?.firstName} {selectedBlog.author?.lastName}</p>
+                                            <p className="text-gray-500 text-xs">{selectedBlog.author?.email}</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right text-gray-500 text-xs font-medium">
+                                        <p>Created on {new Date(selectedBlog.createdAt).toLocaleDateString()}</p>
+                                        <p className="mt-1">{selectedBlog.readTime} min read</p>
+                                    </div>
+                                </div>
+
+                                {/* Main Blog Text */}
+                                <div className="prose prose-invert max-w-none">
+                                    <div 
+                                        className="text-gray-300 leading-relaxed text-base md:text-lg space-y-4"
+                                        dangerouslySetInnerHTML={{ __html: selectedBlog.content }}
+                                    />
+                                </div>
+
+                                {/* Tags */}
+                                {selectedBlog.tags?.length > 0 && (
+                                    <div className="mt-12 pt-8 border-t border-white/5">
+                                        <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-4">Tags</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {selectedBlog.tags.map(tag => (
+                                                <span key={tag} className="px-3 py-1 bg-white/5 text-gray-400 rounded-lg text-xs border border-white/5 italic">
+                                                    #{tag}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Modal Footer (Actions) */}
+                            <div className="p-6 bg-black/40 border-t border-white/10 flex items-center justify-between shrink-0">
+                                <div className="flex gap-4">
+                                    {selectedBlog.status === 'pending' && (
+                                        <>
+                                            <button
+                                                onClick={() => { handleAction(selectedBlog._id, "approve"); setSelectedBlog(null); }}
+                                                className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-green-600/20"
+                                            >
+                                                Approve Post
+                                            </button>
+                                            <button
+                                                onClick={() => { setRejectingId(selectedBlog._id); setSelectedBlog(null); }}
+                                                className="px-6 py-2.5 bg-red-600/10 hover:bg-red-600/20 text-red-400 border border-red-500/30 rounded-xl font-bold text-sm transition-all"
+                                            >
+                                                Reject
+                                            </button>
+                                        </>
+                                    )}
+                                    {selectedBlog.status === 'published' && (
+                                         <button
+                                            onClick={() => { handleAction(selectedBlog._id, "unpublish"); setSelectedBlog(null); }}
+                                            className="px-6 py-2.5 bg-orange-600/10 hover:bg-orange-600/20 text-orange-400 border border-orange-500/30 rounded-xl font-bold text-sm transition-all"
+                                        >
+                                            Unpublish Post
+                                        </button>
+                                    )}
+                                </div>
+                                <button
+                                    onClick={() => setSelectedBlog(null)}
+                                    className="px-6 py-2.5 bg-white/5 hover:bg-white/10 text-gray-300 rounded-xl font-bold text-sm transition-all"
+                                >
+                                    Close Preview
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
