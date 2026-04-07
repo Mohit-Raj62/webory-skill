@@ -23,7 +23,9 @@ import {
   Files,
   Edit,
   EyeOff,
-  Eye
+  Eye,
+  Download,
+  FileDown
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -156,6 +158,31 @@ export default function AdminHackathonsPage() {
         toast.error("Network error");
     } finally {
         setLoading(false);
+    }
+  };
+
+  const handleExport = async (id: string, title: string) => {
+    try {
+      toast.promise(
+        fetch(`/api/admin/hackathons/${id}/export`).then(async (res) => {
+          if (!res.ok) throw new Error("Export failed");
+          const blob = await res.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `${title.replace(/[^a-z0-9]/gi, "_")}_registrations.csv`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        }),
+        {
+          loading: "Generating Excel file...",
+          success: "Download started!",
+          error: "Failed to export registrations"
+        }
+      );
+    } catch (error) {
+      toast.error("Export failed");
     }
   };
 
@@ -496,6 +523,15 @@ export default function AdminHackathonsPage() {
                               <Award size={14} /> Judge
                           </Button>
                           
+                          <Button 
+                            onClick={() => handleExport(h._id, h.title)}
+                            variant="outline" 
+                            className="border-white/10 hover:border-orange-500/30 text-orange-400 font-black rounded-xl h-11 px-3 bg-orange-600/5"
+                            title="Export to Excel"
+                          >
+                              <FileDown size={16} />
+                          </Button>
+
                           <Button 
                             onClick={() => toggleHide(h._id, !!h.isHidden)}
                             variant="outline" 
