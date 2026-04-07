@@ -68,7 +68,8 @@ export async function GET(request: NextRequest) {
           })
           .sort({ appliedAt: -1 })
           .skip(skip)
-          .limit(limit),
+          .limit(limit)
+          .lean(),
         JobApplication.countDocuments(query),
       ]);
     } catch (dbError: any) {

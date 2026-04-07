@@ -91,6 +91,12 @@ const HackathonSchema = new Schema({
   },
 });
 
+// Performance indices for faster queries
+HackathonSchema.index({ slug: 1 });
+HackathonSchema.index({ status: 1 });
+HackathonSchema.index({ isHidden: 1 });
+HackathonSchema.index({ "registeredUsers.user": 1 });
+
 const Hackathon = models.Hackathon || model("Hackathon", HackathonSchema);
 
 export default Hackathon;

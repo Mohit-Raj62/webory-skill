@@ -178,6 +178,11 @@ const UserSchema = new Schema({
   },
 });
 
+// Performance indexes for faster queries
+UserSchema.index({ role: 1 });
+UserSchema.index({ xp: -1 });
+UserSchema.index({ createdAt: -1 });
+
 const User = models.User || model("User", UserSchema);
 
 export default User;
