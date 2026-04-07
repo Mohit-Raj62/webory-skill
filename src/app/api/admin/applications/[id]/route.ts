@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Application from "@/models/Application";
+import User from "@/models/User";
+import Internship from "@/models/Internship";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { sendEmail, emailTemplates } from "@/lib/mail";
@@ -27,6 +29,7 @@ export async function PATCH(
     }
 
     const { id } = await params;
+    const body = await req.json();
     const {
       status,
       startDate,
@@ -34,7 +37,7 @@ export async function PATCH(
       interviewDate,
       interviewLink,
       resume,
-    } = await req.json();
+    } = body;
 
     const updateData: any = {};
     if (status) updateData.status = status;
@@ -72,47 +75,59 @@ export async function PATCH(
       .populate("student")
       .populate("internship");
 
-    if (application && status) {
-      const { student, internship } = application;
+    if (!application) {
+      return NextResponse.json({ error: "Application not found" }, { status: 404 });
+    }
 
-      if (status === "interview_scheduled" && interviewDate) {
-        await sendEmail(
-          student.email,
-          `Interview Scheduled: ${internship.title}`,
-          emailTemplates.interviewScheduled(
-            student.firstName,
-            internship.title,
-            interviewDate,
-            interviewLink,
-          ),
-        );
-      } else if (status === "accepted") {
-        if (!application.offerDate) {
-          await Application.findByIdAndUpdate(application._id, {
-            offerDate: new Date(),
-          });
+    if (status) {
+      // Wrap email logic in try-catch to prevent 500 error on SMTP failure
+      try {
+        const { student, internship } = application;
+
+        if (student && internship) {
+          if (status === "interview_scheduled" && interviewDate) {
+            await sendEmail(
+              student.email,
+              `Interview Scheduled: ${internship.title}`,
+              emailTemplates.interviewScheduled(
+                student.firstName,
+                internship.title,
+                interviewDate,
+                interviewLink,
+              ),
+            );
+          } else if (status === "accepted") {
+            if (!application.offerDate) {
+              await Application.findByIdAndUpdate(application._id, {
+                offerDate: new Date(),
+              });
+            }
+            const appUrl =
+              process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in";
+            const offerLink = `${appUrl}/internships/applications/${application._id}/offer-letter`;
+            await sendEmail(
+              student.email,
+              `Congratulations! Offer for ${internship.title}`,
+              emailTemplates.applicationAccepted(
+                student.firstName,
+                internship.title,
+                offerLink,
+              ),
+            );
+          } else if (status === "rejected") {
+            await sendEmail(
+              student.email,
+              `Application Update: ${internship.title}`,
+              emailTemplates.applicationRejected(
+                student.firstName,
+                internship.title,
+              ),
+            );
+          }
         }
-        const appUrl =
-          process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in";
-        const offerLink = `${appUrl}/internships/applications/${application._id}/offer-letter`;
-        await sendEmail(
-          student.email,
-          `Congratulations! Offer for ${internship.title}`,
-          emailTemplates.applicationAccepted(
-            student.firstName,
-            internship.title,
-            offerLink,
-          ),
-        );
-      } else if (status === "rejected") {
-        await sendEmail(
-          student.email,
-          `Application Update: ${internship.title}`,
-          emailTemplates.applicationRejected(
-            student.firstName,
-            internship.title,
-          ),
-        );
+      } catch (emailError) {
+        console.error("Failed to send status update email:", emailError);
+        // We don't return error here because the database update was successful
       }
     }
 
