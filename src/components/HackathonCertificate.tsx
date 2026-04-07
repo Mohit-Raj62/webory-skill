@@ -196,7 +196,7 @@ export default function HackathonCertificate({
               <div className="flex flex-col items-center gap-1">
                 <div className="text-3xl italic text-slate-800" style={{ fontFamily: "'Dancing Script', cursive" }}>Mohit Sinha</div>
                 <div className="w-40 h-[2px] bg-slate-200 mt-1 mb-1"></div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-900">Founder & CEO</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-900">CEO & Founder</span>
                 <span className="text-[8px] font-bold uppercase tracking-widest text-slate-400">Webory Skills Platform</span>
               </div>
 
