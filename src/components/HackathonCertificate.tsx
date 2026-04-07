@@ -101,7 +101,7 @@ export default function HackathonCertificate({
           <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-0 opacity-[0.08]">
             <div className="flex flex-col items-center transform scale-[3] md:scale-[3.5]">
                 <div className="text-center font-black">
-                    <h1 className="text-5xl tracking-tighter text-slate-900 leading-none">WEBORY</h1>
+                    <h1 className="text-5xl tracking-tighter text-slate-900 leading-none">WEBORY SKILLS</h1>
                     <div className="relative mt-2">
                         <div className="flex gap-1 items-center justify-center mb-1">
                             <div className="w-2 h-2 rounded-full bg-[#FF9933]"></div>
@@ -130,7 +130,7 @@ export default function HackathonCertificate({
                   </div>
                 </div>
                 <div>
-                  <h1 className="text-3xl font-black tracking-tighter uppercase text-slate-900 leading-none">WEBORY</h1>
+                  <h1 className="text-3xl font-black tracking-tighter uppercase text-slate-900 leading-none">WEBORY SKILLS</h1>
                   <span className={`inline-block mt-1 text-[8px] font-black tracking-[0.2em] uppercase px-2 py-0.5 rounded-md ${themeBg} ${themeText} border ${themeBorder}`}>
                     {domain || "Skills Hackathon"}
                   </span>
