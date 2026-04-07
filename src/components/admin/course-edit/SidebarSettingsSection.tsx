@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { DollarSign, Upload, Image, CheckCircle, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -19,6 +19,20 @@ export const SidebarSettingsSection: React.FC<SidebarSettingsSectionProps> = ({
     handleThumbnailUpload, 
     handleCertificateUpload 
 }) => {
+    // Auto-calculate final price
+    useEffect(() => {
+        const originalPrice = Number(formData.originalPrice) || 0;
+        const discountPercentage = Number(formData.discountPercentage) || 0;
+        const gstPercentage = Number(formData.gstPercentage) || 0;
+
+        const discountedPrice = originalPrice - (originalPrice * (discountPercentage / 100));
+        const finalPrice = Math.floor(discountedPrice + (discountedPrice * (gstPercentage / 100)));
+
+        if (formData.price !== finalPrice) {
+            setFormData({ ...formData, price: finalPrice });
+        }
+    }, [formData.originalPrice, formData.discountPercentage, formData.gstPercentage]);
+
     return (
         <div className="space-y-8">
             {/* 1. Status & Visibility */}
