@@ -66,7 +66,7 @@ export async function POST(req: Request) {
     // Verify registration and get hackathon deadlines
     const hackathon = await Hackathon.findOne({
       _id: hackathonId,
-      registeredUsers: userId
+      "registeredUsers.user": userId
     });
 
     if (!hackathon) {
