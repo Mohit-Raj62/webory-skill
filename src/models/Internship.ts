@@ -61,6 +61,10 @@ const InternshipSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  isFree: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Internship = models.Internship || model("Internship", InternshipSchema);

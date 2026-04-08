@@ -233,6 +233,10 @@ const CourseSchema = new Schema({
     type: Boolean,
     default: true,
   },
+  isFree: {
+    type: Boolean,
+    default: false,
+  },
   views: {
     type: Number,
     default: 0,

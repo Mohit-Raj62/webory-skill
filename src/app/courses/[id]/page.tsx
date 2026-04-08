@@ -176,9 +176,15 @@ export default function CourseDetailsPage() {
 
     const handleBuyClick = () => {
         if (!user) {
-            router.push("/login");
+            router.push(`/login?redirect=/courses/${id}`);
             return;
         }
+        
+        if (course.isFree) {
+            handlePaymentSuccess("FREE");
+            return;
+        }
+        
         setShowPayment(true);
     };
 
@@ -990,9 +996,9 @@ export default function CourseDetailsPage() {
 
                                     <Button
                                         onClick={handleBuyClick}
-                                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white h-14 text-lg font-bold mb-4 shadow-lg shadow-blue-500/25"
+                                        className={`w-full bg-gradient-to-r ${course.isFree ? 'from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700' : 'from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700'} text-white h-14 text-lg font-bold mb-4 shadow-lg ${course.isFree ? 'shadow-emerald-500/25' : 'shadow-blue-500/25'}`}
                                     >
-                                        Buy Now
+                                        {course.isFree ? "Enroll Now (Free)" : "Buy Now"}
                                     </Button>
 
                                     <p className="text-center text-gray-500 text-sm mb-6">30-Day Money-Back Guarantee</p>

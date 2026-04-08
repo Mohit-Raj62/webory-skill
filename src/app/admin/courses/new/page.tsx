@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Plus, X, Upload, Image } from "lucide-react";
@@ -54,20 +54,6 @@ export default function NewCoursePage() {
     const [careerInput, setCareerInput] = useState("");
     const [projectInput, setProjectInput] = useState({ title: "", description: "" });
     const [videoInput, setVideoInput] = useState({ title: "", url: "", duration: "" });
-    
-    // Auto-calculate final price
-    useEffect(() => {
-        const originalPrice = Number(formData.originalPrice) || 0;
-        const discountPercentage = Number(formData.discountPercentage) || 0;
-        const gstPercentage = Number(formData.gstPercentage) || 0;
-
-        const discountedPrice = originalPrice - (originalPrice * (discountPercentage / 100));
-        const finalPrice = Math.floor(discountedPrice + (discountedPrice * (gstPercentage / 100)));
-
-        if (formData.price !== finalPrice) {
-            setFormData(prev => ({ ...prev, price: finalPrice }));
-        }
-    }, [formData.originalPrice, formData.discountPercentage, formData.gstPercentage]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

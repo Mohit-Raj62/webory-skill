@@ -188,7 +188,13 @@ export function InternshipsView({ internships, user, userApplications }: Interns
             const data = await res.json();
             
             if (res.ok || data.error === "Already applied to this internship") {
-                setShowPayment(true);
+                if (internshipDetails?.isFree) {
+                    toast.success("Application submitted successfully!");
+                    setSelectedInternship(null);
+                    router.push("/profile?tab=internships");
+                } else {
+                    setShowPayment(true);
+                }
                 setFile(null);
             } else {
                 toast.error(data.error || "Failed to submit application");
@@ -325,7 +331,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                              <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] mb-1.5">Registration Fee</span>
                                              <div className="flex items-baseline gap-2">
                                                 <span className="text-2xl font-black text-white tracking-tighter">
-                                                    ₹{job.price || 0}
+                                                    {job.isFree ? "FREE" : `₹${job.price || 0}`}
                                                 </span>
                                                 {job.gstPercentage > 0 && <span className="text-[10px] text-gray-400 font-bold">+ GST</span>}
                                                 <span className="text-[9px] text-emerald-500/80 font-black uppercase tracking-widest">Industry Standard</span>
@@ -490,7 +496,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                         <div>
                                             <p className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">Registration Fee</p>
                                             <p className="text-3xl font-black text-white">
-                                                ₹{internships.find(i => i._id === selectedInternship)?.price}
+                                                {internships.find(i => i._id === selectedInternship)?.isFree ? "FREE" : `₹${internships.find(i => i._id === selectedInternship)?.price}`}
                                             </p>
                                         </div>
                                         <div className="text-right">
@@ -727,7 +733,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                         disabled={submitting || (uploading && resumeType === 'file')}
                                         className="w-full bg-emerald-500 hover:bg-emerald-400 text-black border-0 py-6 text-sm font-black uppercase tracking-widest rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-[0.98]"
                                     >
-                                        {uploading ? "Uploading File..." : submitting ? "Processing Application..." : `Proceed to Payment (₹${internships.find(i => i._id === selectedInternship)?.price})`}
+                                        {uploading ? "Uploading File..." : submitting ? "Processing Application..." : (internships.find(i => i._id === selectedInternship)?.isFree ? "Submit Free Application" : `Proceed to Payment (₹${internships.find(i => i._id === selectedInternship)?.price})`)}
                                     </Button>
                                     <p className="text-[10px] text-center text-gray-500 mt-3 mb-2 md:mb-0">
                                         Secure Payment via Razorpay/PhonePe • 100% Secure

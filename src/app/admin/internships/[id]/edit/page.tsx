@@ -24,6 +24,7 @@ export default function EditInternshipPage() {
         requirements: [] as string[],
         responsibilities: [] as string[],
         tags: [] as string[],
+        isFree: false,
     });
 
     const [requirementInput, setRequirementInput] = useState("");
@@ -223,6 +224,20 @@ export default function EditInternshipPage() {
                                 value={formData.gstPercentage}
                                 onChange={(e) => setFormData({ ...formData, gstPercentage: Number(e.target.value) })}
                             />
+                        </div>
+
+                        <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10 mt-2">
+                            <div>
+                                <h4 className="text-white font-medium">Free Internship</h4>
+                                <p className="text-xs text-gray-400">Skip registration fee for this internship</p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, isFree: !formData.isFree })}
+                                className={`w-12 h-6 rounded-full relative transition-all ${formData.isFree ? 'bg-green-600' : 'bg-gray-700'}`}
+                            >
+                                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formData.isFree ? 'right-1' : 'left-1'}`} />
+                            </button>
                         </div>
                     </div>
 
