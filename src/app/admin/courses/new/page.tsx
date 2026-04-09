@@ -379,6 +379,7 @@ export default function NewCoursePage() {
                                 onChange={(e) => setFormData({ ...formData, lastUpdatedDate: e.target.value })}
                             />
                         </div>
+                    </div>
 
                     {/* Signatures & Partnerships Section */}
                     <SignaturesSection 
