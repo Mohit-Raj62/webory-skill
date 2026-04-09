@@ -90,7 +90,7 @@ export default function CertificatePage() {
                     <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
                         <Award className="text-red-500" size={32} />
                     </div>
-                    <h1 className="text-2xl font-bold mb-4 text-gray-900">Certificate Locked</h1>
+                    <h1 className="text-3xl font-black tracking-tighter uppercase text-slate-900 leading-none">WEBORY SKILLS</h1>
                     <p className="text-gray-600 mb-8">
                         You haven&apos;t met the requirements to unlock this certificate yet.
                         Please complete 100% of the videos and achieve an overall grade of 90%.
@@ -162,8 +162,8 @@ export default function CertificatePage() {
 
                     {/* Header */}
                     <div className="text-center w-full">
-                        <div className="flex items-start justify-center gap-4 mb-1">
-                            <Award className="text-[#c5a059] mt-1" size={48} />
+                        <div className="flex items-center justify-center gap-6 mb-2">
+                            <Award className="text-[#c5a059]" size={42} />
                             <div className="text-left">
                                 <h2 className="text-3xl font-bold text-[#1a237e] tracking-wide uppercase font-serif">
                                     WEBORY <span className="relative inline-block ml-2">
@@ -176,22 +176,43 @@ export default function CertificatePage() {
                                     </span>
                                 </h2>
                                 <p className="text-sm text-[#c5a059] tracking-[0.2em] uppercase">Excellence in Education</p>
-                                <div className="flex gap-4 mt-1">
-                                    <div className="flex flex-col items-start border-l-2 border-[#c5a059] pl-2">
-                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wide">Govt. of India Recognized Startup</p>
-                                        <p className="text-[9px] text-[#c5a056] font-bold font-mono tracking-wider">MSME Reg: UDYAM-BR-26-0208472</p>
-                                    </div>
-                                    {course?.collaboration && (
-                                        <div className="flex flex-col items-start border-l-2 border-[#c5a059] pl-2">
-                                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wide">In Association With</p>
-                                            <p className="text-sm text-[#c5a059] font-bold font-serif tracking-wider uppercase">{course.collaboration}</p>
-                                        </div>
-                                    )}
-                                </div>
+                            </div>
+                            
+                            {/* MSME Details - Compact and Separated */}
+                            <div className="flex flex-col items-start border-l border-gray-200 pl-4 py-1">
+                                <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wide">Govt. Recognized Startup</p>
+                                <p className="text-[8px] text-[#c5a056] font-bold font-mono tracking-wider">MSME: UDYAM-BR-26-0208472</p>
                             </div>
                         </div>
 
-                        <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-[#1a237e] to-transparent mb-4 opacity-30"></div>
+                        {/* Collaborations Section - NOW BELOW AND CENTERED */}
+                        {((course?.collaborations && course.collaborations.length > 0) || course?.collaboration) && (
+                            <div className="flex flex-wrap items-center justify-center gap-4 mb-4 px-12">
+                                <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent flex-1 max-w-[100px]"></div>
+                                <div className="flex items-center gap-3">
+                                    <p className="text-[9px] text-gray-400 font-black uppercase tracking-[0.2em]">In Association With</p>
+                                    <div className="h-4 w-px bg-[#c5a059]/40 mt-0.5"></div>
+                                </div>
+                                <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+                                    {course?.collaborations && course.collaborations.length > 0 ? (
+                                        course.collaborations.map((collab: any, index: number) => (
+                                            <div key={index} className="flex items-center">
+                                                {index > 0 && <span className="text-[#c5a059]/40 font-light mx-2 text-[10px]">|</span>}
+                                                <div className="flex items-center gap-1.5 group">
+                                                    {collab.logo && <img src={collab.logo} alt={collab.name} className="h-5 object-contain grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all" />}
+                                                    <p className="text-[10px] text-[#1a237e] font-black font-serif tracking-widest uppercase">{collab.name}</p>
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-[10px] text-[#1a237e] font-black font-serif tracking-widest uppercase">{course.collaboration}</p>
+                                    )}
+                                </div>
+                                <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent flex-1 max-w-[100px]"></div>
+                            </div>
+                        )}
+
+                        <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-[#1a237e] to-transparent mb-2 opacity-30"></div>
 
                         <h1 className="text-5xl font-serif font-bold text-[#1a237e] mb-1 tracking-tight certificate-title">
                             Certificate of Completion
@@ -213,7 +234,7 @@ export default function CertificatePage() {
                             {course?.title}
                         </h3>
 
-                        <div className="flex justify-center gap-12 mb-4 border-y border-gray-200 py-2 mx-10">
+                        <div className="flex justify-center gap-12 mb-2 border-y border-gray-200 py-1.5 mx-10">
                             {/* Duration */}
                             <div className="flex flex-col items-center px-2">
                                 <div className="flex items-center gap-1.5 text-gray-500 mb-1">
@@ -258,9 +279,9 @@ export default function CertificatePage() {
                     </div>
 
                     {/* Footer / Signatures */}
-                    <div className="w-full flex flex-col items-center mt-1">
+                    <div className="w-full flex flex-col items-center mt-0.5">
                         {/* Seal with QR Code - Centered Top */}
-                        <div className="flex flex-col items-center justify-center mb-1">
+                        <div className="flex flex-col items-center justify-center mb-0.5">
                             <div className="relative w-28 h-28 flex items-center justify-center mb-1">
                                 <div className="absolute inset-0 border-4 border-[#c5a059] border-dashed rounded-full animate-[spin_10s_linear_infinite] opacity-20"></div>
                                 <div className="bg-white p-1 rounded-lg shadow-sm">

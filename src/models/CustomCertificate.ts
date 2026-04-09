@@ -35,6 +35,18 @@ const CustomCertificateSchema = new Schema({
     default: "participant",
   },
   rank: Number,
+  collaborations: {
+    type: [{
+      name: String,
+      logo: String,
+    }],
+    default: [],
+  },
+  signatures: {
+    founder: { name: String, title: String },
+    director: { name: String, title: String },
+    partner: { name: String, title: String },
+  },
 });
 
 const CustomCertificate =

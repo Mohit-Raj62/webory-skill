@@ -57,6 +57,33 @@ const InternshipSchema = new Schema({
     type: [String],
     default: [],
   },
+  collaboration: {
+    type: String,
+    default: "",
+  },
+  collaborations: {
+    type: [{
+      name: String,
+      logo: String,
+      website: String,
+    }],
+    default: [],
+  },
+  signatures: {
+    founder: {
+      name: { type: String, default: "Mohit Sinha" },
+      title: { type: String, default: "Founder & CEO" },
+    },
+    director: {
+      name: { type: String, default: "Vijay Kumar" },
+      title: { type: String, default: "Director of Education, Webory" },
+      credential: { type: String, default: "Alumnus, IIT Mandi" },
+    },
+    partner: {
+      name: { type: String, default: "Partner Rep." },
+      title: { type: String, default: "Authorized Signatory" },
+    },
+  },
   createdAt: {
     type: Date,
     default: Date.now,

@@ -31,6 +31,13 @@ const getCachedCertificate = unstable_cache(
                 certificate.rank = certificate.rank || submission.rank;
                 certificate.type = certificate.type || (submission.status === "winner" ? "winner" : "participant");
                 certificate.studentName = certificate.studentName || submission.teamName;
+                
+                // New: Populate collaborations and signatures from Hackathon
+                const hackathon = submission.hackathonId as any;
+                if (hackathon) {
+                    certificate.collaborations = certificate.collaborations?.length ? certificate.collaborations : hackathon.collaborations;
+                    certificate.signatures = certificate.signatures || hackathon.signatures;
+                }
             }
         }
 

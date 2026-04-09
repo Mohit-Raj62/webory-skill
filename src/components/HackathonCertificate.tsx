@@ -14,6 +14,12 @@ interface HackathonCertificateProps {
   issueDate: string;
   certificateId: string;
   domain?: string;
+  collaborations?: { name: string, logo?: string }[];
+  signatures?: {
+    founder: { name: string, title: string },
+    director: { name: string, title: string },
+    partner: { name: string, title: string },
+  };
 }
 
 export default function HackathonCertificate({
@@ -24,7 +30,9 @@ export default function HackathonCertificate({
   rank,
   issueDate,
   certificateId,
-  domain
+  domain,
+  collaborations,
+  signatures
 }: HackathonCertificateProps) {
   const isWinner = type === "winner";
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -122,53 +130,82 @@ export default function HackathonCertificate({
           <div className={`w-full h-full relative z-10 border-[12px] border-double ${themeBorder} flex flex-col justify-between p-8 bg-white/80 backdrop-blur-sm`}>
             
             {/* Header Section */}
-            <div className="flex justify-between items-start w-full relative">
-              <div className="flex items-center gap-4">
-                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${themeAccent} p-[2px] shadow-lg`}>
-                  <div className="w-full h-full bg-white rounded-[14px] flex items-center justify-center">
-                    <ShieldCheck className={themeText} size={32} />
+            <div className="w-full flex flex-col items-center">
+              <div className="flex justify-between items-center w-full mb-6">
+                <div className="flex items-center gap-4">
+                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${themeAccent} p-[2px] shadow-lg`}>
+                    <div className="w-full h-full bg-white rounded-[14px] flex items-center justify-center">
+                      <ShieldCheck className={themeText} size={28} />
+                    </div>
+                  </div>
+                  <div>
+                    <h1 className="text-3xl font-black tracking-tighter uppercase text-slate-900 leading-none">WEBORY SKILLS</h1>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className={`inline-block text-[8px] font-black tracking-[0.2em] uppercase px-2 py-0.5 rounded-md ${themeBg} ${themeText} border ${themeBorder}`}>
+                        {domain || "Skills Hackathon"}
+                      </span>
+                      <div className="h-3 w-px bg-slate-200"></div>
+                      <span className="text-[7px] text-slate-400 font-bold uppercase tracking-widest">Govt. Recognized Startup</span>
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <h1 className="text-3xl font-black tracking-tighter uppercase text-slate-900 leading-none">WEBORY SKILLS</h1>
-                  <span className={`inline-block mt-1 text-[8px] font-black tracking-[0.2em] uppercase px-2 py-0.5 rounded-md ${themeBg} ${themeText} border ${themeBorder}`}>
-                    {domain || "Skills Hackathon"}
-                  </span>
-                </div>
-              </div>
 
-              <div className="text-right">
                 <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full ${themeBg} border ${themeBorder} shadow-sm`}>
                   {isWinner ? <Trophy size={14} className={themeText} /> : <Code2 size={14} className={themeText} />}
-                  <span className={`text-[10px] font-black uppercase tracking-widest ${themeText}`}>
+                  <span className={`text-[9px] font-black uppercase tracking-widest ${themeText}`}>
                     {isWinner ? 'Certificate of Excellence' : 'Certificate of Participation'}
                   </span>
                 </div>
               </div>
+
+              {/* Collaborations Section - NOW BELOW AND CENTERED */}
+              {collaborations && collaborations.length > 0 && (
+                <div className="flex items-center justify-center gap-6 mb-8 w-full">
+                  <div className="h-px bg-slate-100 flex-1"></div>
+                  <div className="flex items-center gap-8">
+                  <div className="flex items-center gap-3">
+                    <span className="text-[8px] text-slate-400 font-black uppercase tracking-[0.2em]">In Association With</span>
+                    <div className="h-4 w-px bg-slate-300 mt-0.5"></div>
+                  </div>
+                    <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+                      {collaborations.map((collab, index) => (
+                        <div key={index} className="flex items-center">
+                          {index > 0 && <span className="text-slate-300 font-light mx-2 text-[10px]">|</span>}
+                          <div className="flex items-center gap-1.5 group">
+                            {collab.logo && <img src={collab.logo} alt={collab.name} className="h-5 object-contain grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all" />}
+                            <span className="text-[10px] font-black tracking-widest uppercase text-slate-900">{collab.name}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="h-px bg-slate-100 flex-1"></div>
+                </div>
+              )}
             </div>
 
             {/* Core Content */}
             <div className="w-full text-center flex-1 flex flex-col items-center justify-center py-6">
               <p className="text-sm font-bold text-slate-400 uppercase tracking-[0.4em] mb-4">Proudly Presented To</p>
               
-              <h2 className="text-5xl md:text-6xl font-black text-slate-900 tracking-tight capitalize mb-6 border-b-2 border-slate-100 pb-2 px-12">
+              <h2 className="text-5xl md:text-6xl font-black text-slate-900 tracking-tight capitalize mb-2 border-b-2 border-slate-100 pb-1 px-12">
                 {studentName}
               </h2>
 
-              <div className="max-w-2xl mx-auto space-y-4">
+              <div className="max-w-2xl mx-auto space-y-2">
                 <p className="text-base text-slate-600 font-medium leading-relaxed">
                   For demonstrating exceptional coding skills, creativity, and problem-solving abilities 
                   during the official software development hackathon event.
                 </p>
                 
-                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 mt-4 relative overflow-hidden group">
+                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 mt-2 relative overflow-hidden group">
                   <div className={`absolute top-0 left-0 w-1 h-full bg-gradient-to-b ${themeAccent}`}></div>
                   
-                  <h3 className={`text-xl font-black uppercase tracking-wide mb-2 ${themeText}`}>
+                  <h3 className={`text-xl font-black uppercase tracking-wide mb-1 ${themeText}`}>
                     {hackathonTitle}
                   </h3>
                   
-                  <div className="flex flex-col md:flex-row items-center justify-center gap-4 mt-4">
+                  <div className="flex flex-col md:flex-row items-center justify-center gap-4 mt-2">
                     <div className={`flex items-center gap-2 bg-white px-4 py-2 rounded-xl border ${themeBorder} shadow-sm group-hover:shadow-md transition-shadow`}>
                       <Code2 size={16} className={themeText} />
                       <span className="text-xs font-black text-slate-700 uppercase tracking-widest truncate max-w-[250px]">
@@ -190,13 +227,17 @@ export default function HackathonCertificate({
             </div>
 
             {/* Footer Area */}
-            <div className="w-full flex items-end justify-between border-t-2 border-slate-100 pt-8 mt-4">
+            <div className="w-full flex items-end justify-between border-t-2 border-slate-100 pt-4 mt-1">
               
               {/* Signatures */}
               <div className="flex flex-col items-center gap-1">
-                <div className="text-3xl italic text-slate-800" style={{ fontFamily: "'Dancing Script', cursive" }}>Mohit Sinha</div>
+                <div className="text-3xl italic text-slate-800" style={{ fontFamily: "'Dancing Script', cursive" }}>
+                    {signatures?.founder?.name || "Mohit Sinha"}
+                </div>
                 <div className="w-40 h-[2px] bg-slate-200 mt-1 mb-1"></div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-900">CEO & Founder</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-900">
+                    {signatures?.founder?.title || "CEO & Founder"}
+                </span>
                 <span className="text-[8px] font-bold uppercase tracking-widest text-slate-400">Webory Skills Platform</span>
               </div>
 
@@ -228,6 +269,17 @@ export default function HackathonCertificate({
                   <span className="block text-[8px] font-black text-slate-400 uppercase tracking-widest">Verification ID</span>
                   <span className="block text-[10px] font-bold text-slate-800 tracking-tighter">{certificateId}</span>
                 </div>
+                {signatures?.partner && (
+                    <div className="flex flex-col items-center gap-1 mt-2">
+                        <div className="text-2xl italic text-slate-800" style={{ fontFamily: "'Dancing Script', cursive" }}>
+                            {signatures.partner.name}
+                        </div>
+                        <div className="w-32 h-[1px] bg-slate-200"></div>
+                        <span className="text-[8px] font-black uppercase tracking-widest text-slate-900">
+                            {signatures.partner.title}
+                        </span>
+                    </div>
+                )}
               </div>
 
             </div>

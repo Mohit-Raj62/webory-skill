@@ -48,6 +48,14 @@ const CourseSchema = new Schema({
     type: String,
     default: "",
   },
+  collaborations: {
+    type: [{
+      name: String,
+      logo: String,
+      website: String,
+    }],
+    default: [],
+  },
   signatures: {
     founder: {
       name: { type: String, default: "Mohit Sinha" },

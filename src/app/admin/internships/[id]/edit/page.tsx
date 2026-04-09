@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus, X } from "lucide-react";
+import { ArrowLeft, Plus, X, PenTool } from "lucide-react";
 import Link from "next/link";
+import { SignaturesSection } from "@/components/admin/course-edit/SignaturesSection";
 
 export default function EditInternshipPage() {
     const router = useRouter();
@@ -25,6 +26,13 @@ export default function EditInternshipPage() {
         responsibilities: [] as string[],
         tags: [] as string[],
         isFree: false,
+        collaboration: "",
+        collaborations: [] as { name: string, logo?: string, website?: string }[],
+        signatures: {
+            founder: { name: "Mohit Sinha", title: "Founder & CEO" },
+            director: { name: "Vijay Kumar", title: "Director of Education, Webory", credential: "Alumnus, IIT Mandi" },
+            partner: { name: "Partner Rep.", title: "Authorized Signatory" },
+        },
     });
 
     const [requirementInput, setRequirementInput] = useState("");
@@ -47,6 +55,13 @@ export default function EditInternshipPage() {
                     responsibilities: data.internship.responsibilities || [],
                     gstPercentage: data.internship.gstPercentage || 0,
                     tags: data.internship.tags || [],
+                    collaboration: data.internship.collaboration || "",
+                    collaborations: data.internship.collaborations || [],
+                    signatures: data.internship.signatures || {
+                        founder: { name: "Mohit Sinha", title: "Founder & CEO" },
+                        director: { name: "Vijay Kumar", title: "Director of Education, Webory", credential: "Alumnus, IIT Mandi" },
+                        partner: { name: "Partner Rep.", title: "Authorized Signatory" },
+                    },
                 });
             }
         } catch (error) {
@@ -349,6 +364,14 @@ export default function EditInternshipPage() {
                                 </span>
                             ))}
                         </div>
+                    </div>
+
+                    {/* Signatures & Partnerships Section */}
+                    <div className="mt-8">
+                        <SignaturesSection 
+                            formData={formData} 
+                            setFormData={setFormData}
+                        />
                     </div>
 
                     {/* Submit */}

@@ -30,6 +30,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { SignaturesSection } from "@/components/admin/course-edit/SignaturesSection";
 
 interface Hackathon {
   _id: string;
@@ -54,7 +55,7 @@ export default function AdminHackathonsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"general" | "details" | "dates">("general");
+  const [activeTab, setActiveTab] = useState<"general" | "details" | "dates" | "partners">("general");
   
   const initialForm = {
     title: "",
@@ -69,7 +70,14 @@ export default function AdminHackathonsPage() {
     prizes: [] as { title: string; reward: string; value: number }[],
     rules: [] as string[],
     simulatorPrerequisite: false,
-    isHidden: false
+    isHidden: false,
+    collaboration: "",
+    collaborations: [] as { name: string, logo?: string, website?: string }[],
+    signatures: {
+        founder: { name: "Mohit Sinha", title: "Founder & CEO" },
+        director: { name: "Vijay Kumar", title: "Director of Education, Webory", credential: "Alumnus, IIT Mandi" },
+        partner: { name: "Partner Rep.", title: "Authorized Signatory" }
+    }
   };
 
   const [formH, setFormH] = useState(initialForm);
@@ -204,7 +212,14 @@ export default function AdminHackathonsPage() {
         prizes: h.prizes || [],
         rules: h.rules || [],
         simulatorPrerequisite: h.simulatorPrerequisite || false,
-        isHidden: h.isHidden || false
+        isHidden: h.isHidden || false,
+        collaboration: h.collaboration || "",
+        collaborations: h.collaborations || [],
+        signatures: h.signatures || {
+            founder: { name: "Mohit Sinha", title: "Founder & CEO" },
+            director: { name: "Vijay Kumar", title: "Director of Education, Webory", credential: "Alumnus, IIT Mandi" },
+            partner: { name: "Partner Rep.", title: "Authorized Signatory" }
+        }
     });
     setActiveTab("general");
     setIsModalOpen(true);
@@ -250,7 +265,8 @@ export default function AdminHackathonsPage() {
                       {[ 
                         { id: 'general', icon: FileText, label: 'General' },
                         { id: 'details', icon: FileCode, label: 'Content' },
-                        { id: 'dates', icon: Calendar, label: 'Schedule' }
+                        { id: 'dates', icon: Calendar, label: 'Schedule' },
+                        { id: 'partners', icon: Award, label: 'Partners' }
                       ].map((tab) => (
                         <button
                           key={tab.id}
@@ -514,6 +530,21 @@ export default function AdminHackathonsPage() {
                                   </button>
                               </div>
                           </div>
+                      </motion.div>
+                    )}
+
+                    {activeTab === 'partners' && (
+                      <motion.div 
+                        key="partners"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="space-y-6"
+                      >
+                         <SignaturesSection 
+                            formData={formH} 
+                            setFormData={setFormH}
+                          />
                       </motion.div>
                     )}
                   </AnimatePresence>

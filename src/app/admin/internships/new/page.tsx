@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus, X } from "lucide-react";
+import { ArrowLeft, Plus, X, PenTool } from "lucide-react";
 import Link from "next/link";
+import { SignaturesSection } from "@/components/admin/course-edit/SignaturesSection";
 
 export default function NewInternshipPage() {
     const router = useRouter();
@@ -22,6 +23,13 @@ export default function NewInternshipPage() {
         requirements: [] as string[],
         responsibilities: [] as string[],
         tags: [] as string[],
+        collaboration: "",
+        collaborations: [] as { name: string, logo?: string, website?: string }[],
+        signatures: {
+            founder: { name: "Mohit Sinha", title: "Founder & CEO" },
+            director: { name: "Vijay Kumar", title: "Director of Education, Webory", credential: "Alumnus, IIT Mandi" },
+            partner: { name: "Partner Rep.", title: "Authorized Signatory" },
+        },
     });
 
     const [requirementInput, setRequirementInput] = useState("");
@@ -299,6 +307,14 @@ export default function NewInternshipPage() {
                                 </span>
                             ))}
                         </div>
+                    </div>
+
+                    {/* Signatures & Partnerships Section */}
+                    <div className="mt-8">
+                        <SignaturesSection 
+                            formData={formData} 
+                            setFormData={setFormData}
+                        />
                     </div>
 
                     {/* Submit */}

@@ -23,6 +23,13 @@ interface Application {
     completedAt: string;
     certificateId: string;
     certificateKey?: string;
+    collaboration?: string;
+    collaborations?: { name: string, logo?: string }[];
+    signatures?: {
+        founder: { name: string, title: string },
+        director: { name: string, title: string, credential?: string },
+        partner: { name: string, title: string },
+    };
 }
 
 export default function CertificatePage() {
@@ -180,8 +187,8 @@ export default function CertificatePage() {
 
                     {/* Header with MSME */}
                     <div className="text-center w-full">
-                        <div className="flex items-start justify-center gap-4 mb-1">
-                            <Award className="text-[#c5a059] mt-1" size={48} />
+                        <div className="flex items-center justify-center gap-4 mb-2">
+                            <Award className="text-[#c5a059]" size={42} />
                             <div className="text-left">
                                 <h2 className="text-3xl font-bold text-[#1a237e] tracking-wide uppercase font-serif">
                                     WEBORY <span className="relative inline-block ml-2">
@@ -194,16 +201,43 @@ export default function CertificatePage() {
                                     </span>
                                 </h2>
                                 <p className="text-sm text-[#c5a059] tracking-[0.2em] uppercase">Excellence in Education</p>
-                                <div className="flex gap-4 mt-1">
-                                    <div className="flex flex-col items-start border-l-2 border-[#c5a059] pl-2">
-                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wide">Govt. of India Recognized Startup</p>
-                                        <p className="text-[9px] text-[#c5a056] font-bold font-mono tracking-wider">MSME Reg: UDYAM-BR-26-0208472</p>
-                                    </div>
-                                </div>
+                            </div>
+                            
+                            {/* MSME Details - Compact and Separated */}
+                            <div className="flex flex-col items-start border-l border-gray-200 pl-4 py-1">
+                                <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wide">Govt. Recognized Startup</p>
+                                <p className="text-[8px] text-[#c5a056] font-bold font-mono tracking-wider">MSME: UDYAM-BR-26-0208472</p>
                             </div>
                         </div>
 
-                        <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-[#1a237e] to-transparent mb-4 opacity-30"></div>
+                        {/* Collaborations Section - NOW BELOW AND CENTERED */}
+                        {((application.internship?.collaborations && application.internship.collaborations.length > 0) || application.internship?.collaboration) && (
+                            <div className="flex flex-wrap items-center justify-center gap-4 mb-4 px-12">
+                                <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent flex-1 max-w-[100px]"></div>
+                                <div className="flex items-center gap-3">
+                                    <p className="text-[9px] text-gray-400 font-black uppercase tracking-[0.2em]">In Association With</p>
+                                    <div className="h-4 w-px bg-[#c5a059]/40 mt-0.5"></div>
+                                </div>
+                                <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+                                    {application.internship?.collaborations && application.internship.collaborations.length > 0 ? (
+                                        application.internship.collaborations.map((collab: any, index: number) => (
+                                            <div key={index} className="flex items-center">
+                                                {index > 0 && <span className="text-[#c5a059]/40 font-light mx-2 text-[10px]">|</span>}
+                                                <div className="flex items-center gap-1.5 group">
+                                                    {collab.logo && <img src={collab.logo} alt={collab.name} className="h-5 object-contain grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all" />}
+                                                    <p className="text-[10px] text-[#1a237e] font-black font-serif tracking-widest uppercase">{collab.name}</p>
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-[10px] text-[#1a237e] font-black font-serif tracking-widest uppercase">{application.internship.collaboration}</p>
+                                    )}
+                                </div>
+                                <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent flex-1 max-w-[100px]"></div>
+                            </div>
+                        )}
+
+                        <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-[#1a237e] to-transparent mb-2 opacity-30"></div>
 
                         <h1 className="text-5xl font-serif font-bold text-[#1a237e] mb-1 tracking-tight certificate-title">
                             Certificate of Completion
@@ -228,7 +262,7 @@ export default function CertificatePage() {
                             at <span className="font-bold text-[#1a237e]">{application.internship?.company || 'Webory Skills'}</span>
                         </p>
 
-                        <div className="flex justify-center gap-12 mt-6 mb-4 border-y border-gray-200 py-2 mx-10">
+                        <div className="flex justify-center gap-12 mt-2 mb-2 border-y border-gray-200 py-1.5 mx-10">
                             {/* Duration */}
                             <div className="flex flex-col items-center px-2">
                                 <span className="text-[10px] uppercase tracking-widest font-semibold text-gray-500">Duration</span>
@@ -256,14 +290,18 @@ export default function CertificatePage() {
                     </div>
 
                     {/* Footer / Signatures */}
-                    <div className="w-full flex justify-between items-end mt-4 px-12">
+                    <div className="w-full flex justify-between items-end mt-1 px-12">
                         {/* Signature 1 */}
                         <div className="text-center">
                             <div className="h-12 flex items-end justify-center mb-1">
-                                <span className="font-signature text-3xl text-[#1a237e] whitespace-nowrap px-2">Webory Skills</span>
+                                <span className="font-signature text-3xl text-[#1a237e] whitespace-nowrap px-2">
+                                    {application.internship?.signatures?.founder?.name || "Mohit Sinha"}
+                                </span>
                             </div>
                             <div className="border-b border-gray-400 w-40 mx-auto mb-1"></div>
-                            <p className="text-xs text-gray-600 font-bold uppercase tracking-widest">Institute</p>
+                            <p className="text-xs text-gray-600 font-bold uppercase tracking-widest">
+                                {application.internship?.signatures?.founder?.title || "Founder & CEO"}
+                            </p>
                         </div>
 
                          {/* QR Code */}
@@ -284,14 +322,35 @@ export default function CertificatePage() {
                         {/* Signature 2 */}
                         <div className="text-center">
                             <div className="h-12 flex items-end justify-center mb-1">
-                                <span className="font-signature text-3xl text-[#1a237e] whitespace-nowrap px-2">Vijay Kumar</span>
+                                <span className="font-signature text-3xl text-[#1a237e] whitespace-nowrap px-2">
+                                    {application.internship?.signatures?.director?.name || "Vijay Kumar"}
+                                </span>
                             </div>
                             <div className="border-b border-gray-400 w-40 mx-auto mb-1"></div>
                             <div className="space-y-0.5">
-                                <p className="text-xs text-gray-600 font-bold uppercase tracking-widest">Director of Education, Webory</p>
-                                <p className="text-[10px] text-[#1a237e] font-bold">Alumnus, IIT Mandi</p>
+                                <p className="text-xs text-gray-600 font-bold uppercase tracking-widest">
+                                    {application.internship?.signatures?.director?.title || "Director of Education, Webory"}
+                                </p>
+                                <p className="text-[10px] text-[#1a237e] font-bold">
+                                    {application.internship?.signatures?.director?.credential || "Alumnus, IIT Mandi"}
+                                </p>
                             </div>
                         </div>
+
+                        {/* Signature 3 (Partner) - Only if collaboration */}
+                        {(application.internship?.collaboration || (application.internship?.collaborations && application.internship.collaborations.length > 0)) && (
+                            <div className="text-center">
+                                <div className="h-12 flex items-end justify-center mb-1">
+                                    <span className="font-signature text-3xl text-[#c5a059] whitespace-nowrap px-2">
+                                        {application.internship?.signatures?.partner?.name || "Partner Rep."}
+                                    </span>
+                                </div>
+                                <div className="border-b border-gray-400 w-40 mx-auto mb-1"></div>
+                                <p className="text-xs text-gray-600 font-bold uppercase tracking-widest">
+                                    {application.internship?.signatures?.partner?.title || "Authorized Signatory"}
+                                </p>
+                            </div>
+                        )}
                     </div>
 
                     {/* OFFICIAL SEAL */}

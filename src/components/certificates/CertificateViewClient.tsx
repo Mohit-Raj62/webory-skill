@@ -75,6 +75,8 @@ export function CertificateViewClient({ certificate }: { certificate: any }) {
                     issueDate={certificate.issuedAt}
                     certificateId={certificate.certificateId}
                     domain={certificate.domain || "Skills Hackathon"}
+                    collaborations={certificate.collaborations}
+                    signatures={certificate.signatures}
                 />
             </motion.div>
 

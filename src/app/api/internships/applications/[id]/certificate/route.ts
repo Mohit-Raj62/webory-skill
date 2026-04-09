@@ -52,7 +52,7 @@ export async function GET(
     if (!mongoose.models.Application) mongoose.model("Application", Application.schema);
 
     const application = await Application.findById(applicationId)
-      .populate({ path: "internship", model: Internship, select: "title company location stipend type" })
+      .populate({ path: "internship", model: Internship, select: "title company location stipend type collaboration collaborations signatures" })
       .populate({ path: "student", model: User, select: "firstName lastName email" })
       .lean();
 

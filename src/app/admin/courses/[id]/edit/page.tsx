@@ -11,6 +11,7 @@ import Link from "next/link";
 import { uploadFile, uploadPDFToCloudinary } from "@/lib/upload-utils";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { SignaturesSection } from "@/components/admin/course-edit/SignaturesSection";
 
 export default function EditCoursePage() {
     const router = useRouter();
@@ -48,9 +49,10 @@ export default function EditCoursePage() {
             videos: { title: string; url: string; duration: string }[];
         }[],
         collaboration: "",
+        collaborations: [] as { name: string, logo?: string, website?: string }[],
         signatures: {
-            founder: { name: "Mohit Raj", title: "Founder & CEO" },
-            director: { name: "Webory Team", title: "Director of Education" },
+            founder: { name: "Mohit Sinha", title: "Founder & CEO" },
+            director: { name: "Vijay Kumar", title: "Director of Education, Webory", credential: "Alumnus, IIT Mandi" },
             partner: { name: "Partner Rep.", title: "Authorized Signatory" }
         },
         isAvailable: true,
@@ -117,9 +119,11 @@ export default function EditCoursePage() {
                 setFormData({
                     ...data.course,
                     modules: modules,
+                    collaboration: data.course.collaboration || "",
+                    collaborations: data.course.collaborations || [],
                     signatures: data.course.signatures || {
-                        founder: { name: "Mohit Raj", title: "Founder & CEO" },
-                        director: { name: "Webory Team", title: "Director of Education" },
+                        founder: { name: "Mohit Sinha", title: "Founder & CEO" },
+                        director: { name: "Vijay Kumar", title: "Director of Education, Webory", credential: "Alumnus, IIT Mandi" },
                         partner: { name: "Partner Rep.", title: "Authorized Signatory" }
                     }
                 });
@@ -607,48 +611,11 @@ export default function EditCoursePage() {
                             </div>
                         </div>
 
-                        {/* Signatures & Partnerships (Admin Specific) */}
-                        <div className="glass-card border border-white/10 bg-black/40 backdrop-blur-xl p-8 rounded-3xl shadow-xl">
-                            <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
-                                <div className="p-2 bg-pink-500/20 rounded-lg text-pink-400">
-                                    <PenTool size={20} />
-                                </div>
-                                Signatures & Partnerships
-                            </h2>
-                            <div className="space-y-6">
-                                <div>
-                                    <label className="text-sm text-gray-400 font-medium mb-2 block">Collaboration / Partnership Name</label>
-                                    <input
-                                        type="text"
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-pink-500/50 outline-none"
-                                        value={formData.collaboration}
-                                        onChange={(e) => setFormData({ ...formData, collaboration: e.target.value })}
-                                        placeholder="e.g. Google Developers Group"
-                                    />
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    {['founder', 'director', 'partner'].map((role) => (
-                                        <div key={role} className="space-y-4 p-4 bg-white/5 rounded-2xl border border-white/5">
-                                            <h4 className="text-pink-400 text-xs font-bold uppercase tracking-wider">{role} Signature</h4>
-                                            <input
-                                                type="text"
-                                                placeholder="Name"
-                                                className="w-full bg-black/20 border border-white/10 rounded-lg p-2 text-white text-sm"
-                                                value={formData.signatures?.[role as keyof typeof formData.signatures]?.name || ""}
-                                                onChange={(e) => updateSignature(role, "name", e.target.value)}
-                                            />
-                                            <input
-                                                type="text"
-                                                placeholder="Title"
-                                                className="w-full bg-black/20 border border-white/10 rounded-lg p-2 text-white text-sm"
-                                                value={formData.signatures?.[role as keyof typeof formData.signatures]?.title || ""}
-                                                onChange={(e) => updateSignature(role, "title", e.target.value)}
-                                            />
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
+                        {/* Signatures & Partnerships Section */}
+                        <SignaturesSection 
+                            formData={formData} 
+                            setFormData={setFormData}
+                        />
 
                         {/* 3. Modules & Content */}
                         <div className="glass-card border border-white/10 bg-black/40 backdrop-blur-xl p-8 rounded-3xl shadow-xl">

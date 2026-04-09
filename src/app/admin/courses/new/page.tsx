@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus, X, Upload, Image } from "lucide-react";
+import { ArrowLeft, Plus, X, Upload, Image, PenTool } from "lucide-react";
 import Link from "next/link";
 import { uploadFile } from "@/lib/upload-utils";
+import { SignaturesSection } from "@/components/admin/course-edit/SignaturesSection";
 
 export default function NewCoursePage() {
     const router = useRouter();
@@ -36,9 +37,10 @@ export default function NewCoursePage() {
         benefits: [] as string[],
         videos: [] as { title: string; url: string; duration: string }[],
         collaboration: "",
+        collaborations: [] as { name: string, logo?: string, website?: string }[],
         signatures: {
-            founder: { name: "Mohit Raj", title: "Founder & CEO" },
-            director: { name: "Webory Team", title: "Director of Education" },
+            founder: { name: "Mohit Sinha", title: "Founder & CEO" },
+            director: { name: "Vijay Kumar", title: "Director of Education, Webory", credential: "Alumnus, IIT Mandi" },
             partner: { name: "Partner Rep.", title: "Authorized Signatory" }
         },
         isAvailable: true,
@@ -378,122 +380,11 @@ export default function NewCoursePage() {
                             />
                         </div>
 
-                        <div className="md:col-span-2">
-                             <label className="text-sm text-gray-300 block mb-2">Collaboration (Optional)</label>
-                             <input
-                                type="text"
-                                placeholder="e.g. In Partnership with College"
-                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                value={formData.collaboration}
-                                onChange={(e) => setFormData({ ...formData, collaboration: e.target.value })}
-                            />
-                            <p className="text-xs text-gray-400 mt-1">This text will appear on the student certificate.</p>
-                        </div>
-
-                        <div className="md:col-span-2">
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    className="w-5 h-5 rounded border-white/10 bg-black/20 text-blue-500 focus:ring-blue-500/50"
-                                    checked={formData.isAvailable}
-                                    onChange={(e) => setFormData({ ...formData, isAvailable: e.target.checked })}
-                                />
-                                <span className="text-gray-300">Available for Students</span>
-                            </label>
-                            <p className="text-xs text-gray-400 mt-1 ml-7">
-                                If unchecked, this course will be hidden from the student course list.
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* Certificate Signatures Section */}
-                    <div className="border-t border-white/10 pt-6 mt-6">
-                        <h3 className="text-lg font-semibold text-white mb-4">Certificate Signatures</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Founder */}
-                            <div>
-                                <label className="text-sm text-gray-300 block mb-2">Signature 1 (Left)</label>
-                                <div className="space-y-2">
-                                    <input
-                                        type="text"
-                                        placeholder="Name (e.g. Mohit Raj)"
-                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white text-sm"
-                                        value={formData.signatures.founder.name}
-                                        onChange={(e) => setFormData({ 
-                                            ...formData, 
-                                            signatures: { ...formData.signatures, founder: { ...formData.signatures.founder, name: e.target.value } } 
-                                        })}
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Title (e.g. Founder & CEO)"
-                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white text-sm"
-                                        value={formData.signatures.founder.title}
-                                        onChange={(e) => setFormData({ 
-                                            ...formData, 
-                                            signatures: { ...formData.signatures, founder: { ...formData.signatures.founder, title: e.target.value } } 
-                                        })}
-                                    />
-                                </div>
-                            </div>
-                            
-                            {/* Director */}
-                            <div>
-                                <label className="text-sm text-gray-300 block mb-2">Signature 2 (Right/Center)</label>
-                                <div className="space-y-2">
-                                    <input
-                                        type="text"
-                                        placeholder="Name (e.g. Webory Team)"
-                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white text-sm"
-                                        value={formData.signatures.director.name}
-                                        onChange={(e) => setFormData({ 
-                                            ...formData, 
-                                            signatures: { ...formData.signatures, director: { ...formData.signatures.director, name: e.target.value } } 
-                                        })}
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Title (e.g. Director of Education)"
-                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white text-sm"
-                                        value={formData.signatures.director.title}
-                                        onChange={(e) => setFormData({ 
-                                            ...formData, 
-                                            signatures: { ...formData.signatures, director: { ...formData.signatures.director, title: e.target.value } } 
-                                        })}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Partner (Only if collaboration) */}
-                            {formData.collaboration && (
-                                <div className="md:col-span-2">
-                                    <label className="text-sm text-[#c5a059] block mb-2">Signature 3 (Partner Rep)</label>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <input
-                                            type="text"
-                                            placeholder="Name (e.g. Partner Rep.)"
-                                            className="w-full bg-black/20 border border-[#c5a059]/30 rounded-xl p-3 text-white text-sm"
-                                            value={formData.signatures.partner.name}
-                                            onChange={(e) => setFormData({ 
-                                                ...formData, 
-                                                signatures: { ...formData.signatures, partner: { ...formData.signatures.partner, name: e.target.value } } 
-                                            })}
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Title (e.g. Authorized Signatory)"
-                                            className="w-full bg-black/20 border border-[#c5a059]/30 rounded-xl p-3 text-white text-sm"
-                                            value={formData.signatures.partner.title}
-                                            onChange={(e) => setFormData({ 
-                                                ...formData, 
-                                                signatures: { ...formData.signatures, partner: { ...formData.signatures.partner, title: e.target.value } } 
-                                            })}
-                                        />
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
+                    {/* Signatures & Partnerships Section */}
+                    <SignaturesSection 
+                        formData={formData} 
+                        setFormData={setFormData}
+                    />
 
                     <div>
                         <label className="text-sm text-gray-300 block mb-2">Description *</label>
