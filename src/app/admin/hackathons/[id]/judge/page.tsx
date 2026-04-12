@@ -250,9 +250,23 @@ export default function HackathonJudgingPage() {
                                                             <div className="min-w-0 space-y-0.5">
                                                                 <div className="text-xs font-bold text-white truncate">{m.name}</div>
                                                                 <div className="text-[10px] text-gray-500 truncate">{m.email}</div>
-                                                                {m.phone && <div className="text-[10px] text-gray-600">📞 {m.phone}</div>}
-                                                                {m.role && <div className="text-[10px] text-blue-400/70">💼 {m.role}</div>}
-                                                                {m.college && <div className="text-[10px] text-gray-600">🎓 {m.college}</div>}
+                                                                <div className="flex flex-wrap gap-x-3 gap-y-1 pt-1 opacity-60">
+                                                                    {m.phone && <div className="text-[9px] text-gray-400">📞 {m.phone}</div>}
+                                                                    {m.role && <div className="text-[9px] text-blue-400 font-bold uppercase tracking-widest leading-none mt-0.5">💼 {m.role}</div>}
+                                                                </div>
+                                                                <div className="pt-2 space-y-0.5 border-t border-white/5 mt-2">
+                                                                    {m.college && (
+                                                                        <div className="text-[10px] text-gray-400 flex items-center gap-1.5">
+                                                                            <GraduationCap size={10} className="text-gray-600" />
+                                                                            <span className="truncate">{m.college}</span>
+                                                                        </div>
+                                                                    )}
+                                                                    {(m.course || m.branch || m.year) && (
+                                                                        <div className="text-[9px] text-gray-500 font-medium px-2 py-1 bg-white/[0.02] rounded-md border border-white/5 mt-1">
+                                                                            {[m.course, m.branch, m.year].filter(Boolean).join(" · ")}
+                                                                        </div>
+                                                                    )}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     ))}

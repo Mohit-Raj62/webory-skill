@@ -30,12 +30,27 @@ export async function GET(
     }
 
     // Generate CSV
-    const headers = ["First Name", "Last Name", "Email", "Phone", "XP", "Selected Domain", "Registration Date"];
+    const headers = [
+      "Name", 
+      "Email", 
+      "Phone", 
+      "College", 
+      "Course", 
+      "Branch", 
+      "Year", 
+      "XP", 
+      "Selected Domain", 
+      "Registration Date"
+    ];
+    
     const rows = (hackathon.registeredUsers || []).map((item: any) => [
-      item.user?.firstName || "N/A",
-      item.user?.lastName || "N/A",
-      item.user?.email || "N/A",
-      item.user?.phone || "N/A",
+      item.name || `${item.user?.firstName || ""} ${item.user?.lastName || ""}`.trim() || "N/A",
+      item.email || item.user?.email || "N/A",
+      item.phone || item.user?.phone || "N/A",
+      item.college || "N/A",
+      item.course || "N/A",
+      item.branch || "N/A",
+      item.year || "N/A",
       item.user?.xp || 0,
       item.domain || "Default",
       item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A"

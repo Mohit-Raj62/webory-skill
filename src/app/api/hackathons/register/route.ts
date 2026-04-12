@@ -10,7 +10,17 @@ export async function POST(req: Request) {
     
     // Auth Check
     const userId = await getDataFromToken(req);
-    const { hackathonId, domain } = await req.json();
+    const { 
+      hackathonId, 
+      domain,
+      name,
+      email,
+      phone,
+      college,
+      course,
+      branch,
+      year
+    } = await req.json();
 
     console.log("DEBUG_REGISTRATION_START:", { userId, hackathonId, domain });
 
@@ -20,6 +30,11 @@ export async function POST(req: Request) {
 
     if (!hackathonId) {
       return NextResponse.json({ error: "Hackathon ID is required" }, { status: 400 });
+    }
+
+    // Validation for new fields
+    if (!name || !email || !phone || !college || !course || !branch || !year) {
+      return NextResponse.json({ error: "All profile fields are required for registration." }, { status: 400 });
     }
 
     const hackathon = await Hackathon.findById(hackathonId);
@@ -53,10 +68,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "You are already registered for this hackathon." }, { status: 400 });
     }
 
-    // Register User with domain
+    // Register User with domain and details
     hackathon.registeredUsers.push({
       user: userId,
-      domain: domain || hackathon.theme || "General"
+      domain: domain || hackathon.theme || "General",
+      name,
+      email,
+      phone,
+      college,
+      course,
+      branch,
+      year
     });
     await hackathon.save();
 

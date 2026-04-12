@@ -36,6 +36,9 @@ interface TeamMember {
   phone: string;
   role: string;
   college: string;
+  course: string;
+  branch: string;
+  year: string;
 }
 
 export default function HackathonSubmissionPage() {
@@ -51,7 +54,7 @@ export default function HackathonSubmissionPage() {
   const [participationType, setParticipationType] = useState<"individual" | "team">("individual");
   const [teamName, setTeamName] = useState("");
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
-    { name: "", email: "", phone: "", role: "", college: "" }
+    { name: "", email: "", phone: "", role: "", college: "", course: "", branch: "", year: "" }
   ]);
 
   // Project Submission State
@@ -102,7 +105,7 @@ export default function HackathonSubmissionPage() {
       toast.error("Maximum 5 team members allowed.");
       return;
     }
-    setTeamMembers([...teamMembers, { name: "", email: "", phone: "", role: "", college: "" }]);
+    setTeamMembers([...teamMembers, { name: "", email: "", phone: "", role: "", college: "", course: "", branch: "", year: "" }]);
   };
 
   const removeTeamMember = (index: number) => {
@@ -431,57 +434,95 @@ export default function HackathonSubmissionPage() {
                                   )}
                                 </div>
 
-                                {/* Required Fields */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <div className="relative">
-                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 w-3.5 h-3.5" />
-                                    <Input 
-                                      value={member.name}
-                                      onChange={e => updateTeamMember(idx, "name", e.target.value)}
-                                      placeholder="Full Name *"
-                                      className="bg-white/[0.03] border-white/5 pl-10 h-12 rounded-xl text-white text-sm focus:border-orange-500/50"
-                                    />
+                                {/* Member Form Content */}
+                                <div className="space-y-6">
+                                  {/* Primary Details Row */}
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="relative">
+                                      <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 w-3.5 h-3.5" />
+                                      <Input 
+                                        value={member.name}
+                                        onChange={e => updateTeamMember(idx, "name", e.target.value)}
+                                        placeholder="Full Name *"
+                                        className="bg-white/[0.03] border-white/5 pl-10 h-12 rounded-xl text-white text-sm focus:border-orange-500/50"
+                                      />
+                                    </div>
+                                    <div className="relative">
+                                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 w-3.5 h-3.5" />
+                                      <Input 
+                                        type="email"
+                                        value={member.email}
+                                        onChange={e => updateTeamMember(idx, "email", e.target.value)}
+                                        placeholder="Email Address *"
+                                        className="bg-white/[0.03] border-white/5 pl-10 h-12 rounded-xl text-white text-sm focus:border-orange-500/50"
+                                      />
+                                    </div>
                                   </div>
-                                  <div className="relative">
-                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 w-3.5 h-3.5" />
-                                    <Input 
-                                      type="email"
-                                      value={member.email}
-                                      onChange={e => updateTeamMember(idx, "email", e.target.value)}
-                                      placeholder="Email Address *"
-                                      className="bg-white/[0.03] border-white/5 pl-10 h-12 rounded-xl text-white text-sm focus:border-orange-500/50"
-                                    />
-                                  </div>
-                                </div>
 
-                                {/* Optional Fields */}
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                  <div className="relative">
-                                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 w-3.5 h-3.5" />
-                                    <Input 
-                                      value={member.phone}
-                                      onChange={e => updateTeamMember(idx, "phone", e.target.value)}
-                                      placeholder="Phone"
-                                      className="bg-white/[0.03] border-white/5 pl-10 h-12 rounded-xl text-white text-sm focus:border-orange-500/50"
-                                    />
+                                  {/* Contact, Role & Year Row */}
+                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="relative">
+                                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 w-3.5 h-3.5" />
+                                      <Input 
+                                        value={member.phone}
+                                        onChange={e => updateTeamMember(idx, "phone", e.target.value)}
+                                        placeholder="Phone"
+                                        className="bg-white/[0.03] border-white/5 pl-10 h-12 rounded-xl text-white text-sm focus:border-orange-500/50"
+                                      />
+                                    </div>
+                                    <div className="relative">
+                                      <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 w-3.5 h-3.5" />
+                                      <Input 
+                                        value={member.role}
+                                        onChange={e => updateTeamMember(idx, "role", e.target.value)}
+                                        placeholder="Role (e.g. Frontend)"
+                                        className="bg-white/[0.03] border-white/5 pl-10 h-12 rounded-xl text-white text-sm focus:border-orange-500/50"
+                                      />
+                                    </div>
+                                    <div className="relative">
+                                      <select 
+                                        value={member.year}
+                                        onChange={e => updateTeamMember(idx, "year", e.target.value)}
+                                        className="w-full bg-white/[0.03] border border-white/5 h-12 rounded-xl text-white text-sm focus:border-orange-500/50 outline-none px-4 appearance-none"
+                                      >
+                                        <option value="" disabled className="bg-black text-gray-400">Academic Year</option>
+                                        <option value="1st Year" className="bg-black">1st Year</option>
+                                        <option value="2nd Year" className="bg-black">2nd Year</option>
+                                        <option value="3rd Year" className="bg-black">3rd Year</option>
+                                        <option value="4th Year" className="bg-black">4th Year</option>
+                                        <option value="Graduated" className="bg-black">Graduated</option>
+                                      </select>
+                                    </div>
                                   </div>
-                                  <div className="relative">
-                                    <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 w-3.5 h-3.5" />
-                                    <Input 
-                                      value={member.role}
-                                      onChange={e => updateTeamMember(idx, "role", e.target.value)}
-                                      placeholder="Role (e.g. Frontend)"
-                                      className="bg-white/[0.03] border-white/5 pl-10 h-12 rounded-xl text-white text-sm focus:border-orange-500/50"
-                                    />
-                                  </div>
-                                  <div className="relative">
-                                    <GraduationCap className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 w-3.5 h-3.5" />
-                                    <Input 
-                                      value={member.college}
-                                      onChange={e => updateTeamMember(idx, "college", e.target.value)}
-                                      placeholder="College / Org"
-                                      className="bg-white/[0.03] border-white/5 pl-10 h-12 rounded-xl text-white text-sm focus:border-orange-500/50"
-                                    />
+
+                                  {/* Education Section */}
+                                  <div className="p-5 rounded-2xl bg-white/[0.01] border border-white/5 space-y-4">
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <GraduationCap size={14} className="text-gray-500" />
+                                      <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Education Details</span>
+                                    </div>
+                                    <div className="relative">
+                                      <Input 
+                                        value={member.college}
+                                        onChange={e => updateTeamMember(idx, "college", e.target.value)}
+                                        placeholder="College or organization name"
+                                        className="bg-white/[0.03] border-white/5 px-4 h-12 rounded-xl text-white text-sm focus:border-orange-500/50"
+                                      />
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <Input 
+                                        value={member.course}
+                                        onChange={e => updateTeamMember(idx, "course", e.target.value)}
+                                        placeholder="Course (e.g. B.Tech)"
+                                        className="bg-white/[0.03] border-white/5 px-4 h-12 rounded-xl text-white text-sm focus:border-orange-500/50"
+                                      />
+                                      <Input 
+                                        value={member.branch}
+                                        onChange={e => updateTeamMember(idx, "branch", e.target.value)}
+                                        placeholder="Branch (e.g. CS)"
+                                        className="bg-white/[0.03] border-white/5 px-4 h-12 rounded-xl text-white text-sm focus:border-orange-500/50"
+                                      />
+                                    </div>
                                   </div>
                                 </div>
                               </div>

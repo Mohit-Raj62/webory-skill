@@ -32,6 +32,9 @@ const SubmissionSchema = new Schema({
     phone: { type: String, default: "" },
     role: { type: String, default: "" }, // e.g. "Frontend Dev", "Designer"
     college: { type: String, default: "" },
+    course: { type: String, default: "" },
+    branch: { type: String, default: "" },
+    year: { type: String, default: "" },
   }],
   projectName: {
     type: String,

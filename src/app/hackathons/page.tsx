@@ -20,7 +20,13 @@ import {
   Rocket,
   FileCode,
   ListChecks,
-  Clock
+  Clock,
+  Phone,
+  School,
+  GraduationCap,
+  BookOpen,
+  Mail,
+  User as UserIcon
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -131,6 +137,7 @@ interface Hackathon {
   problemStatement?: string;
   totalParticipants: number;
   totalSubmissions?: number;
+  registeredUsers?: { user: string; domain: string }[];
 }
 
 const MOCK_HACKATHON: Hackathon = {
@@ -168,61 +175,97 @@ export default function HackathonArena() {
   const [selectedDomain, setSelectedDomain] = useState("");
   const [targetHackathon, setTargetHackathon] = useState<Hackathon | null>(null);
 
+  // New Registration Form State
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [regForm, setRegForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    college: "",
+    course: "",
+    branch: "",
+    year: ""
+  });
+  const [user, setUser] = useState<any>(null);
+
   const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
-        try {
-            const [resHacks, resSubs] = await Promise.all([
-                fetch("/api/hackathons"),
-                fetch("/api/me/hackathons/certificates")
-            ]);
+      try {
+        const [resHacks, resSubs, resMe] = await Promise.all([
+          fetch("/api/hackathons"),
+          fetch("/api/me/hackathons/certificates"),
+          fetch("/api/auth/me")
+        ]);
 
-            if (resHacks.ok) {
-                const data = await resHacks.json();
-                if (data.data?.length > 0) setHackathons(data.data);
-            }
-
-            if (resSubs.ok) {
-                const data = await resSubs.json();
-                setMySubmissions(data.data || []);
-            }
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
+        if (resHacks.ok) {
+          const data = await resHacks.json();
+          if (data.data?.length > 0) setHackathons(data.data);
         }
+
+        if (resSubs.ok) {
+          const data = await resSubs.json();
+          setMySubmissions(data.data || []);
+        }
+
+        if (resMe.ok) {
+          const data = await resMe.json();
+          if (data.user) {
+            setUser(data.user);
+            setRegForm(prev => ({
+              ...prev,
+              name: `${data.user.firstName} ${data.user.lastName}`,
+              email: data.user.email,
+              phone: data.user.phone || "",
+              college: data.user.education?.[0]?.institution || "",
+              course: data.user.education?.[0]?.degree || ""
+            }));
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchData();
   }, []);
 
-  const handleJoin = async (hackathonId: string, domain?: string) => {
-    if (hackathonId === "preview_1") {
-        return toast.info("This is a preview Hackathon. Real events will appear once published by Admin.");
+  const handleJoin = (hackathon: Hackathon) => {
+    if (hackathon._id === "preview_1") {
+      return toast.info("This is a preview Hackathon. Real events will appear once published by Admin.");
     }
 
-    const hackathon = hackathons.find(h => h._id === hackathonId);
-    if (!hackathon) return;
-
-    // Multiple domains check
-    if (!domain && hackathon.domains && hackathon.domains.length > 0) {
-        if (hackathon.domains.length === 1) {
-            // Auto-join with the only domain
-            return handleJoin(hackathonId, hackathon.domains[0]);
-        }
-        setTargetHackathon(hackathon);
-        setIsDomainModalOpen(true);
+    // Check if already registered
+    const isAlreadyRegistered = user && hackathon.registeredUsers?.some(reg => reg.user === user._id);
+    if (isAlreadyRegistered) {
+        router.push(`/hackathons/${hackathon._id}/submit`);
         return;
     }
+
+    setTargetHackathon(hackathon);
+    setIsRegistering(true);
+  };
+
+  const submitRegistration = async () => {
+    if (!targetHackathon || !regForm.name || !regForm.email || !regForm.phone || !regForm.college || !regForm.course || !regForm.branch || !regForm.year) {
+      return toast.error("Please fill all fields to join the battle!");
+    }
+
+    if (targetHackathon.domains && targetHackathon.domains.length > 0 && !selectedDomain) {
+      return toast.error("Please select a domain/track.");
+    }
     
-    setJoiningId(hackathonId);
+    setJoiningId(targetHackathon._id);
     try {
       const res = await fetch("/api/hackathons/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-            hackathonId, 
-            domain: domain || hackathon.theme || "General" 
+          hackathonId: targetHackathon._id, 
+          domain: selectedDomain || targetHackathon.theme || "General",
+          ...regForm
         })
       });
 
@@ -235,15 +278,15 @@ export default function HackathonArena() {
 
       if (res.ok) {
         toast.success(data.message || "Welcome to the Battle! 🚀");
-        setIsDomainModalOpen(false);
-        router.push(`/hackathons/${hackathonId}/submit`);
+        setIsRegistering(false);
+        router.push(`/hackathons/${targetHackathon._id}/submit`);
       } else {
         toast.error(data.error || "Failed to join");
       }
     } catch (error) {
-        toast.error("Network error. Please try again.");
+      toast.error("Network error. Please try again.");
     } finally {
-        setJoiningId(null);
+      setJoiningId(null);
     }
   };
 
@@ -492,11 +535,17 @@ export default function HackathonArena() {
                                         ) : (
                                             <>
                                                 <Button 
-                                                    onClick={() => handleJoin(h._id)}
+                                                    onClick={() => handleJoin(h)}
                                                     disabled={joiningId === h._id}
                                                     className="flex-1 h-14 rounded-2xl bg-white text-gray-950 font-black uppercase shadow-xl hover:bg-gray-200"
                                                 >
-                                                    {joiningId === h._id ? <Loader2 className="animate-spin" /> : "Join Battle"}
+                                                    {joiningId === h._id ? (
+                                                        <Loader2 className="animate-spin" />
+                                                    ) : (
+                                                        user && h.registeredUsers?.some(reg => reg.user === user._id) 
+                                                            ? "Enter Arena" 
+                                                            : "Join Battle"
+                                                    )}
                                                 </Button>
                                                 <Link 
                                                     href={`/hackathons/${h._id}/submit`}
@@ -657,10 +706,10 @@ export default function HackathonArena() {
                 {/* Modal Footer */}
                 <div className="sticky bottom-0 bg-[#0A0A0A]/95 backdrop-blur-xl border-t border-white/5 px-5 py-4 md:p-8 flex gap-3 md:gap-4">
                   <Button 
-                    onClick={() => { setExpandedId(null); handleJoin(h._id); }}
+                    onClick={() => { setExpandedId(null); handleJoin(h); }}
                     className="flex-1 h-12 md:h-14 rounded-2xl bg-white text-gray-950 font-black uppercase shadow-xl hover:bg-gray-200 text-sm md:text-base"
                   >
-                    Join Battle
+                    {user && h.registeredUsers?.some(reg => reg.user === user._id) ? "Enter Arena" : "Join Battle"}
                   </Button>
                   <Button 
                     onClick={() => setExpandedId(null)}
@@ -710,60 +759,172 @@ export default function HackathonArena() {
           </div>
       </div>
 
-      {/* ═══════ DOMAIN SELECTION MODAL ═══════ */}
+      {/* ═══════ REGISTRATION & DOMAIN MODAL ═══════ */}
       <AnimatePresence>
-        {isDomainModalOpen && targetHackathon && (
+        {isRegistering && targetHackathon && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm"
+            className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md overflow-y-auto"
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-[#0A0A0A] border border-white/10 rounded-3xl p-8 max-w-md w-full shadow-2xl relative"
+              initial={{ scale: 0.9, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 30 }}
+              className="bg-[#0A0A0A] border border-white/10 rounded-[2.5rem] p-6 md:p-10 max-w-2xl w-full shadow-2xl relative my-8"
             >
               <button 
-                onClick={() => setIsDomainModalOpen(false)}
-                className="absolute top-6 right-6 text-gray-500 hover:text-white"
+                onClick={() => setIsRegistering(false)}
+                className="absolute top-8 right-8 text-gray-500 hover:text-white transition-colors"
+                disabled={joiningId !== null}
               >
                 ✕
               </button>
               
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <h3 className="text-2xl font-black uppercase tracking-tight italic">Select Domain</h3>
-                  <p className="text-xs font-medium text-gray-500">Pick a category for <span className="text-orange-500">{targetHackathon.title}</span>. You cannot change this later.</p>
+              <div className="space-y-8">
+                <div className="space-y-3">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-600/10 border border-orange-500/20">
+                        <Rocket className="w-3 h-3 text-orange-500" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-orange-500">Battle Registration</span>
+                    </div>
+                    <h3 className="text-2xl md:text-4xl font-black uppercase tracking-tight italic leading-tight">
+                        Join the <span className="text-orange-500">Arena</span>
+                    </h3>
+                    <p className="text-xs font-medium text-gray-500">
+                        Confirm your details for <span className="text-white font-bold">{targetHackathon.title}</span>. These will be used for certificates and rewards.
+                    </p>
                 </div>
                 
-                <div className="grid grid-cols-1 gap-3 max-h-[300px] overflow-y-auto pr-2">
-                  {targetHackathon.domains.map((domain, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setSelectedDomain(domain)}
-                      className={`p-4 rounded-2xl border transition-all text-left group ${
-                        selectedDomain === domain 
-                          ? 'bg-orange-600/10 border-orange-500 text-white' 
-                          : 'bg-white/5 border-white/5 text-gray-400 hover:border-white/20'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-extrabold uppercase tracking-tight text-xs">{domain}</span>
-                        {selectedDomain === domain && <CheckCircle2 size={16} className="text-orange-500" />}
-                      </div>
-                    </button>
-                  ))}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Basic Info */}
+                    <div className="space-y-4 md:col-span-2">
+                        <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-600 mb-1">Student Credentials</div>
+                    </div>
+
+                    <div className="relative group">
+                        <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600 group-focus-within:text-orange-500 transition-colors" />
+                        <input 
+                            type="text" 
+                            placeholder="Full Name"
+                            value={regForm.name}
+                            onChange={(e) => setRegForm({...regForm, name: e.target.value})}
+                            className="w-full h-14 bg-white/[0.03] border border-white/5 rounded-2xl pl-12 pr-4 text-sm font-bold focus:border-orange-500/50 focus:bg-white/[0.05] transition-all outline-none"
+                        />
+                    </div>
+
+                    <div className="relative group">
+                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600 group-focus-within:text-orange-500 transition-colors" />
+                        <input 
+                            type="email" 
+                            placeholder="Email Address"
+                            value={regForm.email}
+                            onChange={(e) => setRegForm({...regForm, email: e.target.value})}
+                            className="w-full h-14 bg-white/[0.03] border border-white/5 rounded-2xl pl-12 pr-4 text-sm font-bold focus:border-orange-500/50 focus:bg-white/[0.05] transition-all outline-none"
+                        />
+                    </div>
+
+                    <div className="relative group">
+                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600 group-focus-within:text-orange-500 transition-colors" />
+                        <input 
+                            type="text" 
+                            placeholder="Phone Number"
+                            value={regForm.phone}
+                            onChange={(e) => setRegForm({...regForm, phone: e.target.value})}
+                            className="w-full h-14 bg-white/[0.03] border border-white/5 rounded-2xl pl-12 pr-4 text-sm font-bold focus:border-orange-500/50 focus:bg-white/[0.05] transition-all outline-none"
+                        />
+                    </div>
+
+                    <div className="relative group">
+                        <School className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600 group-focus-within:text-orange-500 transition-colors" />
+                        <input 
+                            type="text" 
+                            placeholder="College Name"
+                            value={regForm.college}
+                            onChange={(e) => setRegForm({...regForm, college: e.target.value})}
+                            className="w-full h-14 bg-white/[0.03] border border-white/5 rounded-2xl pl-12 pr-4 text-sm font-bold focus:border-orange-500/50 focus:bg-white/[0.05] transition-all outline-none"
+                        />
+                    </div>
+
+                    <div className="relative group">
+                        <GraduationCap className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600 group-focus-within:text-orange-500 transition-colors" />
+                        <input 
+                            type="text" 
+                            placeholder="Course (e.g. B.Tech)"
+                            value={regForm.course}
+                            onChange={(e) => setRegForm({...regForm, course: e.target.value})}
+                            className="w-full h-14 bg-white/[0.03] border border-white/5 rounded-2xl pl-12 pr-4 text-sm font-bold focus:border-orange-500/50 focus:bg-white/[0.05] transition-all outline-none"
+                        />
+                    </div>
+
+                    <div className="relative group">
+                        <BookOpen className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600 group-focus-within:text-orange-500 transition-colors" />
+                        <input 
+                            type="text" 
+                            placeholder="Branch (e.g. CSE)"
+                            value={regForm.branch}
+                            onChange={(e) => setRegForm({...regForm, branch: e.target.value})}
+                            className="w-full h-14 bg-white/[0.03] border border-white/5 rounded-2xl pl-12 pr-4 text-sm font-bold focus:border-orange-500/50 focus:bg-white/[0.05] transition-all outline-none"
+                        />
+                    </div>
+
+                    <div className="relative group md:col-span-1">
+                        <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600 group-focus-within:text-orange-500 transition-colors" />
+                        <select 
+                            value={regForm.year}
+                            onChange={(e) => setRegForm({...regForm, year: e.target.value})}
+                            className="w-full h-14 bg-white/[0.03] border border-white/5 rounded-2xl pl-12 pr-4 text-sm font-bold focus:border-orange-500/50 focus:bg-white/[0.05] transition-all outline-none appearance-none"
+                        >
+                            <option value="" disabled className="bg-black">Select Year</option>
+                            <option value="1st Year" className="bg-black">1st Year</option>
+                            <option value="2nd Year" className="bg-black">2nd Year</option>
+                            <option value="3rd Year" className="bg-black">3rd Year</option>
+                            <option value="4th Year" className="bg-black">4th Year</option>
+                            <option value="Graduated" className="bg-black">Graduated</option>
+                        </select>
+                    </div>
+
+                    {/* Domain Selection if applicable */}
+                    {targetHackathon.domains && targetHackathon.domains.length > 0 && (
+                        <div className="md:col-span-2 space-y-3 pt-4 border-t border-white/5">
+                            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-600">Select Domain Track</div>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                {targetHackathon.domains.map((domain, idx) => (
+                                    <button
+                                        key={idx}
+                                        onClick={() => setSelectedDomain(domain)}
+                                        className={`px-4 py-3 rounded-xl border text-[10px] font-black uppercase tracking-tight transition-all ${
+                                            selectedDomain === domain 
+                                                ? 'bg-orange-600/20 border-orange-500 text-orange-500 shadow-lg shadow-orange-500/10' 
+                                                : 'bg-white/5 border-white/5 text-gray-500 hover:border-white/20'
+                                        }`}
+                                    >
+                                        {domain}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
                 
                 <Button 
-                  onClick={() => handleJoin(targetHackathon._id, selectedDomain)}
-                  disabled={!selectedDomain || joiningId !== null}
-                  className="w-full h-14 bg-white text-black font-black uppercase rounded-2xl hover:bg-orange-600 hover:text-white transition-all shadow-xl"
+                  onClick={submitRegistration}
+                  disabled={joiningId !== null}
+                  className="w-full h-16 bg-white text-black font-black uppercase rounded-3xl hover:bg-orange-600 hover:text-white transition-all shadow-2xl flex items-center justify-center gap-3 group"
                 >
-                  {joiningId ? <Loader2 className="animate-spin" /> : "Confirm Registration"}
+                  {joiningId ? (
+                    <Loader2 className="animate-spin" />
+                  ) : (
+                    <>
+                        Enter Battle Arena
+                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </>
+                  )}
                 </Button>
+
+                <p className="text-center text-[9px] font-bold text-gray-600 uppercase tracking-widest">
+                    By entering, you agree to the hackathon rules and guidelines.
+                </p>
               </div>
             </motion.div>
           </motion.div>

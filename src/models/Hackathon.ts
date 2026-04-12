@@ -68,6 +68,13 @@ const HackathonSchema = new Schema({
       ref: "User",
     },
     domain: String,
+    name: String,
+    email: String,
+    phone: String,
+    college: String,
+    course: String,
+    branch: String,
+    year: String,
     createdAt: {
       type: Date,
       default: Date.now,
