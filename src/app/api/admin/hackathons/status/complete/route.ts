@@ -6,6 +6,7 @@ import CustomCertificate from "@/models/CustomCertificate";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import crypto from "crypto";
+import { sendEmail, emailTemplates } from "@/lib/mail";
 
 export async function POST(req: Request) {
   try {
@@ -62,6 +63,8 @@ export async function POST(req: Request) {
         await User.findByIdAndUpdate(sub.userId._id, { $inc: { xp: xpDiff } });
       }
 
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in";
+
       // Check if certificate already exists for this submission
       let certificate;
       const title = isWinner 
@@ -89,6 +92,18 @@ export async function POST(req: Request) {
           domain: hackathon.theme,
         });
         sub.certificateId = certificate._id;
+
+        // --- EMAIL NOTIFICATION (MAIN USER) ---
+        await sendEmail(
+          sub.userId.email,
+          `Certificate: ${hackathon.title}`,
+          emailTemplates.hackathonCertificate(
+            `${sub.userId.firstName} ${sub.userId.lastName}`,
+            hackathon.title,
+            `${baseUrl}/certificates/${certId}`,
+            isWinner ? "winner" : "participant"
+          )
+        );
       } else {
         // Already has certificate — update title/description if rank changed
         await CustomCertificate.findByIdAndUpdate(sub.certificateId, { 
@@ -106,7 +121,86 @@ export async function POST(req: Request) {
       sub.status = isWinner ? "winner" : "participated";
       if (isWinner) sub.rank = winnerData.rank;
       else sub.rank = 0;
-      (sub as any).xpAwarded = newXp; // Track how much XP was given
+      (sub as any).xpAwarded = newXp; 
+
+      // --- TEAM MEMBERS PROCESSING ---
+      if (sub.participationType === "team" && sub.teamMemberDetails && sub.teamMemberDetails.length > 0) {
+        if (!sub.certificates) sub.certificates = [];
+
+        // Also add the main user to the certificates array if not already there
+        const mainUserInCerts = sub.certificates.find((c: any) => c.email === sub.userId.email);
+        if (!mainUserInCerts && sub.certificateId) {
+          sub.certificates.push({
+            name: `${sub.userId.firstName} ${sub.userId.lastName}`,
+            email: sub.userId.email,
+            certificateId: sub.certificateId
+          });
+        }
+
+        for (const member of sub.teamMemberDetails) {
+          // Skip the main submitter as they are already processed
+          if (member.email === sub.userId.email) continue;
+
+          // Award XP to registered team members
+          if (xpDiff !== 0) {
+            const memberUser = await User.findOne({ email: member.email });
+            if (memberUser) {
+              await User.findByIdAndUpdate(memberUser._id, { $inc: { xp: xpDiff } });
+            }
+          }
+
+          // Generate/Update certificate for team member
+          const existingMemberCert = sub.certificates.find((c: any) => c.email === member.email);
+          
+          if (!existingMemberCert) {
+            const certId = "WEBORY-" + crypto.randomBytes(4).toString("hex").toUpperCase();
+            const certKey = crypto.randomBytes(16).toString("hex");
+
+            const memberCert = await CustomCertificate.create({
+              studentName: member.name,
+              title,
+              description,
+              certificateId: certId,
+              certificateKey: certKey,
+              issuedAt: hackathon.endDate,
+              type: isWinner ? "winner" : "participant",
+              rank: isWinner ? winnerData.rank : 0,
+              hackathonTitle: hackathon.title,
+              projectName: sub.projectName,
+              domain: hackathon.theme,
+            });
+
+            sub.certificates.push({
+              name: member.name,
+              email: member.email,
+              certificateId: memberCert._id
+            });
+
+            // --- EMAIL NOTIFICATION (TEAM MEMBER) ---
+            await sendEmail(
+              member.email,
+              `Certificate: ${hackathon.title}`,
+              emailTemplates.hackathonCertificate(
+                member.name,
+                hackathon.title,
+                `${baseUrl}/certificates/${certId}`,
+                isWinner ? "winner" : "participant"
+              )
+            );
+          } else {
+            await CustomCertificate.findByIdAndUpdate(existingMemberCert.certificateId, {
+              title,
+              description,
+              type: isWinner ? "winner" : "participant",
+              rank: isWinner ? winnerData.rank : 0,
+              hackathonTitle: hackathon.title,
+              projectName: sub.projectName,
+              domain: hackathon.theme,
+            });
+          }
+        }
+      }
+
       await sub.save();
 
       certificateResults.push({ 

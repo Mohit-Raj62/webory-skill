@@ -79,6 +79,11 @@ const SubmissionSchema = new Schema({
     type: Number,
     default: 0, // Tracks XP given to prevent duplicates and enable rank change adjustments
   },
+  certificates: [{
+    name: String,
+    email: String,
+    certificateId: { type: Schema.Types.ObjectId, ref: "CustomCertificate" }
+  }],
   createdAt: {
     type: Date,
     default: Date.now,

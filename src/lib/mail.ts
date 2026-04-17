@@ -356,4 +356,35 @@ export const emailTemplates = {
       <p>Best Regards,<br/>Webory Skills System</p>
     </div>
   `,
+  hackathonCertificate: (
+    name: string,
+    hackathonTitle: string,
+    certificateLink: string,
+    type: "winner" | "participant"
+  ) => `
+    <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #ea580c;">${type === "winner" ? "Hackathon Winner! 🏆" : "Certificate of Participation! 🎓"}</h2>
+      <p>Hi ${name},</p>
+      <p>Congratulations on your ${type === "winner" ? "outstanding performance" : "active participation"} in <strong>${hackathonTitle}</strong>!</p>
+      
+      <div style="background: linear-gradient(135deg, #ea580c 0%, #ff9933 100%); padding: 30px; border-radius: 20px; text-align: center; margin: 30px 0; box-shadow: 0 10px 20px rgba(234, 88, 12, 0.2);">
+        <p style="color: white; font-size: 40px; margin: 0;">🏅</p>
+        <p style="color: white; font-size: 20px; font-weight: bold; margin: 10px 0;">Hackathon Certificate</p>
+        <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 14px;">${hackathonTitle}</p>
+      </div>
+
+      <p>You can view and download your certificate using the link below. No login is required to view this link.</p>
+      
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${certificateLink}" style="background-color: #ea580c; color: white; padding: 14px 35px; text-decoration: none; border-radius: 12px; display: inline-block; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">View My Certificate</a>
+      </div>
+
+      <p style="color: #666; font-size: 14px; line-height: 1.6;">
+        Share your achievement on LinkedIn and tag <strong>Webory Skills</strong> to celebrate your success with the community!
+      </p>
+      
+      <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+      <p style="color: #999; font-size: 12px; text-align: center;">Best Regards,<br/>Webory Skills Team</p>
+    </div>
+  `,
 };
