@@ -232,6 +232,20 @@ export default function HackathonJudgingPage() {
                                             }`}>
                                                 {sub.participationType === 'team' ? `👥 Team: ${sub.teamName}` : '👤 Individual'}
                                             </div>
+
+                                            {/* Domain Badge */}
+                                            {(() => {
+                                                const regUser = hackathon?.registeredUsers?.find((reg: any) => 
+                                                    (reg.user?._id || reg.user)?.toString() === sub.userId?._id?.toString()
+                                                );
+                                                const domain = regUser?.domain;
+                                                if (!domain) return null;
+                                                return (
+                                                    <div className="px-2 py-0.5 rounded-md bg-orange-500/10 text-orange-400 text-[8px] font-black uppercase tracking-widest border border-orange-500/20">
+                                                        🎯 {domain}
+                                                    </div>
+                                                );
+                                            })()}
                                         </div>
 
                                         {/* Team Members Details (if team) */}
