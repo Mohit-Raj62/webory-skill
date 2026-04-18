@@ -50,7 +50,7 @@ export async function POST(req: Request) {
       const winnerData = winners?.find((w: any) => w.userId === sub.userId._id.toString());
       
       // Calculate new XP
-      const newXp = isWinner ? (winnerData.rank === 1 ? 500 : winnerData.rank === 2 ? 300 : 100) : 50;
+      const newXp = isWinner ? (winnerData.rank === 1 ? 5000 : winnerData.rank === 2 ? 3000 : 1000) : 500;
       
       // Get previously awarded XP (stored on submission)
       const previousXp = (sub as any).xpAwarded || 0;

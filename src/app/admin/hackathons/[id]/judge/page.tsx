@@ -53,7 +53,7 @@ export default function HackathonJudgingPage() {
                     .map((sub: any) => ({
                         userId: sub.userId._id,
                         rank: sub.rank,
-                        points: sub.rank === 1 ? 500 : sub.rank === 2 ? 300 : 100
+                        points: sub.rank === 1 ? 5000 : sub.rank === 2 ? 3000 : 1000
                     }));
                 
                 if (existingRanks.length > 0) {
@@ -110,7 +110,7 @@ export default function HackathonJudgingPage() {
             }
             // Overwrite existing rank for this user if they had one
             const filtered = prev.filter(r => r.userId !== userId);
-            return [...filtered, { userId, rank, points: rank === 1 ? 500 : rank === 2 ? 300 : 100 }];
+            return [...filtered, { userId, rank, points: rank === 1 ? 5000 : rank === 2 ? 3000 : 1000 }];
         });
     };
 
@@ -184,7 +184,7 @@ export default function HackathonJudgingPage() {
                     { label: "Submissions", value: submissions.length, icon: Code, color: "text-blue-500" },
                     { label: "Ranked", value: results.length, icon: Trophy, color: "text-yellow-500" },
                     { label: "Participants", value: hackathon?.registeredUsers?.length || 0, icon: Users, color: "text-purple-500" },
-                    { label: "Total XP", value: (results.reduce((acc, r) => acc + r.points, 0)) + ((submissions.length - results.length) * 50), icon: Zap, color: "text-orange-500" },
+                    { label: "Total XP", value: (results.reduce((acc, r) => acc + r.points, 0)) + ((submissions.length - results.length) * 500), icon: Zap, color: "text-orange-500" },
                 ].map((stat, i) => (
                     <div key={i} className="bg-white/5 border border-white/5 p-4 rounded-3xl backdrop-blur-xl">
                         <div className="flex items-center gap-3 mb-1">
