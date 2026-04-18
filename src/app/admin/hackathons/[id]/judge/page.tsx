@@ -16,7 +16,8 @@ import {
     Users,
     Zap,
     ExternalLink,
-    Code
+    Code,
+    GraduationCap
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -43,11 +44,12 @@ export default function HackathonJudgingPage() {
             const res = await fetch(`/api/admin/hackathons/${id}/submissions`);
             const data = await res.json();
             if (res.ok) {
-                setSubmissions(data.data);
+                const dataArray = Array.isArray(data.data) ? data.data : [];
+                setSubmissions(dataArray);
                 
                 // Pre-fill visual state for previously finalized ranks
-                const existingRanks = data.data
-                    .filter((sub: any) => sub.rank && sub.rank > 0)
+                const existingRanks = dataArray
+                    .filter((sub: any) => sub?.userId && sub.rank && sub.rank > 0)
                     .map((sub: any) => ({
                         userId: sub.userId._id,
                         rank: sub.rank,
@@ -124,8 +126,8 @@ export default function HackathonJudgingPage() {
     }
 
     const filteredSubmissions = submissions.filter(s => 
-        s.projectName.toLowerCase().includes(search.toLowerCase()) || 
-        `${s.userId.firstName} ${s.userId.lastName}`.toLowerCase().includes(search.toLowerCase())
+        (s.projectName || "").toLowerCase().includes(search.toLowerCase()) || 
+        `${s.userId?.firstName || ""} ${s.userId?.lastName || ""}`.toLowerCase().includes(search.toLowerCase())
     );
 
     return (
@@ -198,7 +200,7 @@ export default function HackathonJudgingPage() {
             <div className="space-y-8">
                 <AnimatePresence mode="popLayout">
                     {filteredSubmissions.map((sub, i) => {
-                        const winResult = results.find(r => r.userId === sub.userId._id);
+                        const winResult = results.find(r => r.userId === sub.userId?._id);
                         return (
                             <motion.div 
                                 key={sub._id}
@@ -217,7 +219,7 @@ export default function HackathonJudgingPage() {
                                     <div className="flex-1 min-w-0 space-y-3">
                                         <div className="flex flex-wrap items-center gap-3 opacity-60">
                                             <div className="px-2 py-0.5 rounded-md bg-white/5 text-gray-400 text-[8px] font-black uppercase tracking-widest border border-white/10">
-                                                {sub.userId.firstName} {sub.userId.lastName}
+                                                {sub.userId?.firstName || "Unknown"} {sub.userId?.lastName || "User"}
                                             </div>
                                             <div className="flex items-center gap-1.5 text-[8px] font-black text-gray-700 uppercase tracking-widest leading-none">
                                                 <Calendar size={10} /> {new Date(sub.createdAt).toLocaleDateString()}
@@ -277,7 +279,7 @@ export default function HackathonJudgingPage() {
                                         <div className="group/title relative">
                                             <h3 className="text-sm font-mono text-blue-400/90 leading-relaxed break-all bg-blue-500/5 p-2 rounded-lg border border-blue-500/10">
                                                 <span className="text-blue-500/30 mr-2">$</span>
-                                                {sub.projectName}
+                                                {sub.projectName || "Untitled Project"}
                                             </h3>
                                             <p className="text-gray-600 text-[10px] font-medium line-clamp-2 hover:line-clamp-none transition-all duration-300 leading-relaxed mt-2 max-w-4xl break-all">
                                                 {sub.projectDescription || "No detailed project description provided."}
@@ -308,7 +310,7 @@ export default function HackathonJudgingPage() {
                                             ].map(r => (
                                                 <button 
                                                     key={r.rank}
-                                                    onClick={() => toggleWinner(sub.userId._id, r.rank)}
+                                                    onClick={() => sub.userId?._id && toggleWinner(sub.userId._id, r.rank)}
                                                     className={`w-14 h-10 rounded-lg flex items-center justify-center text-[10px] font-black transition-all duration-300 ${
                                                         winResult?.rank === r.rank 
                                                             ? `${r.color} text-black shadow-xl ${r.glow} scale-105` 
