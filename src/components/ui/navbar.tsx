@@ -180,9 +180,9 @@ export function Navbar() {
                                     className="flex items-center gap-2 px-2 xl:px-3 py-1.5 rounded-xl bg-white/[0.06] border border-white/[0.08] hover:border-blue-500/30 hover:bg-white/[0.08] transition-all duration-300 cursor-pointer"
                                 >
                                     <div className="w-6 h-6 xl:w-7 xl:h-7 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-[10px] xl:text-xs font-bold text-white shadow-inner">
-                                        {user.firstName[0]}
+                                        {user?.firstName?.[0] || 'U'}
                                     </div>
-                                    <span className="text-xs xl:text-sm font-medium text-gray-200">{user.firstName}</span>
+                                    <span className="text-xs xl:text-sm font-medium text-gray-200">{user?.firstName || 'User'}</span>
                                 </motion.div>
                             </Link>
                         ) : (
@@ -221,7 +221,7 @@ export function Navbar() {
                             {user ? (
                                 <Link href={user.role === 'admin' ? "/admin" : "/profile"}>
                                     <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white shadow-lg border border-white/10 active:scale-95 transition-transform">
-                                        {user.firstName[0]}
+                                        {user?.firstName?.[0] || 'U'}
                                     </div>
                                 </Link>
                             ) : (

@@ -94,7 +94,7 @@ export function ProfileClientContent({
                         <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-2xl animate-pulse" />
                         <div className="w-24 h-24 md:w-28 md:h-28 rounded-full p-1 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 relative z-10 shadow-2xl">
                             <div className="w-full h-full rounded-full bg-slate-950 flex items-center justify-center text-3xl md:text-4xl font-black text-white tracking-tighter">
-                                {user.firstName[0]}{user.lastName[0]}
+                                {user?.firstName?.[0] || 'U'}{user?.lastName?.[0] || ''}
                             </div>
                         </div>
                         <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-emerald-500 rounded-full border-4 border-slate-900 flex items-center justify-center z-20 shadow-lg">
@@ -105,7 +105,7 @@ export function ProfileClientContent({
                     <div className="flex-1 text-center md:text-left relative z-10">
                         <div className="flex flex-col md:flex-row md:items-center gap-3 mb-2 justify-center md:justify-start">
                             <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">
-                                {user.firstName} {user.lastName}
+                                {user?.firstName || 'User'} {user?.lastName || ''}
                             </h1>
                             <span className="hidden md:block text-slate-700 font-light text-xl">|</span>
                             <span className="inline-flex items-center px-3 py-1 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-widest self-center">

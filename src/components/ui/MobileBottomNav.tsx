@@ -80,25 +80,25 @@ export function MobileBottomNav() {
         }
 
         // Specific fix for AI Mentor immersive mode
-        const observer = new MutationAttributeObserver((mutations) => {
-            mutations.forEach((mutation) => {
-              if (mutation.type === "attributes" && mutation.attributeName === "class") {
-                setIsHiddenByMain(document.body.classList.contains("hide-mobile-bottom-nav"));
-              }
+        let observer: MutationObserver | null = null;
+        if (typeof window !== 'undefined' && window.MutationObserver) {
+            observer = new window.MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === "attributes" && mutation.attributeName === "class") {
+                        setIsHiddenByMain(document.body.classList.contains("hide-mobile-bottom-nav"));
+                    }
+                });
             });
-          });
-          
-        observer.observe(document.body, { attributes: true });
-        setIsHiddenByMain(document.body.classList.contains("hide-mobile-bottom-nav"));
+
+            observer.observe(document.body, { attributes: true });
+            setIsHiddenByMain(document.body.classList.contains("hide-mobile-bottom-nav"));
+        }
 
         return () => {
             document.body.classList.remove('pb-32');
-            observer.disconnect();
+            if (observer) observer.disconnect();
         };
     }, []);
-
-    // Helper class for MutationObserver (standard in modern browsers)
-    const MutationAttributeObserver = window.MutationObserver;
 
     // Only show on mobile AND in standalone mode
     // Hide on admin and teacher pages, or when suppressed by main content
