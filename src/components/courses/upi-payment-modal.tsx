@@ -79,20 +79,34 @@ export function UPIPaymentModal({
             return;
         }
 
+        const itemType = courseId ? "course" : internshipId ? "internship" : "course";
+        const itemId = courseId || internshipId;
+
         setValidatingPromo(true);
         try {
             const res = await fetch("/api/promo-codes/validate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ code: promoCode, orderValue: price })
+                body: JSON.stringify({ 
+                    code: promoCode, 
+                    price: price, // API expects 'price' or 'orderValue'
+                    itemType,
+                    itemId
+                })
             });
 
             const data = await res.json();
 
             if (res.ok && data.valid) {
                 setAppliedPromo(data.promoCode);
-                setFinalPrice(data.finalPrice);
-                toast.success(`Promo code applied! You saved ₹${price - data.finalPrice}`);
+                // The API now returns finalPrice, but if not, we calculate it
+                const calculatedFinalPrice = data.finalPrice || (
+                    data.promoCode.discountType === "percentage" 
+                        ? Math.round(price * (1 - data.promoCode.discountValue / 100))
+                        : Math.max(0, price - data.promoCode.discountValue)
+                );
+                setFinalPrice(calculatedFinalPrice);
+                toast.success(`Promo code applied! You saved ₹${price - calculatedFinalPrice}`);
             } else {
                 setErrorMessage(data.error || "Invalid promo code");
                 toast.error(data.error || "Invalid promo code");

@@ -18,6 +18,7 @@ export default function PromoCodesPage() {
         maxUses: "",
         expiresAt: "",
         isActive: true,
+        applicableTo: "both",
     });
 
     useEffect(() => {
@@ -100,6 +101,7 @@ export default function PromoCodesPage() {
                 maxUses: code.maxUses || "",
                 expiresAt: code.expiresAt ? new Date(code.expiresAt).toISOString().split('T')[0] : "",
                 isActive: code.isActive,
+                applicableTo: code.applicableTo || "both",
             });
         } else {
             setEditingId(null);
@@ -111,6 +113,7 @@ export default function PromoCodesPage() {
                 maxUses: "",
                 expiresAt: "",
                 isActive: true,
+                applicableTo: "both",
             });
         }
         setIsModalOpen(true);
@@ -190,6 +193,13 @@ export default function PromoCodesPage() {
                                                 • Expires: {new Date(code.expiresAt).toLocaleDateString()}
                                             </span>
                                         )}
+                                        <span className={`ml-2 px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                                            code.applicableTo === "course" ? "bg-orange-500/20 text-orange-400" :
+                                            code.applicableTo === "internship" ? "bg-green-500/20 text-green-400" :
+                                            "bg-gray-500/20 text-gray-400"
+                                        }`}>
+                                            {code.applicableTo || "both"}
+                                        </span>
                                     </p>
                                 </div>
                             </div>
@@ -272,6 +282,19 @@ export default function PromoCodesPage() {
                                         onChange={(e) => setFormData({ ...formData, discountValue: Number(e.target.value) })}
                                     />
                                 </div>
+                            </div>
+                            
+                            <div>
+                                <label className="text-sm text-gray-300 block mb-2">Applicable To</label>
+                                <select
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none"
+                                    value={formData.applicableTo}
+                                    onChange={(e) => setFormData({ ...formData, applicableTo: e.target.value })}
+                                >
+                                    <option value="both">Both (Course & Internship)</option>
+                                    <option value="course">Course Only</option>
+                                    <option value="internship">Internship Only</option>
+                                </select>
                             </div>
 
                             <div>

@@ -106,6 +106,7 @@ export function PaymentModal({
                 body: JSON.stringify({
                     code: promoCode,
                     itemType: resourceType,
+                    itemId: resourceId,
                     price: price,
                 }),
             });

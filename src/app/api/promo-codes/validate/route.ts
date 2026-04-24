@@ -104,9 +104,19 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Calculate final price
+    const orderValue = body.price || body.orderValue || 0;
+    let finalPrice = orderValue;
+    if (promoCode.discountType === "percentage") {
+      finalPrice = Math.round(orderValue * (1 - promoCode.discountValue / 100));
+    } else {
+      finalPrice = Math.max(0, orderValue - promoCode.discountValue);
+    }
+
     return NextResponse.json(
       {
         valid: true,
+        finalPrice,
         promoCode: {
           code: promoCode.code,
           discountType: promoCode.discountType,
