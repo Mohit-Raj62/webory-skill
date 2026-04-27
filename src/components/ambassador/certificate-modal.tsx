@@ -50,6 +50,7 @@ export const CertificateModal = ({ isOpen, onClose, reward, stats, user }: Certi
           <div className="relative w-full overflow-hidden bg-[#111] p-0 md:p-8 flex justify-center pb-24 print:pb-0 print:p-0 print:bg-white print:overflow-visible my-12 md:my-0 print:m-0">
             {/* Flexible Scaling Container */}
             <div 
+                id="certificate-container-parent"
                 className="relative mx-auto overflow-hidden shadow-2xl print:shadow-none print:overflow-visible"
                 style={{
                     width: `${1122 * certScale}px`,
@@ -287,12 +288,17 @@ export const CertificateModal = ({ isOpen, onClose, reward, stats, user }: Certi
         
         {reward.id === "cert" && (
           <div className="absolute inset-x-0 bottom-0 bg-black/80 backdrop-blur-md p-4 flex justify-center gap-4 border-t border-white/10 z-30 print:hidden">
-            <Button 
-                className="bg-white text-black hover:bg-gray-200"
-                onClick={() => window.print()}
-            >
-                Print / Save as PDF
-            </Button>
+            <div className="flex flex-col items-center gap-2">
+                <Button 
+                    className="bg-white text-black hover:bg-gray-200"
+                    onClick={() => window.print()}
+                >
+                    Print / Save as PDF
+                </Button>
+                <p className="text-[10px] text-yellow-400/60 font-medium animate-pulse">
+                    Tip: Enable "Background graphics" in print settings for the best look!
+                </p>
+            </div>
             <Button variant="outline" className="border-white/10 hover:bg-white/5 text-white" onClick={onClose}>Close</Button>
           </div>
         )}
@@ -316,24 +322,48 @@ export const CertificateModal = ({ isOpen, onClose, reward, stats, user }: Certi
                   margin: 0;
               }
               html, body {
-                  width: 100%;
-                  height: 100%;
+                  width: 100% !important;
+                  height: 100% !important;
                   margin: 0 !important;
                   padding: 0 !important;
-                  overflow: hidden !important;
+                  overflow: visible !important;
                   background-color: white !important;
-                  -webkit-print-color-adjust: exact;
-                  print-color-adjust: exact;
+                  -webkit-print-color-adjust: exact !important;
+                  print-color-adjust: exact !important;
+              }
+              body {
+                  visibility: hidden !important;
+              }
+              /* Reset all potential parent containers that might shift the certificate */
+              main, .container, #certificate-container-parent {
+                  display: block !important;
+                  visibility: hidden !important;
+                  position: static !important;
+                  margin: 0 !important;
+                  padding: 0 !important;
+                  width: auto !important;
+                  height: auto !important;
+                  overflow: visible !important;
+              }
+              #certificate-container, 
+              #certificate-container * {
+                  visibility: visible !important;
+                  -webkit-print-color-adjust: exact !important;
               }
               #certificate-container {
-                  position: absolute !important;
+                  position: fixed !important;
                   left: 0 !important;
                   top: 0 !important;
                   margin: 0 !important;
                   padding: 0 !important;
-                  width: 1122px !important;
-                  height: 794px !important;
+                  width: 297mm !important;
+                  height: 210mm !important;
                   display: block !important;
+                  z-index: 9999999 !important;
+                  background: radial-gradient(circle at center, #ffffff 0%, #f9f7f2 100%) !important;
+                  transform: scale(1) !important;
+                  transform-origin: top left !important;
+                  page-break-after: avoid !important;
               }
           }
         `}</style>

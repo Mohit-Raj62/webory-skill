@@ -32,7 +32,7 @@ export function RewardsHistory({ history }: { history: any[] }) {
                             <tr key={historyItem._id || i} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
                                 <td className="p-4 px-6 font-medium text-white">{historyItem.item}</td>
                                 <td className="p-4 px-6 text-yellow-400 font-bold">-{historyItem.pointsSpent} pts</td>
-                                <td className="p-4 px-6 text-gray-400">{new Date(historyItem.createdAt).toLocaleDateString()}</td>
+                                <td className="p-4 px-6 text-gray-400">{new Date(historyItem.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
                                 <td className="p-4 px-6">
                                     <span className={`px-3 py-1 text-xs font-bold rounded-full border ${
                                         historyItem.status === 'pending' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' :

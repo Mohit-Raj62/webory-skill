@@ -76,7 +76,7 @@ export function RewardsStore({ stats, rewardsHistory, onRedeemSuccess, user }: a
 
   return (
     <>
-      <div>
+      <div className="print:hidden">
         <div className="flex items-center gap-3 mb-8">
             <div className="p-3 rounded-2xl bg-purple-500/10 text-purple-400">
                  <ShoppingBag size={24} /> 
@@ -149,7 +149,7 @@ export function RewardsStore({ stats, rewardsHistory, onRedeemSuccess, user }: a
       </div>
 
       {showAddressModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200 print:hidden">
               <div className="bg-[#111] border border-white/10 p-8 rounded-3xl max-w-md w-full shadow-2xl relative">
                   <div className="absolute top-4 right-4 text-gray-500 hover:text-white cursor-pointer" onClick={() => { setShowAddressModal(null); setAddress(""); }}>
                       <AlertCircle size={24} className="rotate-45" />

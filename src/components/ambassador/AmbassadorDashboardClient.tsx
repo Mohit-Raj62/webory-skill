@@ -38,7 +38,7 @@ export function AmbassadorDashboardClient({
   return (
     <div className="space-y-10">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 print:hidden">
           <div>
               <h1 className="text-3xl md:text-4xl font-bold mb-2">
                   Welcome, <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 uppercase">{user?.firstName || stats?.firstName || "Ambassador"}</span> 👋
@@ -55,9 +55,13 @@ export function AmbassadorDashboardClient({
           </div>
       </div>
 
-      <AmbassadorStats stats={stats} rewardsHistory={history} />
+      <div className="print:hidden">
+        <AmbassadorStats stats={stats} rewardsHistory={history} />
+      </div>
       
-      <TestimonialEditor initialTestimonial={stats.testimonial || ""} />
+      <div className="print:hidden">
+        <TestimonialEditor initialTestimonial={stats.testimonial || ""} />
+      </div>
       
       <RewardsStore 
         stats={stats} 
@@ -66,7 +70,9 @@ export function AmbassadorDashboardClient({
         user={user}
       />
       
-      <RewardsHistory history={history} />
+      <div className="print:hidden">
+        <RewardsHistory history={history} />
+      </div>
     </div>
   );
 }

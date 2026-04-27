@@ -165,7 +165,7 @@ export default async function AmbassadorDashboard() {
     <main className="min-h-screen bg-black text-white font-sans selection:bg-blue-500/30 print:bg-white print:min-h-0 relative">
       <div className="print:hidden"><Navbar /></div>
 
-      <div className="pt-24 pb-20 container mx-auto px-4 md:px-8 print:hidden">
+      <div className="pt-24 pb-20 container mx-auto px-4 md:px-8">
         <AmbassadorDashboardClient 
           initialStats={serializedStats} 
           initialHistory={history} 
