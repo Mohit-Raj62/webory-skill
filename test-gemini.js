@@ -1,23 +1,19 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { NextResponse } from "next/server";
+require('dotenv').config({ path: '.env.local' });
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
-export async function POST(req: Request) {
-    try {
-        const { context } = await req.json();
-        const businessContext = context || "A fast-growing B2B SaaS startup.";
+async function test() {
+    const model = genAI.getGenerativeModel({ 
+        model: "gemini-2.5-flash",
+        generationConfig: {
+            responseMimeType: "application/json",
+        }
+    });
 
-        const model = genAI.getGenerativeModel({ 
-            model: "gemini-2.5-flash",
-            generationConfig: {
-                responseMimeType: "application/json",
-            }
-        }); // Use latest stable gemini
-
-        const prompt = `
+    const prompt = `
             You are the Nexus (Chief Executive Agent) of Agent OS, an AI-powered business operating system.
-            The user is the Founder of: ${businessContext}.
+            The user is the Founder of: A fast-growing B2B SaaS startup.
 
             Generate a morning briefing and exactly 3 pending tasks for the founder to approve.
             The tasks MUST involve exactly one from Sales, one from Marketing, and one from any other department.
@@ -50,37 +46,15 @@ export async function POST(req: Request) {
             }
         `;
 
+    try {
         const result = await model.generateContent(prompt);
         const response = await result.response;
-        let text = response.text();
-        
-        // Strip markdown code block markers if present, even with JSON mime type enabled
-        text = text.replace(/```json/g, "").replace(/```/g, "").trim();
-
-        let data;
-        try {
-            data = JSON.parse(text);
-        } catch (parseError) {
-            console.error("Agent OS Generate JSON Parse Error. Raw text:", text);
-            throw new Error("Failed to parse AI JSON response");
-        }
-
-        // Add extra fields needed by UI
-        const tasksWithUiState = data.tasks.map((task: any, index: number) => ({
-            ...task,
-            id: `generated_task_${index}_${Date.now()}`,
-            status: 'pending',
-            time: 'Just now',
-            result: null
-        }));
-
-        return NextResponse.json({ 
-            ceoMessage: data.ceoMessage, 
-            tasks: tasksWithUiState 
-        });
-
-    } catch (error: any) {
-        console.error("Agent OS Generate Error:", error.message || error);
-        return NextResponse.json({ error: "Failed to generate morning briefing", details: error.message }, { status: 500 });
+        console.log("Raw text:", response.text());
+        JSON.parse(response.text());
+        console.log("JSON is valid.");
+    } catch (e) {
+        console.error("Error:", e);
     }
 }
+
+test();

@@ -6,7 +6,7 @@ import {
     Briefcase, Users, TrendingUp, DollarSign, Megaphone, Settings, 
     CheckCircle, XCircle, Clock, Activity, MessageSquare, Play, 
     ChevronRight, Zap, Shield, Search, Bell, Menu, Cpu, ArrowUpRight,
-    BarChart3, UserCheck, LayoutDashboard, BrainCircuit, Check, X, Loader2
+    BarChart3, UserCheck, LayoutDashboard, BrainCircuit, Check, X, Loader2, Code
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
@@ -41,6 +41,8 @@ const mockDepartments: Department[] = [
     { id: 'sales', name: 'Sales', agentName: 'Atlas', icon: <TrendingUp size={20} />, status: 'waiting_approval', color: 'from-emerald-400 to-emerald-600', activeTasks: 12, efficiency: 98 },
     { id: 'marketing', name: 'Marketing', agentName: 'Nova', icon: <Megaphone size={20} />, status: 'waiting_approval', color: 'from-pink-400 to-rose-600', activeTasks: 8, efficiency: 95 },
     { id: 'finance', name: 'Finance', agentName: 'Ledger', icon: <DollarSign size={20} />, status: 'idle', color: 'from-amber-400 to-orange-600', activeTasks: 3, efficiency: 100 },
+    { id: 'developer', name: 'Developer', agentName: 'Cipher', icon: <Code size={20} />, status: 'waiting_approval', color: 'from-cyan-400 to-blue-600', activeTasks: 7, efficiency: 94 },
+    { id: 'support', name: 'Support', agentName: 'Echo', icon: <MessageSquare size={20} />, status: 'idle', color: 'from-teal-400 to-emerald-600', activeTasks: 18, efficiency: 96 },
     { id: 'hr', name: 'HR', agentName: 'Harmony', icon: <Users size={20} />, status: 'idle', color: 'from-violet-400 to-purple-600', activeTasks: 5, efficiency: 92 },
     { id: 'ops', name: 'Operations', agentName: 'Orion', icon: <Briefcase size={20} />, status: 'waiting_approval', color: 'from-blue-400 to-indigo-600', activeTasks: 15, efficiency: 89 },
 ];
@@ -50,6 +52,8 @@ const getAgentInfo = (department: string) => {
         case 'sales': return { icon: <TrendingUp size={18} />, color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20' };
         case 'marketing': return { icon: <Megaphone size={18} />, color: 'text-pink-500 bg-pink-500/10 border-pink-500/20' };
         case 'finance': return { icon: <DollarSign size={18} />, color: 'text-amber-500 bg-amber-500/10 border-amber-500/20' };
+        case 'developer': return { icon: <Code size={18} />, color: 'text-cyan-500 bg-cyan-500/10 border-cyan-500/20' };
+        case 'support': return { icon: <MessageSquare size={18} />, color: 'text-teal-500 bg-teal-500/10 border-teal-500/20' };
         case 'hr': return { icon: <Users size={18} />, color: 'text-purple-500 bg-purple-500/10 border-purple-500/20' };
         case 'ops': case 'operations': return { icon: <Briefcase size={18} />, color: 'text-blue-500 bg-blue-500/10 border-blue-500/20' };
         default: return { icon: <BrainCircuit size={18} />, color: 'text-slate-500 bg-slate-500/10 border-slate-500/20' };
@@ -111,11 +115,63 @@ export default function AgentOS() {
             const data = await res.json();
 
             setTasks(prev => prev.map(t => t.id === id ? { ...t, status: 'completed', result: data.result || "Task completed successfully." } : t));
-            setDepartments(prev => prev.map(d => d.id === taskToApprove.department ? { ...d, status: 'idle' } : d));
+            
+            // Check if department has other active tasks
+            setDepartments(prev => prev.map(d => {
+                if (d.id === taskToApprove.department) {
+                    return { ...d, status: 'idle' };
+                }
+                return d;
+            }));
             
         } catch (err) {
             console.error(err);
             setTasks(prev => prev.map(t => t.id === id ? { ...t, status: 'pending' } : t)); // revert
+        }
+    };
+
+    const handleApproveAll = async () => {
+        const pendingTasks = tasks.filter(t => t.status === 'pending');
+        if (pendingTasks.length === 0) return;
+
+        // Optimistic update for all
+        setTasks(prev => prev.map(t => t.status === 'pending' ? { ...t, status: 'in_progress' } : t));
+        
+        const activeDepts = Array.from(new Set(pendingTasks.map(t => t.department)));
+        setDepartments(prev => prev.map(d => activeDepts.includes(d.id) ? { ...d, status: 'working' } : d));
+
+        // Execute sequentially to avoid API rate limits
+        for (const task of pendingTasks) {
+            try {
+                const res = await fetch('/api/agent-os/execute', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ task, context: businessContext })
+                });
+                
+                if (!res.ok) {
+                    throw new Error("API Limit reached or server error");
+                }
+                
+                const data = await res.json();
+                
+                setTasks(prev => {
+                    const newTasks = prev.map(t => t.id === task.id ? { ...t, status: 'completed', result: data.result || "Task completed successfully." } : t);
+                    
+                    // Keep department working if other tasks are still in progress
+                    const isDeptStillWorking = newTasks.some(t => t.department === task.department && t.status === 'in_progress' && t.id !== task.id);
+                    if (!isDeptStillWorking) {
+                        setDepartments(prevDepts => prevDepts.map(d => d.id === task.department ? { ...d, status: 'idle' } : d));
+                    }
+                    
+                    return newTasks;
+                });
+            } catch (err) {
+                console.error(err);
+                alert(`Task "${task.title}" failed. Gemini API rate limit ho sakta hai. Please wait 1 min and try again.`);
+                setTasks(prev => prev.map(t => t.id === task.id ? { ...t, status: 'pending' } : t));
+                setDepartments(prev => prev.map(d => d.id === task.department ? { ...d, status: 'waiting_approval' } : d));
+            }
         }
     };
 
@@ -132,13 +188,13 @@ export default function AgentOS() {
                 <motion.div 
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="relative z-10 flex flex-col items-center"
+                    className="relative z-10 flex flex-col items-center text-center px-6"
                 >
                     <BrainCircuit size={64} className="text-blue-500 mb-6 animate-pulse" />
-                    <h1 className="text-4xl font-black tracking-tighter mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-600">
+                    <h1 className="text-3xl md:text-4xl font-black tracking-tighter mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-600">
                         Agent OS
                     </h1>
-                    <p className="text-slate-400 font-medium tracking-widest text-sm uppercase">Initializing Business Intelligence...</p>
+                    <p className="text-slate-400 font-medium tracking-widest text-xs md:text-sm uppercase">Initializing Business Intelligence...</p>
                     
                     <div className="flex gap-2 mt-8">
                         <Loader2 className="animate-spin text-blue-500" size={24} />
@@ -198,11 +254,11 @@ export default function AgentOS() {
                         <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-2">Good morning, Founder.</h1>
                         <p className="text-slate-400 text-lg">Your AI team has drafted <span className="text-emerald-400 font-semibold">{tasks.filter(t => t.status === 'pending').length} tasks</span> requiring approval.</p>
                     </div>
-                    <div className="flex gap-3">
-                        <button onClick={() => window.location.reload()} className="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-medium transition-all flex items-center gap-2 backdrop-blur-md">
+                    <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                        <button onClick={() => window.location.reload()} className="w-full sm:w-auto justify-center px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-medium transition-all flex items-center gap-2 backdrop-blur-md">
                             <Activity size={16} /> Refresh Agents
                         </button>
-                        <button className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all flex items-center gap-2">
+                        <button className="w-full sm:w-auto justify-center px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all flex items-center gap-2">
                             <Plus size={16} /> New Initiative
                         </button>
                     </div>
@@ -270,7 +326,7 @@ export default function AgentOS() {
                                     {tasks.filter(t => t.status === 'pending').length}
                                 </span>
                             </h2>
-                            <button className="text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors">Approve All</button>
+                            <button onClick={handleApproveAll} className="text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors">Approve All</button>
                         </div>
 
                         <div className="flex flex-col gap-4">
@@ -314,9 +370,12 @@ export default function AgentOS() {
                                                     </div>
                                                     <h3 className="text-xl font-bold text-white mb-2">{task.title}</h3>
                                                     <p className="text-slate-400 text-sm leading-relaxed mb-4">{task.description}</p>
-                                                    <div className="flex items-center gap-2 inline-flex bg-white/5 border border-white/10 rounded-lg px-3 py-1.5">
-                                                        <Zap size={14} className="text-yellow-500" />
-                                                        <span className="text-xs font-bold text-slate-300">Expected Impact: <span className="text-emerald-400">{task.impact}</span></span>
+                                                    <div className="inline-flex items-start sm:items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 flex-col sm:flex-row w-full sm:w-auto">
+                                                        <div className="flex items-center gap-2">
+                                                            <Zap size={14} className="text-yellow-500 shrink-0" />
+                                                            <span className="text-xs font-bold text-slate-300 whitespace-nowrap">Expected Impact:</span>
+                                                        </div>
+                                                        <span className="text-xs font-bold text-emerald-400 sm:ml-1">{task.impact}</span>
                                                     </div>
                                                 </div>
                                                 
@@ -367,15 +426,15 @@ export default function AgentOS() {
                                                 animate={{ opacity: 1, y: 0 }}
                                                 className="bg-slate-900 border border-emerald-500/30 rounded-2xl p-5"
                                             >
-                                                <div className="flex items-center gap-3 mb-4 border-b border-white/5 pb-4">
-                                                    <div className={`p-1.5 rounded-lg border ${task.color}`}>
+                                                <div className="flex flex-wrap items-center gap-3 mb-4 border-b border-white/5 pb-4">
+                                                    <div className={`p-1.5 rounded-lg border ${task.color} shrink-0`}>
                                                         {task.icon}
                                                     </div>
-                                                    <div>
-                                                        <h3 className="font-bold text-white">{task.title}</h3>
+                                                    <div className="flex-1 min-w-[200px]">
+                                                        <h3 className="font-bold text-white text-sm sm:text-base leading-tight mb-1">{task.title}</h3>
                                                         <span className="text-xs text-slate-400">Executed by {task.agentName}</span>
                                                     </div>
-                                                    <div className="ml-auto bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                                                    <div className="bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 ml-auto shrink-0">
                                                         <Check size={14} /> Done
                                                     </div>
                                                 </div>

@@ -419,7 +419,7 @@ export default function JobSimulator() {
                         initial={{ opacity: 0, scale: 0.95, y: -20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: -20 }}
-                        className="absolute top-10 right-4 w-80 bg-slate-950/80 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl z-[150] p-6"
+                        className="absolute top-10 right-4 w-[calc(100vw-2rem)] sm:w-80 bg-slate-950/80 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl z-[150] p-6 max-w-sm"
                     >
                         <div className="grid grid-cols-2 gap-3 mb-6">
                             <div className="bg-blue-600 p-4 rounded-2xl flex flex-col gap-2">
@@ -458,7 +458,7 @@ export default function JobSimulator() {
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
-                        className="absolute top-10 left-4 w-72 bg-slate-900/90 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl z-[100] overflow-hidden p-2"
+                        className="absolute top-10 left-4 w-[calc(100vw-2rem)] sm:w-72 bg-slate-900/90 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl z-[100] overflow-hidden p-2 max-w-sm"
                     >
                         <div className="p-4 border-b border-white/5 mb-2">
                             <div className="flex items-center gap-3">
@@ -571,8 +571,8 @@ export default function JobSimulator() {
             </div>
 
             {/* macOS-style Dock */}
-            <div className="h-24 pb-4 flex justify-center w-full z-50">
-                <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl px-6 py-2 flex items-center gap-4 shadow-2xl mb-4">
+            <div className="h-24 pb-4 flex justify-center w-full z-50 px-2 sm:px-4">
+                <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl px-3 sm:px-6 py-2 flex items-center gap-2 sm:gap-4 shadow-2xl mb-4 max-w-full overflow-x-auto scrollbar-hide">
                     <DockIcon 
                         icon={<Mail size={28} />} 
                         name="Mail" 
@@ -637,10 +637,10 @@ export default function JobSimulator() {
 
 function DockIcon({ icon, name, active, focused, onClick, badge, pulse }: any) {
     return (
-        <div className="relative group flex flex-col items-center">
+        <div className="relative group flex flex-col items-center shrink-0">
             <button 
                 onClick={onClick}
-                className={`w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-300 ${focused ? 'bg-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.5)] scale-110' : active ? 'bg-white/20 text-slate-100' : 'bg-white/10 text-slate-300 hover:bg-white/20 hover:scale-110 active:scale-95'} ${pulse && !active ? 'animate-pulse ring-2 ring-green-500' : ''}`}
+                className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center transition-all duration-300 ${focused ? 'bg-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.5)] scale-110' : active ? 'bg-white/20 text-slate-100' : 'bg-white/10 text-slate-300 hover:bg-white/20 hover:scale-110 active:scale-95'} ${pulse && !active ? 'animate-pulse ring-2 ring-green-500' : ''}`}
             >
                 {icon}
             </button>
@@ -660,12 +660,12 @@ function DockIcon({ icon, name, active, focused, onClick, badge, pulse }: any) {
 function WindowTemplate({ title, icon, onClose, onFocus, onMinimize, onMaximize, isMaximized, children, className = "" }: any) {
     const windowVariants = {
         normal: {
-            width: "85%",
-            height: "75%",
+            width: "90%",
+            height: "80%",
             maxWidth: "1000px",
             maxHeight: "700px",
-            top: "40px",
-            left: "7.5%",
+            top: "10%",
+            left: "5%",
             borderRadius: "16px",
             scale: 1,
             opacity: 1,
