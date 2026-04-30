@@ -136,7 +136,7 @@ export async function GET() {
     const topLearnersResult = await User.aggregate([
         { $match: { role: "student" } },
         { $sort: { xp: -1 } },
-        { $limit: 5 },
+        { $limit: 10 },
         {
             $lookup: {
                 from: "enrollments",

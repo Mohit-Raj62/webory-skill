@@ -133,13 +133,13 @@ export default function HackathonCertificate({
             <div className="w-full flex flex-col items-center">
               <div className="flex justify-between items-start w-full mb-6">
                 <div className="flex items-center gap-4">
-                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${themeAccent} p-[2px] shadow-lg`}>
+                  <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${themeAccent} p-[2px] shadow-lg`}>
                     <div className="w-full h-full bg-white rounded-[14px] flex items-center justify-center">
-                      <ShieldCheck className={themeText} size={28} />
+                      <ShieldCheck className={themeText} size={24} />
                     </div>
                   </div>
                   <div>
-                    <h1 className="text-3xl font-bold tracking-tighter uppercase leading-none flex items-center">
+                    <h1 className="text-2xl font-bold tracking-tighter uppercase leading-none flex items-center">
                       <span className="mr-[0.2em] text-[#3B82F6]">WEBORY</span>
                       <div className="flex relative text-[#16A34A]">
                           <div className="relative flex flex-col items-center">
@@ -154,33 +154,41 @@ export default function HackathonCertificate({
                             <div className="absolute -top-2 w-2.5 h-2.5 rounded-full bg-[#16A34A]"></div>
                             <span>I</span>
                           </div>
-                          <span>L</span>
-                          <span>L</span>
-                          <span>S</span>
+                          <div className="relative flex flex-col items-center">
+                            <span>L</span>
+                          </div>
+                          <div className="relative flex flex-col items-center">
+                            <span>L</span>
+                          </div>
+                          <div className="relative flex flex-col items-center">
+                            <span>S</span>
+                          </div>
                       </div>
                     </h1>
-                    <div className="flex items-center gap-2 mt-1">
+                    <div className="flex items-center gap-2 mt-1.5">
                       <span className={`inline-block text-[8px] font-black tracking-[0.2em] uppercase px-2 py-0.5 rounded-md ${themeBg} ${themeText} border ${themeBorder}`}>
                         {domain || "Skills Hackathon"}
                       </span>
-                      <div className="h-3 w-px bg-slate-200"></div>
-                      <span className="text-[7px] text-slate-400 font-bold uppercase tracking-widest">Govt. Recognized Startup</span>
+                    </div>
+                    <div className="mt-1 flex items-center gap-1">
+                        <div className="w-1.5 h-1.5 rounded-full bg-amber-400"></div>
+                        <span className="text-[9px] text-amber-500 font-black uppercase tracking-[0.2em]">Govt. Recognized Startup</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Verification QR - Absolute Below Logo */}
-                <div className="absolute top-[110px] left-8 flex items-center gap-3">
+                <div className="absolute top-[130px] left-8 flex flex-col items-center gap-2">
                   <div className="p-1.5 bg-white border border-slate-200 rounded-xl shadow-sm">
                     <QRCodeSVG 
                       value={qrUrl} 
-                      size={75}
+                      size={70}
                       level="M"
                     />
                   </div>
-                  <div className="text-left">
-                    <span className="block text-[8px] font-black text-slate-400 uppercase tracking-widest">Verify ID</span>
-                    <span className="block text-[10px] font-bold text-slate-800 tracking-tighter">{certificateId}</span>
+                  <div className="text-center">
+                    <span className="block text-[7px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Verify ID</span>
+                    <span className="block text-[9px] font-bold text-slate-800 tracking-tighter">{certificateId}</span>
                   </div>
                 </div>
 
@@ -209,7 +217,7 @@ export default function HackathonCertificate({
                           {index > 0 && <span className="text-slate-300 font-light mx-2 text-[10px]">|</span>}
                           <div className="flex items-center gap-1.5 group">
                             {collab.logo && <img src={collab.logo} alt={collab.name} className="h-5 object-contain grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all" />}
-                            <span className="text-[10px] font-black tracking-widest uppercase text-amber-600 drop-shadow-sm">{collab.name}</span>
+                            <span className="text-[13px] font-black tracking-widest uppercase text-amber-600 drop-shadow-sm">{collab.name}</span>
                           </div>
                         </div>
                       ))}
@@ -222,7 +230,7 @@ export default function HackathonCertificate({
 
             {/* Core Content */}
             <div className="relative w-full text-center flex-1 flex flex-col items-center justify-center py-6">
-              {/* Issue Date & Seal - Moved to right side */}
+              {/* Issue Date & Seal - Back to original right side position */}
               <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2">
                 <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${themeAccent} flex items-center justify-center shadow-lg p-1`}>
                   <div className="w-full h-full border-2 border-white/50 rounded-full border-dashed flex items-center justify-center">
@@ -283,7 +291,7 @@ export default function HackathonCertificate({
               {/* Left: Founder Signature */}
               <div className="flex items-end justify-start">
                 <div className="flex flex-col items-center gap-1">
-                  <div className="text-3xl italic text-slate-800" style={{ fontFamily: "'Dancing Script', cursive" }}>
+                  <div className="text-2xl italic text-slate-800" style={{ fontFamily: "'Dancing Script', cursive" }}>
                       {signatures?.founder?.name || "Mohit Sinha"}
                   </div>
                   <div className="w-36 h-[2px] bg-slate-200 mt-1 mb-1"></div>
@@ -297,7 +305,7 @@ export default function HackathonCertificate({
               {/* Center: Director Signature */}
               <div className="flex items-end justify-center">
                 <div className="flex flex-col items-center gap-1">
-                  <div className="text-3xl italic text-slate-800" style={{ fontFamily: "'Dancing Script', cursive" }}>
+                  <div className="text-2xl italic text-slate-800" style={{ fontFamily: "'Dancing Script', cursive" }}>
                       {signatures?.director?.name || "Vijay Kumar"}
                   </div>
                   <div className="w-36 h-[2px] bg-slate-200 mt-1 mb-1"></div>
@@ -312,7 +320,7 @@ export default function HackathonCertificate({
               <div className="flex items-end justify-end pr-8">
                 {signatures?.partner && (
                   <div className="flex flex-col items-center gap-1">
-                    <div className="text-3xl italic text-slate-800" style={{ fontFamily: "'Dancing Script', cursive" }}>
+                    <div className="text-2xl italic text-slate-800" style={{ fontFamily: "'Dancing Script', cursive" }}>
                         {signatures.partner.name}
                     </div>
                     <div className="w-36 h-[2px] bg-slate-200 mt-1 mb-1"></div>

@@ -26,13 +26,14 @@ export function TestimonialsSection() {
 
         const fetchFeedbacks = async () => {
             try {
-                const res = await fetch("/api/feedback");
+                const res = await fetch("/api/reviews");
+                if (!res.ok) return; // Silent fail if the endpoint is unreachable
                 const data = await res.json();
                 if (isMounted && data.feedbacks) {
                     setFeedbacks(data.feedbacks);
                 }
             } catch (error) {
-                console.error("Failed to fetch feedbacks", error);
+                // Silently ignore network errors (e.g. adblockers blocking the request)
             } finally {
                 if (isMounted) setLoading(false);
             }

@@ -17,6 +17,7 @@ const AIRoadmapFlow = dynamic(() => import('@/components/landing/ai-roadmap-flow
 const DevLabPreview = dynamic(() => import('@/components/landing/devlab-preview').then(mod => mod.DevLabPreview));
 const AINexusShowcase = dynamic(() => import('@/components/landing/ai-nexus-showcase').then(mod => mod.AINexusShowcase));
 const HackathonPreview = dynamic(() => import('@/components/landing/hackathon-preview').then(mod => mod.HackathonPreview));
+const LeaderboardSection = dynamic(() => import('@/components/home/LeaderboardSection').then(mod => mod.LeaderboardSection));
 
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
@@ -105,6 +106,10 @@ export default async function Home() {
 
             <Suspense fallback={<TrustProofSkeleton />}>
                 <TrustProofSection />
+            </Suspense>
+
+            <Suspense fallback={<SectionSkeleton height="h-[400px]" />}>
+                <LeaderboardSection />
             </Suspense>
 
             <Suspense fallback={<SectionSkeleton height="h-[400px]" />}>

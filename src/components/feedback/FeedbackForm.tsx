@@ -27,7 +27,7 @@ export function FeedbackForm({ isOpen, onClose }: FeedbackFormProps) {
 
         setLoading(true);
         try {
-            const res = await fetch("/api/feedback", {
+            const res = await fetch("/api/reviews", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ category, rating, comment }),

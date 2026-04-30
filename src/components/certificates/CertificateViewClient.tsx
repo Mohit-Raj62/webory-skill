@@ -64,7 +64,7 @@ export function CertificateViewClient({ certificate }: { certificate: any }) {
             <motion.div 
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="motion-wrapper shadow-[0_0_100px_rgba(37,99,235,0.1)] rounded-[2rem] overflow-hidden print:overflow-visible print:shadow-none print:rounded-none"
+                className="motion-wrapper shadow-[0_0_100px_rgba(37,99,235,0.1)] rounded-[2rem] overflow-hidden print:overflow-visible print:shadow-none print:rounded-none mb-12"
             >
                 <HackathonCertificate 
                     type={certificate.type || (certificate.title?.toLowerCase().includes('champion') ? 'winner' : 'participant')}
@@ -79,6 +79,83 @@ export function CertificateViewClient({ certificate }: { certificate: any }) {
                     signatures={certificate.signatures}
                 />
             </motion.div>
+
+            {/* Official Verification Details - THE SOURCE OF TRUTH */}
+            <div className="bg-white/[0.02] border border-white/10 rounded-[2rem] p-8 md:p-10 backdrop-blur-xl print:hidden">
+                <div className="flex items-center gap-3 mb-8">
+                    <div className="h-8 w-1.5 bg-emerald-500 rounded-full"></div>
+                    <h2 className="text-2xl font-black uppercase tracking-tight text-white">Official Verification Record</h2>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-10 gap-x-12">
+                    {/* Student Name */}
+                    <div className="space-y-1">
+                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">Verified Candidate</span>
+                        <p className="text-xl font-bold text-white tracking-tight">{certificate.studentName}</p>
+                        <div className="flex items-center gap-1.5 text-emerald-500">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="m9 11 3 3L22 4" /></svg>
+                            <span className="text-[10px] font-bold uppercase">Identity Verified</span>
+                        </div>
+                    </div>
+
+                    {/* Hackathon Title */}
+                    <div className="space-y-1">
+                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">Event / Competition</span>
+                        <p className="text-xl font-bold text-white tracking-tight">
+                            {certificate.hackathonTitle || "Webory Skills Hackathon"}
+                        </p>
+                    </div>
+
+                    {/* Project Name */}
+                    <div className="space-y-1">
+                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">Project Title</span>
+                        <p className="text-xl font-bold text-blue-400 tracking-tight">
+                            {certificate.projectName || "Official Submission"}
+                        </p>
+                    </div>
+
+                    {/* Credential Type */}
+                    <div className="space-y-1">
+                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">Credential Type</span>
+                        <div className="flex items-center gap-2">
+                            <p className="text-xl font-bold text-white tracking-tight capitalize">
+                                {certificate.type === 'winner' ? 'Excellence Award' : 'Completion Award'}
+                            </p>
+                            {certificate.rank > 0 && (
+                                <span className="bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded text-[10px] font-black uppercase">
+                                    Rank #{certificate.rank}
+                                </span>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Issue Date */}
+                    <div className="space-y-1">
+                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">Date of Issuance</span>
+                        <p className="text-xl font-bold text-white tracking-tight">
+                            {new Date(certificate.issuedAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        </p>
+                    </div>
+
+                    {/* Status */}
+                    <div className="space-y-1">
+                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">Verification Status</span>
+                        <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 w-fit px-4 py-2 rounded-xl">
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                            <span className="text-emerald-500 text-xs font-black uppercase tracking-widest">Active & Authentic</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <p className="text-gray-500 text-[10px] font-medium max-w-xl text-center md:text-left leading-relaxed">
+                        This digital record is securely stored on Webory Skills servers and serves as the primary source of truth for this credential. Any discrepancy between this record and the visual certificate should be reported to support@weboryskills.in.
+                    </p>
+                    <div className="flex items-center gap-2 opacity-50 grayscale">
+                         <span className="text-[10px] font-black text-white uppercase tracking-tighter">Powered by Webory Verification Engine</span>
+                    </div>
+                </div>
+            </div>
 
             {/* Print Styles */}
             <style dangerouslySetInnerHTML={{ __html: `
