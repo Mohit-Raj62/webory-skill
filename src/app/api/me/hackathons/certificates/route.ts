@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
           { "certificates.certificateId": { $exists: true, $ne: null } }
         ]
     })
-    .populate("hackathonId", "title theme bannerImage startDate status")
+    .populate("hackathonId", "title theme bannerImage startDate status collaborations signatures")
     .populate("certificateId")
     .populate("certificates.certificateId")
     .sort({ createdAt: -1 })

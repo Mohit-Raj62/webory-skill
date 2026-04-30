@@ -21,7 +21,7 @@ const getCachedCertificate = unstable_cache(
         // Backward compatibility: If fields are missing, try to find the HackathonSubmission
         if (!certificate.projectName || !certificate.hackathonTitle || !certificate.domain) {
             const submission = await HackathonSubmission.findOne({ certificateId: certificate._id })
-                .populate("hackathonId", "title theme")
+                .populate("hackathonId", "title theme collaborations signatures")
                 .lean();
             
             if (submission) {

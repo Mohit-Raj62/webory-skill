@@ -131,7 +131,7 @@ export default function HackathonCertificate({
             
             {/* Header Section */}
             <div className="w-full flex flex-col items-center">
-              <div className="flex justify-between items-center w-full mb-6">
+              <div className="flex justify-between items-start w-full mb-6">
                 <div className="flex items-center gap-4">
                   <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${themeAccent} p-[2px] shadow-lg`}>
                     <div className="w-full h-full bg-white rounded-[14px] flex items-center justify-center">
@@ -139,7 +139,26 @@ export default function HackathonCertificate({
                     </div>
                   </div>
                   <div>
-                    <h1 className="text-3xl font-black tracking-tighter uppercase text-slate-900 leading-none">WEBORY SKILLS</h1>
+                    <h1 className="text-3xl font-bold tracking-tighter uppercase leading-none flex items-center">
+                      <span className="mr-[0.2em] text-[#3B82F6]">WEBORY</span>
+                      <div className="flex relative text-[#16A34A]">
+                          <div className="relative flex flex-col items-center">
+                            <div className="absolute -top-2 w-2.5 h-2.5 rounded-full bg-[#F97316]"></div>
+                            <span>S</span>
+                          </div>
+                          <div className="relative flex flex-col items-center">
+                            <div className="absolute -top-2 w-2.5 h-2.5 rounded-full bg-[#FFFFFF] border-[0.5px] border-slate-300 shadow-sm"></div>
+                            <span>K</span>
+                          </div>
+                          <div className="relative flex flex-col items-center">
+                            <div className="absolute -top-2 w-2.5 h-2.5 rounded-full bg-[#16A34A]"></div>
+                            <span>I</span>
+                          </div>
+                          <span>L</span>
+                          <span>L</span>
+                          <span>S</span>
+                      </div>
+                    </h1>
                     <div className="flex items-center gap-2 mt-1">
                       <span className={`inline-block text-[8px] font-black tracking-[0.2em] uppercase px-2 py-0.5 rounded-md ${themeBg} ${themeText} border ${themeBorder}`}>
                         {domain || "Skills Hackathon"}
@@ -150,11 +169,28 @@ export default function HackathonCertificate({
                   </div>
                 </div>
 
-                <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full ${themeBg} border ${themeBorder} shadow-sm`}>
-                  {isWinner ? <Trophy size={14} className={themeText} /> : <Code2 size={14} className={themeText} />}
-                  <span className={`text-[9px] font-black uppercase tracking-widest ${themeText}`}>
-                    {isWinner ? 'Certificate of Excellence' : 'Certificate of Participation'}
-                  </span>
+                {/* Verification QR - Absolute Below Logo */}
+                <div className="absolute top-[110px] left-8 flex items-center gap-3">
+                  <div className="p-1.5 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <QRCodeSVG 
+                      value={qrUrl} 
+                      size={75}
+                      level="M"
+                    />
+                  </div>
+                  <div className="text-left">
+                    <span className="block text-[8px] font-black text-slate-400 uppercase tracking-widest">Verify ID</span>
+                    <span className="block text-[10px] font-bold text-slate-800 tracking-tighter">{certificateId}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-6">
+                  <div className={`mt-2 inline-flex items-center gap-2 px-4 py-1.5 rounded-full ${themeBg} border ${themeBorder} shadow-sm`}>
+                    {isWinner ? <Trophy size={14} className={themeText} /> : <Code2 size={14} className={themeText} />}
+                    <span className={`text-[9px] font-black uppercase tracking-widest ${themeText}`}>
+                      {isWinner ? 'Certificate of Excellence' : 'Certificate of Participation'}
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -173,7 +209,7 @@ export default function HackathonCertificate({
                           {index > 0 && <span className="text-slate-300 font-light mx-2 text-[10px]">|</span>}
                           <div className="flex items-center gap-1.5 group">
                             {collab.logo && <img src={collab.logo} alt={collab.name} className="h-5 object-contain grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all" />}
-                            <span className="text-[10px] font-black tracking-widest uppercase text-slate-900">{collab.name}</span>
+                            <span className="text-[10px] font-black tracking-widest uppercase text-amber-600 drop-shadow-sm">{collab.name}</span>
                           </div>
                         </div>
                       ))}
@@ -185,7 +221,22 @@ export default function HackathonCertificate({
             </div>
 
             {/* Core Content */}
-            <div className="w-full text-center flex-1 flex flex-col items-center justify-center py-6">
+            <div className="relative w-full text-center flex-1 flex flex-col items-center justify-center py-6">
+              {/* Issue Date & Seal - Moved to right side */}
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2">
+                <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${themeAccent} flex items-center justify-center shadow-lg p-1`}>
+                  <div className="w-full h-full border-2 border-white/50 rounded-full border-dashed flex items-center justify-center">
+                    <Sparkles size={24} className="text-white" />
+                  </div>
+                </div>
+                <div className="text-center mt-2">
+                  <span className="block text-[8px] font-black text-slate-400 uppercase tracking-widest">Issued On</span>
+                  <span className="block text-xs font-bold text-slate-800" suppressHydrationWarning>
+                    {new Date(issueDate).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  </span>
+                </div>
+              </div>
+
               <p className="text-sm font-bold text-slate-400 uppercase tracking-[0.4em] mb-4">Proudly Presented To</p>
               
               <h2 className="text-5xl md:text-6xl font-black text-slate-900 tracking-tight capitalize mb-2 border-b-2 border-slate-100 pb-1 px-12">
@@ -227,61 +278,58 @@ export default function HackathonCertificate({
             </div>
 
             {/* Footer Area */}
-            <div className="w-full flex items-end justify-between border-t-2 border-slate-100 pt-4 mt-1">
+            <div className="w-full grid grid-cols-3 items-end border-t-2 border-slate-100 pt-4 mt-1 px-4">
               
-              {/* Signatures */}
-              <div className="flex flex-col items-center gap-1">
-                <div className="text-3xl italic text-slate-800" style={{ fontFamily: "'Dancing Script', cursive" }}>
-                    {signatures?.founder?.name || "Mohit Sinha"}
-                </div>
-                <div className="w-40 h-[2px] bg-slate-200 mt-1 mb-1"></div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-900">
-                    {signatures?.founder?.title || "CEO & Founder"}
-                </span>
-                <span className="text-[8px] font-bold uppercase tracking-widest text-slate-400">Webory Skills Platform</span>
-              </div>
-
-              {/* Issue Date & Seal */}
-              <div className="flex flex-col items-center gap-2 px-8">
-                <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${themeAccent} flex items-center justify-center shadow-lg p-1`}>
-                  <div className="w-full h-full border-2 border-white/50 rounded-full border-dashed flex items-center justify-center">
-                    <Sparkles size={24} className="text-white" />
+              {/* Left: Founder Signature */}
+              <div className="flex items-end justify-start">
+                <div className="flex flex-col items-center gap-1">
+                  <div className="text-3xl italic text-slate-800" style={{ fontFamily: "'Dancing Script', cursive" }}>
+                      {signatures?.founder?.name || "Mohit Sinha"}
                   </div>
-                </div>
-                <div className="text-center mt-2">
-                  <span className="block text-[8px] font-black text-slate-400 uppercase tracking-widest">Issued On</span>
-                  <span className="block text-xs font-bold text-slate-800" suppressHydrationWarning>
-                    {new Date(issueDate).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  <div className="w-36 h-[2px] bg-slate-200 mt-1 mb-1"></div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-900">
+                      {signatures?.founder?.title || "CEO & Founder"}
                   </span>
+                  <span className="text-[8px] font-bold uppercase tracking-widest text-slate-400">Webory Skills Platform</span>
                 </div>
               </div>
 
-              {/* Verification QR */}
-              <div className="flex flex-col items-end gap-2 text-right">
-                <div className="p-2 bg-white border border-slate-200 rounded-xl shadow-sm">
-                  <QRCodeSVG 
-                    value={qrUrl} 
-                    size={70}
-                    level="M"
-                  />
+              {/* Center: Director Signature */}
+              <div className="flex items-end justify-center">
+                <div className="flex flex-col items-center gap-1">
+                  <div className="text-3xl italic text-slate-800" style={{ fontFamily: "'Dancing Script', cursive" }}>
+                      {signatures?.director?.name || "Vijay Kumar"}
+                  </div>
+                  <div className="w-36 h-[2px] bg-slate-200 mt-1 mb-1"></div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-900">
+                      {signatures?.director?.title || "Director of Education"}
+                  </span>
+                  <span className="text-[8px] font-bold uppercase tracking-widest text-slate-400">Webory Skills Platform</span>
                 </div>
-                <div>
-                  <span className="block text-[8px] font-black text-slate-400 uppercase tracking-widest">Verification ID</span>
-                  <span className="block text-[10px] font-bold text-slate-800 tracking-tighter">{certificateId}</span>
-                </div>
+              </div>
+
+              {/* Right: Partner Signature */}
+              <div className="flex items-end justify-end pr-8">
                 {signatures?.partner && (
-                    <div className="flex flex-col items-center gap-1 mt-2">
-                        <div className="text-2xl italic text-slate-800" style={{ fontFamily: "'Dancing Script', cursive" }}>
-                            {signatures.partner.name}
-                        </div>
-                        <div className="w-32 h-[1px] bg-slate-200"></div>
-                        <span className="text-[8px] font-black uppercase tracking-widest text-slate-900">
-                            {signatures.partner.title}
-                        </span>
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="text-3xl italic text-slate-800" style={{ fontFamily: "'Dancing Script', cursive" }}>
+                        {signatures.partner.name}
                     </div>
+                    <div className="w-36 h-[2px] bg-slate-200 mt-1 mb-1"></div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-900">
+                        {signatures.partner.title}
+                    </span>
+                    <span className="text-[8px] font-bold uppercase tracking-widest text-slate-400">Authorized Signatory</span>
+                  </div>
                 )}
               </div>
+            </div>
 
+            {/* Accreditations & Legal Footer */}
+            <div className="w-full text-center mt-8 border-t border-slate-100/50 pt-3">
+              <span className="text-[7px] font-bold text-slate-400 uppercase tracking-[0.3em]">
+                ISO 9001:2015 Certified • MSME Registered • Recognized by Startup India • Verify at weboryskills.in
+              </span>
             </div>
           </div>
         </div>

@@ -22,7 +22,7 @@ export async function GET(
 
     // Find the linked submission to get project data
     const submission = await HackathonSubmission.findOne({ certificateId: certificate._id })
-      .populate("hackathonId", "title")
+      .populate("hackathonId", "title collaborations signatures")
       .lean();
 
     return NextResponse.json({
@@ -32,7 +32,9 @@ export async function GET(
         hackathonTitle: (submission?.hackathonId as any)?.title || "Webory Hackathon",
         projectName: submission?.projectName || "Innovative Project",
         type: certificate.title.includes("Champion") ? "winner" : "participant",
-        rank: submission?.rank || 0
+        rank: submission?.rank || 0,
+        collaborations: certificate.collaborations?.length ? certificate.collaborations : (submission?.hackathonId as any)?.collaborations,
+        signatures: certificate.signatures || (submission?.hackathonId as any)?.signatures
       },
     });
   } catch (error: any) {
