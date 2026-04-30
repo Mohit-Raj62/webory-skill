@@ -18,26 +18,24 @@ const getCachedCertificate = unstable_cache(
 
         if (!certificate) return null;
 
-        // Backward compatibility: If fields are missing, try to find the HackathonSubmission
-        if (!certificate.projectName || !certificate.hackathonTitle || !certificate.domain) {
-            const submission = await HackathonSubmission.findOne({ certificateId: certificate._id })
-                .populate("hackathonId", "title theme collaborations signatures")
-                .lean();
+        // Always try to find the HackathonSubmission to get latest signatures & collaborations
+        const submission = await HackathonSubmission.findOne({ certificateId: certificate._id })
+            .populate("hackathonId", "title theme collaborations signatures")
+            .lean();
+        
+        if (submission) {
+            certificate.projectName = certificate.projectName || submission.projectName;
+            certificate.hackathonTitle = certificate.hackathonTitle || (submission.hackathonId as any)?.title;
+            certificate.domain = certificate.domain || (submission.hackathonId as any)?.theme;
+            certificate.rank = certificate.rank || submission.rank;
+            certificate.type = certificate.type || (submission.status === "winner" ? "winner" : "participant");
+            certificate.studentName = certificate.studentName || submission.teamName;
             
-            if (submission) {
-                certificate.projectName = certificate.projectName || submission.projectName;
-                certificate.hackathonTitle = certificate.hackathonTitle || (submission.hackathonId as any)?.title;
-                certificate.domain = certificate.domain || (submission.hackathonId as any)?.theme;
-                certificate.rank = certificate.rank || submission.rank;
-                certificate.type = certificate.type || (submission.status === "winner" ? "winner" : "participant");
-                certificate.studentName = certificate.studentName || submission.teamName;
-                
-                // New: Populate collaborations and signatures from Hackathon
-                const hackathon = submission.hackathonId as any;
-                if (hackathon) {
-                    certificate.collaborations = certificate.collaborations?.length ? certificate.collaborations : hackathon.collaborations;
-                    certificate.signatures = certificate.signatures || hackathon.signatures;
-                }
+            // Populate collaborations and signatures from Hackathon
+            const hackathon = submission.hackathonId as any;
+            if (hackathon) {
+                certificate.collaborations = certificate.collaborations?.length ? certificate.collaborations : hackathon.collaborations;
+                certificate.signatures = certificate.signatures || hackathon.signatures;
             }
         }
 
