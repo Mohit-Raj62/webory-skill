@@ -51,8 +51,8 @@ export function LeaderboardSection() {
                     <Trophy className="text-blue-500" size={14} />
                     <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">Wall of Fame</span>
                 </div>
-                <h2 className="text-2xl md:text-4xl font-black text-white mb-3 uppercase tracking-tighter">
-                    Top Skill Achievers
+                <h2 className="text-2xl md:text-4xl font-black text-white mb-3 uppercase tracking-normal">
+                    Top Performing Students
                 </h2>
                 <p className="text-gray-400 max-w-xl mx-auto text-sm font-medium">
                     Recognizing our most ambitious students mastering new skills and leading the community.
@@ -60,7 +60,7 @@ export function LeaderboardSection() {
             </div>
 
             <div className="relative w-full overflow-hidden">
-                <div className="flex gap-4 animate-scroll-fast hover:pause px-4 w-max">
+                <div className="flex gap-8 animate-scroll-fast hover:pause px-4 w-max">
                     {[...learners, ...learners].map((learner, index) => (
                         <div
                             key={`${learner._id}-${index}`}
