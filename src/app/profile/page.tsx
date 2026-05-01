@@ -31,16 +31,47 @@ export default async function ProfilePage() {
             .populate("internship", "title company location type stipend tags")
             .populate("student", "firstName lastName email")
             .lean(),
-        HackathonSubmission.find({ userId: user._id })
-            .populate("hackathonId", "title")
+        HackathonSubmission.find({
+            $or: [
+                { userId: user._id },
+                { teamMembers: user._id },
+                { "certificates.email": user.email }
+            ]
+        })
+            .populate("hackathonId", "title theme bannerImage startDate status collaborations signatures")
             .populate("certificateId")
+            .populate("certificates.certificateId")
             .lean(),
     ]);
 
     const serializedUser = JSON.parse(JSON.stringify(user));
     const serializedEnrollments = JSON.parse(JSON.stringify(enrollments));
     const serializedApplications = JSON.parse(JSON.stringify(applications));
-    const serializedHackathons = JSON.parse(JSON.stringify(hackathons));
+    
+    // Process hackathons to ensure team members see their own certificates
+    const processedHackathons = hackathons.map((sub: any) => {
+        let personalCert = null;
+        
+        // 1. Check if user is in team certificates list
+        if (sub.certificates && sub.certificates.length > 0) {
+            const teamMatch = sub.certificates.find((c: any) => c.email === user.email);
+            if (teamMatch) {
+                personalCert = teamMatch.certificateId;
+            }
+        }
+        
+        // 2. Fallback to primary certificate if user is lead and not in team list
+        if (!personalCert && sub.userId.toString() === user._id.toString()) {
+            personalCert = sub.certificateId;
+        }
+
+        return {
+            ...sub,
+            certificateId: personalCert
+        };
+    });
+
+    const serializedHackathons = JSON.parse(JSON.stringify(processedHackathons));
 
     return (
         <main className="min-h-screen bg-[#020617] relative overflow-hidden font-sans">

@@ -10,7 +10,7 @@ import { toast } from "sonner";
 
 interface VerificationResult {
   valid: boolean;
-  type?: 'course' | 'internship' | 'custom';
+  type?: 'course' | 'internship' | 'custom' | 'hackathon' | 'ambassador';
   data?: {
     studentName: string;
     title: string;
@@ -20,6 +20,9 @@ interface VerificationResult {
     score?: number;
     certificateId: string;
     certificateKey?: string;
+    hackathonTitle?: string;
+    projectName?: string;
+    rank?: number;
   };
   error?: string;
 }
@@ -42,6 +45,10 @@ export default function UnifiedCertificateManagementPage() {
   const [studentName, setStudentName] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [hackathonTitle, setHackathonTitle] = useState("");
+  const [projectName, setProjectName] = useState("");
+  const [certType, setCertType] = useState<'participant' | 'winner'>('participant');
+  const [rank, setRank] = useState<string>("");
   const [generating, setGenerating] = useState(false);
   const [certificate, setCertificate] = useState<{
     id: string;
@@ -229,6 +236,10 @@ export default function UnifiedCertificateManagementPage() {
           studentName: studentName.trim(),
           title: title.trim(),
           description: description.trim(),
+          hackathonTitle: hackathonTitle.trim(),
+          projectName: projectName.trim(),
+          type: certType,
+          rank: rank ? parseInt(rank) : 0,
         }),
       });
 
@@ -258,6 +269,10 @@ export default function UnifiedCertificateManagementPage() {
     setStudentName("");
     setTitle("");
     setDescription("");
+    setHackathonTitle("");
+    setProjectName("");
+    setCertType('participant');
+    setRank("");
     setCertificate(null);
   };
 
@@ -288,13 +303,13 @@ export default function UnifiedCertificateManagementPage() {
     }
   };
 
-  const handleIssueCertificate = async (type: 'course' | 'internship', id: string) => {
+  const handleIssueCertificate = async (type: 'course' | 'internship' | 'hackathon', id: string) => {
     setIssuingId(id);
     try {
       const res = await fetch("/api/admin/certificates/issue", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type, id }),
+        body: JSON.stringify({ type, id, email }),
       });
       const data = await res.json();
 
@@ -492,11 +507,21 @@ export default function UnifiedCertificateManagementPage() {
                           </div>
                           <div>
                             <p className="text-sm text-gray-400 font-medium">
-                              {result.type === 'course' ? 'Course' : result.type === 'internship' ? 'Internship' : 'Achievement'}
+                              {result.type === 'course' ? 'Course' : result.type === 'internship' ? 'Internship' : result.type === 'hackathon' ? 'Hackathon' : 'Achievement'}
                             </p>
                             <p className="text-lg font-semibold text-white">{result.data.title}</p>
+                            {result.type === 'hackathon' && result.data.hackathonTitle && (
+                              <p className="text-sm text-purple-300">{result.data.hackathonTitle}</p>
+                            )}
                           </div>
                         </div>
+
+                        {result.type === 'hackathon' && result.data.projectName && (
+                          <div className="bg-white/5 p-3 rounded-lg border border-white/10">
+                            <p className="text-xs text-gray-400 uppercase">Project Name</p>
+                            <p className="text-sm text-white font-medium">{result.data.projectName}</p>
+                          </div>
+                        )}
 
                         {/* Tampering Warning */}
                         <div className="bg-yellow-500/20 p-4 rounded-lg border border-yellow-400/30">
@@ -582,6 +607,63 @@ export default function UnifiedCertificateManagementPage() {
                     rows={4}
                     className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
                   />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-white mb-2">
+                      Hackathon Title (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={hackathonTitle}
+                      onChange={(e) => setHackathonTitle(e.target.value)}
+                      placeholder="Webory Hackathon 2024"
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-white mb-2">
+                      Project Name (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={projectName}
+                      onChange={(e) => setProjectName(e.target.value)}
+                      placeholder="Smart Dashboard"
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-white mb-2">
+                      Type
+                    </label>
+                    <select
+                      value={certType}
+                      onChange={(e) => setCertType(e.target.value as any)}
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                      <option value="participant" className="bg-gray-900">Participant</option>
+                      <option value="winner" className="bg-gray-900">Winner</option>
+                    </select>
+                  </div>
+                  {certType === 'winner' && (
+                    <div>
+                      <label className="block text-sm font-semibold text-white mb-2">
+                        Rank
+                      </label>
+                      <input
+                        type="number"
+                        value={rank}
+                        onChange={(e) => setRank(e.target.value)}
+                        placeholder="1"
+                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex gap-3 pt-2">
@@ -726,22 +808,28 @@ export default function UnifiedCertificateManagementPage() {
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-white mb-3">Enrollments & Internships</h3>
-                  {userData.enrollments.length === 0 && userData.internships.length === 0 ? (
-                    <p className="text-gray-500 italic">No enrollments or internships found.</p>
+                  <h3 className="font-semibold text-white mb-3">Enrollments, Internships & Hackathons</h3>
+                  {userData.enrollments.length === 0 && userData.internships.length === 0 && userData.hackathons.length === 0 ? (
+                    <p className="text-gray-500 italic">No enrollments, internships or hackathons found.</p>
                   ) : (
                     <div className="space-y-3">
-                      {[...userData.enrollments, ...userData.internships].map((item: any) => (
+                      {[...userData.enrollments, ...userData.internships, ...userData.hackathons].map((item: any) => (
                         <div key={item.id} className="flex flex-col md:flex-row md:items-center justify-between p-4 border border-white/20 rounded-lg bg-white/5 hover:bg-white/10 transition-colors gap-4">
                           <div>
                             <div className="flex items-center gap-2">
-                              <span className={`text-xs px-2 py-0.5 rounded-full ${item.type === 'course' ? 'bg-blue-500/20 text-blue-300' : 'bg-purple-500/20 text-purple-300'}`}>
-                                {item.type === 'course' ? 'Course' : 'Internship'}
+                              <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                item.type === 'course' ? 'bg-blue-500/20 text-blue-300' : 
+                                item.type === 'internship' ? 'bg-purple-500/20 text-purple-300' :
+                                'bg-orange-500/20 text-orange-300'
+                              }`}>
+                                {item.type === 'course' ? 'Course' : item.type === 'internship' ? 'Internship' : 'Hackathon'}
                               </span>
                               <h4 className="font-medium text-white">{item.title}</h4>
                             </div>
                             <p className="text-xs text-gray-400 mt-1">
-                              {item.type === 'course' ? `Progress: ${Math.round(item.progress)}%` : `Status: ${item.status}`}
+                              {item.type === 'course' ? `Progress: ${Math.round(item.progress)}%` : 
+                               item.type === 'internship' ? `Status: ${item.status}` :
+                               `Project: ${item.projectName || 'N/A'}`}
                               {' • '}
                               {new Date(item.date).toLocaleDateString()}
                             </p>

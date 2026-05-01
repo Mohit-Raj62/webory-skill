@@ -101,7 +101,7 @@ export async function GET(
     if (customCert) {
       return NextResponse.json({
         valid: true,
-        type: "custom",
+        type: customCert.hackathonTitle ? "hackathon" : "custom",
         data: {
           studentName: customCert.studentName,
           title: customCert.title,
@@ -109,6 +109,10 @@ export async function GET(
           date: customCert.issuedAt,
           certificateId: customCert.certificateId,
           certificateKey: customCert.certificateKey,
+          hackathonTitle: customCert.hackathonTitle,
+          projectName: customCert.projectName,
+          domain: customCert.domain,
+          rank: customCert.rank,
         },
       });
     }

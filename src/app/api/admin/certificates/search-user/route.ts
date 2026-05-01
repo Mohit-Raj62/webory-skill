@@ -5,6 +5,8 @@ import Enrollment from "@/models/Enrollment";
 import Application from "@/models/Application";
 import Course from "@/models/Course"; // Ensure models are registered
 import Internship from "@/models/Internship"; // Ensure models are registered
+import HackathonSubmission from "@/models/HackathonSubmission";
+import Hackathon from "@/models/Hackathon";
 
 export async function GET(req: Request) {
   try {
@@ -34,6 +36,18 @@ export async function GET(req: Request) {
       .populate("internship", "title")
       .sort({ createdAt: -1 });
 
+    // Fetch Hackathons
+    const hackathonSubmissions = await HackathonSubmission.find({
+      $or: [
+        { userId: user._id },
+        { teamMembers: user._id },
+        { "teamMemberDetails.email": user.email },
+        { "certificates.email": user.email },
+      ],
+    })
+      .populate("hackathonId", "title theme")
+      .sort({ createdAt: -1 });
+
     return NextResponse.json({
       user: {
         id: user._id,
@@ -56,6 +70,23 @@ export async function GET(req: Request) {
         certificateId: a.certificateId,
         date: a.completedAt || a.updatedAt,
       })),
+      hackathons: hackathonSubmissions.map((s) => {
+        let personalCertId = s.certificateId;
+        if (s.userId.toString() !== user._id.toString()) {
+          const teamCert = s.certificates?.find((c: any) => c.email === user.email);
+          personalCertId = teamCert?.certificateId || null;
+        }
+        
+        return {
+          id: s._id,
+          type: "hackathon",
+          title: s.hackathonId.title,
+          status: s.status,
+          certificateId: personalCertId,
+          date: s.createdAt,
+          projectName: s.projectName,
+        };
+      }),
     });
   } catch (error) {
     console.error("Search error:", error);

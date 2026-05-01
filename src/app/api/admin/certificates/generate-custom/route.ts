@@ -5,7 +5,7 @@ import CustomCertificate from "@/models/CustomCertificate";
 export async function POST(req: Request) {
   try {
     await dbConnect();
-    const { studentName, title, description } = await req.json();
+    const { studentName, title, description, hackathonTitle, projectName, type, rank } = await req.json();
 
     if (!studentName || !title) {
       return NextResponse.json(
@@ -23,7 +23,8 @@ export async function POST(req: Request) {
       .substring(0, 4);
 
     const randomId = Math.random().toString(36).substring(2, 8).toUpperCase();
-    const certificateId = `CUSTOM-${titleSlug}-${randomId}-${Date.now()
+    const prefix = hackathonTitle ? "WEBORY" : "CUSTOM";
+    const certificateId = `${prefix}-${titleSlug}-${randomId}-${Date.now()
       .toString()
       .substring(8)}`;
 
@@ -40,6 +41,10 @@ export async function POST(req: Request) {
       certificateId,
       certificateKey,
       issuedAt: new Date(),
+      hackathonTitle,
+      projectName,
+      type: type || "participant",
+      rank: rank || 0,
     });
 
     return NextResponse.json({

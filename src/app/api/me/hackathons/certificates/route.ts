@@ -23,14 +23,21 @@ export async function GET(req: NextRequest) {
 
     // 2. Fetch submissions where user is owner OR a team member with a certificate
     const submissions = await HackathonSubmission.find({ 
-        $or: [
-          { userId },
-          { "certificates.email": userEmail }
-        ],
-        $or: [
-          { certificateId: { $exists: true, $ne: null } },
-          { "certificates.certificateId": { $exists: true, $ne: null } }
-        ]
+      $and: [
+        {
+          $or: [
+            { userId },
+            { teamMembers: userId },
+            { "certificates.email": userEmail }
+          ]
+        },
+        {
+          $or: [
+            { certificateId: { $exists: true, $ne: null } },
+            { "certificates.certificateId": { $exists: true, $ne: null } }
+          ]
+        }
+      ]
     })
     .populate("hackathonId", "title theme bannerImage startDate status collaborations signatures")
     .populate("certificateId")

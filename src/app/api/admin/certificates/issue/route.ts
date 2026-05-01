@@ -4,6 +4,10 @@ import Enrollment from "@/models/Enrollment";
 import Application from "@/models/Application";
 import Course from "@/models/Course";
 import Internship from "@/models/Internship";
+import HackathonSubmission from "@/models/HackathonSubmission";
+import CustomCertificate from "@/models/CustomCertificate";
+import User from "@/models/User";
+import crypto from "crypto";
 
 export async function POST(req: Request) {
   try {
@@ -99,6 +103,78 @@ export async function POST(req: Request) {
       application.certificateKey = certificateKey;
       application.completedAt = new Date(); // Ensure completedAt is set
       await application.save();
+    } else if (type === "hackathon") {
+      const { email: targetEmail } = await req.json().catch(() => ({}));
+      const submission = await HackathonSubmission.findById(id).populate("hackathonId").populate("userId");
+      if (!submission) {
+        return NextResponse.json(
+          { error: "Hackathon submission not found" },
+          { status: 404 }
+        );
+      }
+
+      const hackathon = submission.hackathonId;
+      let user = submission.userId;
+      let isTeamMember = false;
+
+      // If target email is provided and different from lead, find team member
+      if (targetEmail && targetEmail !== submission.userId.email) {
+        const teamMember = await User.findOne({ email: targetEmail });
+        if (teamMember) {
+          user = teamMember;
+          isTeamMember = true;
+        }
+      }
+
+      // Check if certificate already exists for this specific user
+      if (isTeamMember) {
+        const existing = submission.certificates?.find((c: any) => c.email === user.email);
+        if (existing?.certificateId) {
+          return NextResponse.json(
+            { error: "Certificate already exists for this team member" },
+            { status: 400 }
+          );
+        }
+      } else if (submission.certificateId) {
+        return NextResponse.json(
+          { error: "Certificate already exists for the team lead" },
+          { status: 400 }
+        );
+      }
+
+      title = submission.status === "winner" ? `Hackathon Champion - ${submission.rank}${submission.rank === 1 ? 'st' : submission.rank === 2 ? 'nd' : 'rd'} Place` : "Hackathon Participant";
+      
+      const description = `Awarded for ${submission.status === "winner" ? 'Outstanding performance' : 'Active participation'} in the ${hackathon.title}. Project: ${submission.projectName}`;
+
+      // Generate ID and Key
+      certificateId = "WEBORY-" + crypto.randomBytes(4).toString("hex").toUpperCase();
+      certificateKey = crypto.randomBytes(16).toString("hex");
+
+      const certificate = await CustomCertificate.create({
+        studentName: `${user.firstName} ${user.lastName}`,
+        title,
+        description,
+        certificateId,
+        certificateKey,
+        issuedAt: new Date(),
+        type: submission.status === "winner" ? "winner" : "participant",
+        rank: submission.status === "winner" ? submission.rank : 0,
+        hackathonTitle: hackathon.title,
+        projectName: submission.projectName,
+        domain: hackathon.theme,
+      });
+
+      if (isTeamMember) {
+        if (!submission.certificates) submission.certificates = [];
+        submission.certificates.push({
+          name: `${user.firstName} ${user.lastName}`,
+          email: user.email,
+          certificateId: certificate._id
+        });
+      } else {
+        submission.certificateId = certificate._id;
+      }
+      await submission.save();
     } else {
       return NextResponse.json({ error: "Invalid type" }, { status: 400 });
     }
