@@ -49,6 +49,7 @@ export default function UnifiedCertificateManagementPage() {
   const [projectName, setProjectName] = useState("");
   const [certType, setCertType] = useState<'participant' | 'winner'>('participant');
   const [rank, setRank] = useState<string>("");
+  const [college, setCollege] = useState("");
   const [generating, setGenerating] = useState(false);
   const [certificate, setCertificate] = useState<{
     id: string;
@@ -240,6 +241,7 @@ export default function UnifiedCertificateManagementPage() {
           projectName: projectName.trim(),
           type: certType,
           rank: rank ? parseInt(rank) : 0,
+          college: college.trim(),
         }),
       });
 
@@ -273,6 +275,7 @@ export default function UnifiedCertificateManagementPage() {
     setProjectName("");
     setCertType('participant');
     setRank("");
+    setCollege("");
     setCertificate(null);
   };
 
@@ -606,6 +609,19 @@ export default function UnifiedCertificateManagementPage() {
                     placeholder="Additional details about the achievement..."
                     rows={4}
                     className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-white mb-2">
+                    College/Institution (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={college}
+                    onChange={(e) => setCollege(e.target.value)}
+                    placeholder="e.g., IIT Delhi"
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
 

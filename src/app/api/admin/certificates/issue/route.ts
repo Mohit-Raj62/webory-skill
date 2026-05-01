@@ -145,6 +145,15 @@ export async function POST(req: Request) {
       title = submission.status === "winner" ? `Hackathon Champion - ${submission.rank}${submission.rank === 1 ? 'st' : submission.rank === 2 ? 'nd' : 'rd'} Place` : "Hackathon Participant";
       
       const description = `Awarded for ${submission.status === "winner" ? 'Outstanding performance' : 'Active participation'} in the ${hackathon.title}. Project: ${submission.projectName}`;
+      
+      let college = "";
+      if (isTeamMember) {
+        const detail = submission.teamMemberDetails?.find((m: any) => m.email === user.email);
+        college = detail?.college || "";
+      } else {
+        const leadDetail = submission.teamMemberDetails?.find((m: any) => m.role?.toLowerCase().includes("lead") || m.name === `${user.firstName} ${user.lastName}`);
+        college = leadDetail?.college || "";
+      }
 
       // Generate ID and Key
       certificateId = "WEBORY-" + crypto.randomBytes(4).toString("hex").toUpperCase();
@@ -162,6 +171,7 @@ export async function POST(req: Request) {
         hackathonTitle: hackathon.title,
         projectName: submission.projectName,
         domain: hackathon.theme,
+        college,
       });
 
       if (isTeamMember) {

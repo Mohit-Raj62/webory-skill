@@ -18,8 +18,13 @@ const getCachedCertificate = unstable_cache(
 
         if (!certificate) return null;
 
-        // Always try to find the HackathonSubmission to get latest signatures & collaborations
-        const submission = await HackathonSubmission.findOne({ certificateId: certificate._id })
+        // Always try to find the HackathonSubmission to get latest signatures, collaborations & college
+        const submission = await HackathonSubmission.findOne({
+            $or: [
+                { certificateId: certificate._id },
+                { "certificates.certificateId": certificate._id }
+            ]
+        })
             .populate("hackathonId", "title theme collaborations signatures")
             .lean();
         
@@ -29,7 +34,24 @@ const getCachedCertificate = unstable_cache(
             certificate.domain = certificate.domain || (submission.hackathonId as any)?.theme;
             certificate.rank = certificate.rank || submission.rank;
             certificate.type = certificate.type || (submission.status === "winner" ? "winner" : "participant");
-            certificate.studentName = certificate.studentName || submission.teamName;
+            
+            // Determine the specific student name and college from the submission
+            if (submission.certificateId?.toString() === certificate._id.toString()) {
+                // This is the lead
+                certificate.studentName = certificate.studentName || submission.teamName;
+                // Lead's college might be in registeredUsers of Hackathon, but let's try to find it in submission if available
+                // Actually, let's just use what's in the certificate if it was set, or try to find in teamMemberDetails
+                const leadDetails = submission.teamMemberDetails?.find((m: any) => m.role?.toLowerCase().includes("lead") || m.name === certificate.studentName);
+                certificate.college = leadDetails?.college || "";
+            } else {
+                // This is a team member
+                const memberDetails = submission.certificates?.find((c: any) => c.certificateId?.toString() === certificate._id.toString());
+                if (memberDetails) {
+                    certificate.studentName = certificate.studentName || memberDetails.name;
+                    const detail = submission.teamMemberDetails?.find((m: any) => m.email === memberDetails.email);
+                    certificate.college = detail?.college || "";
+                }
+            }
             
             // Populate collaborations and signatures from Hackathon
             const hackathon = submission.hackathonId as any;

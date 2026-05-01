@@ -26,6 +26,7 @@ const CustomCertificateSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  college: String,
   hackathonTitle: String,
   projectName: String,
   domain: String,

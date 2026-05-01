@@ -14,6 +14,7 @@ interface HackathonCertificateProps {
   issueDate: string;
   certificateId: string;
   domain?: string;
+  college?: string;
   collaborations?: { name: string, logo?: string }[];
   signatures?: {
     founder: { name: string, title: string },
@@ -31,6 +32,7 @@ export default function HackathonCertificate({
   issueDate,
   certificateId,
   domain,
+  college,
   collaborations,
   signatures
 }: HackathonCertificateProps) {
@@ -247,9 +249,15 @@ export default function HackathonCertificate({
 
               <p className="text-sm font-bold text-slate-400 uppercase tracking-[0.4em] mb-4">Proudly Presented To</p>
               
-              <h2 className="text-5xl md:text-6xl font-black text-slate-900 tracking-tight capitalize mb-2 border-b-2 border-slate-100 pb-1 px-12">
+              <h2 className="text-5xl md:text-6xl font-black text-slate-900 tracking-tight capitalize mb-1 border-b-2 border-slate-100 pb-1 px-12">
                 {studentName}
               </h2>
+
+              {college && (
+                <p className="text-sm font-black text-slate-600 uppercase tracking-[0.2em] mb-4">
+                  {college}
+                </p>
+              )}
 
               <div className="max-w-2xl mx-auto space-y-2">
                 <p className="text-base text-slate-600 font-medium leading-relaxed">

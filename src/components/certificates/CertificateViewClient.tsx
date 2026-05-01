@@ -75,6 +75,7 @@ export function CertificateViewClient({ certificate }: { certificate: any }) {
                     issueDate={certificate.issuedAt}
                     certificateId={certificate.certificateId}
                     domain={certificate.domain || "Skills Hackathon"}
+                    college={certificate.college}
                     collaborations={certificate.collaborations}
                     signatures={certificate.signatures}
                 />

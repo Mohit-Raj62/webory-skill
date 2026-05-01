@@ -5,7 +5,7 @@ import CustomCertificate from "@/models/CustomCertificate";
 export async function POST(req: Request) {
   try {
     await dbConnect();
-    const { studentName, title, description, hackathonTitle, projectName, type, rank } = await req.json();
+    const { studentName, title, description, hackathonTitle, projectName, type, rank, college } = await req.json();
 
     if (!studentName || !title) {
       return NextResponse.json(
@@ -45,6 +45,7 @@ export async function POST(req: Request) {
       projectName,
       type: type || "participant",
       rank: rank || 0,
+      college,
     });
 
     return NextResponse.json({
