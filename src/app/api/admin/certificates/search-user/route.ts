@@ -5,8 +5,10 @@ import Enrollment from "@/models/Enrollment";
 import Application from "@/models/Application";
 import Course from "@/models/Course"; // Ensure models are registered
 import Internship from "@/models/Internship"; // Ensure models are registered
+import Hackathon from "@/models/Hackathon"; // Ensure models are registered
 import HackathonSubmission from "@/models/HackathonSubmission";
-import Hackathon from "@/models/Hackathon";
+import CustomCertificate from "@/models/CustomCertificate"; // Ensure models are registered
+import Simulator from "@/models/Simulator"; // Ensure models are registered
 
 export async function GET(req: Request) {
   try {
@@ -25,15 +27,15 @@ export async function GET(req: Request) {
 
     // Fetch Enrollments
     const enrollments = await Enrollment.find({ student: user._id })
-      .populate("course", "title")
+      .populate({ path: "course", model: Course, select: "title" })
       .sort({ createdAt: -1 });
 
     // Fetch Internships
     const applications = await Application.find({
       student: user._id,
-      status: "approved",
+      status: { $in: ["accepted", "completed"] },
     })
-      .populate("internship", "title")
+      .populate({ path: "internship", model: Internship, select: "title" })
       .sort({ createdAt: -1 });
 
     // Fetch Hackathons
@@ -45,7 +47,7 @@ export async function GET(req: Request) {
         { "certificates.email": user.email },
       ],
     })
-      .populate("hackathonId", "title theme")
+      .populate({ path: "hackathonId", model: Hackathon, select: "title theme" })
       .sort({ createdAt: -1 });
 
     return NextResponse.json({

@@ -5,6 +5,7 @@ import Application from "@/models/Application";
 import Course from "@/models/Course";
 import Internship from "@/models/Internship";
 import HackathonSubmission from "@/models/HackathonSubmission";
+import Hackathon from "@/models/Hackathon"; // Ensure models are registered
 import CustomCertificate from "@/models/CustomCertificate";
 import User from "@/models/User";
 import crypto from "crypto";
@@ -27,7 +28,7 @@ export async function POST(req: Request) {
     let userId = "";
 
     if (type === "course") {
-      const enrollment = await Enrollment.findById(id).populate("course");
+      const enrollment = await Enrollment.findById(id).populate({ path: "course", model: Course });
       if (!enrollment) {
         return NextResponse.json(
           { error: "Enrollment not found" },
@@ -65,7 +66,7 @@ export async function POST(req: Request) {
       enrollment.certificateKey = certificateKey;
       await enrollment.save();
     } else if (type === "internship") {
-      const application = await Application.findById(id).populate("internship");
+      const application = await Application.findById(id).populate({ path: "internship", model: Internship });
       if (!application) {
         return NextResponse.json(
           { error: "Application not found" },
@@ -105,7 +106,9 @@ export async function POST(req: Request) {
       await application.save();
     } else if (type === "hackathon") {
       const { email: targetEmail } = await req.json().catch(() => ({}));
-      const submission = await HackathonSubmission.findById(id).populate("hackathonId").populate("userId");
+      const submission = await HackathonSubmission.findById(id)
+        .populate({ path: "hackathonId", model: Hackathon })
+        .populate({ path: "userId", model: User });
       if (!submission) {
         return NextResponse.json(
           { error: "Hackathon submission not found" },
