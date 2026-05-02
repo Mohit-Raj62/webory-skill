@@ -37,7 +37,10 @@ export async function GET(req: Request) {
       };
     });
 
-    return NextResponse.json({ feedbacks: formattedFeedbacks });
+    // Filter out feedbacks where user is null (deleted users)
+    const filteredFeedbacks = formattedFeedbacks.filter((f: any) => f.user !== null);
+
+    return NextResponse.json({ feedbacks: filteredFeedbacks });
   } catch (error: any) {
     console.error("Admin Video Feedback Fetch Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });

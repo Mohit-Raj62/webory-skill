@@ -18,7 +18,10 @@ export async function GET(req: Request) {
             .sort({ createdAt: -1 })
             .populate('user', 'firstName lastName email');
 
-        return NextResponse.json({ feedbacks });
+        // Filter out feedbacks where user is null (deleted users)
+        const filteredFeedbacks = feedbacks.filter(f => f.user !== null);
+
+        return NextResponse.json({ feedbacks: filteredFeedbacks });
 
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });

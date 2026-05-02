@@ -213,9 +213,9 @@ export default function AdminFeedbackPage() {
 
                                         <div className="flex items-center gap-2 text-sm text-gray-500">
                                             <div className="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center text-xs font-medium text-gray-300">
-                                                {feedback.user.firstName[0]}
+                                                {feedback.user?.firstName?.[0] || 'U'}
                                             </div>
-                                            {feedback.user.firstName} {feedback.user.lastName} ({feedback.user.email})
+                                            {feedback.user?.firstName || 'Unknown'} {feedback.user?.lastName || 'User'} ({feedback.user?.email || 'No email'})
                                         </div>
                                     </div>
 
@@ -309,13 +309,13 @@ export default function AdminFeedbackPage() {
 
                                         <div className="flex items-center gap-2 text-sm text-gray-500 pt-2 border-t border-white/5">
                                             <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-xs font-bold text-white">
-                                                {feedback.user.firstName[0]}
+                                                {feedback.user?.firstName?.[0] || 'U'}
                                             </div>
                                             <span className="font-medium text-gray-400">
-                                                {feedback.user.firstName} {feedback.user.lastName}
+                                                {feedback.user?.firstName || 'Unknown'} {feedback.user?.lastName || 'User'}
                                             </span>
                                             <span className="text-gray-600">•</span>
-                                            <span className="text-gray-600">{feedback.user.email}</span>
+                                            <span className="text-gray-600">{feedback.user?.email || 'No email'}</span>
                                         </div>
                                     </div>
                                 </div>
