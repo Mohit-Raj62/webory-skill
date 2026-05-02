@@ -21,6 +21,18 @@ const InternshipSchema = new Schema({
     type: String,
     required: true,
   },
+  duration: {
+    type: String,
+    default: "3-6 Months",
+  },
+  deadline: {
+    type: String,
+    default: "Next week!",
+  },
+  perks: {
+    type: [String],
+    default: ["Performance Bonus"],
+  },
   price: {
     type: Number,
     default: 0, // Registration fee
@@ -44,6 +56,10 @@ const InternshipSchema = new Schema({
   tags: {
     type: [String],
     default: [],
+  },
+  tagline: {
+    type: String,
+    default: "Master production-ready tools",
   },
   description: {
     type: String,
@@ -91,6 +107,26 @@ const InternshipSchema = new Schema({
   isFree: {
     type: Boolean,
     default: false,
+  },
+  totalSeats: {
+    type: Number,
+    default: 50,
+  },
+  filledSeats: {
+    type: Number,
+    default: 0,
+  },
+  benefits: {
+    type: [{
+      title: String,
+      description: String,
+      icon: String,
+    }],
+    default: [
+      { title: "Certified Experience", description: "Get a verified internship completion certificate and letter of recommendation from Webory.", icon: "ShieldCheck" },
+      { title: "Direct Mentorship", description: "Work directly with industry experts who will guide you through complex real-world production cycles.", icon: "Sparkles" },
+      { title: "Career Growth", description: "Top performers will receive Pre-Placement Offers (PPOs) and exclusive networking opportunities.", icon: "Briefcase" }
+    ],
   },
 });
 

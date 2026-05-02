@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Internship from "@/models/Internship";
+import { revalidateTag } from "next/cache";
 
 export async function GET() {
   try {
     await dbConnect();
     const internships = await Internship.find({})
       .select(
-        "title company location type stipend tags price description color icon requirements responsibilities",
+        "title company location type stipend tags price description color icon requirements responsibilities duration deadline perks tagline totalSeats filledSeats benefits",
       )
       .sort({ createdAt: -1 })
       .lean();
@@ -26,6 +27,7 @@ export async function POST(req: Request) {
     await dbConnect();
     const data = await req.json();
     const internship = await Internship.create(data);
+    revalidateTag('internships');
     return NextResponse.json({ internship }, { status: 201 });
   } catch (error) {
     console.error("Create internship error:", error);

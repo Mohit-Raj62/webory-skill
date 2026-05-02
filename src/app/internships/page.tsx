@@ -7,8 +7,7 @@ import { unstable_cache } from "next/cache";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
-// export const dynamic = "force-dynamic";
-export const revalidate = 300; // Cache for 5 minutes
+export const dynamic = "force-dynamic";
 
 const fallbackInternships = [
     {
@@ -19,7 +18,9 @@ const fallbackInternships = [
         type: "Full-time",
         stipend: "₹15,000 - ₹30,000 / month",
         tags: ["React", "Tailwind", "TypeScript"],
-        price: 999 
+        price: 999,
+        description: "Join our core team to build modern web applications using React and Next.js. You'll work on production-level code and collaborate with senior developers.",
+        requirements: ["Basic knowledge of HTML/CSS/JS", "Familiarity with React is a plus"]
     },
     {
         _id: "2",
@@ -29,7 +30,9 @@ const fallbackInternships = [
         type: "Part-time",
         stipend: "₹10,000 - ₹20,000 / month",
         tags: ["Figma", "Prototyping", "User Research"],
-        price: 999
+        price: 999,
+        description: "Help us create stunning user experiences for our clients. You will be involved in the entire design process from research to prototyping.",
+        requirements: ["Proficiency in Figma", "Strong understanding of design principles"]
     },
 ];
 
@@ -38,7 +41,7 @@ const getCachedInternshipsData = unstable_cache(
         try {
             await dbConnect();
             const internships = await Internship.find({})
-                .select("title company location type stipend tags price requirements responsibilities isFree")
+                .select("title company location type stipend tags price requirements responsibilities isFree description duration deadline perks tagline totalSeats filledSeats benefits")
                 .sort({ createdAt: -1 })
                 .lean();
             return JSON.parse(JSON.stringify(internships));

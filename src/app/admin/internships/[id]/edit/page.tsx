@@ -25,7 +25,17 @@ export default function EditInternshipPage() {
         requirements: [] as string[],
         responsibilities: [] as string[],
         tags: [] as string[],
+        perks: [] as string[],
+        tagline: "Master production-ready tools",
+        deadline: "",
         isFree: false,
+        totalSeats: 50,
+        filledSeats: 0,
+        benefits: [
+            { title: "Certified Experience", description: "Get a verified internship completion certificate and letter of recommendation from Webory.", icon: "ShieldCheck" },
+            { title: "Direct Mentorship", description: "Work directly with industry experts who will guide you through complex real-world production cycles.", icon: "Sparkles" },
+            { title: "Career Growth", description: "Top performers will receive Pre-Placement Offers (PPOs) and exclusive networking opportunities.", icon: "Briefcase" }
+        ],
         collaboration: "",
         collaborations: [] as { name: string, logo?: string, website?: string }[],
         signatures: {
@@ -38,6 +48,7 @@ export default function EditInternshipPage() {
     const [requirementInput, setRequirementInput] = useState("");
     const [responsibilityInput, setResponsibilityInput] = useState("");
     const [tagInput, setTagInput] = useState("");
+    const [perkInput, setPerkInput] = useState("");
 
     useEffect(() => {
         fetchInternship();
@@ -51,10 +62,29 @@ export default function EditInternshipPage() {
                 // Ensure arrays have default values
                 setFormData({
                     ...data.internship,
+                    title: data.internship.title || "",
+                    company: data.internship.company || "",
+                    location: data.internship.location || "",
+                    type: data.internship.type || "Remote",
+                    duration: data.internship.duration || "",
+                    stipend: data.internship.stipend || "",
+                    price: data.internship.price || 0,
+                    description: data.internship.description || "",
                     requirements: data.internship.requirements || [],
                     responsibilities: data.internship.responsibilities || [],
                     gstPercentage: data.internship.gstPercentage || 0,
                     tags: data.internship.tags || [],
+                    perks: data.internship.perks || [],
+                    tagline: data.internship.tagline || "Master production-ready tools",
+                    deadline: data.internship.deadline || "",
+                    isFree: data.internship.isFree || false,
+                    totalSeats: data.internship.totalSeats || 50,
+                    filledSeats: data.internship.filledSeats || 0,
+                    benefits: data.internship.benefits || [
+                        { title: "Certified Experience", description: "Get a verified internship completion certificate and letter of recommendation from Webory.", icon: "ShieldCheck" },
+                        { title: "Direct Mentorship", description: "Work directly with industry experts who will guide you through complex real-world production cycles.", icon: "Sparkles" },
+                        { title: "Career Growth", description: "Top performers will receive Pre-Placement Offers (PPOs) and exclusive networking opportunities.", icon: "Briefcase" }
+                    ],
                     collaboration: data.internship.collaboration || "",
                     collaborations: data.internship.collaborations || [],
                     signatures: data.internship.signatures || {
@@ -76,27 +106,31 @@ export default function EditInternshipPage() {
         setSaving(true);
 
         try {
+            // Clean data before sending to avoid "Failed to fetch" or Mongoose errors
+            const { _id, __v, createdAt, updatedAt, ...saveData } = formData as any;
+
             const res = await fetch(`/api/admin/internships/${params.id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
+                body: JSON.stringify(saveData),
             });
 
             if (res.ok) {
                 alert("Internship updated successfully!");
                 router.push("/admin/internships");
             } else {
-                alert("Failed to update internship");
+                const errorData = await res.json();
+                alert(`Error: ${errorData.error || "Failed to update"}`);
             }
         } catch (error) {
             console.error("Update internship error:", error);
-            alert("Failed to update internship");
+            alert("Network Error: Failed to connect to server. Please try again.");
         } finally {
             setSaving(false);
         }
     };
 
-    const addItem = (type: 'requirements' | 'responsibilities' | 'tags', value: string) => {
+    const addItem = (type: 'requirements' | 'responsibilities' | 'tags' | 'perks', value: string) => {
         if (value.trim()) {
             setFormData({
                 ...formData,
@@ -105,10 +139,11 @@ export default function EditInternshipPage() {
             if (type === 'requirements') setRequirementInput("");
             if (type === 'responsibilities') setResponsibilityInput("");
             if (type === 'tags') setTagInput("");
+            if (type === 'perks') setPerkInput("");
         }
     };
 
-    const removeItem = (type: 'requirements' | 'responsibilities' | 'tags', index: number) => {
+    const removeItem = (type: 'requirements' | 'responsibilities' | 'tags' | 'perks', index: number) => {
         setFormData({
             ...formData,
             [type]: formData[type].filter((_, i) => i !== index),
@@ -188,6 +223,8 @@ export default function EditInternshipPage() {
                                 <option value="Remote">Remote</option>
                                 <option value="On-site">On-site</option>
                                 <option value="Hybrid">Hybrid</option>
+                                <option value="Full Time">Full Time</option>
+                                <option value="Part Time">Part Time</option>
                             </select>
                         </div>
 
@@ -196,10 +233,32 @@ export default function EditInternshipPage() {
                             <input
                                 type="text"
                                 required
-                                placeholder="e.g., 3 months"
+                                placeholder="e.g., 3-6 Months"
                                 className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
                                 value={formData.duration}
                                 onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="text-sm text-gray-300 block mb-2">Application Deadline *</label>
+                            <input
+                                type="text"
+                                required
+                                placeholder="e.g., Next week!"
+                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                value={formData.deadline}
+                                onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="text-sm text-gray-300 block mb-2">Tagline (Industry Standard Text)</label>
+                            <input
+                                type="text"
+                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                value={formData.tagline}
+                                onChange={(e) => setFormData({ ...formData, tagline: e.target.value })}
                             />
                         </div>
                     </div>
@@ -253,6 +312,27 @@ export default function EditInternshipPage() {
                             >
                                 <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formData.isFree ? 'right-1' : 'left-1'}`} />
                             </button>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="text-sm text-gray-300 block mb-2">Total Seats</label>
+                            <input
+                                type="number"
+                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                value={formData.totalSeats}
+                                onChange={(e) => setFormData({ ...formData, totalSeats: Number(e.target.value) })}
+                            />
+                        </div>
+                        <div>
+                            <label className="text-sm text-gray-300 block mb-2">Filled Seats (Auto-increments on apply)</label>
+                            <input
+                                type="number"
+                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                value={formData.filledSeats}
+                                onChange={(e) => setFormData({ ...formData, filledSeats: Number(e.target.value) })}
+                            />
                         </div>
                     </div>
 
@@ -331,9 +411,44 @@ export default function EditInternshipPage() {
                         </div>
                     </div>
 
+                    {/* Perks / Bonus */}
+                    <div>
+                        <label className="text-sm text-gray-300 block mb-2">Perks & Bonuses (e.g. Performance Bonus)</label>
+                        <div className="flex gap-2 mb-3">
+                            <input
+                                type="text"
+                                placeholder="Add perk (e.g., Skill-Based Bonus)"
+                                className="flex-1 bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                value={perkInput}
+                                onChange={(e) => setPerkInput(e.target.value)}
+                                onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addItem('perks', perkInput))}
+                            />
+                            <Button type="button" onClick={() => addItem('perks', perkInput)}>
+                                <Plus size={20} />
+                            </Button>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                            {formData.perks.map((perk, index) => (
+                                <span
+                                    key={index}
+                                    className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm flex items-center gap-2"
+                                >
+                                    {perk}
+                                    <button
+                                        type="button"
+                                        onClick={() => removeItem('perks', index)}
+                                        className="text-red-400 hover:text-red-300"
+                                    >
+                                        <X size={14} />
+                                    </button>
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+
                     {/* Tags */}
                     <div>
-                        <label className="text-sm text-gray-300 block mb-2">Tags</label>
+                        <label className="text-sm text-gray-300 block mb-2">Tags (Technology Stack)</label>
                         <div className="flex gap-2 mb-3">
                             <input
                                 type="text"
@@ -362,6 +477,57 @@ export default function EditInternshipPage() {
                                         <X size={14} />
                                     </button>
                                 </span>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Dynamic Benefits Section */}
+                    <div className="space-y-6">
+                        <h3 className="text-xl font-bold text-white">Bottom Benefits (3 Cards)</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {formData.benefits.map((benefit, index) => (
+                                <div key={index} className="p-4 bg-white/5 rounded-xl border border-white/10 space-y-4">
+                                    <h4 className="text-sm font-bold text-emerald-400">Card {index + 1}</h4>
+                                    <div>
+                                        <label className="text-[10px] text-gray-400 uppercase block mb-1">Title</label>
+                                        <input
+                                            type="text"
+                                            className="w-full bg-black/20 border border-white/10 rounded-lg p-2 text-sm text-white outline-none"
+                                            value={benefit.title}
+                                            onChange={(e) => {
+                                                const newBenefits = [...formData.benefits];
+                                                newBenefits[index].title = e.target.value;
+                                                setFormData({ ...formData, benefits: newBenefits });
+                                            }}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] text-gray-400 uppercase block mb-1">Description</label>
+                                        <textarea
+                                            rows={3}
+                                            className="w-full bg-black/20 border border-white/10 rounded-lg p-2 text-sm text-white outline-none"
+                                            value={benefit.description}
+                                            onChange={(e) => {
+                                                const newBenefits = [...formData.benefits];
+                                                newBenefits[index].description = e.target.value;
+                                                setFormData({ ...formData, benefits: newBenefits });
+                                            }}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] text-gray-400 uppercase block mb-1">Icon (ShieldCheck, Sparkles, Briefcase)</label>
+                                        <input
+                                            type="text"
+                                            className="w-full bg-black/20 border border-white/10 rounded-lg p-2 text-sm text-white outline-none"
+                                            value={benefit.icon}
+                                            onChange={(e) => {
+                                                const newBenefits = [...formData.benefits];
+                                                newBenefits[index].icon = e.target.value;
+                                                setFormData({ ...formData, benefits: newBenefits });
+                                            }}
+                                        />
+                                    </div>
+                                </div>
                             ))}
                         </div>
                     </div>

@@ -4,6 +4,7 @@ import Internship from "@/models/Internship";
 import Application from "@/models/Application";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
+import { revalidateTag, revalidatePath } from "next/cache";
 
 // GET single internship
 export async function GET(
@@ -54,12 +55,19 @@ export async function PUT(
     const { id } = await params;
     const updateData = await req.json();
 
-    // Update internship with only provided fields
+    // Remove internal fields if present
+    delete updateData._id;
+    delete updateData.__v;
+
     const internship = await Internship.findByIdAndUpdate(
       id,
-      { $set: updateData },
+      updateData, // Update everything sent
       { new: true, runValidators: true }
     );
+
+    revalidateTag('internships');
+    revalidatePath('/internships');
+    revalidatePath('/');
 
     if (!internship) {
       return NextResponse.json({ error: "Internship not found" }, { status: 404 });

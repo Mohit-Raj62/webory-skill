@@ -102,6 +102,9 @@ export async function POST(req: Request) {
         transactionId,
         amountPaid,
       });
+
+      // Increment filled seats
+      await Internship.findByIdAndUpdate(internshipId, { $inc: { filledSeats: 1 } });
     }
 
     // Record Activity

@@ -12,11 +12,13 @@ interface Learner {
     xp: number;
 }
 
-export function LeaderboardSection() {
-    const [learners, setLearners] = useState<Learner[]>([]);
-    const [loading, setLoading] = useState(true);
+export function LeaderboardSection({ initialLearners }: { initialLearners?: Learner[] }) {
+    const [learners, setLearners] = useState<Learner[]>(initialLearners || []);
+    const [loading, setLoading] = useState(!initialLearners);
 
     useEffect(() => {
+        if (initialLearners) return;
+
         let isMounted = true;
 
         const fetchLeaderboard = async () => {
@@ -39,7 +41,7 @@ export function LeaderboardSection() {
         return () => {
             isMounted = false;
         };
-    }, []);
+    }, [initialLearners]);
 
     if (loading) return null;
     if (learners.length === 0) return null;
@@ -60,15 +62,15 @@ export function LeaderboardSection() {
             </div>
 
             <div className="relative w-full overflow-hidden">
-                <div className="flex gap-8 animate-scroll-fast hover:pause px-4 w-max">
+                <div className="flex gap-6 animate-scroll-fast hover:pause px-4 w-max">
                     {[...learners, ...learners].map((learner, index) => (
                         <div
                             key={`${learner._id}-${index}`}
-                            className="w-[220px] flex-shrink-0 bg-white/5 backdrop-blur-md border border-white/10 p-5 rounded-[1.5rem] hover:bg-white/10 transition-all group"
+                            className="w-[140px] flex-shrink-0 bg-white/5 backdrop-blur-md border border-white/10 p-4 rounded-[1.2rem] hover:bg-white/10 transition-all group"
                         >
                             <div className="flex flex-col items-center text-center">
                                 <div className="relative mb-3">
-                                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg border-2 border-white/10 group-hover:scale-110 transition-transform duration-500">
+                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg border-2 border-white/10 group-hover:scale-110 transition-transform duration-500">
                                         {learner.avatar ? (
                                             <img src={learner.avatar} alt={learner.firstName} className="w-full h-full rounded-full object-cover" />
                                         ) : (
@@ -76,8 +78,8 @@ export function LeaderboardSection() {
                                         )}
                                     </div>
                                     {index % learners.length < 3 && (
-                                        <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center text-white shadow-lg border-[1.5px] border-slate-900">
-                                            <Award size={12} />
+                                        <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-amber-500 flex items-center justify-center text-white shadow-lg border-[1.5px] border-slate-900">
+                                            <Award size={10} />
                                         </div>
                                     )}
                                 </div>
@@ -86,8 +88,8 @@ export function LeaderboardSection() {
                                     {learner.firstName} {learner.lastName}
                                 </h4>
                                 
-                                <div className="flex items-center gap-1.5 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
-                                    <Zap size={12} className="text-blue-500 fill-blue-500" />
+                                <div className="flex items-center gap-1.5 bg-blue-500/10 px-2.5 py-1 rounded-full border border-blue-500/20">
+                                    <Zap size={10} className="text-blue-500 fill-blue-500" />
                                     <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest">
                                         {learner.xp.toLocaleString()} XP
                                     </span>

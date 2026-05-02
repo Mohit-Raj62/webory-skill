@@ -3,7 +3,7 @@
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, IndianRupee, CheckCircle2, X, Search, Filter } from "lucide-react";
+import { MapPin, Clock, IndianRupee, CheckCircle2, X, Search, Filter, Zap, Sparkles, GraduationCap, Globe, ArrowUpRight, ShieldCheck, Calendar, Briefcase } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -277,111 +277,212 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                             filteredInternships.map((job, index) => (
                                 <motion.div 
                                     layout
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
+                                    initial={{ opacity: 0, y: 40 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true, margin: "-100px" }}
                                     exit={{ opacity: 0, scale: 0.95 }}
-                                    transition={{ duration: 0.4 }}
+                                    transition={{ 
+                                        duration: 0.8, 
+                                        ease: [0.16, 1, 0.3, 1] 
+                                    }}
                                     key={job._id || index} 
-                                    className="group relative bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-5 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-emerald-500/50 transition-all duration-700 hover:shadow-[0_0_40px_-10px_rgba(16,185,129,0.2)] hover:-translate-y-1"
+                                    className="group relative bg-[#0a0b10] border border-white/[0.03] rounded-[2rem] p-8 md:p-14 mb-16 transition-all duration-700 hover:shadow-[0_0_120px_-30px_rgba(16,185,129,0.1)]"
                                 >
-                                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
-                                        <div className="absolute inset-[-2px] bg-gradient-to-tr from-emerald-500/50 via-cyan-500/20 to-blue-500/50 rounded-[2.1rem] blur-sm -z-10" />
-                                    </div>
-
-                                    <div className="flex-1 relative z-30">
-                                        <div className="mb-4 flex items-center gap-3">
-                                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#10b981] animate-pulse" />
-                                             <span className="text-[9px] font-black text-emerald-400/90 uppercase tracking-[0.2em] leading-none">
-                                                Active Enrollment
-                                             </span>
-                                        </div>
-
-                                        <h3 className="text-3xl md:text-4xl font-black text-white mb-3 tracking-tight leading-tight group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-emerald-400 group-hover:to-cyan-400 transition-all duration-500">{job.title}</h3>
-                                        <div className="text-lg text-slate-400 font-semibold mb-6 flex items-center gap-2.5">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_#10b981]" />
-                                            <span className="group-hover:text-emerald-300 transition-colors duration-500">{job.company}</span>
-                                        </div>
-
-                                         <div className="flex flex-wrap gap-3 mb-6">
-                                            <div className="flex items-center gap-2 bg-white/5 border border-white/5 px-2.5 py-1.5 rounded-lg">
-                                                <MapPin size={13} className="text-blue-400" />
-                                                <span className="text-[11px] font-bold text-slate-400">{job.location}</span>
+                                    {/* Ambient Gradients from Mockup */}
+                                    <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-purple-500/[0.03] via-transparent to-emerald-500/[0.03] pointer-events-none" />
+                                    
+                                    <div className="relative z-10">
+                                        {/* Top Header Section - More compact on mobile */}
+                                        <div className="flex items-center justify-between mb-8 pb-5 border-b border-white/[0.05]">
+                                            <div className="flex items-center gap-2.5">
+                                                <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-br from-emerald-400 to-blue-600 flex items-center justify-center p-1.5 md:p-2 shadow-lg">
+                                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-white"><path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                                </div>
+                                                <span className="text-lg md:text-2xl font-black text-white tracking-tighter uppercase">Webory</span>
                                             </div>
-                                            <div className="flex items-center gap-2 bg-white/5 border border-white/5 px-2.5 py-1.5 rounded-lg">
-                                                <Clock size={13} className="text-orange-400" />
-                                                <span className="text-[11px] font-bold text-slate-400">{job.type}</span>
-                                            </div>
-                                            <div className="flex items-center gap-2 bg-white/5 border border-white/5 px-2.5 py-1.5 rounded-lg">
-                                                <IndianRupee size={13} className="text-green-400" />
-                                                <span className="text-[11px] font-black text-white">{job.stipend}</span>
+                                            <div className="flex items-center gap-1.5 md:gap-2.5 px-3 py-1.5 md:px-4 md:py-2 bg-emerald-500/10 rounded-full border border-emerald-500/20">
+                                                <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-[#10b981] shadow-[0_0_12px_#10b981] animate-pulse" />
+                                                <span className="text-[8px] md:text-[10px] font-black text-[#10b981] uppercase tracking-[0.15em] md:tracking-[0.2em]">Active</span>
                                             </div>
                                         </div>
 
-                                        <div className="flex flex-wrap gap-2">
-                                            {job.tags && job.tags.map((tag: string, i: number) => (
-                                                <span key={i} className="px-2.5 py-1 rounded-lg bg-emerald-950/20 text-emerald-400/80 text-[9px] font-black uppercase tracking-wider border border-emerald-500/10 transition-all">
-                                                    {tag}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </div>
+                                        {/* Main Content Grid */}
+                                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
+                                            {/* Left: Info (8 cols) */}
+                                            <div className="lg:col-span-8 space-y-8 md:space-y-10 text-left">
+                                                <div>
+                                                    <h3 className="text-3xl md:text-5xl font-black text-white mb-6 tracking-tight leading-[1.2] md:leading-[1.1]">
+                                                        {job.title}
+                                                    </h3>
+                                                    <div className="flex flex-wrap gap-3">
+                                                        <div className="flex items-center gap-2 bg-white/[0.03] border border-white/[0.08] px-4 py-2.5 rounded-xl">
+                                                            <Globe size={16} className="text-blue-400" />
+                                                            <span className="text-[11px] md:text-xs font-bold text-slate-300">{job.type} ({job.location})</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 bg-white/[0.03] border border-white/[0.08] px-4 py-2.5 rounded-xl">
+                                                            <Clock size={16} className="text-slate-400" />
+                                                            <span className="text-[11px] md:text-xs font-bold text-slate-300">{job.duration || "3-6 Months"}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 bg-white/[0.03] border border-white/[0.08] px-4 py-2.5 rounded-xl">
+                                                            <Briefcase size={16} className="text-emerald-500" />
+                                                            <span className="text-[11px] md:text-xs font-bold text-slate-300">{job.perks && job.perks.length > 0 ? job.perks[0] : "Performance Bonus"}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
 
-                                    <div className="flex-shrink-0 relative z-30 flex flex-col items-end gap-5 w-full md:w-auto">
-                                        <div className="w-full md:w-auto p-4 rounded-2xl bg-white/[0.02] border border-white/5 flex flex-col items-end group-hover:bg-white/[0.04] transition-colors">
-                                             <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] mb-1.5">Registration Fee</span>
-                                             <div className="flex items-baseline gap-2">
-                                                <span className="text-2xl font-black text-white tracking-tighter">
-                                                    {job.isFree ? "FREE" : `₹${job.price || 0}`}
-                                                </span>
-                                                {job.gstPercentage > 0 && <span className="text-[10px] text-gray-400 font-bold">+ GST</span>}
-                                                <span className="text-[9px] text-emerald-500/80 font-black uppercase tracking-widest">Industry Standard</span>
-                                             </div>
-                                        </div>
+                                                {/* Tech Stack Section */}
+                                                <div className="bg-white/[0.02] border border-white/[0.05] p-5 md:p-8 rounded-[2rem] space-y-6">
+                                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                                        <div>
+                                                            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">{job.tagline || "Industry Standard"}</p>
+                                                            <p className="text-sm md:text-base font-bold text-slate-300">Master production-ready technologies</p>
+                                                        </div>
+                                                        <div className="flex flex-wrap gap-2 md:justify-end">
+                                                            {job.tags && job.tags.map((tag: string, i: number) => (
+                                                                <div key={i} className="px-4 py-2 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center gap-2 group/tag hover:border-emerald-500/30 transition-colors">
+                                                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/50 group-hover/tag:bg-emerald-500 transition-colors" />
+                                                                    <span className="text-[11px] md:text-xs font-bold text-slate-300">{tag}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
 
-                                        {(() => {
-                                            const app = userApplications.find(a => a.internshipId === job._id);
-                                            const isPaidJob = (job.price || 0) > 0;
-                                            
-                                            if (app) {
-                                                if (app.status === 'accepted' || app.status === 'completed' || app.status === 'interview_scheduled' || app.status === 'interview_pending') {
-                                                    const statusLabel = app.status === 'interview_pending' ? 'Interview Pending' : 
-                                                                       app.status === 'interview_scheduled' ? 'Interview Scheduled' : 
-                                                                       'Applied Successfully';
-                                                    return (
-                                                        <Button disabled className={`w-full ${app.status === 'interview_pending' ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30' : 'bg-slate-800/50 text-slate-500 border-slate-700/50'} h-11 rounded-xl font-black uppercase tracking-widest text-[9px] shadow-inner border`}>
-                                                            {app.status === 'interview_pending' ? <Clock className="mr-2 h-3.5 w-3.5" /> : <CheckCircle2 className="mr-2 h-3.5 w-3.5" />} {statusLabel}
+                                                {/* Dynamic Description Section */}
+                                                <div className="space-y-6">
+                                                    <div>
+                                                        <h4 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                                                            <div className="w-1.5 h-6 bg-emerald-500 rounded-full" />
+                                                            About the Internship
+                                                        </h4>
+                                                        <p className="text-sm md:text-base text-slate-400 leading-relaxed max-w-2xl">
+                                                            {job.description}
+                                                        </p>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                                        {job.requirements && job.requirements.length > 0 && (
+                                                            <div>
+                                                                <h4 className="text-sm font-black text-white/50 uppercase tracking-widest mb-4">Core Requirements</h4>
+                                                                <ul className="space-y-3">
+                                                                    {job.requirements.map((req: string, i: number) => (
+                                                                        <li key={i} className="flex items-start gap-3 text-sm text-slate-400">
+                                                                            <div className="w-1 h-1 rounded-full bg-emerald-500 mt-2 shrink-0" />
+                                                                            {req}
+                                                                        </li>
+                                                                    ))}
+                                                                </ul>
+                                                            </div>
+                                                        )}
+                                                        {job.responsibilities && job.responsibilities.length > 0 && (
+                                                            <div>
+                                                                <h4 className="text-sm font-black text-white/50 uppercase tracking-widest mb-4">Key Responsibilities</h4>
+                                                                <ul className="space-y-3">
+                                                                    {job.responsibilities.map((res: string, i: number) => (
+                                                                        <li key={i} className="flex items-start gap-3 text-sm text-slate-400">
+                                                                            <div className="w-1 h-1 rounded-full bg-blue-500 mt-2 shrink-0" />
+                                                                            {res}
+                                                                        </li>
+                                                                    ))}
+                                                                </ul>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Right: CTA (4 cols) */}
+                                            <div className="lg:col-span-4">
+                                                <div className="lg:sticky lg:top-10 flex flex-col gap-6">
+                                                    <div className="bg-gradient-to-br from-white/[0.05] to-transparent border border-white/[0.1] rounded-[2.5rem] p-8 md:p-10 backdrop-blur-3xl shadow-2xl relative overflow-hidden group/cta">
+                                                        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 blur-[80px] rounded-full" />
+                                                        
+                                                        <div className="mb-8 text-center lg:text-left relative z-10">
+                                                            <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-2">Onboarding Fee</p>
+                                                            <div className="flex items-baseline justify-center lg:justify-start gap-3">
+                                                                <span className="text-4xl md:text-5xl font-black text-white tracking-tighter">₹{job.price || 999}</span>
+                                                                <span className="text-sm text-slate-500 line-through">₹2,999</span>
+                                                            </div>
+                                                            <p className="text-[11px] text-slate-400 mt-4 leading-relaxed font-medium">
+                                                                Includes lifetime certification, premium resources, and direct mentorship.
+                                                            </p>
+                                                        </div>
+                                                        
+                                                        <Button
+                                                            onClick={() => (job.totalSeats - job.filledSeats > 0) && handleApplyClick(job._id)}
+                                                            disabled={job.totalSeats - job.filledSeats <= 0}
+                                                            className={`w-full h-16 md:h-20 rounded-2xl font-black text-sm md:text-base tracking-widest uppercase relative overflow-hidden group/btn shadow-[0_20px_50px_-15px_rgba(16,185,129,0.4)] transition-transform ${job.totalSeats - job.filledSeats > 0 ? 'hover:scale-[1.02] active:scale-[0.98]' : 'opacity-50 grayscale cursor-not-allowed'}`}
+                                                            style={{
+                                                                background: job.totalSeats - job.filledSeats > 0 
+                                                                    ? 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)' 
+                                                                    : '#334155',
+                                                                color: 'white'
+                                                            }}
+                                                        >
+                                                            {job.totalSeats - job.filledSeats > 0 ? (
+                                                                <>
+                                                                    APPLY NOW <ArrowUpRight size={22} className="ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                                                                </>
+                                                            ) : (
+                                                                "BATCH FULL"
+                                                            )}
                                                         </Button>
-                                                    );
-                                                } else if (app.status === 'pending') {
-                                                    if (isPaidJob) {
-                                                        return (
-                                                            <Button
-                                                                onClick={() => handleApplyClick(job._id)}
-                                                                className="w-full bg-yellow-500 hover:bg-yellow-600 text-black border-0 px-8 h-11 rounded-xl font-black uppercase tracking-wider text-[10px] shadow-lg hover:shadow-yellow-500/30 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group/btn"
-                                                            >
-                                                                <span className="relative z-20">Complete Payment</span>
-                                                            </Button>
-                                                        );
-                                                    } else {
-                                                         return (
-                                                            <Button disabled className="w-full bg-slate-800/50 text-amber-500 border border-amber-500/20 h-11 rounded-xl font-black uppercase tracking-widest text-[9px] shadow-inner">
-                                                                <Clock className="mr-2 h-3.5 w-3.5" /> Application Pending
-                                                            </Button>
-                                                        );
-                                                    }
-                                                }
-                                            }
 
-                                            return (
-                                                <Button
-                                                    onClick={() => handleApplyClick(job._id)}
-                                                    className="w-full bg-white hover:bg-emerald-500 text-black hover:text-white border-0 px-8 h-11 rounded-xl font-black uppercase tracking-wider text-[10px] shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group/btn"
-                                                >
-                                                    <span className="relative z-20">Apply Now</span>
-                                                    <div className="absolute top-0 -left-[100%] w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover/btn:left-[100%] transition-all duration-1000" />
-                                                </Button>
-                                            );
-                                        })()}
+                                                        <div className="mt-8 flex flex-col gap-4">
+                                                            <div className="flex items-center justify-between text-[11px] font-black uppercase tracking-wider">
+                                                                <span className="text-slate-500">Deadline</span>
+                                                                <span className="text-white">{job.deadline || "Soon"}</span>
+                                                            </div>
+                                                            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                                                <div className={`h-full ${job.totalSeats - job.filledSeats > 0 ? 'bg-emerald-500' : 'bg-red-500'} transition-all`} style={{ width: `${Math.min(100, (job.filledSeats / job.totalSeats) * 100)}%` }} />
+                                                            </div>
+                                                            <div className={`flex items-center justify-center gap-2 py-2 px-4 rounded-xl border ${
+                                                                job.totalSeats - job.filledSeats > 0 
+                                                                    ? 'bg-emerald-500/10 border-emerald-500/20' 
+                                                                    : 'bg-red-500/10 border-red-500/20'
+                                                            }`}>
+                                                                <div className={`w-1.5 h-1.5 rounded-full ${job.totalSeats - job.filledSeats > 0 ? 'bg-emerald-500 animate-ping' : 'bg-red-500'}`} />
+                                                                <span className={`text-[11px] font-black uppercase tracking-widest ${
+                                                                    job.totalSeats - job.filledSeats > 0 ? 'text-emerald-400' : 'text-red-400'
+                                                                }`}>
+                                                                    {job.totalSeats - job.filledSeats > 0 
+                                                                        ? `Only ${job.totalSeats - job.filledSeats} seats left!` 
+                                                                        : "Registration Closed - Batch Full"}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Bottom Perks Grid */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12 pt-12 border-t border-white/[0.05]">
+                                            {(job.benefits && job.benefits.length > 0 ? job.benefits : [
+                                                { title: "Certified Experience", description: "Get a verified internship completion certificate and letter of recommendation from Webory.", icon: "ShieldCheck" },
+                                                { title: "Direct Mentorship", description: "Work directly with industry experts who will guide you through complex real-world production cycles.", icon: "Sparkles" },
+                                                { title: "Career Growth", description: "Top performers will receive Pre-Placement Offers (PPOs) and exclusive networking opportunities.", icon: "Briefcase" }
+                                            ]).map((benefit: any, i: number) => {
+                                                const IconComponent = benefit.icon === "ShieldCheck" ? ShieldCheck : 
+                                                                    benefit.icon === "Sparkles" ? Sparkles : 
+                                                                    benefit.icon === "Briefcase" ? Briefcase : Globe;
+                                                return (
+                                                    <div key={i} className={`bg-[#0c0d12] border border-white/[0.03] rounded-3xl p-8 hover:bg-[#0e0f16] transition-all group/benefit ${i === 2 ? 'md:col-span-2 lg:col-span-1' : ''}`}>
+                                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-6 group-hover/benefit:scale-110 transition-transform ${
+                                                            benefit.icon === "ShieldCheck" ? "bg-emerald-500/10" : 
+                                                            benefit.icon === "Sparkles" ? "bg-blue-500/10" : "bg-purple-500/10"
+                                                        }`}>
+                                                            <IconComponent className={
+                                                                benefit.icon === "ShieldCheck" ? "text-emerald-400" : 
+                                                                benefit.icon === "Sparkles" ? "text-blue-400" : "text-purple-400"
+                                                            } size={24} />
+                                                        </div>
+                                                        <h4 className="text-lg font-black text-white mb-4">{benefit.title}</h4>
+                                                        <p className="text-sm text-slate-500 leading-relaxed">{benefit.description}</p>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
                                 </motion.div>
                             ))

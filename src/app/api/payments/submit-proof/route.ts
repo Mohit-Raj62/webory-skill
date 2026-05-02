@@ -113,7 +113,10 @@ export async function POST(req: Request) {
           amountPaid: amount,
           appliedAt: new Date(),
         });
-        console.log("✅ Application created for internship");
+
+        // Increment filled seats
+        await Internship.findByIdAndUpdate(internshipId, { $inc: { filledSeats: 1 } });
+        console.log("✅ Application created for internship and seats updated");
       } else {
         // Update existing application with transaction info if needed
         existingApp.transactionId = transactionId;

@@ -201,6 +201,9 @@ async function handleInternshipApplication(
         transactionId: txnid,
         amountPaid: amount,
       });
+
+      // Increment filled seats
+      await Internship.findByIdAndUpdate(internshipId, { $inc: { filledSeats: 1 } });
     }
 
     const internship = await Internship.findById(internshipId);

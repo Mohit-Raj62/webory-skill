@@ -41,19 +41,22 @@ export default async function Home() {
     let internshipCount = 0;
     let courseCount = 0;
     let popularCourses: any[] = [];
+    let leaderboardData: any[] = [];
     try {
         await dbConnect();
-        const [users, internships, courses, popular] = await Promise.all([
+        const [users, internships, courses, popular, topLearners] = await Promise.all([
             User.countDocuments(),
-            Internship.countDocuments(), // Simplified as per logic
+            Internship.countDocuments(),
             Course.countDocuments({ isAvailable: true }),
             Course.find({ isPopular: true, isAvailable: true }).select('title level studentsCount color icon').limit(4).lean(),
+            User.find({ role: "student", xp: { $gt: 0 } }).sort({ xp: -1 }).limit(50).select("firstName lastName avatar xp").lean(),
         ]);
         
         userCount = users;
         internshipCount = internships; 
         courseCount = courses;
         popularCourses = JSON.parse(JSON.stringify(popular));
+        leaderboardData = JSON.parse(JSON.stringify(topLearners));
 
     } catch (error) {
         console.error("Failed to fetch counts for landing page", error);
@@ -66,6 +69,10 @@ export default async function Home() {
             
             <Suspense fallback={<div className="h-40 bg-white/5 animate-pulse" />}>
                 <FreeExperienceHighlight />
+            </Suspense>
+
+            <Suspense fallback={<div className="container mx-auto px-4 py-12"><div className="h-64 bg-white/5 rounded-3xl animate-pulse" /></div>}>
+                <LeaderboardSection initialLearners={leaderboardData} />
             </Suspense>
 
             <Suspense fallback={<FeatureSkeleton />}>
@@ -108,9 +115,7 @@ export default async function Home() {
                 <TrustProofSection />
             </Suspense>
 
-            <Suspense fallback={<SectionSkeleton height="h-[400px]" />}>
-                <LeaderboardSection />
-            </Suspense>
+
 
             <Suspense fallback={<SectionSkeleton height="h-[400px]" />}>
                 <TestimonialsSection />
