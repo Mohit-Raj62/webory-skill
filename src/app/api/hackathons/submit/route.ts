@@ -111,13 +111,27 @@ export async function POST(req: Request) {
       // Award XP if project is submitted and no XP has been awarded yet
       let xpMessage = "";
       if (newStatus === "submitted" && (existingSubmission.xpAwarded || 0) === 0) {
-        // 1. Award +50 XP to the user
+        // 1. Award +50 XP to the main user
         await User.findByIdAndUpdate(userId, { $inc: { xp: 50 } });
         
-        // 2. Award +50 XP to the global hackathon stats
-        await Hackathon.findByIdAndUpdate(hackathonId, { $inc: { totalXpDistributed: 50 } });
+        // 2. Award +50 XP to team members
+        if (participationType === "team" && teamMemberDetails && teamMemberDetails.length > 0) {
+          for (const member of teamMemberDetails) {
+            // Skip the main submitter (already awarded above)
+            if (member.email.toLowerCase() === (await User.findById(userId)).email.toLowerCase()) continue;
+            
+            const memberUser = await User.findOne({ email: member.email.toLowerCase() });
+            if (memberUser) {
+              await User.findByIdAndUpdate(memberUser._id, { $inc: { xp: 50 } });
+            }
+          }
+        }
+
+        // 3. Award XP to the global hackathon stats (Total XP for all members)
+        const membersCount = participationType === "team" ? (teamMemberDetails?.length || 1) : 1;
+        await Hackathon.findByIdAndUpdate(hackathonId, { $inc: { totalXpDistributed: 50 * membersCount } });
         
-        // 3. Create Activity Record for dashboard visualization
+        // 4. Create Activity Record for dashboard visualization
         await Activity.create({
           student: userId,
           type: "hackathon_submitted",
@@ -129,7 +143,7 @@ export async function POST(req: Request) {
         });
 
         existingSubmission.xpAwarded = 50;
-        xpMessage = " +50 XP Earned!";
+        xpMessage = " +50 XP Earned for the team!";
       }
 
       existingSubmission.status = newStatus;
@@ -161,10 +175,27 @@ export async function POST(req: Request) {
 
     // Award XP if it's an immediate final submission
     if (!isDraft) {
+      // 1. Award +50 XP to the main user
       await User.findByIdAndUpdate(userId, { $inc: { xp: 50 } });
-      await Hackathon.findByIdAndUpdate(hackathonId, { $inc: { totalXpDistributed: 50 } });
+
+      // 2. Award +50 XP to team members
+      if (participationType === "team" && teamMemberDetails && teamMemberDetails.length > 0) {
+        const currentUser = await User.findById(userId);
+        for (const member of teamMemberDetails) {
+          if (member.email.toLowerCase() === currentUser.email.toLowerCase()) continue;
+          
+          const memberUser = await User.findOne({ email: member.email.toLowerCase() });
+          if (memberUser) {
+            await User.findByIdAndUpdate(memberUser._id, { $inc: { xp: 50 } });
+          }
+        }
+      }
+
+      // 3. Award XP to global stats
+      const membersCount = participationType === "team" ? (teamMemberDetails?.length || 1) : 1;
+      await Hackathon.findByIdAndUpdate(hackathonId, { $inc: { totalXpDistributed: 50 * membersCount } });
       
-      // Create Activity Record
+      // 4. Create Activity Record
       await Activity.create({
         student: userId,
         type: "hackathon_submitted",

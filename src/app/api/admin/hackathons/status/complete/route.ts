@@ -143,9 +143,19 @@ export async function POST(req: Request) {
 
           // Award XP to registered team members
           if (xpDiff !== 0) {
-            const memberUser = await User.findOne({ email: member.email });
+            const memberUser = await User.findOne({ email: member.email.toLowerCase() });
             if (memberUser) {
               await User.findByIdAndUpdate(memberUser._id, { $inc: { xp: xpDiff } });
+              
+              // Track team member XP for stats
+              certificateResults.push({
+                userId: memberUser._id,
+                title,
+                xpAwarded: newXp,
+                xpDiff,
+                previousXp,
+                isTeamMember: true
+              });
             }
           }
 
