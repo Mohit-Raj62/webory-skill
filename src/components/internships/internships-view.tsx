@@ -16,7 +16,13 @@ import { useEffect } from "react";
 interface InternshipsViewProps {
     internships: any[];
     user: any | null;
-    userApplications: { internshipId: string; status: string }[];
+    userApplications: { 
+        internshipId: string; 
+        status: string;
+        transactionId?: string;
+        amountPaid?: number;
+        appliedAt?: string;
+    }[];
 }
 
 export function InternshipsView({ internships, user, userApplications }: InternshipsViewProps) {
@@ -202,10 +208,28 @@ export function InternshipsView({ internships, user, userApplications }: Interns
         } catch (error) {
             console.error("Submission error:", error);
             toast.error("An error occurred");
-        } finally {
-            setSubmitting(false);
             setUploading(false);
         }
+    };
+
+    const handleDownloadInvoice = (job: any, app: any) => {
+        const amount = app.amountPaid || job.price || 999;
+        const originalPrice = job.originalPrice || 2999;
+        
+        const invoiceData = {
+            transactionId: app.transactionId || `TXN${app.internshipId.substring(0, 12)}`,
+            courseTitle: job.title,
+            amount: amount,
+            originalAmount: originalPrice,
+            discountAmount: originalPrice - amount,
+            gstPercentage: job.gstPercentage || 18, // Default to 18 if not specified
+            date: new Date(app.appliedAt || Date.now()).toLocaleDateString(),
+            userEmail: user.email,
+            userName: `${user.firstName} ${user.lastName}`,
+            userPhone: user.phone || '',
+        };
+        setTransactionData(invoiceData);
+        setShowInvoice(true);
     };
 
     return (
@@ -408,25 +432,48 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                                             </p>
                                                         </div>
                                                         
-                                                        <Button
-                                                            onClick={() => (job.totalSeats - job.filledSeats > 0) && handleApplyClick(job._id)}
-                                                            disabled={job.totalSeats - job.filledSeats <= 0}
-                                                            className={`w-full h-16 md:h-20 rounded-2xl font-black text-sm md:text-base tracking-widest uppercase relative overflow-hidden group/btn shadow-[0_20px_50px_-15px_rgba(16,185,129,0.4)] transition-transform ${job.totalSeats - job.filledSeats > 0 ? 'hover:scale-[1.02] active:scale-[0.98]' : 'opacity-50 grayscale cursor-not-allowed'}`}
-                                                            style={{
-                                                                background: job.totalSeats - job.filledSeats > 0 
-                                                                    ? 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)' 
-                                                                    : '#334155',
-                                                                color: 'white'
-                                                            }}
-                                                        >
-                                                            {job.totalSeats - job.filledSeats > 0 ? (
-                                                                <>
-                                                                    APPLY NOW <ArrowUpRight size={22} className="ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                                                                </>
-                                                            ) : (
-                                                                "BATCH FULL"
-                                                            )}
-                                                        </Button>
+                                                        {(() => {
+                                                            const app = userApplications.find(a => a.internshipId === job._id);
+                                                            const hasApplied = !!app;
+                                                            
+                                                            if (hasApplied) {
+                                                                return (
+                                                                    <div className="flex flex-col gap-3 w-full">
+                                                                        <div className="w-full h-16 md:h-20 rounded-2xl font-black text-sm md:text-base tracking-widest uppercase flex items-center justify-center bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                                                                            ALREADY APPLIED <CheckCircle2 size={22} className="ml-2" />
+                                                                        </div>
+                                                                        <button 
+                                                                            onClick={() => handleDownloadInvoice(job, app)}
+                                                                            className="w-full py-4 rounded-xl font-black text-[10px] tracking-[0.2em] uppercase flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all border border-white/5"
+                                                                        >
+                                                                            <Download size={14} /> Download Invoice
+                                                                        </button>
+                                                                    </div>
+                                                                );
+                                                            }
+
+                                                            return (
+                                                                <Button
+                                                                    onClick={() => (job.totalSeats - job.filledSeats > 0) && handleApplyClick(job._id)}
+                                                                    disabled={job.totalSeats - job.filledSeats <= 0}
+                                                                    className={`w-full h-16 md:h-20 rounded-2xl font-black text-sm md:text-base tracking-widest uppercase relative overflow-hidden group/btn shadow-[0_20px_50px_-15px_rgba(16,185,129,0.4)] transition-transform ${job.totalSeats - job.filledSeats > 0 ? 'hover:scale-[1.02] active:scale-[0.98]' : 'opacity-50 grayscale cursor-not-allowed'}`}
+                                                                    style={{
+                                                                        background: job.totalSeats - job.filledSeats > 0 
+                                                                            ? 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)' 
+                                                                            : '#334155',
+                                                                        color: 'white'
+                                                                    }}
+                                                                >
+                                                                    {job.totalSeats - job.filledSeats > 0 ? (
+                                                                        <>
+                                                                            APPLY NOW <ArrowUpRight size={22} className="ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                                                                        </>
+                                                                    ) : (
+                                                                        "BATCH FULL"
+                                                                    )}
+                                                                </Button>
+                                                            );
+                                                        })()}
 
                                                         <div className="mt-8 flex flex-col gap-4">
                                                             <div className="flex items-center justify-between text-[11px] font-black uppercase tracking-wider">

@@ -128,6 +128,10 @@ export async function PUT(
             const invoiceTransactionId = `TXN${enrollment._id
               .toString()
               .substring(0, 12)}`;
+            // Calculate coupon discount if promo code was used
+            const priceBeforePromo = course.price || 0;
+            const couponDiscountAmount = paymentProof.promoCode ? Math.max(0, priceBeforePromo - paymentProof.amount) : 0;
+
             await sendEmail(
               user.email,
               `Invoice - ${course.title}`,
@@ -137,7 +141,11 @@ export async function PUT(
                 paymentProof.amount,
                 invoiceTransactionId,
                 enrollment.enrolledAt.toISOString(),
-                "course"
+                "course",
+                course.originalPrice || course.price,
+                user.phone,
+                paymentProof.promoCode,
+                couponDiscountAmount
               )
             );
 
@@ -212,7 +220,9 @@ export async function PUT(
                 paymentProof.amount,
                 invoiceTransactionId,
                 application.appliedAt.toISOString(),
-                "internship"
+                "internship",
+                internship.originalPrice || internship.price,
+                user.phone
               )
             );
 

@@ -215,8 +215,12 @@ export const emailTemplates = {
     transactionId: string,
     date: string,
     itemType: "course" | "internship",
+    originalAmount?: number,
+    userPhone?: string,
+    couponCode?: string,
+    couponDiscount?: number,
   ) =>
-    createInvoiceHTML(name, itemTitle, amount, transactionId, date, itemType),
+    createInvoiceHTML(name, itemTitle, amount, transactionId, date, itemType, originalAmount, userPhone, couponCode, couponDiscount),
   loginOtp: (name: string, otp: string) => `
     <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #2563eb;">Login OTP 🔐</h2>

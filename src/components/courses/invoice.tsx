@@ -8,14 +8,35 @@ interface InvoiceProps {
     transactionId: string;
     courseTitle: string;
     amount: number;
+    originalAmount?: number;
+    discountAmount?: number;
     gstPercentage?: number;
     gstAmount?: number;
     date: string;
     userEmail: string;
+    userName?: string;
+    userPhone?: string;
+    couponCode?: string;
+    couponDiscount?: number;
     onClose: () => void;
 }
 
-export function Invoice({ transactionId, courseTitle, amount, gstPercentage = 0, gstAmount = 0, date, userEmail, onClose }: InvoiceProps) {
+export function Invoice({ 
+    transactionId, 
+    courseTitle, 
+    amount, 
+    originalAmount, 
+    discountAmount, 
+    gstPercentage = 0, 
+    gstAmount = 0, 
+    date, 
+    userEmail, 
+    userName, 
+    userPhone, 
+    couponCode,
+    couponDiscount = 0,
+    onClose 
+}: InvoiceProps) {
     const [mounted, setMounted] = useState(false);
     const invoiceNumber = `INV-${transactionId.substring(4, 12)}`;
     
@@ -26,8 +47,14 @@ export function Invoice({ transactionId, courseTitle, amount, gstPercentage = 0,
             ? Math.round(amount - (amount / (1 + gstPercentage / 100))) 
             : 0;
             
-    const baseAmount = amount - calculatedGstAmount;
+    const netAmount = amount - calculatedGstAmount;
     
+    // Determine original subtotal and discount for display
+    const displayOriginalAmount = originalAmount || (discountAmount ? amount + discountAmount : amount);
+    const displayDiscountAmount = discountAmount || (originalAmount ? originalAmount - amount : 0);
+    const subtotalBeforeDiscount = displayOriginalAmount / (1 + gstPercentage / 100);
+    const discountBeforeTax = displayDiscountAmount / (1 + gstPercentage / 100);
+
     useEffect(() => {
         setMounted(true);
         // Lock body scroll when modal is open
@@ -48,15 +75,15 @@ export function Invoice({ transactionId, courseTitle, amount, gstPercentage = 0,
             <div className="bg-white text-gray-900 w-full max-w-3xl max-h-[95vh] overflow-y-auto rounded-2xl shadow-2xl relative print:shadow-none print:rounded-none print:max-h-none print:w-full print:max-w-none invoice-container">
                 
                 {/* Header Section */}
-                <div className="bg-white border-b border-gray-200 p-8 print:p-0 print:border-b-2 print:border-gray-800 print:mb-6 relative overflow-hidden">
+                <div className="bg-white border-b border-gray-200 p-8 print:p-2 print:border-b-2 print:border-gray-800 print:mb-2 relative overflow-hidden">
                     {/* PAID Stamp */}
-                    <div className="absolute top-4 right-32 transform rotate-12 opacity-10 pointer-events-none select-none">
+                    <div className="absolute top-4 right-32 transform rotate-12 opacity-10 pointer-events-none select-none print:hidden">
                         <div className="border-[8px] border-green-600 rounded-lg p-2">
                              <span className="text-8xl font-black text-green-600 uppercase tracking-widest">PAID</span>
                         </div>
                     </div>
 
-                    <div className="flex justify-between items-start mb-8 relative z-10">
+                    <div className="flex justify-between items-start mb-8 print:mb-2 relative z-10">
                         <div className="flex items-center gap-3">
                              <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
                                 <span className="text-white font-bold text-2xl">W</span>
@@ -67,82 +94,168 @@ export function Invoice({ transactionId, courseTitle, amount, gstPercentage = 0,
                             </div>
                         </div>
                         <div className="text-right">
-                            <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight mb-1">INVOICE</h1>
-                            <p className="text-sm text-gray-500 font-medium">#{invoiceNumber}</p>
+                            <h1 className="text-4xl print:text-2xl font-extrabold text-gray-900 tracking-tight mb-1">INVOICE</h1>
+                            <p className="text-sm print:text-xs text-gray-500 font-medium">#{invoiceNumber}</p>
                         </div>
                     </div>
                     
                      <div className="grid grid-cols-2 gap-8">
                         <div>
                             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Billed To</h3>
-                            <p className="text-gray-900 font-semibold text-lg">{userEmail.split('@')[0]}</p>
+                            <p className="text-gray-900 font-semibold text-lg">{userName || userEmail.split('@')[0]}</p>
                             <p className="text-gray-500 text-sm">{userEmail}</p>
+                            {userPhone && <p className="text-gray-500 text-sm">{userPhone}</p>}
                         </div>
                         <div className="text-right">
                              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Date Issued</h3>
-                             <p className="text-gray-900 font-semibold text-lg">{date}</p>
+                             <p className="text-gray-900 font-semibold text-lg print:text-base">{date}</p>
                         </div>
                     </div>
                 </div>
 
                 {/* Invoice Details */}
-                <div className="p-8 print:p-0 print:pt-4">
+                <div className="p-8 print:p-2 print:pt-1">
                     
+                    <div className="grid grid-cols-2 gap-8 mb-10 print:mb-2">
+                        <div>
+                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Issued By</h3>
+                            <p className="text-gray-900 font-bold">Webory Skills India</p>
+                            <p className="text-gray-500 text-sm leading-relaxed">
+                                BR-01, janpara, patna<br />
+                                Bihar, 841112<br />
+                            </p>
+                        </div>
+                        <div className="text-right flex flex-col items-end">
+                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Verification</h3>
+                            <div className="w-20 h-20 print:w-16 print:h-16 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200 mb-1 p-1">
+                                <img 
+                                    src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://weboryskills.in/verify/${transactionId}`} 
+                                    alt="QR Code" 
+                                    className="w-full h-full grayscale opacity-70"
+                                />
+                            </div>
+                            <p className="text-[10px] text-gray-400 uppercase font-medium">Scan to Verify</p>
+                        </div>
+                    </div>
+
                     {/* Items Table */}
-                    <div className="mb-8 print:mb-4">
+                    <div className="mb-10 print:mb-2">
                         <table className="w-full">
                             <thead>
                                 <tr className="border-b-2 border-gray-900">
-                                    <th className="text-left py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Item Description</th>
-                                    <th className="text-right py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Price</th>
-                                    <th className="text-right py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Total</th>
+                                    <th className="text-left py-4 print:py-2 text-xs font-bold text-gray-900 uppercase tracking-wider">Item Description</th>
+                                    <th className="text-right py-4 print:py-2 text-xs font-bold text-gray-900 uppercase tracking-wider">Price</th>
+                                    <th className="text-right py-4 print:py-2 text-xs font-bold text-gray-900 uppercase tracking-wider">Total</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
                                 <tr>
-                                    <td className="py-6">
-                                        <p className="font-bold text-gray-900 text-lg mb-1">{courseTitle}</p>
-                                        <p className="text-sm text-gray-500">Lifetime Access • Course Materials • Certificate</p>
+                                    <td className="py-6 print:py-3">
+                                        <p className="font-bold text-gray-900 text-lg print:text-base mb-1">{courseTitle}</p>
+                                        <p className="text-sm print:text-xs text-gray-500 mb-2">Lifetime Access • Course Materials • Certification</p>
+                                        <div className="flex gap-2">
+                                            <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded font-bold uppercase tracking-wider border border-blue-100">Course</span>
+                                            <span className="text-[10px] bg-green-50 text-green-600 px-2 py-0.5 rounded font-bold uppercase tracking-wider border border-green-100">Premium</span>
+                                        </div>
                                     </td>
-                                     <td className="py-6 text-right text-gray-600">₹{baseAmount.toLocaleString('en-IN')}</td>
-                                    <td className="py-6 text-right font-bold text-gray-900">₹{baseAmount.toLocaleString('en-IN')}</td>
+                                     <td className="py-6 print:py-3 text-right">
+                                        {displayDiscountAmount > 0 ? (
+                                            <div className="flex flex-col items-end">
+                                                <span className="text-gray-400 line-through text-sm print:text-xs">₹{subtotalBeforeDiscount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                                                <span className="text-gray-900 print:text-sm">₹{(subtotalBeforeDiscount - discountBeforeTax).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                                            </div>
+                                        ) : (
+                                            <span className="text-gray-600 print:text-sm">₹{netAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                                        )}
+                                     </td>
+                                    <td className="py-6 print:py-3 text-right font-bold text-gray-900 print:text-sm">₹{(subtotalBeforeDiscount - discountBeforeTax).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
 
-                    {/* Total Section */}
-                    <div className="flex justify-end mb-12 print:mb-8">
-                        <div className="w-64">
-                            <div className="flex justify-between py-2 text-gray-600">
-                                <span>Subtotal</span>
-                                <span>₹{baseAmount.toLocaleString('en-IN')}</span>
-                            </div>
-                            <div className="flex justify-between py-2 text-gray-600">
-                                <span>Tax ({gstPercentage}%)</span>
-                                <span>₹{calculatedGstAmount.toLocaleString('en-IN')}</span>
-                            </div>
-                            <div className="flex justify-between py-4 border-t-2 border-gray-900 mt-2">
-                                <span className="font-bold text-xl text-gray-900">Total</span>
-                                <span className="font-bold text-xl text-blue-600">₹{amount.toLocaleString('en-IN')}</span>
+                    {/* Summary and Signature Section */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 print:mb-4">
+                        <div className="flex flex-col justify-end">
+                             <div className="mt-4 flex flex-col items-start">
+                                <style dangerouslySetInnerHTML={{ __html: `
+                                    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap');
+                                `}} />
+                                <p className="text-[10px] text-gray-400 uppercase font-bold mb-1">Authorized Signatory</p>
+                                <div className="h-12 flex items-center">
+                                    <span style={{ fontFamily: '"Dancing Script", cursive' }} className="text-2xl text-gray-800 opacity-90 select-none">
+                                        Mohit sinha
+                                    </span>
+                                </div>
+                                <div className="w-40 h-px bg-gray-300"></div>
+                                <span className="mt-1 text-[10px] text-gray-400 uppercase tracking-wider">
+                                        Founder, Webory Skills
+                                    </span>
+                             </div>
+                        </div>
+
+                        <div className="flex justify-end">
+                            <div className="w-full max-w-[280px] space-y-3">
+                                <div className="flex justify-between text-sm text-gray-600">
+                                    <span>Subtotal</span>
+                                    <span>₹{subtotalBeforeDiscount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                                </div>
+                                
+                                {displayDiscountAmount > 0 && (
+                                    <div className="flex justify-between text-sm text-green-600 font-semibold bg-green-50 px-2 py-1 rounded">
+                                        <span>Course Discount Applied</span>
+                                        <span>-₹{discountBeforeTax.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                                    </div>
+                                )}
+
+                                {couponDiscount > 0 && (
+                                    <div className="flex justify-between text-sm text-blue-600 font-semibold bg-blue-50 px-2 py-1 rounded">
+                                        <span>Coupon ({couponCode || 'PROMO'})</span>
+                                        <span>-₹{(couponDiscount / (1 + gstPercentage / 100)).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                                    </div>
+                                )}
+
+                                <div className="flex justify-between text-sm text-gray-600">
+                                    <span>Taxable Value</span>
+                                    <span>₹{netAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                                </div>
+
+                                <div className="flex justify-between text-sm text-gray-600 border-b border-gray-100 pb-2">
+                                    <span>GST ({gstPercentage}%)</span>
+                                    <span>₹{calculatedGstAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                                </div>
+                                
+                                <div className="flex justify-between items-baseline pt-2">
+                                    <span className="font-extrabold text-lg print:text-base text-gray-900 uppercase tracking-tighter">Amount Paid</span>
+                                    <div className="text-right">
+                                        <span className="font-black text-3xl print:text-xl text-blue-600">₹{amount.toLocaleString('en-IN')}</span>
+                                        <p className="text-[10px] text-blue-400 font-bold uppercase tracking-widest mt-1">Total inclusive of taxes</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     {/* Footer */}
-                    <div className="border-t border-gray-200 pt-8 print:pt-4">
-                        <div className="flex justify-between items-end">
+                    <div className="border-t border-gray-200 pt-8 print:pt-2">
+                        <div className="flex justify-between items-start mb-6 print:mb-2">
                             <div>
-                                <h4 className="font-bold text-gray-900 mb-2">Thank you for your business!</h4>
-                                <p className="text-sm text-gray-500 w-2/3">
-                                    This invoice serves as proof of payment for your enrollment. 
-                                    Confirmation of your lifetime access to the course materials.
-                                </p>
+                                <h4 className="font-bold text-gray-900 mb-1">Webory Skills</h4>
+                                <p className="text-sm text-gray-500">Transforming Careers through Practical Learning</p>
                             </div>
-                            <div className="text-right text-sm text-gray-500">
-                                <p>support@weboryskills.in</p>
-                                <p>www.weboryskills.in</p>
+                            <div className="text-right text-xs text-gray-400 space-y-1">
+                                <p>Email: support@weboryskills.in</p>
+                                <p>Web: www.weboryskills.in</p>
+                                <p className="font-bold text-gray-500"> janpara • Patna •Bihar </p>
                             </div>
+                        </div>
+                        
+                        <div className="pt-4 border-t border-gray-100 text-center">
+                            <p className="text-[10px] text-gray-400 uppercase tracking-[0.2em] mb-2 font-bold">Important Notes</p>
+                            <p className="text-[10px] text-gray-500 leading-relaxed italic max-w-2xl mx-auto">
+                                This is a computer-generated invoice and does not require a physical signature. 
+                                All disputes are subject to Dehradun (Uttarakhand) jurisdiction. Thank you for choosing Webory Skills.
+                            </p>
                         </div>
                     </div>
 
@@ -173,22 +286,6 @@ export function Invoice({ transactionId, courseTitle, amount, gstPercentage = 0,
                             margin: 10mm;
                         }
                         
-                        /* 2. Hide EVERYTHING on the body (The nuclear option) */
-                        body > * {
-                            display: none !important;
-                        }
-
-                        /* 3. But wait! The Portal is a direct child of body, or close to it. */
-                        /* We need to use specific selector logic or just accept that we need to 
-                           make sure the portal root is NOT hidden. 
-                           However, createPortal usually appends to body. 
-                           So 'body > *' hides it too if we aren't careful.
-                           Strategy: Hide everything, then show the specific print target.
-                        */
-
-                        /* Let's try to only hide the main 'next' root if we can identify it. Usually #__next or body > div:first-child */
-                        /* Better approach: layout isolation. */
-                        
                         body, html {
                             height: auto !important;
                             overflow: visible !important;
@@ -196,14 +293,12 @@ export function Invoice({ transactionId, courseTitle, amount, gstPercentage = 0,
                         }
                     }
                 `}</style>
-                {/* Specific global style to hide siblings when this is mounted, simpler than logic */ }
-                 <style jsx global>{`
+                <style jsx global>{`
                     @media print {
                        body > *:not([class*="invoice-portal-root"]) {
                            display: none !important;
                        }
                        
-                       /* Ensure the portal itself is visible */
                        .invoice-portal-root {
                            display: block !important;
                            position: absolute !important;

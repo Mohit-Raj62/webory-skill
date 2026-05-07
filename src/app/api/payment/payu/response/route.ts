@@ -159,6 +159,8 @@ async function handleCourseEnrollment(
           txnid,
           new Date().toISOString(),
           "course",
+          course.originalPrice || course.price,
+          user.phone
         ),
       );
     }
@@ -223,6 +225,22 @@ async function handleInternshipApplication(
         user.email,
         `Application Received: ${internship.title}`,
         emailTemplates.applicationReceived(user.firstName, internship.title),
+      );
+
+      // Send invoice email
+      await sendEmail(
+        user.email,
+        `Invoice - ${internship.title}`,
+        emailTemplates.invoice(
+          user.firstName + " " + user.lastName,
+          internship.title,
+          amount,
+          txnid,
+          new Date().toISOString(),
+          "internship",
+          internship.originalPrice || internship.price,
+          user.phone
+        ),
       );
     }
 

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/session-provider";
 import { 
     User, Mail, Award, Briefcase, LogOut, ExternalLink, Trophy, 
-    Calendar, Video, FileText, Clock, Upload, ChevronRight, Zap, Sparkles 
+    Calendar, Video, FileText, Clock, Upload, ChevronRight, Zap, Sparkles, Download
 } from "lucide-react";
 import dynamic from 'next/dynamic';
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 const ActivityDashboard = dynamic(() => import('@/components/dashboard/activity-dashboard').then(mod => mod.ActivityDashboard), { ssr: false });
 const GradesDashboard = dynamic(() => import('@/components/dashboard/grades-dashboard').then(mod => mod.GradesDashboard), { ssr: false });
 const PhoneCollectionModal = dynamic(() => import('@/components/profile/phone-collection-modal').then(mod => mod.PhoneCollectionModal), { ssr: false });
+const Invoice = dynamic(() => import('@/components/courses/invoice').then(mod => mod.Invoice), { ssr: false });
 
 export function ProfileClientContent({ 
     initialUser, 
@@ -34,6 +35,8 @@ export function ProfileClientContent({
     const [uploadingAppId, setUploadingAppId] = useState<string | null>(null);
     const [showPhoneModal, setShowPhoneModal] = useState(!initialUser.phone);
     const [mounted, setMounted] = useState(false);
+    const [showInvoice, setShowInvoice] = useState(false);
+    const [transactionData, setTransactionData] = useState<any>(null);
     const router = useRouter();
     const { refreshAuth } = useAuth();
 
@@ -81,6 +84,31 @@ export function ProfileClientContent({
         } finally {
             setUploadingAppId(null);
         }
+    };
+
+    const handleDownloadInvoice = (data: any, type: 'course' | 'internship') => {
+        const item = type === 'course' ? data.course : data.internship;
+        const amount = data.amountPaid || (type === 'course' ? item.price : 999);
+        const originalPrice = item.originalPrice || item.price || (type === 'internship' ? 2999 : amount);
+        
+        const gstPercent = item.gstPercentage || 0;
+        // If amount is inclusive, we need to extract taxable
+        // But for simplicity in the invoice component, we pass the final amount paid
+        
+        const invoiceData = {
+            transactionId: data.transactionId || `TXN${data._id.toString().substring(0, 12)}`,
+            courseTitle: item.title,
+            amount: amount,
+            originalAmount: originalPrice,
+            discountAmount: originalPrice - amount,
+            gstPercentage: gstPercent,
+            date: new Date(data.enrolledAt || data.appliedAt || Date.now()).toLocaleDateString(),
+            userEmail: user.email,
+            userName: `${user.firstName} ${user.lastName}`,
+            userPhone: user.phone || '',
+        };
+        setTransactionData(invoiceData);
+        setShowInvoice(true);
     };
 
     return (
@@ -229,6 +257,12 @@ export function ProfileClientContent({
                                             <div className="bg-gradient-to-r from-blue-600 to-cyan-400 h-full rounded-full transition-all duration-1000 shadow-[0_0_8px_rgba(37,99,235,0.5)]" style={{ width: `${Math.min(enrollment.progress || 0, 100)}%` }} />
                                         </div>
                                     </div>
+                                    <button 
+                                        onClick={() => handleDownloadInvoice(enrollment, 'course')}
+                                        className="w-full h-9 flex items-center justify-center gap-2 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-400 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                                    >
+                                        <Download size={14} /> Download Invoice
+                                    </button>
                                 </div>
                             ))}
                         </div>
@@ -280,6 +314,12 @@ export function ProfileClientContent({
                                         {(app.status === 'accepted' || app.status === 'completed') && (
                                             <>
                                                 <button onClick={() => router.push(`/internships/${app.internship._id}/tasks`)} className="h-8 px-4 bg-purple-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-purple-500/20"><FileText size={12} /> Tasks</button>
+                                                <button 
+                                                    onClick={() => handleDownloadInvoice(app, 'internship')}
+                                                    className="h-8 px-4 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all"
+                                                >
+                                                    <Download size={12} /> Invoice
+                                                </button>
                                                 <button onClick={() => router.push(`/internships/applications/${app._id}/offer-letter`)} className="h-8 px-4 bg-white/5 hover:bg-white/10 border border-white/5 text-emerald-400 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2">📄 Offer</button>
                                                 {app.status === 'completed' && <button onClick={() => router.push(`/internships/applications/${app._id}/certificate`)} className="h-8 px-4 bg-blue-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-blue-500/20">🎓 Cert</button>}
                                             </>
@@ -298,6 +338,13 @@ export function ProfileClientContent({
                 </div>
             </div>
             {showPhoneModal && <PhoneCollectionModal isOpen={showPhoneModal} onPhoneUpdated={handlePhoneUpdated} />}
+            
+            {showInvoice && transactionData && (
+                <Invoice
+                    {...transactionData}
+                    onClose={() => setShowInvoice(false)}
+                />
+            )}
         </div>
     );
 }

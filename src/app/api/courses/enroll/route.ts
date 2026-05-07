@@ -157,6 +157,10 @@ export async function POST(req: Request) {
           date: enrollment.enrolledAt.toISOString(),
         });
 
+        // Calculate coupon discount
+        const priceBeforePromo = course.price || 0;
+        const couponDiscountAmount = priceBeforePromo - finalPrice;
+
         const invoiceEmailSent = await sendEmail(
           user.email,
           `Invoice - ${course.title}`,
@@ -165,8 +169,12 @@ export async function POST(req: Request) {
             course.title,
             finalPrice,
             invoiceTransactionId,
-            enrollment.enrolledAt.toISOString(),
-            "course"
+            new Date().toISOString(),
+            "course",
+            course.originalPrice || course.price,
+            user.phone,
+            appliedPromoCode,
+            couponDiscountAmount > 0 ? couponDiscountAmount : 0
           )
         );
 

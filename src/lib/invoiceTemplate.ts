@@ -6,6 +6,10 @@ export function createInvoiceHTML(
   transactionId: string,
   date: string,
   itemType: "course" | "internship",
+  originalAmount?: number,
+  userPhone?: string,
+  couponCode?: string,
+  couponDiscount?: number,
 ) {
   const invoiceNumber = "INV-" + transactionId.substring(4, 12).toUpperCase();
   const formattedDate = new Date(date).toLocaleDateString("en-GB", {
@@ -14,9 +18,18 @@ export function createInvoiceHTML(
     year: "numeric",
   });
 
-  // Tax calculation
-  const baseAmount = amount / 1.18;
-  const taxAmount = amount - baseAmount;
+  // Calculate discount
+  const displayOriginalAmount = originalAmount || amount;
+  const courseDiscountAmount = Math.max(0, displayOriginalAmount - amount - (couponDiscount || 0));
+  const displayCouponDiscount = couponDiscount || 0;
+
+  // Tax calculation (Assume 18% inclusive GST)
+  const baseAmount = displayOriginalAmount / 1.18;
+  const courseDiscountBeforeTax = courseDiscountAmount / 1.18;
+  const couponDiscountBeforeTax = displayCouponDiscount / 1.18;
+  
+  const netBaseAmount = baseAmount - courseDiscountBeforeTax - couponDiscountBeforeTax;
+  const taxAmount = amount - netBaseAmount;
 
   return `
 <!DOCTYPE html>
@@ -25,6 +38,7 @@ export function createInvoiceHTML(
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tax Invoice - Webory Skills</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playwrite+AR+Guides&display=swap" rel="stylesheet">
 </head>
 <body style="margin: 0; padding: 0; font-family: 'Segoe UI', user-scalable=no, -webkit-user-select: none; 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f8fafc; color: #334155;">
   
@@ -62,29 +76,29 @@ export function createInvoiceHTML(
                 <tr>
                   <!-- Bill From -->
                   <td width="55%" valign="top" style="padding-right: 20px;">
-                    <p style="margin: 0 0 12px 0; color: #94a3b8; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;">BILLED FROM</p>
-                    <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #0f172a; font-weight: 700;">Webory Skills</h3>
-                    <p style="margin: 0; color: #64748b; font-size: 14px; line-height: 1.6;">
-                      Online Learning Platform<br>
-                      www.weboryskills.in<br>
-                      support@weboryskills.in
+                    <p style="margin: 0 0 12px 0; color: #94a3b8; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;">ISSUED BY</p>
+                    <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #0f172a; font-weight: 700;">Webory Skills India</h3>
+                    <p style="margin: 0; color: #64748b; font-size: 13px; line-height: 1.6;">
+                      BR-01, janpara, patna<br>
+                      Bihar, 841112<br>
+                      <strong>GSTIN:</strong> 09AAFCH2214R1ZP
                     </p>
                   </td>
                   <!-- Bill To -->
                   <td width="45%" valign="top" style="padding-left: 20px; border-left: 1px solid #f1f5f9;">
                     <p style="margin: 0 0 12px 0; color: #94a3b8; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;">BILLED TO</p>
                     <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #0f172a; font-weight: 700;">${name}</h3>
-                    <p style="margin: 0 0 15px 0; color: #64748b; font-size: 14px; line-height: 1.6;">
-                      Valued Student
+                    <p style="margin: 0 0 15px 0; color: #64748b; font-size: 13px; line-height: 1.6;">
+                      Valued Student${userPhone ? `<br><strong>Phone:</strong> ${userPhone}` : ""}
                     </p>
                     <table width="100%" cellpadding="0" cellspacing="0" border="0">
                       <tr>
-                        <td width="30%" style="color: #64748b; font-size: 12px;">Date:</td>
-                        <td style="color: #0f172a; font-size: 13px; font-weight: 600;">${formattedDate}</td>
+                        <td width="30%" style="color: #64748b; font-size: 11px;">Date:</td>
+                        <td style="color: #0f172a; font-size: 12px; font-weight: 600;">${formattedDate}</td>
                       </tr>
                       <tr>
-                        <td width="30%" style="color: #64748b; font-size: 12px; padding-top: 4px;">Status:</td>
-                        <td style="padding-top: 4px; color: #16a34a; font-size: 12px; font-weight: 700;">Paid in Full</td>
+                        <td width="30%" style="color: #64748b; font-size: 11px; padding-top: 4px;">Status:</td>
+                        <td style="padding-top: 4px; color: #16a34a; font-size: 11px; font-weight: 700; text-transform: uppercase;">Paid</td>
                       </tr>
                     </table>
                   </td>
@@ -105,61 +119,76 @@ export function createInvoiceHTML(
                 <!-- Item Row -->
                 <tr>
                   <td style="padding: 20px; border-bottom: 1px solid #e2e8f0; background-color: #ffffff;">
-                    <p style="margin: 0 0 6px 0; font-size: 15px; color: #0f172a; font-weight: 600;">${itemTitle}</p>
+                    <p style="margin: 0 0 6px 0; font-size: 15px; color: #0f172a; font-weight: 700;">${itemTitle}</p>
                     <p style="margin: 0; font-size: 13px; color: #64748b;">
-                      <span style="display: inline-block; padding: 2px 8px; background-color: #eff6ff; color: #2563eb; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; margin-right: 6px;">${itemType}</span>
+                      <span style="display: inline-block; padding: 2px 8px; background-color: #eff6ff; color: #2563eb; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-right: 6px;">${itemType}</span>
                       Lifetime access & Certification
                     </p>
+                    ${courseDiscountAmount > 0 ? `<p style="margin: 6px 0 0 0; font-size: 11px; color: #16a34a; font-weight: 700; text-transform: uppercase;">Special Discount Applied</p>` : ""}
                   </td>
                   <td align="right" style="padding: 20px; border-bottom: 1px solid #e2e8f0; vertical-align: top; background-color: #ffffff;">
-                    <p style="margin: 0; font-size: 15px; color: #0f172a; font-weight: 600;">₹${amount.toLocaleString(
-                      "en-IN",
-                    )}</p>
+                    ${displayOriginalAmount > amount ? `
+                      <p style="margin: 0; font-size: 12px; color: #94a3b8; text-decoration: line-through;">₹${displayOriginalAmount.toLocaleString("en-IN")}</p>
+                      <p style="margin: 0; font-size: 16px; color: #0f172a; font-weight: 700;">₹${amount.toLocaleString("en-IN")}</p>
+                    ` : `
+                      <p style="margin: 0; font-size: 16px; color: #0f172a; font-weight: 700;">₹${amount.toLocaleString("en-IN")}</p>
+                    `}
                   </td>
                 </tr>
               </table>
             </td>
           </tr>
 
-          <!-- Totals Section -->
+          <!-- Summary and Verification -->
           <tr>
-            <td style="padding: 20px 50px 40px 50px;">
+            <td style="padding: 30px 50px 40px 50px;">
               <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td width="55%"></td>
-                  <td width="45%">
+                  <!-- Verification QR -->
+                  <td width="50%" valign="bottom">
+                    <table cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                            <td style="padding: 10px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=https://weboryskills.in/verify/${transactionId}" width="80" height="80" style="display: block; opacity: 0.6;">
+                            </td>
+                            <td style="padding-left: 15px; vertical-align: bottom;">
+                                <p style="margin: 0; color: #94a3b8; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Digital Verification</p>
+                                <p style="margin: 2px 0 0 0; color: #64748b; font-size: 11px;">Scan to verify authenticity</p>
+                            </td>
+                        </tr>
+                    </table>
+                  </td>
+                  <!-- Totals -->
+                  <td width="50%">
                     <table width="100%" cellpadding="0" cellspacing="0" border="0">
                       <tr>
-                        <td style="padding: 8px 0; color: #64748b; font-size: 13px;">Subtotal</td>
-                        <td align="right" style="padding: 8px 0; color: #0f172a; font-size: 13px; font-weight: 500;">₹${baseAmount.toLocaleString(
-                          "en-IN",
-                          {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          },
-                        )}</td>
+                        <td style="padding: 6px 0; color: #64748b; font-size: 13px;">Subtotal</td>
+                        <td align="right" style="padding: 6px 0; color: #0f172a; font-size: 13px; font-weight: 600;">₹${baseAmount.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                       </tr>
+                      ${courseDiscountAmount > 0 ? `
                       <tr>
-                        <td style="padding: 8px 0; color: #64748b; font-size: 13px;">IGST (18%)</td>
-                        <td align="right" style="padding: 8px 0; color: #0f172a; font-size: 13px; font-weight: 500;">₹${taxAmount.toLocaleString(
-                          "en-IN",
-                          {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          },
-                        )}</td>
+                        <td style="padding: 6px 0; color: #16a34a; font-size: 13px;">Course Discount</td>
+                        <td align="right" style="padding: 6px 0; color: #16a34a; font-size: 13px; font-weight: 700;">-₹${courseDiscountBeforeTax.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                      </tr>
+                      ` : ""}
+                      ${displayCouponDiscount > 0 ? `
+                      <tr>
+                        <td style="padding: 6px 0; color: #2563eb; font-size: 13px;">Coupon (${couponCode || 'PROMO'})</td>
+                        <td align="right" style="padding: 6px 0; color: #2563eb; font-size: 13px; font-weight: 700;">-₹${couponDiscountBeforeTax.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                      </tr>
+                      ` : ""}
+                      <tr>
+                        <td style="padding: 6px 0; color: #64748b; font-size: 13px;">Tax (GST 18%)</td>
+                        <td align="right" style="padding: 6px 0; color: #0f172a; font-size: 13px; font-weight: 600;">₹${taxAmount.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                       </tr>
                       <tr>
                         <td colspan="2" style="padding-top: 15px;">
-                          <div style="border-top: 2px solid #e2e8f0;"></div>
+                          <div style="border-top: 2px solid #0f172a;"></div>
                         </td>
                       </tr>
                       <tr>
-                        <td style="padding-top: 15px; color: #0f172a; font-size: 16px; font-weight: 700;">Total Amount</td>
-                        <td align="right" style="padding-top: 15px; color: #2563eb; font-size: 20px; font-weight: 800;">₹${amount.toLocaleString(
-                          "en-IN",
-                          { minimumFractionDigits: 2 },
-                        )}</td>
+                        <td style="padding-top: 15px; color: #0f172a; font-size: 14px; font-weight: 700; text-transform: uppercase;">Total Paid</td>
+                        <td align="right" style="padding-top: 15px; color: #2563eb; font-size: 24px; font-weight: 800;">₹${amount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
                       </tr>
                     </table>
                   </td>
@@ -170,26 +199,31 @@ export function createInvoiceHTML(
 
           <!-- Footer -->
           <tr>
-            <td style="background-color: #f8fafc; padding: 30px 50px; border-top: 2px solid #e2e8f0;">
-              <p style="margin: 0 0 15px 0; color: #64748b; font-size: 13px; line-height: 1.6;">
-                <strong>Terms & Conditions:</strong><br>
-                This generated invoice is valid proof of payment. For any questions regarding this invoice, please contact <a href="mailto:support@weboryskills.in" style="color: #2563eb; text-decoration: none;">support@weboryskills.in</a>
-              </p>
-              
+            <td style="background-color: #f8fafc; padding: 40px 50px; border-top: 2px solid #f1f5f9;">
               <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td style="color: #94a3b8; font-size: 12px;">
-                    © ${new Date().getFullYear()} Webory Skills
-                  </td>
-                  <td align="right" style="color: #94a3b8; font-size: 12px;">
-                    Transaction ID: <span style="font-family: monospace; color: #64748b;">${transactionId}</span>
-                  </td>
+                    <td width="60%">
+                        <p style="margin: 0 0 10px 0; color: #0f172a; font-size: 14px; font-weight: 700;">Authorized Signatory</p>
+                        <p style="margin: 0; font-family: 'Playwrite AR Guides', cursive; font-size: 24px; color: #0f172a; opacity: 0.9;">Mohit sinha</p>
+                        <div style="margin-top: 5px; width: 150px; border-top: 1px solid #e2e8f0;"></div>
+                    </td>
+                    <td width="40%" align="right" style="vertical-align: bottom;">
+                        <p style="margin: 0; color: #94a3b8; font-size: 11px;">© ${new Date().getFullYear()} Webory Skills India</p>
+                        <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 11px;">www.weboryskills.in</p>
+                    </td>
                 </tr>
               </table>
+              
+              <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center;">
+                <p style="margin: 0; color: #94a3b8; font-size: 10px; line-height: 1.6; text-transform: uppercase; letter-spacing: 0.5px;">
+                  This is a system-generated document and does not require a physical signature.<br>
+                  All disputes are subject to Dehradun (Uttarakhand) jurisdiction.
+                </p>
+              </div>
             </td>
           </tr>
         </table>
-
+        
         <!-- Bottom Branding -->
         <p style="margin: 20px 0 0 0; color: #94a3b8; font-size: 12px; text-align: center;">
           Sent with ❤️ by Webory Skills
@@ -197,7 +231,7 @@ export function createInvoiceHTML(
       </td>
     </tr>
   </table>
-
+  
 </body>
 </html>
   `;

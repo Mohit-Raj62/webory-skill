@@ -59,11 +59,14 @@ const getCachedUserApplications = unstable_cache(
         try {
             await dbConnect();
             const applications = await Application.find({ student: userId, status: { $ne: 'rejected' } })
-                .select("internship status")
+                .select("internship status transactionId amountPaid appliedAt")
                 .lean();
             return applications.map((a: any) => ({
                 internshipId: a.internship.toString(),
-                status: a.status
+                status: a.status,
+                transactionId: a.transactionId,
+                amountPaid: a.amountPaid,
+                appliedAt: a.appliedAt
             }));
         } catch (error) {
             console.error("Failed to fetch applications:", error);

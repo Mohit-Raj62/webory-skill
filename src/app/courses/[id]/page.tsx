@@ -236,21 +236,26 @@ export default function CourseDetailsPage() {
             ? `TXN${enrollmentData._id.toString().substring(0, 12)}`
             : `TXN${Date.now()}`;
         
-        // Calculate price based on current course settings (fallback since we don't store historical price yet)
-        const basePrice = course.discountPercentage > 0 && course.originalPrice > 0
-            ? Math.round(course.originalPrice * (1 - course.discountPercentage / 100))
-            : course.price;
+        // Calculate price based on current course settings
+        const originalPrice = course.originalPrice || course.price;
+        const discountPercentage = course.discountPercentage || 0;
+        const basePrice = course.price; // This is the final base price after discount
 
         const gstPercent = course.gstPercentage || 0;
         const totalAmount = Math.round(basePrice * (1 + gstPercent / 100));
+        const originalTotal = Math.round(originalPrice * (1 + gstPercent / 100));
 
         const invoiceData = {
             transactionId,
             courseTitle: course.title,
             amount: totalAmount,
+            originalAmount: originalTotal,
+            discountAmount: originalTotal - totalAmount,
             gstPercentage: gstPercent,
             date: enrollmentDate,
             userEmail: user?.email || 'student@example.com',
+            userName: user ? `${user.firstName} ${user.lastName}` : '',
+            userPhone: user?.phone || '',
         };
         setTransactionData(invoiceData);
         setShowInvoice(true);
