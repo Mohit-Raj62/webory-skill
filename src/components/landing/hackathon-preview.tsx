@@ -67,7 +67,7 @@ export function HackathonPreview() {
                     <div className="space-y-8 order-1 lg:order-2">
                         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400">
                             <Zap size={14} className="animate-pulse" />
-                            <span className="text-[10px] font-black uppercase tracking-widest">Live Now: Webory Hackathons</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest">Live Now: WeborySkills Hackathons</span>
                         </div>
                         
                         <h2 className="text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-black tracking-tighter leading-[1.1] text-white uppercase">

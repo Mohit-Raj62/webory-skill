@@ -131,13 +131,13 @@ export function DevLabPreview() {
                                         <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
                                         <div className="w-3 h-3 rounded-full bg-green-500/50" />
                                     </div>
-                                    <div className="text-xs text-gray-400 font-mono">webory-skills.py</div>
+                                    <div className="text-xs text-gray-400 font-mono">weboryskills.py</div>
                                     <div className="w-12" />
                                 </div>
                                 {/* Window Body */}
                                 <div className="p-8 bg-black/40 font-mono text-sm leading-relaxed overflow-hidden">
                                     <pre className="text-gray-300">
-                                        <span className="text-purple-400">import</span> webory_skills <span className="text-purple-400">as</span> ws<br /><br />
+                                        <span className="text-purple-400">import</span> weboryskills <span className="text-purple-400">as</span> ws<br /><br />
                                         <span className="text-blue-400"># Start your journey</span><br />
                                         student = ws.<span className="text-yellow-400">Student</span>(<span className="text-emerald-400">"New User"</span>)<br /><br />
                                         <span className="text-purple-400">def</span> <span className="text-yellow-400">achieve_success</span>(student):<br />

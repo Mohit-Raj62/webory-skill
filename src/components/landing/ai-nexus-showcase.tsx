@@ -31,7 +31,7 @@ export function AINexusShowcase() {
                             </div>
 
                             <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight">
-                                Webory <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">AI Nexus</span>
+                                WeborySkills <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">AI Nexus</span>
                             </h2>
                             
                             <p className="text-lg text-gray-300 leading-relaxed">

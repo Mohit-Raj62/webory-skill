@@ -6,8 +6,8 @@ import { ChevronDown, HelpCircle } from "lucide-react";
 
 const faqs = [
     {
-        question: "What exactly does Webory offer?",
-        answer: "Webory is a complete career ecosystem. We provide AI-generated personalized learning roadmaps, premium video courses, real-world verified projects, and guaranteed internship opportunities to launch your tech career."
+        question: "What exactly does WeborySkills offer?",
+        answer: "WeborySkills is a complete career ecosystem. We provide AI-generated personalized learning roadmaps, premium video courses, real-world verified projects, and guaranteed internship opportunities to launch your tech career."
     },
     {
         question: "How does the 'AI Roadmap' work?",
@@ -23,7 +23,7 @@ const faqs = [
     },
     {
         question: "Is there mentorship available?",
-        answer: "Absolutely. You get access to our 'Webory DevLab' community and weekly live sessions with industry experts who review your code, clear doubts, and guide you through complex topics."
+        answer: "Absolutely. You get access to our 'WeborySkills DevLab' community and weekly live sessions with industry experts who review your code, clear doubts, and guide you through complex topics."
     }
 ];
 
@@ -41,7 +41,7 @@ export function FAQ() {
                         Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Questions</span>
                     </h2>
                     <p className="text-gray-400 text-lg">
-                        Everything you need to know about the Webory platform.
+                        Everything you need to know about the WeborySkills platform.
                     </p>
                 </div>
 
@@ -50,7 +50,7 @@ export function FAQ() {
                         <motion.div
                             key={index}
                             initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
+                            whileInView={{ opacity: 1, y: 0 }} 
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.1 }}
                             className={`border ${activeIndex === index ? 'border-blue-500/50 bg-white/5' : 'border-white/5 bg-transparent'} rounded-2xl overflow-hidden backdrop-blur-sm transition-colors duration-300`}
