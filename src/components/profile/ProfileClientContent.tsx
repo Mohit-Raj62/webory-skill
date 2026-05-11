@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/session-provider";
 import { 
     User, Mail, Award, Briefcase, LogOut, ExternalLink, Trophy, 
-    Calendar, Video, FileText, Clock, Upload, ChevronRight, Zap, Sparkles, Download
+    Calendar, Video, FileText, Clock, Upload, ChevronRight, Zap, Sparkles, Download, PlayCircle
 } from "lucide-react";
 import dynamic from 'next/dynamic';
 import { Badge } from "@/components/ui/badge";
@@ -213,7 +213,7 @@ export function ProfileClientContent({
                                                 <div className={`p-3 rounded-2xl ${h.status === 'winner' ? 'bg-yellow-500/10 text-yellow-500' : 'bg-blue-500/10 text-blue-500'}`}><Trophy size={20} className={h.status === 'winner' ? 'animate-bounce' : ''} /></div>
                                                 <Badge className={`border-none capitalize font-black text-[9px] tracking-widest ${h.status === 'winner' ? 'bg-yellow-500 text-black' : 'bg-white/10 text-white'}`}>{h.status}</Badge>
                                             </div>
-                                            <h3 className="text-white font-black tracking-tight mb-2 text-lg lg:text-xl leading-tight">{h.hackathonId.title}</h3>
+                                            <h3 className="text-white font-black tracking-tight mb-2 text-lg lg:text-xl leading-tight">{h.hackathonId?.title || "Unknown Hackathon"}</h3>
                                             <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Project Title</div>
                                             <p className="text-gray-300 font-medium text-xs break-all leading-relaxed line-clamp-3">{h.projectName}</p>
                                         </div>
@@ -246,7 +246,7 @@ export function ProfileClientContent({
                                             <h3 className="text-white font-black tracking-tight group-hover/course:text-blue-400 transition-colors">{enrollment.course?.title || "Unknown Course"}</h3>
                                             <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mt-1">{enrollment.course?.level || "Professional"}</p>
                                         </div>
-                                        <button onClick={() => router.push(`/courses/${enrollment.course._id}`)} className="p-2.5 rounded-xl bg-white/5 hover:bg-white hover:text-black transition-all duration-300 text-blue-400"><ChevronRight size={18} /></button>
+                                        <button onClick={() => enrollment.course?._id && router.push(`/courses/${enrollment.course._id}`)} className="p-2.5 rounded-xl bg-white/5 hover:bg-white hover:text-black transition-all duration-300 text-blue-400"><ChevronRight size={18} /></button>
                                     </div>
                                     <div className="space-y-2">
                                         <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-tighter">
@@ -313,7 +313,8 @@ export function ProfileClientContent({
                                         {app.status === 'interview_scheduled' && <button onClick={() => app.interviewLink && window.open(app.interviewLink, '_blank')} className="h-8 px-4 bg-emerald-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-emerald-500/20"><Video size={12} /> Join Call</button>}
                                         {(app.status === 'accepted' || app.status === 'completed') && (
                                             <>
-                                                <button onClick={() => router.push(`/internships/${app.internship._id}/tasks`)} className="h-8 px-4 bg-purple-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-purple-500/20"><FileText size={12} /> Tasks</button>
+                                                <button onClick={() => app.internship?._id && router.push(`/internships/${app.internship._id}`)} className="h-8 px-4 bg-blue-600 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-blue-600/20"><PlayCircle size={12} /> Content</button>
+                                                <button onClick={() => app.internship?._id && router.push(`/internships/${app.internship._id}/tasks`)} className="h-8 px-4 bg-purple-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-purple-500/20"><FileText size={12} /> Tasks</button>
                                                 <button 
                                                     onClick={() => handleDownloadInvoice(app, 'internship')}
                                                     className="h-8 px-4 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all"

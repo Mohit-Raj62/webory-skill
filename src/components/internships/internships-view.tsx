@@ -3,7 +3,7 @@
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, IndianRupee, CheckCircle2, X, Search, Filter, Zap, Sparkles, GraduationCap, Globe, ArrowUpRight, ShieldCheck, Calendar, Briefcase } from "lucide-react";
+import { MapPin, Clock, IndianRupee, CheckCircle2, X, Search, Filter, Zap, Sparkles, GraduationCap, Globe, ArrowUpRight, ShieldCheck, Calendar, Briefcase, Download } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";

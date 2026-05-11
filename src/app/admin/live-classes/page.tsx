@@ -9,6 +9,7 @@ import Link from "next/link";
 export default function LiveClassesAdminPage() {
     const [liveClasses, setLiveClasses] = useState<any[]>([]);
     const [courses, setCourses] = useState<any[]>([]);
+    const [internships, setInternships] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingClass, setEditingClass] = useState<any>(null);
@@ -27,6 +28,7 @@ export default function LiveClassesAdminPage() {
     useEffect(() => {
         fetchLiveClasses();
         fetchCourses();
+        fetchInternships();
     }, []);
 
     const fetchLiveClasses = async () => {
@@ -52,6 +54,18 @@ export default function LiveClassesAdminPage() {
             }
         } catch (error) {
             console.error("Failed to fetch courses", error);
+        }
+    };
+
+    const fetchInternships = async () => {
+        try {
+            const res = await fetch("/api/admin/internships");
+            if (res.ok) {
+                const data = await res.json();
+                setInternships(data.internships);
+            }
+        } catch (error) {
+            console.error("Failed to fetch internships", error);
         }
     };
 
@@ -357,6 +371,25 @@ export default function LiveClassesAdminPage() {
                                         {courses.map(course => (
                                             <option key={course._id} value={course._id} className="bg-black">
                                                 {course.title}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
+                            {formData.type === 'internship' && (
+                                <div>
+                                    <label className="text-sm text-gray-300 block mb-2">Select Internship</label>
+                                    <select
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none"
+                                        value={formData.referenceId}
+                                        onChange={(e) => setFormData({ ...formData, referenceId: e.target.value })}
+                                        required
+                                    >
+                                        <option value="" className="bg-black">Select an internship</option>
+                                        {internships.map(internship => (
+                                            <option key={internship._id} value={internship._id} className="bg-black">
+                                                {internship.title}
                                             </option>
                                         ))}
                                     </select>

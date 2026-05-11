@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus, X, PenTool } from "lucide-react";
+import { ArrowLeft, Plus, X, PenTool, Trash2, Video, Clock, Layers, ChevronDown, ChevronUp, CheckCircle, Tag } from "lucide-react";
 import Link from "next/link";
 import { SignaturesSection } from "@/components/admin/course-edit/SignaturesSection";
 
@@ -43,12 +43,25 @@ export default function EditInternshipPage() {
             director: { name: "Vijay Kumar", title: "Director of Education, Webory", credential: "Alumnus, IIT Mandi" },
             partner: { name: "Partner Rep.", title: "Authorized Signatory" },
         },
+        modules: [] as {
+            title: string;
+            description: string;
+            order: number;
+            videos: { title: string; url: string; duration: string }[];
+        }[],
     });
 
     const [requirementInput, setRequirementInput] = useState("");
     const [responsibilityInput, setResponsibilityInput] = useState("");
     const [tagInput, setTagInput] = useState("");
     const [perkInput, setPerkInput] = useState("");
+    
+    // Curriculum Management State
+    const [moduleInput, setModuleInput] = useState({ title: "", description: "" });
+    const [selectedModuleIndex, setSelectedModuleIndex] = useState<number>(0);
+    const [videoInput, setVideoInput] = useState({ title: "", url: "", duration: "" });
+    const [editingVideo, setEditingVideo] = useState<{moduleIndex: number, videoIndex: number} | null>(null);
+    const [editingModule, setEditingModule] = useState<number | null>(null);
 
     useEffect(() => {
         fetchInternship();
@@ -92,6 +105,7 @@ export default function EditInternshipPage() {
                         director: { name: "Vijay Kumar", title: "Director of Education, Webory", credential: "Alumnus, IIT Mandi" },
                         partner: { name: "Partner Rep.", title: "Authorized Signatory" },
                     },
+                    modules: data.internship.modules || [],
                 });
             }
         } catch (error) {
@@ -141,6 +155,54 @@ export default function EditInternshipPage() {
             if (type === 'tags') setTagInput("");
             if (type === 'perks') setPerkInput("");
         }
+    };
+
+    // Curriculum Methods
+    const addModule = () => {
+        if (moduleInput.title.trim()) {
+            const newModule = {
+                title: moduleInput.title,
+                description: moduleInput.description,
+                order: formData.modules.length,
+                videos: []
+            };
+            setFormData({
+                ...formData,
+                modules: [...formData.modules, newModule]
+            });
+            setModuleInput({ title: "", description: "" });
+            setSelectedModuleIndex(formData.modules.length);
+        }
+    };
+
+    const removeModule = (index: number) => {
+        if (confirm("Are you sure?")) {
+            const newModules = formData.modules.filter((_, i) => i !== index);
+            newModules.forEach((m, i) => m.order = i);
+            setFormData({ ...formData, modules: newModules });
+            if (selectedModuleIndex >= newModules.length) {
+                setSelectedModuleIndex(Math.max(0, newModules.length - 1));
+            }
+        }
+    };
+
+    const addVideoToModule = (e?: React.MouseEvent) => {
+        e?.preventDefault();
+        if (videoInput.title && videoInput.url && formData.modules.length > 0) {
+            const newModules = [...formData.modules];
+            if (!newModules[selectedModuleIndex].videos) {
+                newModules[selectedModuleIndex].videos = [];
+            }
+            newModules[selectedModuleIndex].videos.push({ ...videoInput });
+            setFormData({ ...formData, modules: newModules });
+            setVideoInput({ title: "", url: "", duration: "" });
+        }
+    };
+
+    const removeVideoFromModule = (mIdx: number, vIdx: number) => {
+        const newModules = [...formData.modules];
+        newModules[mIdx].videos = newModules[mIdx].videos.filter((_, i) => i !== vIdx);
+        setFormData({ ...formData, modules: newModules });
     };
 
     const removeItem = (type: 'requirements' | 'responsibilities' | 'tags' | 'perks', index: number) => {
@@ -526,6 +588,103 @@ export default function EditInternshipPage() {
                                                 setFormData({ ...formData, benefits: newBenefits });
                                             }}
                                         />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Curriculum Management Section */}
+                    <div className="space-y-6 pt-8 border-t border-white/5">
+                        <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                            <Layers className="text-blue-400" size={24} />
+                            Curriculum Management
+                        </h2>
+                        
+                        <div className="bg-blue-500/5 p-6 rounded-2xl border border-blue-500/10 mb-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label className="text-[10px] text-gray-400 uppercase block mb-1">Module Title</label>
+                                    <input 
+                                        type="text" 
+                                        placeholder="e.g. Introduction to React" 
+                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-blue-500/50" 
+                                        value={moduleInput.title} 
+                                        onChange={(e) => setModuleInput({...moduleInput, title: e.target.value})} 
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-[10px] text-gray-400 uppercase block mb-1">Description</label>
+                                    <input 
+                                        type="text" 
+                                        placeholder="Module overview..." 
+                                        className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-blue-500/50" 
+                                        value={moduleInput.description} 
+                                        onChange={(e) => setModuleInput({...moduleInput, description: e.target.value})} 
+                                    />
+                                </div>
+                            </div>
+                            <Button type="button" onClick={addModule} className="w-full bg-blue-600 hover:bg-blue-700">
+                                <Plus size={18} className="mr-2" /> Create Module
+                            </Button>
+                        </div>
+
+                        <div className="space-y-6">
+                            {formData.modules.map((module, mIdx) => (
+                                <div key={mIdx} className={`bg-black/40 border ${selectedModuleIndex === mIdx ? 'border-blue-500/50' : 'border-white/10'} rounded-2xl overflow-hidden`}>
+                                    <div className="p-5 flex items-center justify-between bg-white/5 border-b border-white/5">
+                                        <div>
+                                            <div className="flex items-center gap-3 mb-1">
+                                                <span className="bg-white/10 text-gray-400 text-[10px] px-2 py-0.5 rounded font-black uppercase">Module {mIdx + 1}</span>
+                                                <h3 className="text-white font-bold">{module.title}</h3>
+                                            </div>
+                                            <p className="text-gray-400 text-xs">{module.description}</p>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Button
+                                                type="button"
+                                                size="sm"
+                                                variant={selectedModuleIndex === mIdx ? "secondary" : "ghost"}
+                                                className={selectedModuleIndex === mIdx ? "bg-blue-500 text-white" : "text-gray-400"}
+                                                onClick={() => setSelectedModuleIndex(mIdx)}
+                                            >
+                                                {selectedModuleIndex === mIdx ? "Adding Content" : "Select"}
+                                            </Button>
+                                            <button type="button" onClick={() => removeModule(mIdx)} className="p-2 text-red-500/70 hover:text-red-400">
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {selectedModuleIndex === mIdx && (
+                                        <div className="p-5 bg-blue-500/5 border-b border-white/5">
+                                            <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-4">Add Lesson to {module.title}</p>
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                                <input type="text" placeholder="Video Title" className="bg-black/20 border border-white/10 rounded-xl p-3 text-sm text-white" value={videoInput.title} onChange={(e) => setVideoInput({...videoInput, title: e.target.value})} />
+                                                <input type="text" placeholder="YouTube URL" className="bg-black/20 border border-white/10 rounded-xl p-3 text-sm text-white" value={videoInput.url} onChange={(e) => setVideoInput({...videoInput, url: e.target.value})} />
+                                                <input type="text" placeholder="Duration (e.g. 12:30)" className="bg-black/20 border border-white/10 rounded-xl p-3 text-sm text-white" value={videoInput.duration} onChange={(e) => setVideoInput({...videoInput, duration: e.target.value})} />
+                                            </div>
+                                            <Button type="button" onClick={addVideoToModule} className="w-full bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/30">
+                                                <Plus size={16} className="mr-2" /> Add Lesson
+                                            </Button>
+                                        </div>
+                                    )}
+
+                                    <div className="p-4 space-y-2">
+                                        {module.videos?.map((video, vIdx) => (
+                                            <div key={vIdx} className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5">
+                                                <div className="flex items-center gap-3">
+                                                    <Video size={14} className="text-blue-400" />
+                                                    <div>
+                                                        <p className="text-white text-sm font-medium">{video.title}</p>
+                                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{video.duration}</p>
+                                                    </div>
+                                                </div>
+                                                <button type="button" onClick={() => removeVideoFromModule(mIdx, vIdx)} className="p-2 text-red-500/50 hover:text-red-400">
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
                             ))}
