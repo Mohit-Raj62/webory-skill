@@ -71,7 +71,7 @@ export default function InternshipVideoPlayerPage({ params }: { params: Promise<
                     const app = data.applications.find(
                         (a: any) => a.internship?._id?.toString() === internshipId || a.internship?.toString() === internshipId
                     );
-                    setIsAccepted(app?.status === 'accepted' || app?.status === 'completed');
+                    setIsAccepted(app?.status === 'accepted' || app?.status === 'completed' || (app?.amountPaid > 0 && app?.status !== 'rejected'));
                 }
             } catch (e) {}
         };

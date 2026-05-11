@@ -73,7 +73,7 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                     const app = data.applications.find(
                         (a: any) => a.internship?._id?.toString() === id || a.internship?.toString() === id
                     );
-                    setIsAccepted(app?.status === 'accepted' || app?.status === 'completed');
+                    setIsAccepted(app?.status === 'accepted' || app?.status === 'completed' || (app?.amountPaid > 0 && app?.status !== 'rejected'));
                 }
             } catch (error) {
                 console.error("Failed to fetch application status", error);
@@ -131,7 +131,7 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                                     <Briefcase size={14} /> {internship.company}
                                 </span>
                             </div>
-                            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter mb-4">
+                            <h1 className="text-3xl md:text-4xl font-black text-white tracking-tighter mb-4">
                                 {internship.title}
                             </h1>
                             <p className="text-lg text-slate-400 max-w-2xl font-light leading-relaxed">
@@ -140,29 +140,35 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                         </div>
 
                         {isAccepted ? (
-                            <div className="flex flex-col gap-3">
-                                <div className="bg-emerald-500/10 border border-emerald-500/20 px-6 py-4 rounded-2xl flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400">
-                                        <ShieldCheck size={20} />
+                            <div className="flex flex-col gap-4">
+                                <div className="bg-emerald-500/5 backdrop-blur-xl border border-emerald-500/20 px-8 py-5 rounded-[2rem] flex items-center gap-4 shadow-inner group">
+                                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform duration-500">
+                                        <ShieldCheck size={24} />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Enrollment Status</p>
-                                        <p className="text-white font-bold">Access Granted</p>
+                                        <p className="text-[8px] font-black text-emerald-500 uppercase tracking-[0.2em] mb-0.5">Enrollment Active</p>
+                                        <p className="text-white font-black text-base tracking-tight uppercase">Access Granted</p>
                                     </div>
                                 </div>
                                 <Button 
                                     onClick={() => router.push(`/internships/${id}/tasks`)}
-                                    className="w-full bg-blue-600 hover:bg-blue-700 h-12 rounded-xl font-bold uppercase tracking-widest text-[10px]"
+                                    className="w-full h-14 bg-gradient-to-r from-blue-600 to-indigo-600 hover:shadow-[0_15px_35px_-10px_rgba(37,99,235,0.4)] transition-all duration-500 rounded-2xl font-black uppercase tracking-widest text-[10px] text-white border-none"
                                 >
-                                    View Assigned Tasks
+                                    <FileText size={16} className="mr-2" /> View Assigned Tasks
                                 </Button>
                             </div>
                         ) : (
                             <Button 
                                 onClick={() => router.push('/internships')}
-                                className="bg-white text-black hover:bg-emerald-500 hover:text-white h-14 px-10 rounded-2xl font-black uppercase tracking-widest text-[12px] shadow-2xl"
+                                className="relative overflow-hidden group h-16 px-12 rounded-[2rem] font-black uppercase tracking-[0.2em] text-[11px] text-white border-none shadow-[0_20px_50px_-15px_rgba(16,185,129,0.4)] hover:shadow-[0_25px_60px_-12px_rgba(16,185,129,0.5)] transition-all duration-500 hover:scale-[1.02]"
+                                style={{
+                                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                                }}
                             >
-                                Apply Now
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]" />
+                                <span className="relative z-10 flex items-center gap-2">
+                                    Apply Now <ArrowUpRight size={18} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                                </span>
                             </Button>
                         )}
                     </div>

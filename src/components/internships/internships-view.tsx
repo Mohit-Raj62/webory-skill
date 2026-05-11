@@ -335,7 +335,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                             {/* Left: Info (8 cols) */}
                                             <div className="lg:col-span-8 space-y-8 md:space-y-10 text-left">
                                                 <div>
-                                                    <h3 className="text-3xl md:text-5xl font-black text-white mb-6 tracking-tight leading-[1.2] md:leading-[1.1]">
+                                                    <h3 className="text-2xl md:text-4xl font-black text-white mb-6 tracking-tight leading-[1.2] md:leading-[1.1]">
                                                         {job.title}
                                                     </h3>
                                                     <div className="flex flex-wrap gap-3">
@@ -355,17 +355,17 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                                 </div>
 
                                                 {/* Tech Stack Section */}
-                                                <div className="bg-white/[0.02] border border-white/[0.05] p-5 md:p-8 rounded-[2rem] space-y-6">
+                                                <div className="bg-white/[0.02] border border-white/[0.05] p-4 md:p-6 rounded-[2rem] space-y-4">
                                                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                                         <div>
-                                                            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">{job.tagline || "Industry Standard"}</p>
-                                                            <p className="text-sm md:text-base font-bold text-slate-300">Master production-ready technologies</p>
+                                                            <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-0.5">{job.tagline || "Industry Standard"}</p>
+                                                            <p className="text-xs md:text-sm font-bold text-slate-300">Master production-ready technologies</p>
                                                         </div>
                                                         <div className="flex flex-wrap gap-2 md:justify-end">
                                                             {job.tags && job.tags.map((tag: string, i: number) => (
-                                                                <div key={i} className="px-4 py-2 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center gap-2 group/tag hover:border-emerald-500/30 transition-colors">
-                                                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/50 group-hover/tag:bg-emerald-500 transition-colors" />
-                                                                    <span className="text-[11px] md:text-xs font-bold text-slate-300">{tag}</span>
+                                                                <div key={i} className="px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center gap-2 group/tag hover:border-emerald-500/30 transition-colors">
+                                                                    <div className="w-1 h-1 rounded-full bg-emerald-500/50 group-hover/tag:bg-emerald-500 transition-colors" />
+                                                                    <span className="text-[9px] md:text-[10px] font-bold text-slate-300">{tag}</span>
                                                                 </div>
                                                             ))}
                                                         </div>
@@ -438,39 +438,57 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                                             
                                                             if (hasApplied) {
                                                                 return (
-                                                                    <div className="flex flex-col gap-3 w-full">
-                                                                        <div className="w-full h-16 md:h-20 rounded-2xl font-black text-sm md:text-base tracking-widest uppercase flex items-center justify-center bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
-                                                                            ALREADY APPLIED <CheckCircle2 size={22} className="ml-2" />
+                                                                    <div className="flex flex-col gap-4 w-full">
+                                                                        <div className="w-full py-6 md:py-8 rounded-[2rem] bg-emerald-500/5 backdrop-blur-2xl border border-emerald-500/20 flex flex-col items-center justify-center relative overflow-hidden group/applied shadow-inner">
+                                                                            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover/applied:opacity-100 transition-opacity duration-700" />
+                                                                            <div className="relative z-10 flex items-center gap-3">
+                                                                                <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                                                                    <CheckCircle2 size={18} className="animate-in zoom-in duration-500" />
+                                                                                </div>
+                                                                                <span className="text-xs md:text-sm font-black text-emerald-400 uppercase tracking-[0.2em]">Application Active</span>
+                                                                            </div>
+                                                                            <div className="mt-2 text-[10px] font-bold text-emerald-500/60 uppercase tracking-widest flex items-center gap-1.5">
+                                                                                <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" /> Status: {app.status.replace('_', ' ')}
+                                                                            </div>
                                                                         </div>
                                                                         <button 
                                                                             onClick={() => handleDownloadInvoice(job, app)}
-                                                                            className="w-full py-4 rounded-xl font-black text-[10px] tracking-[0.2em] uppercase flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all border border-white/5"
+                                                                            className="w-full h-14 md:h-16 rounded-2xl font-black text-[11px] tracking-[0.2em] uppercase flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-all duration-300 border border-white/5 hover:border-white/20 group/inv"
                                                                         >
-                                                                            <Download size={14} /> Download Invoice
+                                                                            <Download size={16} className="text-emerald-500 group-hover:-translate-y-0.5 transition-transform" />
+                                                                            Download Invoice
                                                                         </button>
                                                                     </div>
                                                                 );
                                                             }
+                                                            
+                                                            const isFull = job.totalSeats - job.filledSeats <= 0;
 
                                                             return (
                                                                 <Button
-                                                                    onClick={() => (job.totalSeats - job.filledSeats > 0) && handleApplyClick(job._id)}
-                                                                    disabled={job.totalSeats - job.filledSeats <= 0}
-                                                                    className={`w-full h-16 md:h-20 rounded-2xl font-black text-sm md:text-base tracking-widest uppercase relative overflow-hidden group/btn shadow-[0_20px_50px_-15px_rgba(16,185,129,0.4)] transition-transform ${job.totalSeats - job.filledSeats > 0 ? 'hover:scale-[1.02] active:scale-[0.98]' : 'opacity-50 grayscale cursor-not-allowed'}`}
+                                                                    onClick={() => !isFull && handleApplyClick(job._id)}
+                                                                    disabled={isFull}
+                                                                    className={`w-full h-16 md:h-18 rounded-[2rem] font-black text-xs md:text-sm tracking-[0.2em] uppercase relative overflow-hidden transition-all duration-500 ${isFull ? 'opacity-40 grayscale cursor-not-allowed bg-slate-800' : 'hover:scale-[1.02] active:scale-[0.98] hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.5)] shadow-xl'}`}
                                                                     style={{
-                                                                        background: job.totalSeats - job.filledSeats > 0 
-                                                                            ? 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)' 
-                                                                            : '#334155',
+                                                                        background: isFull 
+                                                                            ? '#1e293b' 
+                                                                            : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                                                                         color: 'white'
                                                                     }}
                                                                 >
-                                                                    {job.totalSeats - job.filledSeats > 0 ? (
-                                                                        <>
-                                                                            APPLY NOW <ArrowUpRight size={22} className="ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                                                                        </>
-                                                                    ) : (
-                                                                        "BATCH FULL"
+                                                                    {!isFull && (
+                                                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-[shimmer_3s_infinite]" />
                                                                     )}
+                                                                    <div className="relative z-10 flex items-center justify-center gap-3">
+                                                                        {isFull ? "Registration Closed" : (
+                                                                            <>
+                                                                                APPLY NOW 
+                                                                                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                                                                                    <ArrowUpRight size={20} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                                                                                </div>
+                                                                            </>
+                                                                        )}
+                                                                    </div>
                                                                 </Button>
                                                             );
                                                         })()}

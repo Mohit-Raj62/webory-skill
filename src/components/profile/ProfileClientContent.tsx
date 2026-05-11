@@ -311,7 +311,7 @@ export function ProfileClientContent({
                                             </>
                                         )}
                                         {app.status === 'interview_scheduled' && <button onClick={() => app.interviewLink && window.open(app.interviewLink, '_blank')} className="h-8 px-4 bg-emerald-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-emerald-500/20"><Video size={12} /> Join Call</button>}
-                                        {(app.status === 'accepted' || app.status === 'completed') && (
+                                        {(app.status === 'accepted' || app.status === 'completed' || (app.amountPaid > 0 && app.status !== 'rejected')) && (
                                             <>
                                                 <button onClick={() => app.internship?._id && router.push(`/internships/${app.internship._id}`)} className="h-8 px-4 bg-blue-600 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-blue-600/20"><PlayCircle size={12} /> Content</button>
                                                 <button onClick={() => app.internship?._id && router.push(`/internships/${app.internship._id}/tasks`)} className="h-8 px-4 bg-purple-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-purple-500/20"><FileText size={12} /> Tasks</button>

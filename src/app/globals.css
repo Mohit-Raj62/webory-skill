@@ -114,4 +114,9 @@
     margin-bottom: var(--sab);
   }
 }
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
 /* Force CSS Rebuild for Chunk Sync */
