@@ -138,6 +138,30 @@ const InternshipSchema = new Schema({
     ],
     default: [],
   },
+  hasTiers: {
+    type: Boolean,
+    default: false,
+  },
+  tiers: {
+    type: [
+      {
+        name: { 
+          type: String, 
+          enum: ["Basic", "Intermediate", "Advanced"],
+          required: true 
+        },
+        price: { type: Number, required: true },
+        originalPrice: { type: Number, required: true },
+        discountPercentage: { type: Number, default: 0 },
+        perks: { type: [String], default: [] },
+      },
+    ],
+    default: [
+      { name: "Basic", price: 999, originalPrice: 2999, perks: ["Internship Certificate", "Standard Tasks"] },
+      { name: "Intermediate", price: 1499, originalPrice: 3999, perks: ["Intermediate Certificate", "Mentorship Sessions", "Premium Tasks"] },
+      { name: "Advanced", price: 2499, originalPrice: 5999, perks: ["Advanced Certificate", "1-on-1 Mentorship", "PPO Opportunity", "Real-world Project"] },
+    ],
+  },
   modules: {
     type: [
       {
@@ -153,6 +177,11 @@ const InternshipSchema = new Schema({
           type: Number,
           required: true,
           default: 0,
+        },
+        tierAccess: {
+          type: [String],
+          enum: ["Basic", "Intermediate", "Advanced"],
+          default: ["Basic", "Intermediate", "Advanced"],
         },
         videos: {
           type: [

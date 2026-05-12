@@ -21,6 +21,7 @@ export default function InternshipVideoPlayerPage({ params }: { params: Promise<
     const ytPlayerRef = useRef<any>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [isEnrolled, setIsEnrolled] = useState(false);
+    const [selectedTier, setSelectedTier] = useState<string | null>(null);
 
     const currentIndex = parseInt(videoIndex as string) || 0;
     
@@ -29,6 +30,10 @@ export default function InternshipVideoPlayerPage({ params }: { params: Promise<
         if (!internship) return [];
         if (internship.modules && internship.modules.length > 0 && internship.modules.some((m: any) => m.videos && m.videos.length > 0)) {
             return internship.modules
+                .filter((m: any) => {
+                    if (!m.tierAccess || m.tierAccess.length === 0) return true;
+                    return m.tierAccess.includes(selectedTier || "Basic");
+                })
                 .sort((a: any, b: any) => a.order - b.order)
                 .reduce((acc: any[], module: any) => [...acc, ...(module.videos || [])], []);
         }
@@ -72,6 +77,7 @@ export default function InternshipVideoPlayerPage({ params }: { params: Promise<
                         (a: any) => a.internship?._id?.toString() === internshipId || a.internship?.toString() === internshipId
                     );
                     setIsAccepted(app?.status === 'accepted' || app?.status === 'completed' || (app?.amountPaid > 0 && app?.status !== 'rejected'));
+                    if (app) setSelectedTier(app.selectedTier || "Basic");
                 }
             } catch (e) {}
         };

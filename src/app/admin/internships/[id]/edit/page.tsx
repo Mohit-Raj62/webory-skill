@@ -43,10 +43,17 @@ export default function EditInternshipPage() {
             director: { name: "Vijay Kumar", title: "Director of Education, Webory", credential: "Alumnus, IIT Mandi" },
             partner: { name: "Partner Rep.", title: "Authorized Signatory" },
         },
+        hasTiers: false,
+        tiers: [
+            { name: "Basic", price: 999, originalPrice: 2999, perks: ["Internship Certificate", "Standard Tasks"] },
+            { name: "Intermediate", price: 1499, originalPrice: 3999, perks: ["Intermediate Certificate", "Mentorship Sessions", "Premium Tasks"] },
+            { name: "Advanced", price: 2499, originalPrice: 5999, perks: ["Advanced Certificate", "1-on-1 Mentorship", "PPO Opportunity", "Real-world Project"] },
+        ] as { name: "Basic" | "Intermediate" | "Advanced", price: number, originalPrice: number, discountPercentage?: number, perks: string[] }[],
         modules: [] as {
             title: string;
             description: string;
             order: number;
+            tierAccess: string[];
             videos: { title: string; url: string; duration: string }[];
         }[],
     });
@@ -105,7 +112,16 @@ export default function EditInternshipPage() {
                         director: { name: "Vijay Kumar", title: "Director of Education, Webory", credential: "Alumnus, IIT Mandi" },
                         partner: { name: "Partner Rep.", title: "Authorized Signatory" },
                     },
-                    modules: data.internship.modules || [],
+                    hasTiers: data.internship.hasTiers || false,
+                    tiers: data.internship.tiers || [
+                        { name: "Basic", price: 999, originalPrice: 2999, perks: ["Internship Certificate", "Standard Tasks"] },
+                        { name: "Intermediate", price: 1499, originalPrice: 3999, perks: ["Intermediate Certificate", "Mentorship Sessions", "Premium Tasks"] },
+                        { name: "Advanced", price: 2499, originalPrice: 5999, perks: ["Advanced Certificate", "1-on-1 Mentorship", "PPO Opportunity", "Real-world Project"] },
+                    ],
+                    modules: data.internship.modules?.map((m: any) => ({
+                        ...m,
+                        tierAccess: m.tierAccess || ["Basic", "Intermediate", "Advanced"]
+                    })) || [],
                 });
             }
         } catch (error) {
@@ -398,6 +414,73 @@ export default function EditInternshipPage() {
                         </div>
                     </div>
 
+                    {/* Tiers Management */}
+                    <div className="space-y-6 pt-6 border-t border-white/5">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h3 className="text-xl font-bold text-white">Tiered Pricing & Access</h3>
+                                <p className="text-sm text-gray-400">Enable 3 distinct levels: Basic, Intermediate, Advanced</p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, hasTiers: !formData.hasTiers })}
+                                className={`w-12 h-6 rounded-full relative transition-all ${formData.hasTiers ? 'bg-blue-600' : 'bg-gray-700'}`}
+                            >
+                                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formData.hasTiers ? 'right-1' : 'left-1'}`} />
+                            </button>
+                        </div>
+
+                        {formData.hasTiers && (
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                {formData.tiers.map((tier, idx) => (
+                                    <div key={idx} className="p-4 bg-white/5 rounded-xl border border-white/10 space-y-4">
+                                        <h4 className={`text-sm font-black uppercase tracking-widest ${idx === 0 ? 'text-blue-400' : idx === 1 ? 'text-purple-400' : 'text-emerald-400'}`}>
+                                            {tier.name} Tier
+                                        </h4>
+                                        <div>
+                                            <label className="text-[10px] text-gray-400 uppercase block mb-1">Price ($)</label>
+                                            <input
+                                                type="number"
+                                                className="w-full bg-black/20 border border-white/10 rounded-lg p-2 text-sm text-white outline-none"
+                                                value={tier.price}
+                                                onChange={(e) => {
+                                                    const newTiers = [...formData.tiers];
+                                                    newTiers[idx].price = Number(e.target.value);
+                                                    setFormData({ ...formData, tiers: newTiers });
+                                                }}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] text-gray-400 uppercase block mb-1">Original Price ($)</label>
+                                            <input
+                                                type="number"
+                                                className="w-full bg-black/20 border border-white/10 rounded-lg p-2 text-sm text-white outline-none"
+                                                value={tier.originalPrice}
+                                                onChange={(e) => {
+                                                    const newTiers = [...formData.tiers];
+                                                    newTiers[idx].originalPrice = Number(e.target.value);
+                                                    setFormData({ ...formData, tiers: newTiers });
+                                                }}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] text-gray-400 uppercase block mb-1">Perks (comma separated)</label>
+                                            <textarea
+                                                className="w-full bg-black/20 border border-white/10 rounded-lg p-2 text-sm text-white h-20 outline-none resize-none scroller"
+                                                value={tier.perks.join(", ")}
+                                                onChange={(e) => {
+                                                    const newTiers = [...formData.tiers];
+                                                    newTiers[idx].perks = e.target.value.split(",").map(p => p.trim()).filter(p => p);
+                                                    setFormData({ ...formData, tiers: newTiers });
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
                     <div>
                         <label className="text-sm text-gray-300 block mb-2">Description *</label>
                         <textarea
@@ -639,6 +722,34 @@ export default function EditInternshipPage() {
                                                 <h3 className="text-white font-bold">{module.title}</h3>
                                             </div>
                                             <p className="text-gray-400 text-xs">{module.description}</p>
+                                            {formData.hasTiers && (
+                                                <div className="flex flex-wrap gap-1.5 mt-2">
+                                                    {["Basic", "Intermediate", "Advanced"].map(t => (
+                                                        <button
+                                                            key={t}
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                const newModules = [...formData.modules];
+                                                                const currentAccess = newModules[mIdx].tierAccess || [];
+                                                                if (currentAccess.includes(t)) {
+                                                                    newModules[mIdx].tierAccess = currentAccess.filter(x => x !== t);
+                                                                } else {
+                                                                    newModules[mIdx].tierAccess = [...currentAccess, t];
+                                                                }
+                                                                setFormData({ ...formData, modules: newModules });
+                                                            }}
+                                                            className={`px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-widest border transition-all ${
+                                                                (formData.modules[mIdx].tierAccess || []).includes(t)
+                                                                    ? 'bg-blue-500/20 border-blue-500/40 text-blue-400'
+                                                                    : 'bg-white/5 border-white/10 text-gray-600'
+                                                            }`}
+                                                        >
+                                                            {t}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <Button

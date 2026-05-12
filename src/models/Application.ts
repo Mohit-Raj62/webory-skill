@@ -55,6 +55,11 @@ const ApplicationSchema = new Schema({
   amountPaid: {
     type: Number,
   },
+  selectedTier: {
+    type: String,
+    enum: ["Basic", "Intermediate", "Advanced"],
+    default: "Basic",
+  },
   appliedAt: {
     type: Date,
     default: Date.now,

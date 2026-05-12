@@ -21,6 +21,7 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
     const [internship, setInternship] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [isAccepted, setIsAccepted] = useState(false);
+    const [selectedTier, setSelectedTier] = useState<string | null>(null);
     const [liveClasses, setLiveClasses] = useState<any[]>([]);
     const [expandedModules, setExpandedModules] = useState<Record<number, boolean>>({ 0: true });
     const fetchingRef = useRef(false);
@@ -74,6 +75,7 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                         (a: any) => a.internship?._id?.toString() === id || a.internship?.toString() === id
                     );
                     setIsAccepted(app?.status === 'accepted' || app?.status === 'completed' || (app?.amountPaid > 0 && app?.status !== 'rejected'));
+                    if (app) setSelectedTier(app.selectedTier || "Basic");
                 }
             } catch (error) {
                 console.error("Failed to fetch application status", error);
@@ -141,13 +143,17 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
 
                         {isAccepted ? (
                             <div className="flex flex-col gap-4">
-                                <div className="bg-emerald-500/5 backdrop-blur-xl border border-emerald-500/20 px-8 py-5 rounded-[2rem] flex items-center gap-4 shadow-inner group">
-                                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform duration-500">
+                                <div className="bg-[#0a0a0b] border border-emerald-500/20 px-6 py-4 rounded-2xl flex items-center gap-4 shadow-2xl relative overflow-hidden group">
+                                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                    <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform duration-500 relative z-10 shadow-inner">
                                         <ShieldCheck size={24} />
                                     </div>
-                                    <div>
-                                        <p className="text-[8px] font-black text-emerald-500 uppercase tracking-[0.2em] mb-0.5">Enrollment Active</p>
-                                        <p className="text-white font-black text-base tracking-tight uppercase">Access Granted</p>
+                                    <div className="relative z-10">
+                                        <div className="flex items-center gap-2 mb-0.5">
+                                            <p className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Enrollment Active</p>
+                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                                        </div>
+                                        <p className="text-slate-500 font-bold text-[10px] tracking-tight uppercase">Access Granted</p>
                                     </div>
                                 </div>
                                 <Button 
@@ -266,6 +272,84 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                             </div>
                         )}
 
+                        {/* Tier Comparison Section */}
+                        {internship.hasTiers && (
+                            <div className="mb-12 relative overflow-hidden">
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-blue-500/10 rounded-full blur-[120px] -z-10" />
+                                <div className="text-center mb-12">
+                                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] mb-4">
+                                        <Sparkles size={12} /> Flexible Learning Paths
+                                    </div>
+                                    <h2 className="text-4xl font-black text-white tracking-tighter mb-4">Choose Your Tier</h2>
+                                    <p className="text-slate-400 text-sm max-w-xl mx-auto">Accelerate your career with a tier that fits your professional goals and mentorship needs.</p>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    {(internship.tiers || []).map((tier: any, idx: number) => (
+                                        <div 
+                                            key={idx}
+                                            className={`relative p-8 rounded-[2.5rem] border transition-all duration-500 group ${
+                                                idx === 1 
+                                                ? 'bg-blue-900/10 border-blue-500/40 shadow-[0_0_50px_rgba(59,130,246,0.15)] scale-[1.02]' 
+                                                : idx === 2
+                                                ? 'bg-emerald-900/10 border-emerald-500/40 shadow-[0_0_50px_rgba(16,185,129,0.1)]'
+                                                : 'bg-slate-900/40 border-white/5'
+                                            }`}
+                                        >
+                                            {idx === 1 && <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-[9px] font-black uppercase tracking-widest px-5 py-2 rounded-full text-white shadow-xl z-10">Most Popular</div>}
+                                            {idx === 2 && <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-600 text-[9px] font-black uppercase tracking-widest px-5 py-2 rounded-full text-white shadow-xl z-10">Premium Experience</div>}
+                                            
+                                            <div className="flex justify-between items-start mb-8">
+                                                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 duration-500 ${
+                                                    idx === 0 ? 'bg-slate-800 text-slate-400' : 
+                                                    idx === 1 ? 'bg-blue-500 text-white shadow-[0_10px_20px_rgba(59,130,246,0.3)]' : 
+                                                    'bg-emerald-500 text-black shadow-[0_10px_20px_rgba(16,185,129,0.3)]'
+                                                }`}>
+                                                    {idx === 0 ? <Zap size={24} /> : idx === 1 ? <Sparkles size={24} /> : <GraduationCap size={24} />}
+                                                </div>
+                                            </div>
+
+                                            <h3 className="text-xl font-black text-white uppercase tracking-tighter mb-2">{tier.name}</h3>
+                                            
+                                            <div className="mb-8">
+                                                <div className="flex items-baseline gap-2">
+                                                    <span className="text-4xl font-black text-white">₹{tier.price}</span>
+                                                    <span className="text-sm text-slate-500 line-through">₹{tier.originalPrice}</span>
+                                                </div>
+                                                <p className="text-[10px] text-emerald-400 font-black uppercase tracking-widest mt-2">Save {Math.round(((tier.originalPrice - tier.price)/tier.originalPrice)*100)}% Today</p>
+                                            </div>
+
+                                            <div className="space-y-4 mb-10 min-h-[180px]">
+                                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Included Benefits:</p>
+                                                <ul className="space-y-4">
+                                                    {tier.perks.map((perk: string, pIdx: number) => (
+                                                        <li key={pIdx} className="flex items-start gap-3 text-xs text-slate-400 group-hover:text-slate-300 transition-colors">
+                                                            <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${idx === 1 ? 'bg-blue-500/20 text-blue-400' : idx === 2 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/10 text-slate-500'}`}>
+                                                                <CheckCircle size={12} />
+                                                            </div>
+                                                            <span className="leading-tight">{perk}</span>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+
+                                            <Button 
+                                                onClick={() => router.push('/internships')}
+                                                disabled={selectedTier === tier.name}
+                                                className={`w-full h-12 rounded-xl font-black uppercase tracking-[0.2em] text-[9px] transition-all duration-300 ${
+                                                    selectedTier === tier.name ? 'bg-slate-800 text-slate-500 cursor-not-allowed' :
+                                                    idx === 1 ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-blue-500/20' : 
+                                                    idx === 2 ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-black shadow-emerald-500/20' : 
+                                                    'bg-white/5 text-slate-300 hover:bg-white/10 border border-white/5'
+                                                } hover:scale-[1.02] shadow-lg`}
+                                            >
+                                                {selectedTier === tier.name ? "Current Tier" : (isAccepted ? "Upgrade Tier" : `Select ${tier.name}`)}
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                         {/* Video Curriculum Section */}
                         <div className="bg-slate-900/40 border border-white/5 rounded-[2.5rem] p-8 mb-12">
                             <h2 className="text-2xl font-black text-white tracking-tight mb-8">Video Curriculum</h2>
@@ -273,6 +357,13 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                             {internship.modules && internship.modules.length > 0 && internship.modules.some((m: any) => m.videos && m.videos.length > 0) ? (
                                 <div className="space-y-4">
                                     {internship.modules
+                                        .filter((m: any) => {
+                                            // If user is accepted, filter by their tierAccess
+                                            if (isAccepted && m.tierAccess && m.tierAccess.length > 0) {
+                                                return m.tierAccess.includes(selectedTier || "Basic");
+                                            }
+                                            return true; // Show all (some locked) if not accepted yet
+                                        })
                                         .sort((a: any, b: any) => a.order - b.order)
                                         .map((module: any, moduleIndex: number) => {
                                             const startIndex = internship.modules

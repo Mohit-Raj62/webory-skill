@@ -52,6 +52,8 @@ export function InternshipsView({ internships, user, userApplications }: Interns
     const [transactionData, setTransactionData] = useState<any>(null);
     const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
     const [hasTriggeredLeadPopup, setHasTriggeredLeadPopup] = useState(false);
+    const [applyStep, setApplyStep] = useState<number>(1);
+    const [selectedTier, setSelectedTier] = useState<string>("Basic");
     const router = useRouter();
 
     // ... (filteredInternships useMemo remains same) ...
@@ -92,6 +94,8 @@ export function InternshipsView({ internships, user, userApplications }: Interns
             return;
         }
         setSelectedInternship(id);
+        setApplyStep(1);
+        setSelectedTier("Basic");
         
         // Track view activity for logged-in user when they click apply
         trackActivity(id, internship?.title);
@@ -187,7 +191,12 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                     preferredDuration: formData.preferredDuration,
                     referralCode: formData.referralCode,
                     transactionId: "PENDING_PAYU",
-                    amountPaid: internshipDetails?.price || 0
+                    selectedTier: internshipDetails?.hasTiers ? selectedTier : "Basic",
+                    amountPaid: internshipDetails?.isFree 
+                        ? 0 
+                        : (internshipDetails?.hasTiers 
+                            ? (internshipDetails.tiers?.find((t: any) => t.name === selectedTier)?.price || 0)
+                            : (internshipDetails?.price || 0))
                 }),
             });
 
@@ -433,24 +442,39 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                                         </div>
                                                         
                                                         {(() => {
+                                                            const isFull = job.totalSeats - job.filledSeats <= 0;
                                                             const app = userApplications.find(a => a.internshipId === job._id);
                                                             const hasApplied = !!app;
                                                             
                                                             if (hasApplied) {
                                                                 return (
                                                                     <div className="flex flex-col gap-4 w-full">
-                                                                        <div className="w-full py-6 md:py-8 rounded-[2rem] bg-emerald-500/5 backdrop-blur-2xl border border-emerald-500/20 flex flex-col items-center justify-center relative overflow-hidden group/applied shadow-inner">
-                                                                            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover/applied:opacity-100 transition-opacity duration-700" />
-                                                                            <div className="relative z-10 flex items-center gap-3">
-                                                                                <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400">
-                                                                                    <CheckCircle2 size={18} className="animate-in zoom-in duration-500" />
-                                                                                </div>
-                                                                                <span className="text-xs md:text-sm font-black text-emerald-400 uppercase tracking-[0.2em]">Application Active</span>
+                                                                        <div className="w-full py-4 px-5 rounded-2xl bg-[#0a0a0b] border border-emerald-500/20 flex items-center gap-4 relative overflow-hidden group/applied shadow-2xl">
+                                                                            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-transparent opacity-0 group-hover/applied:opacity-100 transition-opacity duration-500" />
+                                                                            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 shrink-0 shadow-inner">
+                                                                                <ShieldCheck size={20} className="animate-in zoom-in duration-700" />
                                                                             </div>
-                                                                            <div className="mt-2 text-[10px] font-bold text-emerald-500/60 uppercase tracking-widest flex items-center gap-1.5">
-                                                                                <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" /> Status: {app.status.replace('_', ' ')}
+                                                                            <div className="relative z-10">
+                                                                                <div className="flex items-center gap-2 mb-0.5">
+                                                                                    <span className="text-[10px] font-black text-white uppercase tracking-[0.1em]">Application Active</span>
+                                                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                                                                                </div>
+                                                                                <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
+                                                                                    {app.status === 'accepted' ? 'Enrollment Confirmed' : `Current Status: ${app.status.replace('_', ' ')}`}
+                                                                                </p>
                                                                             </div>
                                                                         </div>
+                                                                        
+                                                                        {job.hasTiers && (
+                                                                            <Button
+                                                                                onClick={() => !isFull && handleApplyClick(job._id)}
+                                                                                className="w-full h-12 md:h-14 rounded-xl font-black text-[9px] md:text-[10px] tracking-[0.2em] uppercase flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-blue-600/20 transition-all hover:scale-[1.02] active:scale-[0.98] border-none"
+                                                                            >
+                                                                                <Sparkles size={14} className="text-blue-200" />
+                                                                                Upgrade Tier
+                                                                            </Button>
+                                                                        )}
+
                                                                         <button 
                                                                             onClick={() => handleDownloadInvoice(job, app)}
                                                                             className="w-full h-14 md:h-16 rounded-2xl font-black text-[11px] tracking-[0.2em] uppercase flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-all duration-300 border border-white/5 hover:border-white/20 group/inv"
@@ -462,7 +486,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                                                 );
                                                             }
                                                             
-                                                            const isFull = job.totalSeats - job.filledSeats <= 0;
+                                                            // isFull moved to top
 
                                                             return (
                                                                 <Button
@@ -589,8 +613,90 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                             initial={{ scale: 0.95, opacity: 0, y: 20 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                            className="bg-[#0f1014] w-full max-w-4xl rounded-3xl overflow-hidden border border-white/10 shadow-2xl flex flex-col md:flex-row h-[92vh] md:h-[90vh]"
+                            className={`bg-[#0f1014] w-full ${applyStep === 1 && (internships.find(i => i._id === selectedInternship)?.hasTiers) ? 'max-w-6xl' : 'max-w-4xl'} rounded-3xl overflow-hidden border border-white/10 shadow-2xl flex flex-col h-[92vh] md:h-[90vh] transition-all duration-500`}
                         >
+                            {applyStep === 1 && (internships.find(i => i._id === selectedInternship)?.hasTiers) ? (
+                                /* STEP 1: TIER SELECTION */
+                                <div className="flex-1 overflow-y-auto scroller p-6 md:p-10 bg-[#0c0d12] flex flex-col items-center relative">
+                                    <button
+                                        onClick={() => setSelectedInternship(null)}
+                                        className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all z-50"
+                                    >
+                                        <X size={24} />
+                                    </button>
+
+                                    <div className="text-center mb-10 mt-8">
+                                        <h2 className="text-3xl md:text-4xl font-black text-white mb-3">Choose Your Internship Tier</h2>
+                                        <p className="text-gray-400 text-sm max-w-lg mx-auto">Select the level that matches your career goals and receive tailored benefits.</p>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl">
+                                        {(internships.find(i => i._id === selectedInternship)?.tiers || []).map((tier: any, idx: number) => (
+                                            <div 
+                                                key={idx}
+                                                onClick={() => setSelectedTier(tier.name)}
+                                                className={`relative p-8 rounded-[32px] border-2 transition-all cursor-pointer group flex flex-col ${
+                                                    selectedTier === tier.name 
+                                                    ? 'bg-emerald-500/10 border-emerald-500 shadow-[0_0_40px_rgba(16,185,129,0.1)]' 
+                                                    : 'bg-white/[0.02] border-white/5 hover:border-white/20'
+                                                }`}
+                                            >
+                                                {tier.name === "Intermediate" && <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full text-white shadow-lg z-10">Most Popular</div>}
+                                                {tier.name === "Advanced" && <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-600 text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full text-white shadow-lg z-10">Best Value</div>}
+
+                                                <div className="flex justify-between items-start mb-8">
+                                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${selectedTier === tier.name ? 'bg-emerald-500 text-black' : 'bg-white/5 text-gray-400'}`}>
+                                                        {idx === 0 ? <Zap size={24} /> : idx === 1 ? <Sparkles size={24} /> : <GraduationCap size={24} />}
+                                                    </div>
+                                                    {selectedTier === tier.name && <div className="bg-emerald-500 rounded-full p-1"><CheckCircle2 className="text-black" size={16} /></div>}
+                                                </div>
+
+                                                <h3 className={`text-xl font-black uppercase tracking-tighter mb-2 ${selectedTier === tier.name ? 'text-white' : 'text-gray-400'}`}>{tier.name}</h3>
+
+                                                <div className="mb-8">
+                                                    <div className="flex items-baseline gap-2">
+                                                        <span className="text-4xl font-black text-white">₹{tier.price}</span>
+                                                        <span className="text-sm text-gray-500 line-through">₹{tier.originalPrice}</span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="space-y-4 mb-10 flex-1">
+                                                    <ul className="space-y-3">
+                                                        {tier.perks.map((perk: string, pIdx: number) => (
+                                                            <li key={pIdx} className="flex items-start gap-3 text-xs text-gray-400">
+                                                                <CheckCircle2 size={12} className="text-emerald-500 mt-0.5 shrink-0" />
+                                                                <span className="leading-tight">{perk}</span>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+
+                                                <Button className={`w-full text-xs font-black uppercase tracking-widest py-7 rounded-2xl ${selectedTier === tier.name ? 'bg-emerald-500 text-black' : 'bg-white/5 text-gray-400'}`}>
+                                                    {selectedTier === tier.name ? 'Selected' : 'Choose Plan'}
+                                                </Button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    
+                                    <div className="mt-12 mb-8">
+                                        <Button 
+                                            onClick={() => setApplyStep(2)}
+                                            className="bg-white text-black hover:bg-gray-100 px-20 py-8 text-sm font-black uppercase tracking-widest rounded-[24px]"
+                                        >
+                                            Next: Fill Application <ArrowUpRight className="ml-2" size={20} />
+                                        </Button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col md:flex-row h-full overflow-hidden w-full relative">
+                                    {internships.find(i => i._id === selectedInternship)?.hasTiers && (
+                                        <button 
+                                            onClick={() => setApplyStep(1)}
+                                            className="absolute top-8 right-20 text-gray-400 hover:text-white flex items-center gap-1 text-[10px] uppercase font-black tracking-widest transition-colors z-30"
+                                        >
+                                            ← Change Tier
+                                        </button>
+                                    )}
                             {/* LEFT SIDE: Internship Details / Perks (Hidden on Mobile) */}
                             <div className="hidden md:flex w-2/5 bg-gradient-to-br from-emerald-950/30 to-black p-8 relative flex-col justify-between border-r border-white/5">
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-[80px]" />
@@ -899,14 +1005,16 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                         disabled={submitting || (uploading && resumeType === 'file')}
                                         className="w-full bg-emerald-500 hover:bg-emerald-400 text-black border-0 py-6 text-sm font-black uppercase tracking-widest rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-[0.98]"
                                     >
-                                        {uploading ? "Uploading File..." : submitting ? "Processing Application..." : (internships.find(i => i._id === selectedInternship)?.isFree ? "Submit Free Application" : `Proceed to Payment (₹${internships.find(i => i._id === selectedInternship)?.price})`)}
+                                        {uploading ? "Uploading File..." : submitting ? "Processing Application..." : (internships.find(i => i._id === selectedInternship)?.isFree ? "Submit Free Application" : `Proceed to Payment (₹${(internships.find(i => i._id === selectedInternship)?.hasTiers) ? (internships.find(i => i._id === selectedInternship)?.tiers?.find((t: any) => t.name === selectedTier)?.price || 0) : (internships.find(i => i._id === selectedInternship)?.price || 0)})`)}
                                     </Button>
                                     <p className="text-[10px] text-center text-gray-500 mt-3 mb-2 md:mb-0">
                                         Secure Payment via Razorpay/PhonePe • 100% Secure
                                     </p>
                                 </div>
                             </div>
-                        </motion.div>
+                        </div>
+                        )}
+                    </motion.div>
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -923,9 +1031,10 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                     isOpen={showPayment}
                     onClose={() => setShowPayment(false)}
                     courseTitle={`Internship: ${internships.find(i => i._id === selectedInternship)?.title}`}
-                    price={internships.find(i => i._id === selectedInternship)?.price || 0}
+                    price={(internships.find(i => i._id === selectedInternship)?.hasTiers) ? (internships.find(i => i._id === selectedInternship)?.tiers?.find((t: any) => t.name === selectedTier)?.price || 0) : (internships.find(i => i._id === selectedInternship)?.price || 0)}
                     gstPercentage={internships.find(i => i._id === selectedInternship)?.gstPercentage || 0}
                     internshipId={selectedInternship}
+                    selectedTier={selectedTier} // Pass this to PaymentModal
                     userId={user._id}
                     userName={user.firstName}
                     userEmail={user.email}

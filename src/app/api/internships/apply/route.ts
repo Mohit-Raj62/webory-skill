@@ -35,6 +35,7 @@ export async function POST(req: Request) {
       referralCode,
       transactionId,
       amountPaid,
+      selectedTier,
     } = await req.json();
 
     if (!internshipId || !resume || !coverLetter) {
@@ -52,12 +53,14 @@ export async function POST(req: Request) {
 
     if (application) {
       const isPaidValues = amountPaid > 0;
-      // Allow retry if:
-      // 1. Rejected
-      // 2. Pending AND it was a paid application (meaning payment failed/cancelled)
+      
+      // Allow re-application if selecting a different tier or if previously rejected/pending-paid
+      const isDifferentTier = selectedTier && application.selectedTier !== selectedTier;
+
       if (
         application.status === "rejected" ||
-        (application.status === "pending" && isPaidValues)
+        (application.status === "pending" && isPaidValues) ||
+        isDifferentTier
       ) {
         // Re-open/Update the application
         application.status = "pending";
@@ -74,8 +77,9 @@ export async function POST(req: Request) {
         application.startDate = startDate;
         application.preferredDuration = preferredDuration;
         application.referralCode = referralCode;
-        application.transactionId = transactionId;
+        application.transactionId = transactionId || "PENDING_UPGRADE";
         application.amountPaid = amountPaid;
+        application.selectedTier = selectedTier || "Basic";
         application.appliedAt = new Date(); // Reset applied date
         await application.save();
       } else {
@@ -101,6 +105,7 @@ export async function POST(req: Request) {
         referralCode,
         transactionId,
         amountPaid,
+        selectedTier: selectedTier || "Basic",
       });
 
       // Increment filled seats
@@ -116,6 +121,7 @@ export async function POST(req: Request) {
       metadata: {
         internshipName:
           (await Internship.findById(internshipId))?.title || "Internship",
+        tier: selectedTier || "Basic",
       },
       date: new Date(),
     });
