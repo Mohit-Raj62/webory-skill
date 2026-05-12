@@ -38,8 +38,16 @@ export async function GET(
       );
     }
 
-    // Fetch tasks
-    const tasks = await InternshipTask.find({ internship: id }).sort({
+    // Fetch tasks filtered by the user's selected tier
+    const userTier = application.selectedTier || "Basic";
+    const tasks = await InternshipTask.find({ 
+      internship: id,
+      $or: [
+        { tierAccess: { $exists: false } },
+        { tierAccess: { $size: 0 } },
+        { tierAccess: userTier }
+      ]
+    }).sort({
       createdAt: -1,
     });
 
@@ -60,7 +68,10 @@ export async function GET(
       };
     });
 
-    return NextResponse.json({ tasks: tasksWithStatus });
+    return NextResponse.json({ 
+      tasks: tasksWithStatus,
+      selectedTier: userTier
+    });
   } catch (error) {
     console.error("Fetch student internship tasks error:", error);
     return NextResponse.json(

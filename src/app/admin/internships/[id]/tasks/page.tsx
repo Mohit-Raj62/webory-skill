@@ -13,6 +13,7 @@ interface TaskFormData {
     isSimulated: boolean;
     initialCode: string;
     expectedRegex: string;
+    tierAccess: string[];
 }
 
 export default function InternshipTasksPage({ params }: { params: Promise<{ id: string }> }) {
@@ -28,6 +29,7 @@ export default function InternshipTasksPage({ params }: { params: Promise<{ id: 
         isSimulated: false,
         initialCode: "",
         expectedRegex: "",
+        tierAccess: ["Basic", "Intermediate", "Advanced"],
     });
 
     useEffect(() => {
@@ -60,7 +62,7 @@ export default function InternshipTasksPage({ params }: { params: Promise<{ id: 
             if (res.ok) {
                 fetchTasks();
                 setIsModalOpen(false);
-                setFormData({ title: "", description: "", dueDate: "", isSimulated: false, initialCode: "", expectedRegex: "" });
+                setFormData({ title: "", description: "", dueDate: "", isSimulated: false, initialCode: "", expectedRegex: "", tierAccess: ["Basic", "Intermediate", "Advanced"] });
                 alert("Task created successfully!");
             } else {
                 alert("Failed to create task");
@@ -114,6 +116,19 @@ export default function InternshipTasksPage({ params }: { params: Promise<{ id: 
                                             <FileText size={16} />
                                             Created: {new Date(task.createdAt).toLocaleDateString()}
                                         </div>
+                                        {task.tierAccess && (
+                                            <div className="flex items-center gap-2">
+                                                {task.tierAccess.map((tier: string) => (
+                                                    <span key={tier} className={`text-[8px] px-2 py-0.5 rounded border ${
+                                                        tier === 'Basic' ? 'bg-slate-500/10 text-slate-400 border-slate-500/20' :
+                                                        tier === 'Intermediate' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
+                                                        'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                                                    } font-black uppercase tracking-widest`}>
+                                                        {tier}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                                 <div className="flex gap-2">
@@ -181,6 +196,28 @@ export default function InternshipTasksPage({ params }: { params: Promise<{ id: 
                                     value={formData.dueDate}
                                     onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
                                 />
+                            </div>
+
+                            <div>
+                                <label className="text-sm text-gray-300 block mb-3">Tier Access</label>
+                                <div className="flex gap-3">
+                                    {["Basic", "Intermediate", "Advanced"].map(tier => (
+                                        <label key={tier} className="flex items-center gap-2 cursor-pointer group">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.tierAccess.includes(tier)}
+                                                onChange={(e) => {
+                                                    const newTiers = e.target.checked
+                                                        ? [...formData.tierAccess, tier]
+                                                        : formData.tierAccess.filter(t => t !== tier);
+                                                    setFormData({ ...formData, tierAccess: newTiers });
+                                                }}
+                                                className="w-4 h-4 rounded border-white/10 bg-white/5 text-blue-600 focus:ring-0"
+                                            />
+                                            <span className="text-xs font-bold text-gray-400 group-hover:text-white transition-colors">{tier}</span>
+                                        </label>
+                                    ))}
+                                </div>
                             </div>
                                 <div className="flex items-center gap-3 bg-white/5 p-4 rounded-xl border border-white/10">
                                     <input

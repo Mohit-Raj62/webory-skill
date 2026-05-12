@@ -38,6 +38,11 @@ const InternshipTaskSchema = new Schema({
     type: Date,
     required: true,
   },
+  tierAccess: {
+    type: [String],
+    enum: ["Basic", "Intermediate", "Advanced"],
+    default: ["Basic", "Intermediate", "Advanced"],
+  },
   createdAt: {
     type: Date,
     default: Date.now,

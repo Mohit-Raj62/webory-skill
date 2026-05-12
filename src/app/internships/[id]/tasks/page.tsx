@@ -9,6 +9,7 @@ import { toast } from "sonner";
 export default function StudentInternshipTasksPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
     const [tasks, setTasks] = useState<any[]>([]);
+    const [selectedTier, setSelectedTier] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [submittingId, setSubmittingId] = useState<string | null>(null);
     const [submissionData, setSubmissionData] = useState({
@@ -26,6 +27,7 @@ export default function StudentInternshipTasksPage({ params }: { params: Promise
             if (res.ok) {
                 const data = await res.json();
                 setTasks(data.tasks);
+                setSelectedTier(data.selectedTier);
             } else {
                 toast.error("Failed to load tasks");
             }
@@ -87,7 +89,18 @@ export default function StudentInternshipTasksPage({ params }: { params: Promise
                     </Link>
                     <div>
                         <h1 className="text-3xl font-bold text-white mb-2">My Tasks</h1>
-                        <p className="text-gray-400">Complete your assigned tasks to progress</p>
+                        <div className="flex items-center gap-3">
+                            <p className="text-gray-400 text-sm">Complete your assigned tasks to progress</p>
+                            {selectedTier && (
+                                <span className={`text-[10px] px-3 py-1 rounded-full border ${
+                                    selectedTier === 'Basic' ? 'bg-slate-500/10 text-slate-400 border-slate-500/20' :
+                                    selectedTier === 'Intermediate' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
+                                    'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                                } font-black uppercase tracking-widest`}>
+                                    {selectedTier} Tier
+                                </span>
+                            )}
+                        </div>
                     </div>
                 </div>
 
@@ -112,6 +125,19 @@ export default function StudentInternshipTasksPage({ params }: { params: Promise
                                                 <FileText size={16} />
                                                 Posted: {new Date(task.createdAt).toLocaleDateString()}
                                             </div>
+                                            {task.tierAccess && task.tierAccess.length > 0 && (
+                                                <div className="flex items-center gap-1.5 ml-2">
+                                                    {task.tierAccess.map((tier: string) => (
+                                                        <span key={tier} className={`text-[8px] px-2 py-0.5 rounded border ${
+                                                            tier === 'Basic' ? 'bg-slate-500/10 text-slate-400 border-slate-500/20' :
+                                                            tier === 'Intermediate' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
+                                                            'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                                                        } font-black uppercase tracking-[0.2em]`}>
+                                                            {tier}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                     {task.submission && (
