@@ -257,12 +257,20 @@ export function ProfileClientContent({
                                             <div className="bg-gradient-to-r from-blue-600 to-cyan-400 h-full rounded-full transition-all duration-1000 shadow-[0_0_8px_rgba(37,99,235,0.5)]" style={{ width: `${Math.min(enrollment.progress || 0, 100)}%` }} />
                                         </div>
                                     </div>
-                                    <button 
-                                        onClick={() => handleDownloadInvoice(enrollment, 'course')}
-                                        className="w-full h-9 flex items-center justify-center gap-2 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-400 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
-                                    >
-                                        <Download size={14} /> Download Invoice
-                                    </button>
+                                    <div className="flex gap-2 w-full mt-2">
+                                        <button 
+                                            onClick={() => handleDownloadInvoice(enrollment, 'course')}
+                                            className="flex-1 h-9 flex items-center justify-center gap-1.5 bg-slate-800/50 hover:bg-slate-800 border border-white/5 text-slate-400 hover:text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all"
+                                        >
+                                            <Download size={12} /> Invoice
+                                        </button>
+                                        <button 
+                                            onClick={() => enrollment.course?._id && router.push(`/courses/${enrollment.course._id}`)}
+                                            className="flex-[1.5] h-9 flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow-lg shadow-blue-500/20"
+                                        >
+                                            Continue Course <ChevronRight size={12} />
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                         </div>
