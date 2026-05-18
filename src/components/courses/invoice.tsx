@@ -165,14 +165,14 @@ export function Invoice({
                                      <td className="py-6 print:py-3 text-right">
                                         {displayDiscountAmount > 0 ? (
                                             <div className="flex flex-col items-end">
-                                                <span className="text-gray-400 line-through text-sm print:text-xs">₹{subtotalBeforeDiscount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
-                                                <span className="text-gray-900 print:text-sm">₹{(subtotalBeforeDiscount - discountBeforeTax).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                                                <span className="text-gray-400 line-through text-sm print:text-xs">₹{Number(subtotalBeforeDiscount || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                                                <span className="text-gray-900 print:text-sm">₹{Number((subtotalBeforeDiscount || 0) - (discountBeforeTax || 0)).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
                                             </div>
                                         ) : (
-                                            <span className="text-gray-600 print:text-sm">₹{netAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                                            <span className="text-gray-600 print:text-sm">₹{Number(netAmount || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
                                         )}
                                      </td>
-                                    <td className="py-6 print:py-3 text-right font-bold text-gray-900 print:text-sm">₹{(subtotalBeforeDiscount - discountBeforeTax).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td>
+                                    <td className="py-6 print:py-3 text-right font-bold text-gray-900 print:text-sm">₹{Number((subtotalBeforeDiscount || 0) - (discountBeforeTax || 0)).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -202,37 +202,37 @@ export function Invoice({
                             <div className="w-full max-w-[280px] space-y-3">
                                 <div className="flex justify-between text-sm text-gray-600">
                                     <span>Subtotal</span>
-                                    <span>₹{subtotalBeforeDiscount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                                    <span>₹{Number(subtotalBeforeDiscount || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
                                 </div>
                                 
                                 {displayDiscountAmount > 0 && (
                                     <div className="flex justify-between text-sm text-green-600 font-semibold bg-green-50 px-2 py-1 rounded">
                                         <span>Course Discount Applied</span>
-                                        <span>-₹{discountBeforeTax.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                                        <span>-₹{Number(discountBeforeTax || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
                                     </div>
                                 )}
 
                                 {couponDiscount > 0 && (
                                     <div className="flex justify-between text-sm text-blue-600 font-semibold bg-blue-50 px-2 py-1 rounded">
                                         <span>Coupon ({couponCode || 'PROMO'})</span>
-                                        <span>-₹{(couponDiscount / (1 + gstPercentage / 100)).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                                        <span>-₹{Number((couponDiscount || 0) / (1 + gstPercentage / 100)).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
                                     </div>
                                 )}
 
                                 <div className="flex justify-between text-sm text-gray-600">
                                     <span>Taxable Value</span>
-                                    <span>₹{netAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                                    <span>₹{Number(netAmount || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
                                 </div>
 
                                 <div className="flex justify-between text-sm text-gray-600 border-b border-gray-100 pb-2">
                                     <span>GST ({gstPercentage}%)</span>
-                                    <span>₹{calculatedGstAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                                    <span>₹{Number(calculatedGstAmount || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
                                 </div>
                                 
                                 <div className="flex justify-between items-baseline pt-2">
                                     <span className="font-extrabold text-lg print:text-base text-gray-900 uppercase tracking-tighter">Amount Paid</span>
                                     <div className="text-right">
-                                        <span className="font-black text-3xl print:text-xl text-blue-600">₹{amount.toLocaleString('en-IN')}</span>
+                                        <span className="font-black text-3xl print:text-xl text-blue-600">₹{Number(amount || 0).toLocaleString('en-IN')}</span>
                                         <p className="text-[10px] text-blue-400 font-bold uppercase tracking-widest mt-1">Total inclusive of taxes</p>
                                     </div>
                                 </div>
