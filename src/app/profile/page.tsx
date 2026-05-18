@@ -25,10 +25,10 @@ export default async function ProfilePage() {
     // Fetch initial data on server for better LCP and performance
     const [enrollments, applications, hackathons] = await Promise.all([
         Enrollment.find({ student: user._id })
-            .populate("course", "title level videos thumbnail description")
+            .populate("course", "title level videos thumbnail description price originalPrice gstPercentage")
             .lean(),
         Application.find({ student: user._id, status: { $ne: "rejected" } })
-            .populate("internship", "title company location type stipend tags")
+            .populate("internship", "title company location type stipend tags price originalPrice gstPercentage")
             .populate("student", "firstName lastName email")
             .lean(),
         HackathonSubmission.find({
