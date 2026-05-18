@@ -225,9 +225,10 @@ export function InternshipsView({ internships, user, userApplications }: Interns
         const amount = app.amountPaid || job.price || 999;
         const originalPrice = job.originalPrice || 2999;
         
+        const safeId = app.internshipId || app._id || Date.now().toString();
         const invoiceData = {
-            transactionId: app.transactionId || `TXN${app.internshipId.substring(0, 12)}`,
-            courseTitle: job.title,
+            transactionId: app.transactionId || `TXN${safeId.toString().substring(0, 12)}`,
+            courseTitle: job.title || "Internship Course",
             amount: amount,
             originalAmount: originalPrice,
             discountAmount: originalPrice - amount,

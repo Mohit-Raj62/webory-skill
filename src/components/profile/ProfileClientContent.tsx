@@ -96,8 +96,8 @@ export function ProfileClientContent({
         // But for simplicity in the invoice component, we pass the final amount paid
         
         const invoiceData = {
-            transactionId: data.transactionId || `TXN${data._id.toString().substring(0, 12)}`,
-            courseTitle: item.title,
+            transactionId: data.transactionId || `TXN${(data._id || data.id || Date.now()).toString().substring(0, 12)}`,
+            courseTitle: item.title || "Unknown Course",
             amount: amount,
             originalAmount: originalPrice,
             discountAmount: originalPrice - amount,

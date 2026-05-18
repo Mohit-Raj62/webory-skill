@@ -38,7 +38,11 @@ export function Invoice({
     onClose 
 }: InvoiceProps) {
     const [mounted, setMounted] = useState(false);
-    const invoiceNumber = `INV-${transactionId.substring(4, 12)}`;
+    
+    // Safely handle potentially undefined or non-string values
+    const safeTransactionId = transactionId ? String(transactionId) : 'UNKNOWN';
+    const invoiceNumber = `INV-${safeTransactionId.length >= 12 ? safeTransactionId.substring(4, 12) : safeTransactionId}`;
+    const safeUserEmail = userEmail || '';
     
     // Calculate Base Amount (Amount - GST)
     const calculatedGstAmount = gstAmount > 0 
@@ -102,8 +106,8 @@ export function Invoice({
                      <div className="grid grid-cols-2 gap-8">
                         <div>
                             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Billed To</h3>
-                            <p className="text-gray-900 font-semibold text-lg">{userName || userEmail.split('@')[0]}</p>
-                            <p className="text-gray-500 text-sm">{userEmail}</p>
+                            <p className="text-gray-900 font-semibold text-lg">{userName || safeUserEmail.split('@')[0]}</p>
+                            <p className="text-gray-500 text-sm">{safeUserEmail}</p>
                             {userPhone && <p className="text-gray-500 text-sm">{userPhone}</p>}
                         </div>
                         <div className="text-right">
