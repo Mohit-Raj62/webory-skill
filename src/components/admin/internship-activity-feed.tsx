@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Eye, Clock, Phone, UserCheck, Zap, MousePointer2 } from "lucide-react";
+import { Eye, Clock, Phone, UserCheck, Zap, MousePointer2, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 
 interface Activity {
   type: "guest_lead" | "logged_activity";
@@ -59,14 +60,19 @@ export function InternshipActivityFeed() {
 
   return (
     <div className="mb-10">
-      <div className="flex items-center gap-2 mb-6">
-        <div className="p-2 bg-emerald-500/20 rounded-lg text-emerald-400">
-           <Zap size={20} className="fill-current" />
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-2">
+          <div className="p-2 bg-emerald-500/20 rounded-lg text-emerald-400">
+             <Zap size={20} className="fill-current" />
+          </div>
+          <div>
+              <h2 className="text-xl font-bold text-white">Live Leads & Activity</h2>
+              <p className="text-xs text-gray-500 tracking-wide uppercase font-bold">Real-time interest from students</p>
+          </div>
         </div>
-        <div>
-            <h2 className="text-xl font-bold text-white">Live Leads & Activity</h2>
-            <p className="text-xs text-gray-500 tracking-wide uppercase font-bold">Real-time interest from students</p>
-        </div>
+        <Link href="/admin/activity" className="text-sm font-bold text-emerald-500 hover:text-emerald-400 flex items-center gap-1 transition-colors px-4 py-2 bg-emerald-500/10 rounded-lg hover:bg-emerald-500/20">
+            View More <ChevronRight size={16} />
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
