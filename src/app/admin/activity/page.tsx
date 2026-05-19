@@ -26,7 +26,7 @@ export default function AdminActivityPage() {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-8 pt-24">
         <h1 className="text-3xl font-bold mb-8">Live Interest Tracker</h1>
-        <p className="text-muted-foreground mb-6">See which logged-in students are viewing courses right now.</p>
+        <p className="text-muted-foreground mb-6">See which logged-in students are viewing courses and internships right now.</p>
 
         <div className="grid gap-4">
           {loading ? (
