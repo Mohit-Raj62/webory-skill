@@ -66,7 +66,7 @@ export default function AdminActivityPage() {
                   <div className="flex items-center justify-between md:justify-end gap-6 flex-1">
                     <div className="text-right">
                        <p className="font-medium text-blue-500 flex items-center justify-end gap-2">
-                          <Eye size={16}/> {item.courseName || "Unknown Course"}
+                          <Eye size={16}/> {item.name || item.courseName || "Unknown Course"}
                        </p>
                        <p className="text-sm font-bold text-gray-600">
                           Viewed <span className="text-foreground text-lg">{item.count}</span> times
