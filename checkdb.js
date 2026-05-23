@@ -22,6 +22,7 @@ async function check() {
         console.log("No certificateId attached to submission!");
     }
   }
+  
 
   process.exit(0);
 }
