@@ -147,7 +147,35 @@ export function Footer({ className }: { className?: string }) {
                     )}
                 </div>
 
-                <div className="mt-8">
+                {/* Accreditations & Recognitions */}
+                <div className="mt-12 pt-8 border-t border-white/5">
+                    <div className="flex flex-col items-center space-y-6">
+                        <div className="flex items-center space-x-4">
+                            <div className="h-px w-12 bg-gradient-to-r from-transparent to-gray-500/30"></div>
+                            <span className="text-sm font-semibold tracking-widest text-gray-400 uppercase">Recognized & Accredited By</span>
+                            <div className="h-px w-12 bg-gradient-to-l from-transparent to-gray-500/30"></div>
+                        </div>
+                        <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 md:gap-8 lg:gap-12">
+                        <div className="h-8 md:h-10 flex items-center justify-center bg-white rounded-md px-2 py-1 hover:scale-105 transition-transform">
+                            <img src="https://betacloud.ncs.gov.in/assets/logo/ncs-main-logo.svg" alt="NCS Logo" title="National Career Service" className="h-full w-auto object-contain" />
+                        </div>
+                        <div className="h-8 md:h-10 flex items-center justify-center bg-white rounded-md px-2 py-1 hover:scale-105 transition-transform">
+                            <img src="/assets/aicte.png" alt="AICTE Logo" title="AICTE" className="h-full w-auto object-contain" />
+                        </div>
+                        <div className="h-8 md:h-10 flex items-center justify-center bg-white rounded-md px-2 py-1 hover:scale-105 transition-transform">
+                            <img src="https://internship.aicte-india.org//images/new_logo/logo_internship_new.jpg" alt="AICTE Internship" title="AICTE Internship" className="h-full w-auto object-contain" />
+                        </div>
+                        <div className="h-8 md:h-10 flex items-center justify-center bg-white rounded-md px-2 py-1 hover:scale-105 transition-transform">
+                            <img src="https://www.msme.gov.in/static/uploads/2025/06/3b95c999bc86195fb00f36a0ce88b19d.jpg" alt="MSME" title="MSME" className="h-full w-auto object-contain" />
+                        </div>
+                        <div className="h-8 md:h-10 flex items-center justify-center bg-white rounded-md px-2 py-1 hover:scale-105 transition-transform">
+                            <img src="https://www.skillindiadigital.gov.in/assets/new-ux-img/skill-india-big-logo.svg" alt="Skill India" title="Skill India" className="h-full w-auto object-contain" />
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-12">
                     <div className="w-full flex flex-col md:flex-row justify-between items-center gap-6 p-6 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm">
                         <p className="text-gray-500 text-sm order-2 md:order-1">
                             © {new Date().getFullYear()} Webory Technologies. Made with <span className="text-red-500 animate-pulse">❤</span> in India.

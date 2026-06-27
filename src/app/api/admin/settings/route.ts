@@ -10,7 +10,7 @@ export async function PUT(req: Request) {
   try {
     await dbConnect();
     const data = await req.json();
-    const { firstName, lastName, email, currentPassword, newPassword } = data;
+    const { firstName, lastName, email, phone, bio, expertise, currentPassword, newPassword } = data;
 
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
@@ -41,9 +41,12 @@ export async function PUT(req: Request) {
     }
 
     // Handle Profile Update
-    if (firstName) user.firstName = firstName;
-    if (lastName) user.lastName = lastName;
-    if (email) user.email = email;
+    if (firstName !== undefined) user.firstName = firstName;
+    if (lastName !== undefined) user.lastName = lastName;
+    // Note: Usually email changing is disabled for admins or needs a special flow
+    if (phone !== undefined) user.phone = phone;
+    if (bio !== undefined) user.bio = bio;
+    if (expertise !== undefined) user.expertise = expertise;
 
     await user.save();
 
@@ -53,6 +56,9 @@ export async function PUT(req: Request) {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
+        phone: user.phone,
+        bio: user.bio,
+        expertise: user.expertise,
         role: user.role,
       },
     });

@@ -22,6 +22,8 @@ function LoginContent() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [focusedField, setFocusedField] = useState<string | null>(null);
+    const [require2FA, setRequire2FA] = useState(false);
+    const [tempToken, setTempToken] = useState("");
     const otpRefs = [
         useRef<HTMLInputElement>(null),
         useRef<HTMLInputElement>(null),
@@ -65,6 +67,54 @@ function LoginContent() {
 
             if (!res.ok) {
                 throw new Error(data.error || "Login failed");
+            }
+
+            if (data.require2FA) {
+                setRequire2FA(true);
+                setTempToken(data.tempToken);
+                setSuccess("Please enter your 2FA code or a recovery code to continue.");
+                return;
+            }
+
+            await refreshAuth();
+
+            if (data.user.role === "admin") {
+                router.push("/admin");
+            } else if (data.user.role === "teacher") {
+                router.push("/teacher");
+            } else {
+                router.push("/profile");
+            }
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleVerify2FA = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setError("");
+
+        const codeString = otp.join("");
+        if (codeString.length !== 6) {
+            setError("Please enter the full 6-digit code.");
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const res = await fetch("/api/auth/login/verify-2fa", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ tempToken, code: codeString }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.error || "Invalid 2FA code");
             }
 
             await refreshAuth();
@@ -236,44 +286,46 @@ function LoginContent() {
                         </div>
 
                         {/* Login Method Toggle */}
-                        <div className="flex gap-2 mb-8 p-1.5 bg-black/40 rounded-xl border border-white/5">
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setLoginMethod("password");
-                                    setError("");
-                                    setSuccess("");
-                                    setSuccess("");
-                                    setOtpSent(false);
-                                    setOtp(["", "", "", "", "", ""]);
-                                }}
-                                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${loginMethod === "password"
-                                    ? "bg-white/10 text-white shadow-lg border border-white/10"
-                                    : "text-gray-400 hover:text-gray-300"
-                                    }`}
-                            >
-                                <Lock className="inline mr-2 mb-0.5" size={14} />
-                                Password
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setLoginMethod("otp");
-                                    setError("");
-                                    setSuccess("");
-                                    setSuccess("");
-                                    setOtpSent(false);
-                                    setOtp(["", "", "", "", "", ""]);
-                                }}
-                                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${loginMethod === "otp"
-                                    ? "bg-white/10 text-white shadow-lg border border-white/10"
-                                    : "text-gray-400 hover:text-gray-300"
-                                    }`}
-                            >
-                                <Shield className="inline mr-2 mb-0.5" size={14} />
-                                OTP Login
-                            </button>
-                        </div>
+                        {!require2FA && (
+                            <div className="flex gap-2 mb-8 p-1.5 bg-black/40 rounded-xl border border-white/5">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setLoginMethod("password");
+                                        setError("");
+                                        setSuccess("");
+                                        setSuccess("");
+                                        setOtpSent(false);
+                                        setOtp(["", "", "", "", "", ""]);
+                                    }}
+                                    className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${loginMethod === "password"
+                                        ? "bg-white/10 text-white shadow-lg border border-white/10"
+                                        : "text-gray-400 hover:text-gray-300"
+                                        }`}
+                                >
+                                    <Lock className="inline mr-2 mb-0.5" size={14} />
+                                    Password
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setLoginMethod("otp");
+                                        setError("");
+                                        setSuccess("");
+                                        setSuccess("");
+                                        setOtpSent(false);
+                                        setOtp(["", "", "", "", "", ""]);
+                                    }}
+                                    className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${loginMethod === "otp"
+                                        ? "bg-white/10 text-white shadow-lg border border-white/10"
+                                        : "text-gray-400 hover:text-gray-300"
+                                        }`}
+                                >
+                                    <Shield className="inline mr-2 mb-0.5" size={14} />
+                                    OTP Login
+                                </button>
+                            </div>
+                        )}
 
                         {error && (
                             <motion.div 
@@ -308,7 +360,7 @@ function LoginContent() {
                         )}
 
                         {/* Password Login Form */}
-                        {loginMethod === "password" && (
+                        {!require2FA && loginMethod === "password" && (
                             <form onSubmit={handlePasswordLogin} className="space-y-5">
                                 <div className="space-y-1.5">
                                     <label className="text-xs font-medium text-gray-400 ml-1">Email Address</label>
@@ -374,8 +426,129 @@ function LoginContent() {
                             </form>
                         )}
 
+                        {/* 2FA Verification Form */}
+                        {require2FA && (
+                            <form onSubmit={handleVerify2FA} className="space-y-6">
+                                <div className="space-y-10">
+                                    <div className="text-center group">
+                                        <p className="text-xs text-gray-500 mb-2 uppercase tracking-[0.2em] font-black opacity-60">Two-Factor Auth</p>
+                                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/10 group-hover:border-blue-500/30 transition-colors">
+                                            <Shield size={12} className="text-blue-400" />
+                                            <span className="text-xs text-white/80 font-bold">Authenticator Code</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="flex justify-center items-center gap-3 sm:gap-4">
+                                        <div className="flex gap-2 sm:gap-3">
+                                            {[0, 1, 2].map((idx) => (
+                                                <motion.div
+                                                    key={idx}
+                                                    initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                    transition={{ delay: idx * 0.05, type: "spring", stiffness: 200 }}
+                                                    className="relative"
+                                                >
+                                                    <input
+                                                        ref={otpRefs[idx]}
+                                                        type="text"
+                                                        maxLength={1}
+                                                        value={otp[idx]}
+                                                        onChange={(e) => handleOtpChange(idx, e.target.value)}
+                                                        onKeyDown={(e) => handleKeyDown(idx, e)}
+                                                        onFocus={() => setFocusedField(`otp-${idx}`)}
+                                                        onBlur={() => setFocusedField(null)}
+                                                        className={`w-11 h-14 sm:w-14 sm:h-18 text-2xl sm:text-3xl font-black bg-white/[0.02] border rounded-2xl text-white outline-none transition-all duration-500 text-center selection:bg-blue-500/50 ${
+                                                            otp[idx] 
+                                                                ? 'border-blue-500/60 shadow-[0_0_30px_-5px_rgba(59,130,246,0.3)] bg-blue-500/[0.03]' 
+                                                                : focusedField === `otp-${idx}`
+                                                                    ? 'border-purple-500 shadow-[0_0_40px_-5px_rgba(168,85,247,0.4)] bg-white/10 scale-105'
+                                                                    : 'border-white/10 hover:border-white/20'
+                                                        }`}
+                                                    />
+                                                    {otp[idx] && (
+                                                        <motion.div 
+                                                            initial={{ scale: 0 }}
+                                                            animate={{ scale: 1 }}
+                                                            className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]"
+                                                        />
+                                                    )}
+                                                </motion.div>
+                                            ))}
+                                        </div>
+
+                                        <div className="w-px h-10 bg-white/10 rounded-full shrink-0 mx-1 opacity-40 shadow-[0_0_10px_rgba(255,255,255,0.1)]" />
+
+                                        <div className="flex gap-2 sm:gap-3">
+                                            {[3, 4, 5].map((idx) => (
+                                                <motion.div
+                                                    key={idx}
+                                                    initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                    transition={{ delay: idx * 0.05, type: "spring", stiffness: 200 }}
+                                                    className="relative"
+                                                >
+                                                    <input
+                                                        ref={otpRefs[idx]}
+                                                        type="text"
+                                                        maxLength={1}
+                                                        value={otp[idx]}
+                                                        onChange={(e) => handleOtpChange(idx, e.target.value)}
+                                                        onKeyDown={(e) => handleKeyDown(idx, e)}
+                                                        onFocus={() => setFocusedField(`otp-${idx}`)}
+                                                        onBlur={() => setFocusedField(null)}
+                                                        className={`w-11 h-14 sm:w-14 sm:h-18 text-2xl sm:text-3xl font-black bg-white/[0.02] border rounded-2xl text-white outline-none transition-all duration-500 text-center selection:bg-blue-500/50 ${
+                                                            otp[idx] 
+                                                                ? 'border-blue-500/60 shadow-[0_0_30px_-5px_rgba(59,130,246,0.3)] bg-blue-500/[0.03]' 
+                                                                : focusedField === `otp-${idx}`
+                                                                    ? 'border-purple-500 shadow-[0_0_40px_-5px_rgba(168,85,247,0.4)] bg-white/10 scale-105'
+                                                                    : 'border-white/10 hover:border-white/20'
+                                                        }`}
+                                                    />
+                                                    {otp[idx] && (
+                                                        <motion.div 
+                                                            initial={{ scale: 0 }}
+                                                            animate={{ scale: 1 }}
+                                                            className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]"
+                                                        />
+                                                    )}
+                                                </motion.div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-4 pt-4">
+                                        <motion.div
+                                            whileHover={{ scale: 1.01 }}
+                                            whileTap={{ scale: 0.98 }}
+                                        >
+                                            <Button
+                                                type="submit"
+                                                disabled={loading || otp.some(v => !v)}
+                                                className="w-full relative group overflow-hidden bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-600 hover:from-emerald-500 hover:via-teal-500 hover:to-emerald-500 border-0 py-7 text-sm font-black uppercase tracking-[0.2em] shadow-[0_20px_50px_rgba(16,185,129,0.2)] rounded-2xl transition-all duration-500 disabled:opacity-50 disabled:scale-100"
+                                            >
+                                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
+                                                
+                                                {loading ? (
+                                                    <span className="flex items-center justify-center gap-3">
+                                                        <Loader2 className="animate-spin" size={20} /> Verifying...
+                                                    </span>
+                                                ) : (
+                                                    <span className="flex items-center justify-center gap-2">
+                                                        Verify Code <ArrowRight className="inline group-hover:translate-x-1 transition-transform" size={18} />
+                                                    </span>
+                                                )}
+                                            </Button>
+                                        </motion.div>
+                                        <div className="text-center mt-4">
+                                            <button type="button" onClick={() => setRequire2FA(false)} className="text-gray-500 hover:text-gray-400 text-xs uppercase tracking-widest font-bold">Cancel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        )}
+
                         {/* OTP Login Form */}
-                        {loginMethod === "otp" && (
+                        {!require2FA && loginMethod === "otp" && (
                             <div className="space-y-6">
                                 {!otpSent ? (
                                     <form onSubmit={handleSendOtp} className="space-y-5">

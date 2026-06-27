@@ -127,7 +127,7 @@ export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initi
     const availableCourses = initialCourseCount > 0 ? `${initialCourseCount}+` : "5+";
 
     return (
-        <section className="relative pt-28 pb-16 md:pt-48 md:pb-32 overflow-hidden">
+        <section className="relative pt-24 pb-16 md:pt-32 md:pb-32 overflow-hidden">
             {/* Background Elements */}
             {/* Reduced background blur sizes on mobile to prevent excessive GPU overdraw */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl pointer-events-none">
@@ -140,13 +140,63 @@ export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initi
             <BackgroundCodeAnimation />
 
             <div className="container mx-auto px-4 relative z-10">
+                {/* RECOGNIZED BY BANNER - PREMIUM DESIGN */}
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.1 }}
+                    className="w-full max-w-5xl mx-auto mb-12 lg:mb-16 relative group"
+                >
+                    {/* Glowing Aura Background */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 via-blue-500/20 to-purple-500/20 blur-2xl rounded-[3rem] opacity-50 group-hover:opacity-70 transition-opacity duration-500" />
+                    
+                    {/* Main Banner Container */}
+                    <div className="relative bg-[#030616]/80 backdrop-blur-xl border border-white/10 rounded-3xl md:rounded-[2rem] py-4 px-6 md:py-6 md:px-8 shadow-2xl flex flex-col items-center gap-5 md:gap-6 overflow-hidden">
+                        
+                        {/* Premium Header */}
+                        <div className="flex items-center gap-4 w-full justify-center px-4">
+                            <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-white/20" />
+                            <div className="flex items-center gap-2.5 bg-white/5 px-4 py-1.5 rounded-full border border-white/5">
+                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.8)]" />
+                                <span className="text-[10px] md:text-xs font-black text-gray-300 uppercase tracking-[0.25em]">Recognized & Backed By</span>
+                            </div>
+                            <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-white/20" />
+                        </div>
+
+                        {/* Scrolling Logos */}
+                        <div className="w-full relative overflow-hidden flex items-center h-14 md:h-16">
+                            {/* Seamless Fade Edges */}
+                            <div className="absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-[#030616] via-[#030616]/80 to-transparent z-20 pointer-events-none" />
+                            <div className="absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-[#030616] via-[#030616]/80 to-transparent z-20 pointer-events-none" />
+                            
+                            <div className="w-full flex items-center justify-around gap-12 md:gap-20 animate-simple-marquee hover:[animation-play-state:paused] absolute whitespace-nowrap">
+                                <div className="h-9 md:h-12 bg-white rounded-xl px-4 py-1.5 flex items-center justify-center hover:scale-110 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] shrink-0">
+                                    <img src="https://betacloud.ncs.gov.in/assets/logo/ncs-main-logo.svg" alt="NCS Logo" title="National Career Service" className="h-full w-auto object-contain" />
+                                </div>
+                                <div className="h-9 md:h-12 bg-white rounded-xl px-4 py-1.5 flex items-center justify-center hover:scale-110 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] shrink-0">
+                                    <img src="/assets/aicte.png" alt="AICTE Logo" title="AICTE" className="h-full w-auto object-contain" />
+                                </div>
+                                <div className="h-9 md:h-12 bg-white rounded-xl px-4 py-1.5 flex items-center justify-center hover:scale-110 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] shrink-0">
+                                    <img src="https://internship.aicte-india.org//images/new_logo/logo_internship_new.jpg" alt="AICTE Internship" title="AICTE Internship" className="h-full w-auto object-contain" />
+                                </div>
+                                <div className="h-9 md:h-12 bg-white rounded-xl px-4 py-1.5 flex items-center justify-center hover:scale-110 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] shrink-0">
+                                    <img src="https://www.msme.gov.in/static/uploads/2025/06/3b95c999bc86195fb00f36a0ce88b19d.jpg" alt="MSME" title="MSME" className="h-full w-auto object-contain" />
+                                </div>
+                                <div className="h-9 md:h-12 bg-white rounded-xl px-4 py-1.5 flex items-center justify-center hover:scale-110 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] shrink-0">
+                                    <img src="https://www.skillindiadigital.gov.in/assets/new-ux-img/skill-india-big-logo.svg" alt="Skill India" title="Skill India" className="h-full w-auto object-contain" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </motion.div>
+
                 <div className="text-center max-w-4xl mx-auto">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                     >
-                        <div className="flex flex-col items-center gap-3 mb-8 md:mb-12">
+                        <div className="flex flex-row flex-wrap justify-center items-center gap-3 mb-8 md:mb-12">
                             {/* Primary Trust Signal */}
                             <motion.div 
                                 initial={{ opacity: 0, y: -10 }} 
@@ -188,20 +238,20 @@ export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initi
                             </motion.span>
                         </div>
                         
-                        <h1 className="text-4xl sm:text-5xl md:text-8xl font-extrabold mb-6 md:mb-8 tracking-tight leading-[1.1] drop-shadow-2xl text-white">
+                        <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-6 md:mb-8 tracking-tight leading-[1.1] drop-shadow-2xl text-white">
                             AI-Powered <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-500 animate-gradient-x">Skill</span> Platform
                             <br />
-                            <span className="text-2xl sm:text-3xl md:text-5xl font-semibold text-gray-300 block mt-2">
+                            <span className="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-300 block mt-2">
                                 for <span className="text-white border-b-4 border-purple-500/50">Industry-Ready</span> Careers
                             </span>
                         </h1>
                         
-                        <p className="text-base sm:text-lg md:text-2xl text-gray-400 mb-8 md:mb-10 max-w-2xl mx-auto leading-relaxed font-light px-4">
+                        <p className="text-base sm:text-lg md:text-xl text-gray-400 mb-8 md:mb-10 max-w-2xl mx-auto leading-relaxed font-light px-4">
                             Personalized AI roadmaps, hands-on projects, and industry mentorship. 
                             Build your <span className="text-white font-medium">high-income career</span> with Webory Skills.
                         </p>
 
-                        <div className="flex flex-col items-center justify-center gap-6 mt-8 md:mt-12">
+                        <div className="flex flex-col items-center justify-center gap-6 mt-6 md:mt-8">
                             {/* The "Eye-Catcher" Component (High Visibility Emerald) */}
                             <motion.div 
                                 initial={{ opacity: 0, x: -30 }} 

@@ -176,6 +176,18 @@ const UserSchema = new Schema({
     }],
     default: [],
   },
+  twoFactorSecret: {
+    type: String,
+    default: null,
+  },
+  isTwoFactorEnabled: {
+    type: Boolean,
+    default: false,
+  },
+  twoFactorRecoveryCodes: {
+    type: [String],
+    default: [],
+  },
 });
 
 // Performance indexes for faster queries

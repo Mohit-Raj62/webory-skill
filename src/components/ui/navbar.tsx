@@ -83,6 +83,7 @@ export function Navbar() {
     const { user } = useAuth();
 
     const [announcement, setAnnouncement] = useState({ enabled: false, text: "" });
+    const [isAnnouncementVisible, setIsAnnouncementVisible] = useState(true);
     const [isStandalone, setIsStandalone] = useState(false);
 
     useEffect(() => {
@@ -112,41 +113,50 @@ export function Navbar() {
     return (
         <>
             <nav
-                className={`fixed top-0 w-full z-50 pt-safe transition-all duration-500 ${
+                className={`fixed top-0 w-full z-50 pt-safe transition-all duration-500 flex flex-col ${
                     scrolled
                         ? "bg-black/70 backdrop-blur-2xl border-b border-white/[0.08] shadow-lg shadow-black/20"
                         : "bg-black/20 backdrop-blur-xl border-b border-white/[0.04]"
                 }`}
             >
-                {/* Subtle top gradient line */}
-                <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
+                {/* Navbar Content */}
 
-                <div className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-                    {/* Logo */}
-                    <Link href="/" className="flex items-center space-x-2.5 group">
-                        <motion.div
-                            whileHover={{ scale: 1.05, rotate: -3 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="relative w-9 h-9 bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25 group-hover:shadow-blue-500/40 transition-shadow duration-300"
-                        >
-                            <span className="font-black text-lg text-white">W</span>
-                            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/20 to-transparent" />
-                        </motion.div>
-                        <span className="text-base sm:text-lg xl:text-xl font-bold tracking-tight">
-                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400">WEBORY </span>
-                            <span className="relative">
-                                <span className="absolute -top-1.5 left-[30%] -translate-x-1/2 flex gap-1">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-[#FF9933]"></span>
-                                    <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
-                                    <span className="w-1.5 h-1.5 rounded-full bg-[#138808]"></span>
+                <div className="w-full relative">
+                    {/* Subtle top gradient line */}
+                    <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
+
+                    <div className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+                        <div className="flex items-center space-x-3 xl:space-x-4">
+                        {/* Logo */}
+                        <Link href="/" className="flex items-center space-x-2.5 group shrink-0">
+                            <motion.div
+                                whileHover={{ scale: 1.05, rotate: -3 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="relative w-9 h-9 bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25 group-hover:shadow-blue-500/40 transition-shadow duration-300"
+                            >
+                                <span className="font-black text-lg text-white">W</span>
+                                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/20 to-transparent" />
+                            </motion.div>
+                            <span className="text-base sm:text-lg xl:text-xl font-bold tracking-tight">
+                                <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400">WEBORY </span>
+                                <span className="relative">
+                                    <span className="absolute -top-1.5 left-[30%] -translate-x-1/2 flex gap-1">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-[#FF9933]"></span>
+                                        <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
+                                        <span className="w-1.5 h-1.5 rounded-full bg-[#138808]"></span>
+                                    </span>
+                                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-500 font-extrabold">SKILLS</span>
                                 </span>
-                                <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-500 font-extrabold">SKILLS</span>
                             </span>
-                        </span>
-                    </Link>
+                        </Link>
+                        
+                        <div className="hidden sm:flex items-center gap-3 pl-3 ml-3 border-l border-white/20 h-8">
+                            <img src="/assets/aicte.png" alt="AICTE Logo" className="h-full w-auto object-contain bg-white rounded px-1" />
+                        </div>
+                    </div>
 
                     {/* Desktop Menu */}
-                    <div className="hidden lg:flex items-center gap-0.5 xl:gap-2">
+                    <div className="hidden lg:flex items-center gap-0.5 xl:gap-2 ml-auto">
                         <NavLink href="/courses" icon={GraduationCap} badge="Free">Courses</NavLink>
                         <NavLink href="/internships" icon={Briefcase}>Internships</NavLink>
 
@@ -365,25 +375,40 @@ export function Navbar() {
                         </motion.div>
                     )}
                 </AnimatePresence>
+                </div>
             </nav>
 
-            {/* Announcement Bar */}
-            {announcement.enabled && (
-                <div className="fixed top-16 w-full z-[40] bg-black/50 backdrop-blur-md border-b border-white/[0.05] py-1.5 overflow-hidden">
+            {/* Floating Announcement Box */}
+            <AnimatePresence>
+                {announcement.enabled && announcement.text && isAnnouncementVisible && (
                     <motion.div
-                        animate={{ x: ["100%", "-100%"] }}
-                        transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-                        className="flex items-center gap-12 whitespace-nowrap"
+                        initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 20, scale: 0.9 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] max-w-sm w-[calc(100%-3rem)] sm:w-auto overflow-hidden rounded-2xl shadow-2xl shadow-blue-900/20"
                     >
-                        {[1, 2, 3, 4].map((i) => (
-                            <span key={i} className="text-[10px] md:text-xs font-medium text-gray-300 uppercase tracking-[0.2em] flex items-center gap-4">
-                                <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full italic font-bold text-[10px]">New Update</span>
-                                {announcement.text}
-                            </span>
-                        ))}
+                        <div className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-[length:200%_auto] animate-gradient-x text-white p-4 pr-10 border border-white/10 backdrop-blur-xl">
+                            <div className="absolute inset-0 bg-white/10 animate-pulse mix-blend-overlay"></div>
+                            
+                            <button
+                                onClick={() => setIsAnnouncementVisible(false)}
+                                className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-black/20 text-white/80 hover:text-white transition-colors z-20"
+                                aria-label="Close announcement"
+                            >
+                                <X size={16} />
+                            </button>
+                            
+                            <div className="relative z-10 flex items-start gap-3">
+                                <span className="text-yellow-300 text-xl shrink-0 mt-0.5">✨</span>
+                                <p className="text-sm font-semibold leading-snug">
+                                    {announcement.text}
+                                </p>
+                            </div>
+                        </div>
                     </motion.div>
-                </div>
-            )}
+                )}
+            </AnimatePresence>
 
             <FeedbackForm isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} />
         </>

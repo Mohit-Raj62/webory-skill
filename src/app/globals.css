@@ -100,6 +100,15 @@
     animation: scroll 40s linear infinite;
   }
 
+  @keyframes simple-marquee {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+  }
+
+  .animate-simple-marquee {
+    animation: simple-marquee 20s linear infinite;
+  }
+
   /* Safe Area Padding Utilities */
   .pt-safe {
     padding-top: var(--sat);

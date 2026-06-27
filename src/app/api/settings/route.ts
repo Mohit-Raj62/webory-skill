@@ -19,6 +19,7 @@ export async function GET() {
           "careerApplicationsEnabled",
           "mentorshipEnabled",
           "announcementBar",
+          "promoPopups",
         ],
       },
     }).lean();
@@ -36,9 +37,10 @@ export async function GET() {
       enabled: true,
       text: "Waitlist for January 2026 is full. February batch closing soon!",
     };
+    const promoPopups = settingsMap.promoPopups ?? [];
 
     return NextResponse.json(
-      { careerApplicationsEnabled, mentorshipEnabled, announcementBar },
+      { careerApplicationsEnabled, mentorshipEnabled, announcementBar, promoPopups },
       {
         headers: {
           "Cache-Control": "public, s-maxage=300, stale-while-revalidate=150",

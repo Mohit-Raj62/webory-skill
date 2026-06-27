@@ -13,6 +13,7 @@ import dynamic from "next/dynamic";
 // Defer non-critical global components to boost initial performance and LCP
 import { GlobalClientBootstrap } from "@/components/GlobalClientBootstrap";
 import { SecurityProvider } from "@/components/SecurityProvider";
+import PromoPopupManager from "@/components/ui/PromoPopupManager";
 
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -175,6 +176,7 @@ export default function RootLayout({
                 <SessionProvider>
                     <SecurityProvider>
                         <GlobalClientBootstrap />
+                        <PromoPopupManager />
                         {children}
                     </SecurityProvider>
                 </SessionProvider>

@@ -45,6 +45,24 @@ export async function POST(req: Request) {
       `Login: Session ID generated and saved for user ${user._id}: ${sessionId}`,
     );
 
+    if (user.isTwoFactorEnabled) {
+      // Issue a temporary token for the 2FA verification step
+      const tempToken = jwt.sign(
+        { userId: user._id, sessionId },
+        process.env.JWT_SECRET!,
+        { expiresIn: "5m" }, // 5 minutes to complete 2FA
+      );
+      
+      return NextResponse.json(
+        {
+          message: "2FA required",
+          require2FA: true,
+          tempToken
+        },
+        { status: 200 },
+      );
+    }
+
     const token = jwt.sign(
       { userId: user._id, email: user.email, role: user.role, sessionId },
       process.env.JWT_SECRET!,
