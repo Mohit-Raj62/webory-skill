@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/session-provider";
 import { 
     User, Mail, Award, Briefcase, LogOut, ExternalLink, Trophy, 
-    Calendar, Video, FileText, Clock, Upload, ChevronRight, Zap, Sparkles, Download, PlayCircle
+    Calendar, Video, FileText, Clock, Upload, ChevronRight, Zap, Sparkles, Download, PlayCircle, Lock
 } from "lucide-react";
 import dynamic from 'next/dynamic';
 import { Badge } from "@/components/ui/badge";
@@ -160,6 +160,9 @@ export function ProfileClientContent({
                             </button>
                             <button onClick={() => router.push('/profile/edit')} className="h-11 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-wider text-[10px] transition-all duration-300 flex items-center gap-2 shadow-lg shadow-blue-500/20">
                                 <Sparkles size={14} /> Edit Resume Info
+                            </button>
+                            <button onClick={() => router.push('/profile/security')} className="h-11 px-6 rounded-xl bg-slate-800/50 hover:bg-slate-800 text-white border border-white/5 font-black uppercase tracking-wider text-[10px] transition-all duration-300 flex items-center gap-2">
+                                <Lock size={14} /> Security
                             </button>
                         </div>
                     </div>

@@ -13,6 +13,7 @@ import {
     FileText,
     Shield,
     Home,
+    KeyRound,
 } from "lucide-react";
 
 const menuItems = [
@@ -24,6 +25,7 @@ const menuItems = [
     { name: "Create Course", href: "/teacher/courses/create", icon: PlusCircle },
     { name: "Student Doubts", href: "/teacher/doubts", icon: HelpCircle },
     { name: "My Profile / KYC", href: "/teacher/profile", icon: Shield },
+    { name: "Security (2FA)", href: "/teacher/security", icon: KeyRound },
 ];
 
 interface TeacherSidebarProps {

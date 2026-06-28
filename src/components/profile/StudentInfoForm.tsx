@@ -179,16 +179,16 @@ function PersonalInfoStep({ formData, updateFormData }: StepProps) {
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">First Name</label>
                     <Input 
                         value={formData.firstName} 
-                        disabled
-                        className="h-12 bg-white/5 border-white/10 rounded-xl opacity-50 cursor-not-allowed"
+                        onChange={(e: any) => updateFormData({ firstName: e.target.value })}
+                        className="h-12 bg-white/5 border-white/10 rounded-xl focus:ring-blue-500 focus:border-blue-500"
                     />
                 </div>
                 <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Last Name</label>
                     <Input 
                         value={formData.lastName} 
-                        disabled
-                        className="h-12 bg-white/5 border-white/10 rounded-xl opacity-50 cursor-not-allowed"
+                        onChange={(e: any) => updateFormData({ lastName: e.target.value })}
+                        className="h-12 bg-white/5 border-white/10 rounded-xl focus:ring-blue-500 focus:border-blue-500"
                     />
                 </div>
                 <div className="space-y-2">
