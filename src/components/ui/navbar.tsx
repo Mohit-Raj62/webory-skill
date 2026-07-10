@@ -110,6 +110,15 @@ export function Navbar() {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
+    useEffect(() => {
+        if (announcement.enabled && announcement.text && isAnnouncementVisible) {
+            const timer = setTimeout(() => {
+                setIsAnnouncementVisible(false);
+            }, 15000);
+            return () => clearTimeout(timer);
+        }
+    }, [announcement.enabled, announcement.text, isAnnouncementVisible]);
+
     return (
         <>
             <nav
@@ -381,32 +390,34 @@ export function Navbar() {
             {/* Floating Announcement Box */}
             <AnimatePresence>
                 {announcement.enabled && announcement.text && isAnnouncementVisible && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 50, scale: 0.9 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 20, scale: 0.9 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] max-w-sm w-[calc(100%-3rem)] sm:w-auto overflow-hidden rounded-2xl shadow-2xl shadow-blue-900/20"
-                    >
-                        <div className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-[length:200%_auto] animate-gradient-x text-white p-4 pr-10 border border-white/10 backdrop-blur-xl">
-                            <div className="absolute inset-0 bg-white/10 animate-pulse mix-blend-overlay"></div>
-                            
-                            <button
-                                onClick={() => setIsAnnouncementVisible(false)}
-                                className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-black/20 text-white/80 hover:text-white transition-colors z-20"
-                                aria-label="Close announcement"
-                            >
-                                <X size={16} />
-                            </button>
-                            
-                            <div className="relative z-10 flex items-start gap-3">
-                                <span className="text-yellow-300 text-xl shrink-0 mt-0.5">✨</span>
-                                <p className="text-sm font-semibold leading-snug">
-                                    {announcement.text}
-                                </p>
+                    <div className="fixed bottom-24 lg:bottom-6 left-0 right-0 z-[100] flex justify-center px-4 sm:px-6 pointer-events-none">
+                        <motion.div
+                            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                            className="pointer-events-auto w-full max-w-sm sm:max-w-md overflow-hidden rounded-2xl shadow-2xl shadow-blue-900/20"
+                        >
+                            <div className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-[length:200%_auto] animate-gradient-x text-white p-4 pr-10 border border-white/10 backdrop-blur-xl">
+                                <div className="absolute inset-0 bg-white/10 animate-pulse mix-blend-overlay"></div>
+                                
+                                <button
+                                    onClick={() => setIsAnnouncementVisible(false)}
+                                    className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-black/20 text-white/80 hover:text-white transition-colors z-20"
+                                    aria-label="Close announcement"
+                                >
+                                    <X size={16} />
+                                </button>
+                                
+                                <div className="relative z-10 flex items-start gap-3">
+                                    <span className="text-yellow-300 text-xl shrink-0 mt-0.5">✨</span>
+                                    <p className="text-sm font-semibold leading-snug">
+                                        {announcement.text}
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-                    </motion.div>
+                        </motion.div>
+                    </div>
                 )}
             </AnimatePresence>
 

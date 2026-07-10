@@ -4,9 +4,9 @@ import { Award, Clock, CalendarDays } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { useEffect, useState, useRef } from "react";
 
-interface HackathonCertificateProps {
+interface InternshipCertificateProps {
   studentName?: string;
-  hackathonName?: string;
+  internshipRole?: string;
   duration?: string;
   startDate?: string;
   endDate?: string;
@@ -19,16 +19,16 @@ interface HackathonCertificateProps {
   };
 }
 
-export default function HackathonCertificate({
+export default function InternshipCertificate({
   studentName = "Student Name",
-  hackathonName = "Hackathon Name",
+  internshipRole = "Internship Position",
   duration = "N/A",
   startDate = "N/A",
   endDate = "N/A",
   certificateId = "",
   collaborations,
   signatures
-}: HackathonCertificateProps) {
+}: InternshipCertificateProps) {
   const [isMobile, setIsMobile] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -148,9 +148,9 @@ export default function HackathonCertificate({
 
                 {/* Course Details */}
                 <div className="text-center w-full space-y-1">
-                    <p className="text-lg text-gray-600 font-serif">has successfully participated in and completed the</p>
+                    <p className="text-lg text-gray-600 font-serif">has successfully completed the internship program as a</p>
                     <h3 className="text-4xl font-bold text-black font-serif tracking-wide mb-2">
-                        {hackathonName}
+                        {internshipRole}
                     </h3>
 
                     <div className="flex justify-center gap-12 mb-2 border-y border-gray-200 py-1.5 mx-10">
@@ -167,7 +167,7 @@ export default function HackathonCertificate({
                         <div className="flex flex-col items-center px-2 border-l border-gray-200 pl-12">
                             <div className="flex items-center gap-1.5 text-gray-500 mb-1">
                                 <CalendarDays size={14} />
-                                <span className="text-[10px] uppercase tracking-widest font-semibold">Started</span>
+                                <span className="text-[10px] uppercase tracking-widest font-semibold">Enrolled</span>
                             </div>
                             <span className="font-sans text-base font-bold text-[#1a237e] tracking-wide">
                                 {startDate}
@@ -192,7 +192,7 @@ export default function HackathonCertificate({
                 </div>
 
                 {/* Footer / Signatures */}
-                <div className="w-full flex flex-col items-center mt-0.5 mb-12">
+                <div className="w-full flex flex-col items-center mt-2 mb-12">
                     {/* Seal with QR Code - Centered Top */}
                     <div className="flex flex-col items-center justify-center mb-0.5">
                         <div className="relative w-28 h-28 flex items-center justify-center mb-1">
@@ -302,3 +302,4 @@ export default function HackathonCertificate({
     </div>
   );
 }
+

@@ -61,8 +61,16 @@ export function AIRoadmapFlow() {
             </div>
 
             <div className="container mx-auto px-4 relative z-10">
-                {/* Header */}
                 <div className="text-center mb-16 max-w-3xl mx-auto">
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-medium mb-6"
+                    >
+                        <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                        AI Generating Route...
+                    </motion.div>
                     <motion.h2 
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -85,7 +93,15 @@ export function AIRoadmapFlow() {
                 {/* Steps Flow */}
                 <div className="relative mb-24">
                      {/* Connecting Line (Desktop) */}
-                    <div className="hidden lg:block absolute top-14 left-[10%] right-[10%] h-0.5 bg-gradient-to-r from-blue-500/0 via-blue-500/40 to-purple-500/0 z-0 border-t border-dashed border-white/20" />
+                    <div className="hidden lg:block absolute top-14 left-[10%] right-[10%] h-0.5 bg-white/5 z-0 overflow-hidden rounded-full">
+                        <motion.div 
+                            className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 via-purple-500 to-emerald-500 shadow-[0_0_15px_rgba(59,130,246,0.8)]"
+                            initial={{ width: "0%" }}
+                            whileInView={{ width: "100%" }}
+                            viewport={{ once: true, margin: "100px" }}
+                            transition={{ duration: 4, ease: "linear" }}
+                        />
+                    </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                         {steps.map((step, index) => {
@@ -102,10 +118,10 @@ export function AIRoadmapFlow() {
                              return (
                                 <motion.div
                                     key={index}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
+                                    initial={{ opacity: 0, y: 30, filter: "grayscale(100%)" }}
+                                    whileInView={{ opacity: 1, y: 0, filter: "grayscale(0%)" }}
                                     viewport={{ once: true, margin: "100px" }}
-                                    transition={{ delay: index * 0.15 }}
+                                    transition={{ delay: index * 0.8, duration: 0.5 }}
                                     className="relative z-10 group will-change-transform will-change-opacity"
                                 >
                                     <div className="glass-card p-6 rounded-3xl border border-white/5 h-full bg-gradient-to-b from-white/5 to-black/40 hover:bg-white/10 transition-all duration-300 hover:-translate-y-2 hover:border-white/20 hover:shadow-[0_0_30px_rgba(59,130,246,0.1)] relative overflow-hidden">

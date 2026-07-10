@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
+import Settings from "@/models/Settings";
 import crypto from "crypto";
 
 export async function POST(req: Request) {
@@ -46,6 +47,22 @@ export async function POST(req: Request) {
     );
 
     if (user.isTwoFactorEnabled) {
+      if (user.twoFactorMethod === "email") {
+        // Generate and send Email OTP
+        const otp = crypto.randomInt(100000, 999999).toString();
+        const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+        user.twoFactorEmailOtp = otp;
+        user.twoFactorEmailOtpExpires = otpExpires;
+        await user.save();
+
+        const { sendEmail, emailTemplates } = await import("@/lib/mail");
+        await sendEmail(
+          user.email,
+          "Your 2FA Login Code - Webory Skills",
+          emailTemplates.loginOtp(user.firstName, otp)
+        );
+      }
+
       // Issue a temporary token for the 2FA verification step
       const tempToken = jwt.sign(
         { userId: user._id, sessionId },
@@ -57,6 +74,34 @@ export async function POST(req: Request) {
         {
           message: "2FA required",
           require2FA: true,
+          twoFactorMethod: user.twoFactorMethod || "app",
+          tempToken
+        },
+        { status: 200 },
+      );
+    }
+
+    // Check if role requires 2FA
+    const settings = await Settings.findOne({ key: "role2FARequirements" }).lean();
+    let requiresSetup = false;
+    if (settings && settings.value) {
+      const requirements = settings.value as any;
+      if (requirements[user.role] === true && !user.isTwoFactorEnabled) {
+        requiresSetup = true;
+      }
+    }
+
+    if (requiresSetup) {
+      const tempToken = jwt.sign(
+        { userId: user._id, sessionId },
+        process.env.JWT_SECRET!,
+        { expiresIn: "10m" },
+      );
+      
+      return NextResponse.json(
+        {
+          message: "2FA Setup required for your role",
+          require2FASetup: true,
           tempToken
         },
         { status: 200 },

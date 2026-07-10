@@ -47,19 +47,31 @@ export function Internships() {
                                 "Stipend Opportunities",
                                 "Recommendation Letters",
                             ].map((item, index) => (
-                                <div key={index} className="flex items-center space-x-3 bg-white/5 hover:bg-white/[0.08] p-3.5 rounded-xl border border-white/5 transition-all duration-300">
-                                    <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 shrink-0">
-                                        <CheckCircle2 size={14} />
+                                <motion.div 
+                                    key={index} 
+                                    initial={{ opacity: 0, x: -20, filter: "grayscale(100%)" }}
+                                    whileInView={{ opacity: 1, x: 0, filter: "grayscale(0%)" }}
+                                    viewport={{ once: true, margin: "100px" }}
+                                    transition={{ delay: index * 0.15, duration: 0.5 }}
+                                    className="flex items-center space-x-3 bg-white/5 hover:bg-white/[0.08] p-3.5 rounded-xl border border-white/5 hover:border-emerald-500/30 transition-all duration-300 group/item"
+                                >
+                                    <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 shrink-0 group-hover/item:bg-emerald-500/20 group-hover/item:scale-110 transition-all duration-300">
+                                        <CheckCircle2 size={14} className="group-hover/item:animate-pulse" />
                                     </div>
-                                    <span className="text-slate-300 font-bold text-sm tracking-tight">{item}</span>
-                                </div>
+                                    <span className="text-slate-300 font-bold text-sm tracking-tight group-hover/item:text-white transition-colors">{item}</span>
+                                </motion.div>
                             ))}
                         </div>
 
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                             <Link href="/internships">
-                                <Button size="lg" className="bg-white hover:bg-emerald-500 text-black hover:text-white px-10 py-7 h-auto rounded-xl font-black uppercase tracking-wider text-xs shadow-xl hover:shadow-emerald-500/20 transition-all duration-300 group/btn">
-                                    Apply Now <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1.5 transition-all" />
+                                <Button size="lg" className="bg-white hover:bg-emerald-500 text-black hover:text-white px-10 py-7 h-auto rounded-xl font-black uppercase tracking-wider text-xs shadow-xl hover:shadow-emerald-500/20 transition-all duration-300 group/btn relative overflow-hidden">
+                                    <motion.div 
+                                        className="absolute top-0 bottom-0 w-12 bg-gradient-to-r from-transparent via-emerald-400/30 to-transparent skew-x-12 z-0 group-hover/btn:via-white/50"
+                                        animate={{ left: ["-50%", "150%"] }}
+                                        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", repeatDelay: 0.5 }}
+                                    />
+                                    <span className="relative z-10 flex items-center">Apply Now <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1.5 transition-all" /></span>
                                 </Button>
                             </Link>
                             <span className="text-xs text-slate-500 font-medium">

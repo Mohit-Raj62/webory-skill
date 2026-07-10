@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { CheckCircle, Shield, TrendingUp, Users, Brain, Target, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -8,6 +9,16 @@ import { useAuth } from "@/components/auth/session-provider";
 export function TrustProofSection() {
     const router = useRouter();
     const { user } = useAuth();
+    const [activeIndex, setActiveIndex] = useState(0);
+    const [isHovered, setIsHovered] = useState(false);
+
+    useEffect(() => {
+        if (isHovered) return;
+        const interval = setInterval(() => {
+            setActiveIndex((prev) => (prev + 1) % 3);
+        }, 3000);
+        return () => clearInterval(interval);
+    }, [isHovered]);
 
     return (
         <section className="py-24 relative overflow-hidden bg-black/40">
@@ -77,7 +88,7 @@ export function TrustProofSection() {
                         </div>
 
                         <div className="grid grid-cols-1 gap-6">
-                             <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-8 rounded-3xl border border-white/10 relative hover:border-white/20 transition-all group">
+                             <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-8 rounded-3xl border border-white/10 relative hover:border-white/30 transition-all group shadow-[0_0_15px_rgba(255,255,255,0.02)] hover:shadow-[0_0_20px_rgba(255,255,255,0.05)]">
                                 <div className="absolute top-6 right-8 text-white/5 group-hover:text-white/10 transition-colors">
                                     <MessageCircle size={48} />
                                 </div>
@@ -93,7 +104,7 @@ export function TrustProofSection() {
                                 </div>
                              </div>
 
-                             <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-8 rounded-3xl border border-white/10 relative hover:border-white/20 transition-all group">
+                             <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-8 rounded-3xl border border-white/10 relative hover:border-white/30 transition-all group shadow-[0_0_15px_rgba(255,255,255,0.02)] hover:shadow-[0_0_20px_rgba(255,255,255,0.05)]">
                                 <p className="text-gray-300 italic mb-6 text-lg leading-relaxed">
                                     "Building real projects like the Portfolio website gave me so much confidence. I can actually show my work to recruiters now."
                                 </p>
@@ -122,44 +133,48 @@ export function TrustProofSection() {
                          </p>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+                    <div 
+                        className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10"
+                        onMouseEnter={() => setIsHovered(true)}
+                        onMouseLeave={() => setIsHovered(false)}
+                    >
                         {/* Card 1 */}
-                        <div className="group relative bg-black/40 backdrop-blur-xl p-8 rounded-3xl border border-white/10 hover:border-blue-500/50 transition-all duration-300 hover:-translate-y-2">
-                            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div className={`group relative bg-black/40 backdrop-blur-xl p-8 rounded-3xl border transition-all duration-500 cursor-pointer ${activeIndex === 0 ? 'border-blue-500/50 shadow-[0_0_30px_rgba(59,130,246,0.15)] -translate-y-2' : 'border-white/10 hover:border-blue-500/30'}`} onClick={() => setActiveIndex(0)}>
+                            <div className={`absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent rounded-3xl transition-opacity duration-500 ${activeIndex === 0 ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`}></div>
                             
-                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center mb-6 text-white shadow-lg group-hover:scale-110 transition-transform duration-300 relative z-10">
-                                <Brain size={32} />
+                            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 text-white shadow-lg transition-all duration-500 relative z-10 ${activeIndex === 0 ? 'bg-gradient-to-br from-blue-500 to-cyan-400 scale-110 shadow-blue-500/20' : 'bg-gradient-to-br from-blue-600 to-cyan-600 group-hover:scale-105'}`}>
+                                <Brain size={32} className={activeIndex === 0 ? 'animate-pulse' : ''} />
                             </div>
                             
-                            <h4 className="text-2xl font-bold text-white mb-4 relative z-10 group-hover:text-blue-400 transition-colors">AI-Personalized</h4>
+                            <h4 className={`text-2xl font-bold mb-4 relative z-10 transition-colors ${activeIndex === 0 ? 'text-blue-400' : 'text-white group-hover:text-blue-300'}`}>AI-Personalized</h4>
                             <p className="text-gray-400 text-base leading-relaxed relative z-10">
                                 Roadmaps that adapt to your specific goal. No wasting time on irrelevant topics.
                             </p>
                         </div>
 
                         {/* Card 2 */}
-                        <div className="group relative bg-black/40 backdrop-blur-xl p-8 rounded-3xl border border-white/10 hover:border-purple-500/50 transition-all duration-300 hover:-translate-y-2">
-                            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div className={`group relative bg-black/40 backdrop-blur-xl p-8 rounded-3xl border transition-all duration-500 cursor-pointer ${activeIndex === 1 ? 'border-purple-500/50 shadow-[0_0_30px_rgba(168,85,247,0.15)] -translate-y-2' : 'border-white/10 hover:border-purple-500/30'}`} onClick={() => setActiveIndex(1)}>
+                            <div className={`absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent rounded-3xl transition-opacity duration-500 ${activeIndex === 1 ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`}></div>
 
-                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-6 text-white shadow-lg group-hover:scale-110 transition-transform duration-300 relative z-10">
-                                <Target size={32} />
+                            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 text-white shadow-lg transition-all duration-500 relative z-10 ${activeIndex === 1 ? 'bg-gradient-to-br from-purple-500 to-pink-400 scale-110 shadow-purple-500/20' : 'bg-gradient-to-br from-purple-600 to-pink-600 group-hover:scale-105'}`}>
+                                <Target size={32} className={activeIndex === 1 ? 'animate-pulse' : ''} />
                             </div>
                             
-                            <h4 className="text-2xl font-bold text-white mb-4 relative z-10 group-hover:text-purple-400 transition-colors">Project-Based</h4>
+                            <h4 className={`text-2xl font-bold mb-4 relative z-10 transition-colors ${activeIndex === 1 ? 'text-purple-400' : 'text-white group-hover:text-purple-300'}`}>Project-Based</h4>
                             <p className="text-gray-400 text-base leading-relaxed relative z-10">
                                 You don't just watch; you build. Every module ends with a tangible project for your portfolio.
                             </p>
                         </div>
 
                          {/* Card 3 */}
-                         <div className="group relative bg-black/40 backdrop-blur-xl p-8 rounded-3xl border border-white/10 hover:border-green-500/50 transition-all duration-300 hover:-translate-y-2">
-                            <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                         <div className={`group relative bg-black/40 backdrop-blur-xl p-8 rounded-3xl border transition-all duration-500 cursor-pointer ${activeIndex === 2 ? 'border-green-500/50 shadow-[0_0_30px_rgba(34,197,94,0.15)] -translate-y-2' : 'border-white/10 hover:border-green-500/30'}`} onClick={() => setActiveIndex(2)}>
+                            <div className={`absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent rounded-3xl transition-opacity duration-500 ${activeIndex === 2 ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`}></div>
 
-                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center mb-6 text-white shadow-lg group-hover:scale-110 transition-transform duration-300 relative z-10">
-                                <TrendingUp size={32} />
+                            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 text-white shadow-lg transition-all duration-500 relative z-10 ${activeIndex === 2 ? 'bg-gradient-to-br from-green-500 to-emerald-400 scale-110 shadow-green-500/20' : 'bg-gradient-to-br from-green-600 to-emerald-600 group-hover:scale-105'}`}>
+                                <TrendingUp size={32} className={activeIndex === 2 ? 'animate-pulse' : ''} />
                             </div>
                             
-                            <h4 className="text-2xl font-bold text-white mb-4 relative z-10 group-hover:text-green-400 transition-colors">Career Outcomes</h4>
+                            <h4 className={`text-2xl font-bold mb-4 relative z-10 transition-colors ${activeIndex === 2 ? 'text-green-400' : 'text-white group-hover:text-green-300'}`}>Career Outcomes</h4>
                             <p className="text-gray-400 text-base leading-relaxed relative z-10">
                                 Laser-focused on the skills companies are hiring for right now, not outdated theory.
                             </p>

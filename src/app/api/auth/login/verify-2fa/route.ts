@@ -26,15 +26,36 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    if (!user.isTwoFactorEnabled || !user.twoFactorSecret) {
+    if (!user.isTwoFactorEnabled) {
         return NextResponse.json({ error: "2FA is not enabled for this account" }, { status: 400 });
     }
 
-    // Verify 2FA code
-    const isValid = authenticator.verify({
-        token: code,
-        secret: user.twoFactorSecret
-    });
+    let isValid = false;
+
+    if (user.twoFactorMethod === "email") {
+        if (!user.twoFactorEmailOtp || !user.twoFactorEmailOtpExpires) {
+             return NextResponse.json({ error: "No OTP requested" }, { status: 400 });
+        }
+        if (new Date() > new Date(user.twoFactorEmailOtpExpires)) {
+            return NextResponse.json({ error: "OTP expired" }, { status: 400 });
+        }
+        if (user.twoFactorEmailOtp === code.trim()) {
+            isValid = true;
+            // Clear OTP after successful use
+            user.twoFactorEmailOtp = null;
+            user.twoFactorEmailOtpExpires = null;
+            await user.save();
+        }
+    } else {
+        if (!user.twoFactorSecret) {
+            return NextResponse.json({ error: "Invalid 2FA configuration" }, { status: 400 });
+        }
+        // Verify 2FA App code
+        isValid = authenticator.verify({
+            token: code,
+            secret: user.twoFactorSecret
+        });
+    }
 
     // Check recovery codes if authenticator code is invalid
     let isRecoveryCode = false;

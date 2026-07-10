@@ -36,6 +36,8 @@ import {
     TrustProofSkeleton 
 } from "@/components/landing/LandingSkeletons";
 
+import { ScrollReveal } from "@/components/ui/scroll-reveal";
+
 export default async function Home() {
     let userCount = 0;
     let internshipCount = 0;
@@ -63,67 +65,93 @@ export default async function Home() {
     }
 
     return (
-        <main className="min-h-screen">
+        <main className="min-h-screen overflow-x-hidden">
             <Navbar />
             <Hero initialUserCount={userCount} initialInternshipCount={internshipCount} initialCourseCount={courseCount} />
             
-            <Suspense fallback={<div className="h-40 bg-white/5 animate-pulse" />}>
-                <FreeExperienceHighlight />
-            </Suspense>
+            <ScrollReveal style="fade-up">
+                <Suspense fallback={<div className="h-40 bg-white/5 animate-pulse" />}>
+                    <FreeExperienceHighlight />
+                </Suspense>
+            </ScrollReveal>
 
-            <Suspense fallback={<div className="container mx-auto px-4 py-12"><div className="h-64 bg-white/5 rounded-3xl animate-pulse" /></div>}>
-                <LeaderboardSection initialLearners={leaderboardData} />
-            </Suspense>
+            <ScrollReveal style="3d-tilt">
+                <Suspense fallback={<div className="container mx-auto px-4 py-12"><div className="h-64 bg-white/5 rounded-3xl animate-pulse" /></div>}>
+                    <LeaderboardSection initialLearners={leaderboardData} />
+                </Suspense>
+            </ScrollReveal>
 
-            <Suspense fallback={<FeatureSkeleton />}>
-                <Features />
-            </Suspense>
+            <ScrollReveal style="scale-up">
+                <Suspense fallback={<FeatureSkeleton />}>
+                    <Features />
+                </Suspense>
+            </ScrollReveal>
 
-            <Suspense fallback={<SectionSkeleton height="h-[500px]" />}>
-                <AIRoadmapFlow />
-            </Suspense>
+            <ScrollReveal style="3d-flip">
+                <Suspense fallback={<SectionSkeleton height="h-[500px]" />}>
+                    <AIRoadmapFlow />
+                </Suspense>
+            </ScrollReveal>
 
-            <Suspense fallback={<SectionSkeleton height="h-[600px]" />}>
-                <DevLabPreview />
-            </Suspense>
+            <ScrollReveal style="3d-tilt">
+                <Suspense fallback={<SectionSkeleton height="h-[600px]" />}>
+                    <DevLabPreview />
+                </Suspense>
+            </ScrollReveal>
 
-            <Suspense fallback={<SectionSkeleton height="h-[800px]" />}>
-                <AINexusShowcase />
-            </Suspense>
+            <ScrollReveal style="fade-up">
+                <Suspense fallback={<SectionSkeleton height="h-[800px]" />}>
+                    <AINexusShowcase />
+                </Suspense>
+            </ScrollReveal>
 
-            <Suspense fallback={<SectionSkeleton height="h-[500px]" />}>
-                <HackathonPreview />
-            </Suspense>
+            <ScrollReveal style="scale-up">
+                <Suspense fallback={<SectionSkeleton height="h-[500px]" />}>
+                    <HackathonPreview />
+                </Suspense>
+            </ScrollReveal>
 
-            <Suspense fallback={<div className="container mx-auto px-4 py-12"><div className="h-64 bg-white/5 rounded-3xl animate-pulse" /></div>}>
-                <EnrolledCourses />
-            </Suspense>
+            <ScrollReveal style="3d-tilt">
+                <Suspense fallback={<div className="container mx-auto px-4 py-12"><div className="h-64 bg-white/5 rounded-3xl animate-pulse" /></div>}>
+                    <EnrolledCourses />
+                </Suspense>
+            </ScrollReveal>
 
-            <Suspense fallback={<div className="container mx-auto px-4 py-12"><div className="h-64 bg-white/5 rounded-3xl animate-pulse" /></div>}>
-                <AppliedInternships />
-            </Suspense>
+            <ScrollReveal style="fade-up">
+                <Suspense fallback={<div className="container mx-auto px-4 py-12"><div className="h-64 bg-white/5 rounded-3xl animate-pulse" /></div>}>
+                    <AppliedInternships />
+                </Suspense>
+            </ScrollReveal>
 
-            <Suspense fallback={<CoursesPreviewSkeleton />}>
-                <CoursesPreview popularCourses={popularCourses} />
-            </Suspense>
+            <ScrollReveal style="3d-flip">
+                <Suspense fallback={<CoursesPreviewSkeleton />}>
+                    <CoursesPreview popularCourses={popularCourses} />
+                </Suspense>
+            </ScrollReveal>
 
-            <Suspense fallback={<SectionSkeleton height="h-[900px]" />}>
-                <Internships />
-            </Suspense>
+            <ScrollReveal style="scale-up">
+                <Suspense fallback={<SectionSkeleton height="h-[900px]" />}>
+                    <Internships />
+                </Suspense>
+            </ScrollReveal>
 
-            <Suspense fallback={<TrustProofSkeleton />}>
-                <TrustProofSection />
-            </Suspense>
+            <ScrollReveal style="3d-tilt">
+                <Suspense fallback={<TrustProofSkeleton />}>
+                    <TrustProofSection />
+                </Suspense>
+            </ScrollReveal>
 
+            <ScrollReveal style="fade-up">
+                <Suspense fallback={<SectionSkeleton height="h-[400px]" />}>
+                    <TestimonialsSection />
+                </Suspense>
+            </ScrollReveal>
 
-
-            <Suspense fallback={<SectionSkeleton height="h-[400px]" />}>
-                <TestimonialsSection />
-            </Suspense>
-
-            <Suspense fallback={<SectionSkeleton height="h-[600px]" />}>
-                <FAQ />
-            </Suspense>
+            <ScrollReveal style="scale-up">
+                <Suspense fallback={<SectionSkeleton height="h-[600px]" />}>
+                    <FAQ />
+                </Suspense>
+            </ScrollReveal>
 
             <Footer />
         </main>

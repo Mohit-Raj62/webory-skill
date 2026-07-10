@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
+import { motion, useMotionValue, useTransform, useSpring, animate } from "framer-motion";
 import { ArrowRight, Code, Rocket, Users, BookOpen, PlayCircle, Zap } from "lucide-react";
 import { useAuth } from "@/components/auth/session-provider";
 import dynamic from "next/dynamic";
+import { Typewriter } from "@/components/ui/typewriter";
 
 const ParticleNetwork = dynamic(() => import("@/components/ui/particle-network").then(mod => mod.ParticleNetwork), { 
     ssr: false,
@@ -26,6 +27,7 @@ interface HeroProps {
 function ShatterCard({ icon: Icon, label, value, index }: { icon: any, label: string, value: string, index: number }) {
     // Generate random shards with more variety
     const [shards, setShards] = useState<any[]>([]);
+    const [displayValue, setDisplayValue] = useState("0");
 
     useEffect(() => {
         // Reduced shards from 42 to 8 to drastically lower rendering cost on mobile
@@ -51,7 +53,21 @@ function ShatterCard({ icon: Icon, label, value, index }: { icon: any, label: st
             };
         });
         setShards(generatedShards);
-    }, []);
+
+        // Number animation logic
+        const numericValue = parseInt(value.replace(/\D/g, '')) || 0;
+        const hasPlus = value.includes('+');
+        
+        const controls = animate(0, numericValue, {
+            duration: 2,
+            ease: "easeOut",
+            onUpdate: (latest) => {
+                setDisplayValue(Math.round(latest) + (hasPlus ? "+" : ""));
+            }
+        });
+
+        return () => controls.stop();
+    }, [value]);
 
     return (
         <motion.div
@@ -61,6 +77,9 @@ function ShatterCard({ icon: Icon, label, value, index }: { icon: any, label: st
             whileTap="hover"
             animate="initial"
         >
+            {/* Ambient subtle glow */}
+            <div className="absolute inset-0 bg-blue-500/5 group-hover:bg-blue-500/10 rounded-2xl blur-xl transition-colors duration-500" />
+
             {/* The Shards (Hidden initially, visible on hover) */}
             <div className="absolute inset-0 z-0 pointer-events-none">
                 {shards.map((shard) => (
@@ -108,9 +127,9 @@ function ShatterCard({ icon: Icon, label, value, index }: { icon: any, label: st
                 }}
             >
                 <div className="w-10 h-10 md:w-14 md:h-14 bg-white/5 rounded-2xl flex items-center justify-center mb-3 md:mb-4 text-blue-400 border border-white/10 group-hover:text-white/50 transition-colors">
-                    <Icon className="w-5 h-5 md:w-7 md:h-7" />
+                    <Icon className="w-5 h-5 md:w-7 md:h-7 animate-pulse" />
                 </div>
-                <h3 className="text-2xl md:text-3xl font-bold text-white mb-1 group-hover:text-white/50">{value}</h3>
+                <h3 className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400 mb-1 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">{displayValue}</h3>
                 <p className="text-gray-400 font-medium text-xs md:text-sm">{label}</p>
             </motion.div>
 
@@ -247,7 +266,7 @@ export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initi
                             AI-Powered <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-500 animate-gradient-x">Skill</span> Platform
                             <br />
                             <span className="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-300 block mt-2">
-                                for <span className="text-white border-b-4 border-purple-500/50">Industry-Ready</span> Careers
+                                for <span className="text-white border-b-4 border-purple-500/50"><Typewriter words={["Industry-Ready", "High-Paying", "Future-Proof"]} /></span> Careers
                             </span>
                         </h1>
                         

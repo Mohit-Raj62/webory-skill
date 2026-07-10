@@ -1,7 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Code2, Terminal, Cpu, Zap, Globe, Sparkles } from "lucide-react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Code2, Terminal, Cpu, Zap, Globe, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useAuth } from "@/components/auth/session-provider";
@@ -32,6 +33,14 @@ const features = [
 
 export function DevLabPreview() {
     const { user } = useAuth();
+    const [codeStep, setCodeStep] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCodeStep((prev) => (prev >= 16 ? 0 : prev + 1));
+        }, 500); // 500ms per step
+        return () => clearInterval(interval);
+    }, []);
     return (
         <section className="py-24 relative overflow-hidden bg-black">
             {/* Background Decorative Elements */}
@@ -135,23 +144,42 @@ export function DevLabPreview() {
                                     <div className="w-12" />
                                 </div>
                                 {/* Window Body */}
-                                <div className="p-8 bg-black/40 font-mono text-sm leading-relaxed overflow-hidden">
+                                <div className="p-8 bg-black/40 font-mono text-sm leading-relaxed overflow-hidden h-[340px]">
                                     <pre className="text-gray-300">
-                                        <span className="text-purple-400">import</span> weboryskills <span className="text-purple-400">as</span> ws<br /><br />
-                                        <span className="text-blue-400"># Start your journey</span><br />
-                                        student = ws.<span className="text-yellow-400">Student</span>(<span className="text-emerald-400">"New User"</span>)<br /><br />
-                                        <span className="text-purple-400">def</span> <span className="text-yellow-400">achieve_success</span>(student):<br />
-                                        &nbsp;&nbsp;skills = ws.<span className="text-yellow-400">get_industry_skills</span>()<br />
-                                        &nbsp;&nbsp;student.<span className="text-yellow-400">learn</span>(skills)<br />
-                                        &nbsp;&nbsp;student.<span className="text-yellow-400">practice_in_devlab</span>()<br />
-                                        &nbsp;&nbsp;<span className="text-purple-400">return</span> student.<span className="text-emerald-400">"Hired!"</span><br /><br />
-                                        <span className="text-purple-400">print</span>(<span className="text-yellow-400">achieve_success</span>(student))
+                                        <div className={codeStep > 0 ? "opacity-100" : "opacity-0 transition-opacity"}><span className="text-purple-400">import</span> weboryskills <span className="text-purple-400">as</span> ws</div>
+                                        <div className={codeStep > 1 ? "opacity-100 h-4" : "opacity-0 h-4 transition-opacity"}></div>
+                                        <div className={codeStep > 2 ? "opacity-100" : "opacity-0 transition-opacity"}><span className="text-blue-400"># Start your journey</span></div>
+                                        <div className={codeStep > 3 ? "opacity-100" : "opacity-0 transition-opacity"}>student = ws.<span className="text-yellow-400">Student</span>(<span className="text-emerald-400">"New User"</span>)</div>
+                                        <div className={codeStep > 4 ? "opacity-100 h-4" : "opacity-0 h-4 transition-opacity"}></div>
+                                        <div className={codeStep > 5 ? "opacity-100" : "opacity-0 transition-opacity"}><span className="text-purple-400">def</span> <span className="text-yellow-400">achieve_success</span>(student):</div>
+                                        <div className={codeStep > 6 ? "opacity-100" : "opacity-0 transition-opacity"}>&nbsp;&nbsp;skills = ws.<span className="text-yellow-400">get_industry_skills</span>()</div>
+                                        <div className={codeStep > 7 ? "opacity-100" : "opacity-0 transition-opacity"}>&nbsp;&nbsp;student.<span className="text-yellow-400">learn</span>(skills)</div>
+                                        <div className={codeStep > 8 ? "opacity-100" : "opacity-0 transition-opacity"}>&nbsp;&nbsp;student.<span className="text-yellow-400">practice_in_devlab</span>()</div>
+                                        <div className={codeStep > 9 ? "opacity-100" : "opacity-0 transition-opacity"}>&nbsp;&nbsp;<span className="text-purple-400">return</span> <span className="text-emerald-400">"Hired!"</span></div>
+                                        <div className={codeStep > 10 ? "opacity-100 h-4" : "opacity-0 h-4 transition-opacity"}></div>
+                                        <div className={codeStep > 11 ? "opacity-100" : "opacity-0 transition-opacity"}><span className="text-purple-400">print</span>(<span className="text-yellow-400">achieve_success</span>(student))</div>
                                     </pre>
                                 </div>
                                 {/* Terminal/Output Area */}
-                                <div className="bg-black border-t border-white/5 p-4 flex items-center gap-3">
-                                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                    <div className="text-xs font-mono text-emerald-400">Hired! _</div>
+                                <div className="bg-black border-t border-white/5 p-4 flex items-center gap-3 h-[52px]">
+                                    {codeStep <= 11 && (
+                                        <>
+                                            <div className="w-2 h-2 rounded-full bg-gray-600" />
+                                            <div className="text-xs font-mono text-gray-500">Ready... <span className="animate-pulse text-gray-400">_</span></div>
+                                        </>
+                                    )}
+                                    {codeStep === 12 && (
+                                        <>
+                                            <Loader2 className="w-3 h-3 text-blue-400 animate-spin" />
+                                            <div className="text-xs font-mono text-blue-400">Executing...</div>
+                                        </>
+                                    )}
+                                    {codeStep >= 13 && (
+                                        <>
+                                            <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                                            <div className="text-xs font-mono text-emerald-400">Hired! <span className="animate-pulse">_</span></div>
+                                        </>
+                                    )}
                                 </div>
                             </div>
 

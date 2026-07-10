@@ -3,17 +3,19 @@ import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
 import Ambassador from "@/models/Ambassador";
+import ConsentLog from "@/models/ConsentLog";
+import PolicyVersion from "@/models/PolicyVersion";
 import { sendEmail, emailTemplates } from "@/lib/mail";
 
 export async function POST(req: Request) {
   try {
     await dbConnect();
-    const { firstName, lastName, email, password, phone, referralCode } =
+    const { firstName, lastName, email, password, phone, referralCode, termsAccepted, privacyAccepted, marketingAccepted } =
       await req.json();
 
-    if (!firstName || !lastName || !email || !password) {
+    if (!firstName || !lastName || !email || !password || !termsAccepted || !privacyAccepted || !marketingAccepted) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { error: "Missing required fields or mandatory consent not provided" },
         { status: 400 },
       );
     }
@@ -50,6 +52,11 @@ export async function POST(req: Request) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Fetch active policy versions
+    const termsPolicy = await PolicyVersion.findOne({ documentType: "terms", isActive: true }) || { version: "v1.0.0" };
+    const privacyPolicy = await PolicyVersion.findOne({ documentType: "privacy", isActive: true }) || { version: "v1.0.0" };
+    const marketingPolicy = await PolicyVersion.findOne({ documentType: "marketing", isActive: true }) || { version: "v1.0.0" };
+
     const user = await User.create({
       firstName,
       lastName,
@@ -57,7 +64,46 @@ export async function POST(req: Request) {
       password: hashedPassword,
       phone,
       referredBy: validReferralCode,
+      marketingPreferences: !!marketingAccepted,
+      acceptedTermsVersion: termsPolicy.version,
+      acceptedPrivacyVersion: privacyPolicy.version,
     });
+
+    const ipAddress = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
+    const userAgent = req.headers.get("user-agent") || "unknown";
+    const source = "web-signup";
+
+    const consentLogs = [
+      {
+        userId: user._id,
+        action: "granted",
+        consentType: "terms",
+        policyVersion: termsPolicy.version,
+        ipAddress,
+        userAgent,
+        source
+      },
+      {
+        userId: user._id,
+        action: "granted",
+        consentType: "privacy",
+        policyVersion: privacyPolicy.version,
+        ipAddress,
+        userAgent,
+        source
+      },
+      {
+        userId: user._id,
+        action: marketingAccepted ? "granted" : "rejected",
+        consentType: "marketing",
+        policyVersion: marketingPolicy.version,
+        ipAddress,
+        userAgent,
+        source
+      }
+    ];
+
+    await ConsentLog.insertMany(consentLogs);
 
     // Send welcome email
     try {

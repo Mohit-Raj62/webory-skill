@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { BookOpen, Briefcase, LayoutDashboard, ShieldCheck, Trophy, Zap, HeartHandshake ,  BriefcaseBusiness,FileUser, Users, Building2, PlayCircle, BrainCircuit } from "lucide-react";
 
@@ -77,8 +78,23 @@ const features = [
 ];
 
 export function Features() {
+    const [activeIndex, setActiveIndex] = useState(0);
+    const [isHovered, setIsHovered] = useState(false);
+
+    useEffect(() => {
+        if (isHovered) return;
+        
+        const totalItems = features.reduce((acc, group) => acc + group.items.length, 0);
+        
+        const interval = setInterval(() => {
+            setActiveIndex((prev) => (prev + 1) % totalItems);
+        }, 2500);
+
+        return () => clearInterval(interval);
+    }, [isHovered]);
+
     return (
-        <section id="features" className="py-20 relative">
+        <section id="features" className="py-20 relative" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
             <div className="container mx-auto px-4">
                 <div className="text-center mb-16">
                     <h2 className="text-3xl md:text-5xl font-bold mb-4">
@@ -96,24 +112,30 @@ export function Features() {
                                 {group.title}
                             </h3>
                             <div className="grid gap-6 ">
-                                {group.items.map((feature, index) => (
-                                    <motion.div
-                                        key={index}
-                                        initial={{ opacity: 0, x: groupIndex === 0 ? -20 : 20 }}
-                                        whileInView={{ opacity: 1, x: 0 }}
-                                        viewport={{ once: true, margin: "100px" }}
-                                        transition={{ delay: index * 0.1 }}
-                                        className="glass-card p-4 md:p-6 rounded-xl flex items-start space-x-4 will-change-transform will-change-opacity"
-                                    >
-                                        <div className="p-3 bg-emerald-500/10 rounded-lg text-emerald-400">
-                                            <feature.icon size={24} />
-                                        </div>
-                                        <div>
-                                            <h4 className="text-lg font-semibold text-white mb-2">{feature.title}</h4>
-                                            <p className="text-gray-400 text-sm">{feature.description}</p>
-                                        </div>
-                                    </motion.div>
-                                ))}
+                                {group.items.map((feature, index) => {
+                                    const currentGlobalIndex = (groupIndex === 0 ? 0 : features[0].items.length) + index;
+                                    const isActive = activeIndex === currentGlobalIndex;
+                                    
+                                    return (
+                                        <motion.div
+                                            key={index}
+                                            initial={{ opacity: 0, x: groupIndex === 0 ? -20 : 20 }}
+                                            whileInView={{ opacity: 1, x: 0 }}
+                                            viewport={{ once: true, margin: "100px" }}
+                                            transition={{ delay: index * 0.1 }}
+                                            onMouseEnter={() => setActiveIndex(currentGlobalIndex)}
+                                            className={`glass-card p-4 md:p-6 rounded-xl flex items-start space-x-4 will-change-transform will-change-opacity cursor-pointer transition-all duration-500 ${isActive ? 'bg-white/10 border-emerald-500/50 shadow-[0_0_30px_rgba(52,211,153,0.15)] scale-[1.02]' : 'border-white/5 hover:bg-white/5'}`}
+                                        >
+                                            <div className={`p-3 rounded-lg transition-colors duration-500 ${isActive ? 'bg-emerald-500/20 text-emerald-300 shadow-[0_0_15px_rgba(52,211,153,0.4)]' : 'bg-emerald-500/10 text-emerald-400'}`}>
+                                                <feature.icon size={24} className={isActive ? 'animate-pulse' : ''} />
+                                            </div>
+                                            <div>
+                                                <h4 className={`text-lg font-semibold mb-2 transition-colors duration-500 ${isActive ? 'text-emerald-300 drop-shadow-[0_0_5px_rgba(52,211,153,0.5)]' : 'text-white'}`}>{feature.title}</h4>
+                                                <p className="text-gray-400 text-sm">{feature.description}</p>
+                                            </div>
+                                        </motion.div>
+                                    );
+                                })}
                             </div>
                         </div>
                     ))}

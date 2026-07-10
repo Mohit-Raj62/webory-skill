@@ -1,12 +1,43 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, animate } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Bot, BrainCircuit, Mic } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
 export function AINexusShowcase() {
+    const [score, setScore] = useState(0);
+    const [feedbackIndex, setFeedbackIndex] = useState(0);
+
+    const feedbackMessages = [
+        "Analyzing response structure...",
+        "Evaluating technical accuracy...",
+        "Checking communication clarity...",
+        "Identifying improvement areas...",
+        "Generating personalized feedback..."
+    ];
+
+    useEffect(() => {
+        // Score counting animation
+        const controls = animate(65, 92, {
+            duration: 2.5,
+            ease: "easeOut",
+            onUpdate: (latest) => setScore(Math.round(latest))
+        });
+        
+        // Feedback cycle
+        const interval = setInterval(() => {
+            setFeedbackIndex((prev) => (prev + 1) % feedbackMessages.length);
+        }, 3000);
+
+        return () => {
+            controls.stop();
+            clearInterval(interval);
+        };
+    }, []);
+
     return (
         <section className="py-20 relative overflow-hidden">
             {/* Background Gradients */}
@@ -77,7 +108,15 @@ export function AINexusShowcase() {
                             className="relative will-change-transform will-change-opacity"
                         >
                             <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10 group">
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-10 pointer-events-none" />
+                                
+                                {/* Live Scanning Line */}
+                                <motion.div 
+                                    className="absolute left-0 right-0 h-1 bg-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.8)] z-20 pointer-events-none"
+                                    animate={{ top: ["0%", "100%", "0%"] }}
+                                    transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                                />
+
                                 <Image 
                                     src="/ai-nexus-preview.png" 
                                     alt="Webory AI Nexus Dashboard" 
@@ -87,14 +126,33 @@ export function AINexusShowcase() {
                                 />
                                 
                                 {/* Overlay UI Elements */}
-                                <div className="absolute bottom-6 left-6 right-6 z-20 flex justify-between items-end">
-                                    <div>
-                                        <div className="text-sm font-medium text-blue-400 mb-1">AI Confidence Score</div>
-                                        <div className="text-3xl font-bold text-white">92%</div>
+                                <div className="absolute bottom-6 left-6 right-6 z-20 flex flex-col gap-4 justify-end">
+                                    {/* Real-time feedback stream */}
+                                    <div className="bg-black/60 backdrop-blur-md border border-white/10 rounded-lg p-3 w-3/4">
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <Bot className="w-3 h-3 text-purple-400" />
+                                            <span className="text-[10px] uppercase tracking-wider text-purple-400 font-bold">AI Analysis</span>
+                                        </div>
+                                        <motion.div 
+                                            key={feedbackIndex}
+                                            initial={{ opacity: 0, y: 5 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -5 }}
+                                            className="text-xs text-gray-300 font-mono"
+                                        >
+                                            &gt; {feedbackMessages[feedbackIndex]}<span className="animate-pulse text-gray-500">_</span>
+                                        </motion.div>
                                     </div>
-                                    <div className="flex gap-2">
-                                        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                                        <span className="text-xs text-gray-400 font-mono">SYSTEM ACTIVE</span>
+
+                                    <div className="flex justify-between items-end">
+                                        <div>
+                                            <div className="text-sm font-medium text-blue-400 mb-1">AI Confidence Score</div>
+                                            <div className="text-3xl font-bold text-white">{score}%</div>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                                            <span className="text-xs text-gray-400 font-mono">SYSTEM ACTIVE</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

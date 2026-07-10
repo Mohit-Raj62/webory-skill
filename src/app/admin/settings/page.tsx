@@ -123,6 +123,11 @@ export default function AdminSettingsPage() {
   });
 
   const [promoPopups, setPromoPopups] = useState<PromoPopup[]>([]);
+  const [role2FARequirements, setRole2FARequirements] = useState({
+    admin: false,
+    teacher: false,
+    student: false,
+  });
 
   useEffect(() => {
     fetchSettings();
@@ -140,6 +145,9 @@ export default function AdminSettingsPage() {
         }
         if (data.promoPopups) {
             setPromoPopups(data.promoPopups);
+        }
+        if (data.role2FARequirements) {
+            setRole2FARequirements(data.role2FARequirements);
         }
       }
     } catch (error) {
@@ -232,6 +240,31 @@ export default function AdminSettingsPage() {
         }
       } catch (error) {
         toast.error("Failed to update setting");
+    }
+  };
+
+  const handleRole2FAToggle = async (role: "admin" | "teacher" | "student", checked: boolean) => {
+    const newRequirements = { ...role2FARequirements, [role]: checked };
+    try {
+      setRole2FARequirements(newRequirements); // Optimistic update
+      const res = await fetch("/api/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          key: "role2FARequirements",
+          value: newRequirements
+        }),
+      });
+
+      if (res.ok) {
+        toast.success(`2FA requirement updated for ${role}s`);
+      } else {
+        setRole2FARequirements(role2FARequirements); // Revert on failure
+        toast.error("Failed to update 2FA requirement");
+      }
+    } catch (error) {
+      setRole2FARequirements(role2FARequirements); // Revert
+      toast.error("Network error. Please check your connection.");
     }
   };
 
@@ -484,6 +517,36 @@ export default function AdminSettingsPage() {
                     </div>
                 </div>
             )}
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gray-900/40 border-white/5 text-white shadow-xl backdrop-blur-xl">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2"><Shield className="text-blue-400" size={20}/> 2FA Enforcement Policy</CardTitle>
+            <CardDescription className="text-gray-400">Require specific user roles to enable Two-Factor Authentication.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10">
+              <div className="space-y-0.5">
+                <Label className="text-base">Require 2FA for Admins</Label>
+                <p className="text-sm text-gray-400">Admins must set up 2FA to access the platform.</p>
+              </div>
+              <Switch checked={role2FARequirements.admin} onCheckedChange={(checked) => handleRole2FAToggle("admin", checked)} />
+            </div>
+            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10">
+              <div className="space-y-0.5">
+                <Label className="text-base">Require 2FA for Teachers</Label>
+                <p className="text-sm text-gray-400">Teachers must set up 2FA to access the platform.</p>
+              </div>
+              <Switch checked={role2FARequirements.teacher} onCheckedChange={(checked) => handleRole2FAToggle("teacher", checked)} />
+            </div>
+            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10">
+              <div className="space-y-0.5">
+                <Label className="text-base">Require 2FA for Students</Label>
+                <p className="text-sm text-gray-400">Students must set up 2FA to access the platform.</p>
+              </div>
+              <Switch checked={role2FARequirements.student} onCheckedChange={(checked) => handleRole2FAToggle("student", checked)} />
+            </div>
           </CardContent>
         </Card>
 

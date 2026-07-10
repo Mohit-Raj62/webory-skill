@@ -1,13 +1,53 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, animate } from "framer-motion";
 import Link from "next/link";
 import { Zap, Code, Terminal, Trophy, Users, ArrowRight, ShieldCheck, Cpu } from "lucide-react";
 
 export function HackathonPreview() {
+    const [prizePool, setPrizePool] = useState(0);
+    const [builders, setBuilders] = useState(0);
+    const [terminalText, setTerminalText] = useState("");
+    const fullText = "arena.weboryskills.in";
+
+    useEffect(() => {
+        let currentIndex = 0;
+        const typingInterval = setInterval(() => {
+            if (currentIndex <= fullText.length) {
+                setTerminalText(fullText.slice(0, currentIndex));
+                currentIndex++;
+            } else {
+                clearInterval(typingInterval);
+            }
+        }, 100);
+
+        const controls1 = animate(0, 5, {
+            duration: 2,
+            ease: "easeOut",
+            onUpdate: (latest) => setPrizePool(Math.round(latest))
+        });
+
+        const controls2 = animate(0, 2500, {
+            duration: 2.5,
+            ease: "easeOut",
+            onUpdate: (latest) => setBuilders(Math.round(latest))
+        });
+
+        return () => {
+            clearInterval(typingInterval);
+            controls1.stop();
+            controls2.stop();
+        };
+    }, []);
+
     return (
         <section className="relative py-24 bg-[#030303] overflow-hidden">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-orange-600/5 rounded-full blur-[120px] pointer-events-none" />
+            <motion.div 
+                animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.8, 0.5] }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-orange-600/5 rounded-full blur-[120px] pointer-events-none" 
+            />
             
             <div className="container mx-auto px-6 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -27,7 +67,7 @@ export function HackathonPreview() {
                                     <div className="w-3 h-3 rounded-full bg-green-500/50" />
                                 </div>
                                 <div className="ml-4 px-3 py-1 rounded-full bg-white/5 text-[10px] text-gray-400 font-mono flex items-center gap-2">
-                                    <Terminal size={12} /> arena.weboryskills.in
+                                    <Terminal size={12} /> {terminalText}<span className="animate-pulse">_</span>
                                 </div>
                             </div>
                             
@@ -50,13 +90,13 @@ export function HackathonPreview() {
                                         <div className="absolute top-0 right-0 w-16 h-16 bg-yellow-500/10 rounded-full blur-xl" />
                                         <Trophy size={20} className="text-yellow-500" />
                                         <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Prizes Pool</span>
-                                        <span className="text-lg font-black text-white">₹5 Lakhs+</span>
+                                        <span className="text-lg font-black text-white">₹{prizePool} Lakhs+</span>
                                     </div>
                                     <div className="p-4 rounded-2xl bg-white/5 border border-white/5 flex flex-col gap-2 relative overflow-hidden">
                                         <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/10 rounded-full blur-xl" />
                                         <Users size={20} className="text-blue-500" />
                                         <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Elite Builders</span>
-                                        <span className="text-lg font-black text-white">2,500+</span>
+                                        <span className="text-lg font-black text-white">{builders.toLocaleString()}+</span>
                                     </div>
                                 </div>
                             </div>

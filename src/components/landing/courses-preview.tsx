@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Code2, Database, Globe, Palette, BookOpen, Users, Zap } from "lucide-react";
+import { Hover3DTilt } from "@/components/ui/hover-3d-tilt";
 
 interface PopularCourse {
     _id: string;
@@ -92,44 +93,45 @@ export function CoursesPreview({ popularCourses = [] }: CoursesPreviewProps) {
                          const Icon = course.icon && typeof course.icon === 'string' ? getIcon(course.icon) : (course.icon || BookOpen);
                          
                         return (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, margin: "100px" }}
-                            transition={{ delay: index * 0.1 }}
-                            className="group relative bg-slate-900/40 backdrop-blur-xl p-5 rounded-[1.5rem] border border-white/5 hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-2 cursor-pointer overflow-hidden flex flex-col h-full will-change-transform will-change-opacity"
-                        >
-                            <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${course.color} opacity-5 blur-3xl rounded-full group-hover:opacity-10 transition-opacity`} />
+                        <Hover3DTilt key={index} tiltAmount={12} popOutAmount={20} className="h-full">
+                            <motion.div
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true, margin: "100px" }}
+                                transition={{ delay: index * 0.1 }}
+                                className="group relative bg-slate-900/40 backdrop-blur-xl p-5 rounded-[1.5rem] border border-white/5 hover:border-blue-500/30 transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(59,130,246,0.3)] cursor-pointer overflow-hidden flex flex-col h-full will-change-transform will-change-opacity"
+                            >
+                                <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${course.color} opacity-5 blur-3xl rounded-full group-hover:opacity-20 transition-opacity`} />
 
-                            <div className="relative z-10 flex flex-col h-full">
-                                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${course.color} flex items-center justify-center mb-5 text-white shadow-xl group-hover:scale-110 transition-transform duration-500`}>
-                                    <Icon size={22} />
-                                </div>
-                                
-                                <h3 className="text-lg font-black text-white mb-2 group-hover:text-blue-400 transition-colors line-clamp-1 tracking-tight">{course.title}</h3>
-                                
-                                <div className="absolute top-4 right-4 z-20">
-                                    <span className="px-3 py-1 bg-emerald-500 text-black rounded-full text-[9px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/40 animate-pulse">
-                                        Free Preview
-                                    </span>
-                                </div>
+                                <div className="relative z-10 flex flex-col h-full">
+                                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${course.color} flex items-center justify-center mb-5 text-white shadow-xl group-hover:scale-110 transition-transform duration-500`}>
+                                        <Icon size={22} />
+                                    </div>
+                                    
+                                    <h3 className="text-lg font-black text-white mb-2 group-hover:text-blue-400 transition-colors line-clamp-1 tracking-tight">{course.title}</h3>
+                                    
+                                    <div className="absolute top-4 right-4 z-20">
+                                        <span className="px-3 py-1 bg-emerald-500 text-black rounded-full text-[9px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/40 animate-pulse">
+                                            Free Preview
+                                        </span>
+                                    </div>
 
-                                <div className="flex items-center gap-2 mb-6">
-                                    <span className="px-2.5 py-1 bg-white/5 rounded-lg text-[10px] font-black uppercase tracking-widest text-slate-400 border border-white/5">
-                                        {course.level}
-                                    </span>
-                                </div>
+                                    <div className="flex items-center gap-2 mb-6">
+                                        <span className="px-2.5 py-1 bg-white/5 rounded-lg text-[10px] font-black uppercase tracking-widest text-slate-400 border border-white/5">
+                                            {course.level}
+                                        </span>
+                                    </div>
 
-                                <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/5 text-[11px] font-bold text-slate-500">
-                                    <span className="flex items-center gap-1.5">
-                                        <Users size={14} className="text-blue-500" />
-                                        {course.studentsCount || course.students} Learners
-                                    </span>
-                                    <ArrowRight className="w-4 h-4 text-white/20 group-hover:text-blue-400 transition-all group-hover:translate-x-1" />
+                                    <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/5 text-[11px] font-bold text-slate-500">
+                                        <span className="flex items-center gap-1.5">
+                                            <Users size={14} className="text-blue-500" />
+                                            {course.studentsCount || course.students} Learners
+                                        </span>
+                                        <ArrowRight className="w-4 h-4 text-white/20 group-hover:text-blue-400 transition-all group-hover:translate-x-1" />
+                                    </div>
                                 </div>
-                            </div>
-                        </motion.div>
+                            </motion.div>
+                        </Hover3DTilt>
                     )})}
                 </div>
 

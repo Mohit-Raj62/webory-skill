@@ -10,6 +10,7 @@ import {
 import dynamic from 'next/dynamic';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { PrivacyConsentDashboard } from "./PrivacyConsentDashboard";
 
 const ActivityDashboard = dynamic(() => import('@/components/dashboard/activity-dashboard').then(mod => mod.ActivityDashboard), { ssr: false });
 const GradesDashboard = dynamic(() => import('@/components/dashboard/grades-dashboard').then(mod => mod.GradesDashboard), { ssr: false });
@@ -31,7 +32,7 @@ export function ProfileClientContent({
     const [enrollments, setEnrollments] = useState(initialEnrollments);
     const [applications, setApplications] = useState(initialApplications);
     const [hackathons, setHackathons] = useState(initialHackathons);
-    const [activeTab, setActiveTab] = useState<'courses' | 'internships' | 'grades' | 'hackathons'>('courses');
+    const [activeTab, setActiveTab] = useState<'courses' | 'internships' | 'grades' | 'hackathons' | 'privacy'>('courses');
     const [uploadingAppId, setUploadingAppId] = useState<string | null>(null);
     const [showPhoneModal, setShowPhoneModal] = useState(!initialUser.phone);
     const [mounted, setMounted] = useState(false);
@@ -187,7 +188,7 @@ export function ProfileClientContent({
                 </div>
 
                 <div className="p-1.5 bg-slate-900/50 backdrop-blur-xl border border-white/5 rounded-[1.5rem] flex gap-1 mb-10 overflow-x-auto no-scrollbar">
-                    {(['courses', 'internships', 'grades', 'hackathons'] as const).map((tab) => (
+                    {(['courses', 'internships', 'grades', 'hackathons', 'privacy'] as const).map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
@@ -197,6 +198,7 @@ export function ProfileClientContent({
                             {tab === 'internships' && <Briefcase size={14} />}
                             {tab === 'grades' && <Trophy size={14} />}
                             {tab === 'hackathons' && <Zap size={14} />}
+                            {tab === 'privacy' && <Lock size={14} />}
                             {tab}
                         </button>
                     ))}
@@ -229,6 +231,9 @@ export function ProfileClientContent({
                                 </div>
                             ))}
                         </div>
+                    </div>
+                    <div className={activeTab === 'privacy' ? 'block' : 'hidden'}>
+                        <PrivacyConsentDashboard user={user} />
                     </div>
                 </div>
             </div>

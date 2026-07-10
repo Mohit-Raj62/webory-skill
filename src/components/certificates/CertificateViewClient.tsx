@@ -67,15 +67,12 @@ export function CertificateViewClient({ certificate }: { certificate: any }) {
                 className="motion-wrapper shadow-[0_0_100px_rgba(37,99,235,0.1)] rounded-[2rem] overflow-hidden print:overflow-visible print:shadow-none print:rounded-none mb-12"
             >
                 <HackathonCertificate 
-                    type={certificate.type || (certificate.title?.toLowerCase().includes('champion') ? 'winner' : 'participant')}
                     studentName={certificate.studentName}
-                    hackathonTitle={certificate.hackathonTitle || certificate.description?.match(/in the (.*?)\./)?.[1] || "Software Development Hackathon"}
-                    projectName={certificate.projectName || certificate.description?.split("Project: ")[1] || "Open Innovation Project"}
-                    rank={certificate.rank || (certificate.title?.match(/(\d+)/)?.[0] ? parseInt(certificate.title.match(/(\d+)/)![0]) : 0)}
-                    issueDate={certificate.issuedAt}
+                    hackathonName={certificate.hackathonTitle || certificate.description?.match(/in the (.*?)\./)?.[1] || "Software Development Hackathon"}
+                    duration="48 Hours"
+                    startDate={new Date(certificate.issuedAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    endDate={new Date(certificate.issuedAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
                     certificateId={certificate.certificateId}
-                    domain={certificate.domain || "Skills Hackathon"}
-                    college={certificate.college}
                     collaborations={certificate.collaborations}
                     signatures={certificate.signatures}
                 />

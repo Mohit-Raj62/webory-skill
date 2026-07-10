@@ -17,7 +17,10 @@ export function FreeExperienceHighlight() {
                     {/* Left: Text Content */}
                     <div className="flex-1 text-center md:text-left">
                         <div className="inline-flex items-center gap-2 mb-2">
-                            <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <div className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            </div>
                             <span className="text-emerald-400 text-[10px] md:text-xs font-bold uppercase tracking-widest">Risk-Free Trial</span>
                         </div>
                         
@@ -39,9 +42,16 @@ export function FreeExperienceHighlight() {
 
                     {/* Right: Action */}
                     <Link href="/courses">
-                        <Button size="lg" className="bg-emerald-500 text-black hover:bg-emerald-400 border-0 h-12 px-6 rounded-xl font-bold shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 transition-all text-sm group">
-                            <Play size={16} className="fill-current mr-2 group-hover:scale-110 transition-transform" />
-                            WATCH MODULE 1 FREE
+                        <Button size="lg" className="bg-emerald-500 text-black hover:bg-emerald-400 border-0 h-12 px-6 rounded-xl font-bold shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 transition-all text-sm group relative overflow-hidden">
+                            <motion.div 
+                                className="absolute top-0 bottom-0 w-12 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12 z-0"
+                                animate={{ left: ["-50%", "150%"] }}
+                                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", repeatDelay: 1 }}
+                            />
+                            <span className="relative z-10 flex items-center">
+                                <Play size={16} className="fill-current mr-2 group-hover:scale-110 transition-transform" />
+                                WATCH MODULE 1 FREE
+                            </span>
                         </Button>
                     </Link>
                 </div>

@@ -19,6 +19,8 @@ export function SignupForm() {
         password: "",
         confirmPassword: "",
         referralCode: refCode,
+        legalAccepted: false,
+        marketingAccepted: false,
     });
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -40,7 +42,11 @@ export function SignupForm() {
             const res = await fetch("/api/auth/signup", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({
+                    ...formData,
+                    termsAccepted: formData.legalAccepted,
+                    privacyAccepted: formData.legalAccepted,
+                }),
             });
 
             const data = await res.json();
@@ -198,10 +204,50 @@ export function SignupForm() {
                 />
             </div>
 
+            <div className="space-y-3 mt-6 mb-4">
+                <label className="flex items-start gap-3 cursor-pointer group">
+                    <div className="relative flex items-center justify-center mt-0.5">
+                        <input
+                            type="checkbox"
+                            className="peer sr-only"
+                            checked={formData.legalAccepted}
+                            onChange={(e) => setFormData({ ...formData, legalAccepted: e.target.checked })}
+                        />
+                        <div className="w-5 h-5 rounded border border-white/20 bg-black/20 peer-checked:bg-blue-500 peer-checked:border-blue-500 transition-all flex items-center justify-center">
+                            <svg className={`w-3.5 h-3.5 text-white pointer-events-none ${formData.legalAccepted ? 'opacity-100' : 'opacity-0'} transition-opacity`} viewBox="0 0 14 14" fill="none">
+                                <path d="M3 8L6 11L11 3.5" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" stroke="currentColor" />
+                            </svg>
+                        </div>
+                    </div>
+                    <span className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">
+                        I agree to the <Link href="/terms" className="text-blue-400 hover:underline">Terms</Link> and <Link href="/privacy" className="text-blue-400 hover:underline">Privacy Policy</Link>. <span className="text-red-400">*</span>
+                    </span>
+                </label>
+
+                <label className="flex items-start gap-3 cursor-pointer group">
+                    <div className="relative flex items-center justify-center mt-0.5">
+                        <input
+                            type="checkbox"
+                            className="peer sr-only"
+                            checked={formData.marketingAccepted}
+                            onChange={(e) => setFormData({ ...formData, marketingAccepted: e.target.checked })}
+                        />
+                        <div className="w-5 h-5 rounded border border-white/20 bg-black/20 peer-checked:bg-blue-500 peer-checked:border-blue-500 transition-all flex items-center justify-center">
+                            <svg className={`w-3.5 h-3.5 text-white pointer-events-none ${formData.marketingAccepted ? 'opacity-100' : 'opacity-0'} transition-opacity`} viewBox="0 0 14 14" fill="none">
+                                <path d="M3 8L6 11L11 3.5" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" stroke="currentColor" />
+                            </svg>
+                        </div>
+                    </div>
+                    <span className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">
+                        I'd like to receive marketing emails and updates. <span className="text-red-400">*</span>
+                    </span>
+                </label>
+            </div>
+
             <button
                 type="submit"
-                disabled={loading}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 py-6 text-base font-semibold shadow-lg shadow-blue-500/20 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] flex justify-center items-center text-white"
+                disabled={loading || !formData.legalAccepted || !formData.marketingAccepted}
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:hover:scale-100 border-0 py-6 text-base font-semibold shadow-lg shadow-blue-500/20 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] flex justify-center items-center text-white"
             >
                 {loading ? (
                     <span className="flex items-center gap-2">

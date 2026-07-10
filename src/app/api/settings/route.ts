@@ -20,6 +20,7 @@ export async function GET() {
           "mentorshipEnabled",
           "announcementBar",
           "promoPopups",
+          "role2FARequirements",
         ],
       },
     }).lean();
@@ -38,9 +39,14 @@ export async function GET() {
       text: "Waitlist for January 2026 is full. February batch closing soon!",
     };
     const promoPopups = settingsMap.promoPopups ?? [];
+    const role2FARequirements = settingsMap.role2FARequirements ?? {
+      admin: false,
+      teacher: false,
+      student: false,
+    };
 
     return NextResponse.json(
-      { careerApplicationsEnabled, mentorshipEnabled, announcementBar, promoPopups },
+      { careerApplicationsEnabled, mentorshipEnabled, announcementBar, promoPopups, role2FARequirements },
       {
         headers: {
           "Cache-Control": "public, s-maxage=300, stale-while-revalidate=150",

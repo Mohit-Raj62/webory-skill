@@ -1,11 +1,33 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { BrainCircuit, Rocket, ArrowRight, CheckCircle2, Timer, Zap } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export function AIPracticePreview() {
+    const [timeLeft, setTimeLeft] = useState(30);
+    const [processText, setProcessText] = useState("Analyzing response...");
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setTimeLeft((prev) => (prev > 0 ? prev - 1 : 30));
+        }, 1000);
+
+        const messages = ["Analyzing tone...", "Checking concepts...", "Generating report...", "Ready."];
+        let msgIndex = 0;
+        const msgTimer = setInterval(() => {
+            msgIndex = (msgIndex + 1) % messages.length;
+            setProcessText(messages[msgIndex]);
+        }, 2000);
+
+        return () => {
+            clearInterval(timer);
+            clearInterval(msgTimer);
+        };
+    }, []);
+
   return (
     <section className="py-24 relative overflow-hidden">
       {/* Background Elements */}
@@ -63,7 +85,13 @@ export function AIPracticePreview() {
                 <BrainCircuit className="w-7 h-7" />
               </div>
 
-              <h3 className="text-2xl font-bold text-white mb-4">Aptitude & Logic Test</h3>
+              <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-2xl font-bold text-white">Aptitude & Logic Test</h3>
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono">
+                      <Timer className="w-3 h-3" />
+                      00:{timeLeft.toString().padStart(2, '0')}
+                  </div>
+              </div>
               <p className="text-gray-400 mb-6">
                 Sharpen your problem-solving skills with progressive difficulty questions.
               </p>
@@ -104,7 +132,13 @@ export function AIPracticePreview() {
                 <Rocket className="w-7 h-7" />
               </div>
 
-              <h3 className="text-2xl font-bold text-white mb-4">AI Mock Interview</h3>
+              <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-2xl font-bold text-white">AI Mock Interview</h3>
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-[10px] font-mono">
+                      <Zap className="w-3 h-3 animate-pulse" />
+                      {processText}
+                  </div>
+              </div>
               <p className="text-gray-400 mb-6">
                 Face realistic technical interviews with our AI mentor and get detailed feedback.
               </p>

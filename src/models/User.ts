@@ -184,9 +184,38 @@ const UserSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  twoFactorMethod: {
+    type: String,
+    enum: ["app", "email"],
+    default: "app",
+  },
+  twoFactorEmailOtp: {
+    type: String,
+    default: null,
+  },
+  twoFactorEmailOtpExpires: {
+    type: Date,
+    default: null,
+  },
   twoFactorRecoveryCodes: {
     type: [String],
     default: [],
+  },
+  marketingPreferences: {
+    type: Boolean,
+    default: false,
+  },
+  acceptedTermsVersion: {
+    type: String,
+    default: null,
+  },
+  acceptedPrivacyVersion: {
+    type: String,
+    default: null,
+  },
+  lastConsentUpdate: {
+    type: Date,
+    default: Date.now,
   },
 });
 

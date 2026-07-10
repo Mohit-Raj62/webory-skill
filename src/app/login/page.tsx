@@ -69,10 +69,17 @@ function LoginContent() {
                 throw new Error(data.error || "Login failed");
             }
 
+            if (data.require2FASetup) {
+                // Set the token temporarily so the setup page can use it for API calls
+                document.cookie = `token=${data.tempToken}; path=/`;
+                router.push("/auth/setup-2fa");
+                return;
+            }
+
             if (data.require2FA) {
                 setRequire2FA(true);
                 setTempToken(data.tempToken);
-                setSuccess("Please enter your 2FA code or a recovery code to continue.");
+                setSuccess(data.twoFactorMethod === "email" ? "We've sent a code to your email. Please enter it below." : "Please enter your 2FA code or a recovery code to continue.");
                 return;
             }
 

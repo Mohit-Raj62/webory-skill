@@ -8,6 +8,7 @@ const PushSubscriptionHandler = dynamic(() => import("@/components/PushSubscript
 const PushNotificationBanner = dynamic(() => import("@/components/PushNotificationBanner").then(mod => mod.PushNotificationBanner), { ssr: false });
 const InactivityLogout = dynamic(() => import("@/components/auth/inactivity-logout").then(mod => mod.InactivityLogout), { ssr: false });
 const MobileBottomNav = dynamic(() => import("@/components/ui/MobileBottomNav").then(mod => mod.MobileBottomNav), { ssr: false });
+const LegacyConsentModal = dynamic(() => import("@/components/auth/LegacyConsentModal").then(mod => mod.LegacyConsentModal), { ssr: false });
 
 export function GlobalClientBootstrap() {
   return (
@@ -18,6 +19,7 @@ export function GlobalClientBootstrap() {
       <PushNotificationBanner />
       <InactivityLogout />
       <MobileBottomNav />
+      <LegacyConsentModal />
     </>
   );
 }

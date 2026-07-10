@@ -62,6 +62,14 @@ export default function AdminDashboard() {
             link: "/admin/rewards",
             color: "from-pink-600 to-rose-600",
         },
+        {
+            id: "consent",
+            name: "Consent Logs",
+            icon: Shield,
+            description: "Audit user privacy consents",
+            link: "/admin/consent",
+            color: "from-emerald-600 to-teal-600",
+        },
     ];
 
     return (
@@ -216,7 +224,7 @@ function AnalyticsPreview() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch('/api/admin/stats')
+        fetch('/api/admin/overview')
             .then(res => res.json())
             .then(data => setStats(data))
             .catch(err => console.error(err))
