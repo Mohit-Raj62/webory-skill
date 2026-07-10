@@ -263,7 +263,10 @@ export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initi
                         </div>
                         
                         <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-6 md:mb-8 tracking-tight leading-[1.1] drop-shadow-2xl text-white">
-                            AI-Powered <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-500 animate-gradient-x">Skill</span> Platform
+                            <Typewriter 
+                                words={["AI-Powered Skill Platform", "Next-Gen Learning Hub", "Smart Career Engine"]} 
+                                textClassName="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-500 animate-gradient-x"
+                            />
                             <br />
                             <span className="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-300 block mt-2">
                                 for <span className="text-white border-b-4 border-purple-500/50"><Typewriter words={["Industry-Ready", "High-Paying", "Future-Proof"]} /></span> Careers

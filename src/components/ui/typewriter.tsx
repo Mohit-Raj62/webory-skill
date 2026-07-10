@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-export function Typewriter({ words }: { words: string[] }) {
+export function Typewriter({ words, textClassName = "" }: { words: string[], textClassName?: string }) {
     const [index, setIndex] = useState(0);
     const [subIndex, setSubIndex] = useState(0);
     const [blink, setBlink] = useState(true);
@@ -45,7 +45,7 @@ export function Typewriter({ words }: { words: string[] }) {
 
     return (
         <span className="inline-flex items-center min-w-[20px]">
-            <span>{words[index].substring(0, subIndex)}</span>
+            <span className={textClassName}>{words[index].substring(0, subIndex)}</span>
             <span 
                 className={`inline-block w-[3px] md:w-[4px] h-[0.9em] bg-purple-400 ml-[4px] align-middle ${blink ? 'opacity-100' : 'opacity-0'} transition-opacity duration-75`}
                 style={{ transform: 'translateY(-2px)' }}
