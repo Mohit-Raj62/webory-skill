@@ -10,6 +10,7 @@ const AppliedInternships = dynamic(() => import('@/components/landing/applied-in
 const CoursesPreview = dynamic(() => import('@/components/landing/courses-preview').then(mod => mod.CoursesPreview));
 const Internships = dynamic(() => import('@/components/landing/internships').then(mod => mod.Internships));
 const TrustProofSection = dynamic(() => import('@/components/landing/trust-proof').then(mod => mod.TrustProofSection));
+const VideoTestimonialsSection = dynamic(() => import('@/components/landing/video-testimonials').then(mod => mod.VideoTestimonialsSection));
 const TestimonialsSection = dynamic(() => import('@/components/home/TestimonialsSection').then(mod => mod.TestimonialsSection));
 const FAQ = dynamic(() => import('@/components/landing/faq').then(mod => mod.FAQ));
 const Footer = dynamic(() => import('@/components/ui/footer').then(mod => mod.Footer));
@@ -78,6 +79,12 @@ export default async function Home() {
             <ScrollReveal style="3d-tilt">
                 <Suspense fallback={<div className="container mx-auto px-4 py-12"><div className="h-64 bg-white/5 rounded-3xl animate-pulse" /></div>}>
                     <LeaderboardSection initialLearners={leaderboardData} />
+                </Suspense>
+            </ScrollReveal>
+
+            <ScrollReveal style="fade-up">
+                <Suspense fallback={<SectionSkeleton height="h-[400px]" />}>
+                    <VideoTestimonialsSection />
                 </Suspense>
             </ScrollReveal>
 

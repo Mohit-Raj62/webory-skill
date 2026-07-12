@@ -20,25 +20,48 @@ export function Typewriter({ words, textClassName = "" }: { words: string[], tex
     useEffect(() => {
         if (words.length === 0) return;
         
-        if (subIndex === words[index].length && !reverse) {
-            // Reached end of word, wait before deleting
-            const timeout = setTimeout(() => setReverse(true), 2500);
+        const currentWord = words[index];
+
+        if (subIndex === currentWord.length && !reverse) {
+            // Reached end of word, wait longer before deleting so users can read
+            const timeout = setTimeout(() => setReverse(true), 4000); // Wait 4 seconds
             return () => clearTimeout(timeout);
         }
 
         if (subIndex === 0 && reverse) {
-            // Finished deleting, move to next word
+            // Finished deleting, wait a bit before starting the next word
             setReverse(false);
-            setIndex((prev) => (prev + 1) % words.length);
-            return;
+            const timeout = setTimeout(() => {
+                setIndex((prev) => (prev + 1) % words.length);
+            }, 1000); // 1 second pause before typing next word
+            return () => clearTimeout(timeout);
         }
 
-        const typingSpeed = reverse ? 50 : 100; // Delete faster than typing
-        const variance = Math.random() * 50; // Add some human-like variance
+        // Calculate a human-like delay
+        let delay = 0;
+        
+        if (reverse) {
+            // When humans delete, they hold backspace (fast & steady)
+            delay = 40; 
+        } else {
+            // Base typing speed - SLOWED DOWN
+            delay = 120 + Math.random() * 100; // Between 120ms and 220ms per letter
+            
+            // 15% chance to have a micro-pause (thinking / finger slip)
+            if (Math.random() < 0.15) {
+                delay += 250 + Math.random() * 200; // Pause for extra 250-450ms
+            }
+            
+            // Slower on capital letters or hyphens (shift key / reaching)
+            const nextChar = currentWord[subIndex];
+            if (nextChar && (nextChar === nextChar.toUpperCase() || nextChar === '-')) {
+                delay += 150;
+            }
+        }
 
         const timeout = setTimeout(() => {
             setSubIndex((prev) => prev + (reverse ? -1 : 1));
-        }, typingSpeed + variance);
+        }, delay);
 
         return () => clearTimeout(timeout);
     }, [subIndex, index, reverse, words]);

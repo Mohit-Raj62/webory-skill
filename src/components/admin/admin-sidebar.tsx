@@ -23,9 +23,11 @@ import {
     Megaphone,
     Gift,
     Shield,
+    ShieldCheck,
     Home,
     Terminal,
     Trophy,
+    Film,
 } from "lucide-react";
 
 const menuItems = [
@@ -40,6 +42,7 @@ const menuItems = [
     { name: "Certificates", href: "/admin/certificates", icon: Award },
     { name: "Doubts", href: "/admin/doubts", icon: MessageCircle },
     { name: "Feedback", href: "/admin/feedback", icon: Star },
+    { name: "Video Testimonials", href: "/admin/video-testimonials", icon: Film },
     { name: "Promo Codes", href: "/admin/promo-codes", icon: Tag },
     { name: "Broadcast Emails", href: "/admin/broadcast", icon: MessageCircle },
     { name: "Payments", href: "/admin/payments", icon: CreditCard },
@@ -56,6 +59,7 @@ const menuItems = [
     { name: "Hackathons", href: "/admin/hackathons", icon: Trophy },
     { name: "Campus Ambassadors", href: "/admin/ambassadors", icon: Megaphone },
     { name: "Maintenance", href: "/admin/maintenance", icon: Database },
+    { name: "Consent Logs", href: "/admin/consent", icon: ShieldCheck },
 ];
 
 interface AdminSidebarProps {
