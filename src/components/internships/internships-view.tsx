@@ -1033,6 +1033,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                     onClose={() => setShowPayment(false)}
                     courseTitle={`Internship: ${internships.find(i => i._id === selectedInternship)?.title}`}
                     price={(internships.find(i => i._id === selectedInternship)?.hasTiers) ? (internships.find(i => i._id === selectedInternship)?.tiers?.find((t: any) => t.name === selectedTier)?.price || 0) : (internships.find(i => i._id === selectedInternship)?.price || 0)}
+                    originalPrice={(internships.find(i => i._id === selectedInternship)?.hasTiers) ? (internships.find(i => i._id === selectedInternship)?.tiers?.find((t: any) => t.name === selectedTier)?.originalPrice || 0) : (internships.find(i => i._id === selectedInternship)?.originalPrice || 0)}
                     gstPercentage={internships.find(i => i._id === selectedInternship)?.gstPercentage || 0}
                     internshipId={selectedInternship}
                     selectedTier={selectedTier} // Pass this to PaymentModal

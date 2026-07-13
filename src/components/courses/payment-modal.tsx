@@ -42,7 +42,9 @@ export function PaymentModal({
     const [promoCode, setPromoCode] = useState("");
     const [validatingPromo, setValidatingPromo] = useState(false);
     const [appliedPromo, setAppliedPromo] = useState<any>(null);
-    const [finalPrice, setFinalPrice] = useState(Math.round(price + (price * gstPercentage / 100)));
+    const effectiveOriginalPrice = (originalPrice && originalPrice > 0) ? originalPrice : price;
+    const initialGstAmount = Math.round(effectiveOriginalPrice * (gstPercentage / 100));
+    const [finalPrice, setFinalPrice] = useState(price + initialGstAmount);
     const [basePrice, setBasePrice] = useState(price); // Price after course discount, before promo
     const [errorMessage, setErrorMessage] = useState("");
     const [phoneNumber, setPhoneNumber] = useState(mobileNumber || "");
@@ -124,8 +126,8 @@ export function PaymentModal({
                 }
 
                 setBasePrice(newBasePrice);
-                const gstAmount = newBasePrice * (gstPercentage / 100);
-                setFinalPrice(Math.round(newBasePrice + gstAmount));
+                const gstAmount = Math.round(effectiveOriginalPrice * (gstPercentage / 100));
+                setFinalPrice(newBasePrice + gstAmount);
 
                 toast.success(`Promo code applied! You save ₹${price - newBasePrice}`);
             } else {
@@ -135,14 +137,16 @@ export function PaymentModal({
                 toast.error(msg);
                 setAppliedPromo(null);
                 setBasePrice(price);
-                setFinalPrice(Math.round(price + (price * gstPercentage / 100)));
+                const gstAmount = Math.round(effectiveOriginalPrice * (gstPercentage / 100));
+                setFinalPrice(price + gstAmount);
             }
         } catch (error) {
             console.error("Error validating promo code:", error);
             setErrorMessage("Failed to validate promo code");
             setAppliedPromo(null);
             setBasePrice(price);
-            setFinalPrice(Math.round(price + (price * gstPercentage / 100)));
+            const gstAmount = Math.round(effectiveOriginalPrice * (gstPercentage / 100));
+            setFinalPrice(price + gstAmount);
         } finally {
             setValidatingPromo(false);
         }
@@ -152,7 +156,8 @@ export function PaymentModal({
         setAppliedPromo(null);
         setPromoCode("");
         setBasePrice(price);
-        setFinalPrice(Math.round(price + (price * gstPercentage / 100)));
+        const gstAmount = Math.round(effectiveOriginalPrice * (gstPercentage / 100));
+        setFinalPrice(price + gstAmount);
         toast.info("Promo code removed");
     };
 
@@ -352,7 +357,7 @@ export function PaymentModal({
                         {gstPercentage > 0 && (
                             <div className="flex justify-between items-center mb-2">
                                 <span className="text-gray-400 text-sm">GST ({gstPercentage}%)</span>
-                                <span className="text-white font-medium">₹{Math.round(basePrice * gstPercentage / 100)}</span>
+                                <span className="text-white font-medium">₹{Math.round(effectiveOriginalPrice * (gstPercentage / 100))}</span>
                             </div>
                         )}
 
