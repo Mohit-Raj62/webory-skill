@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dbConnect from "@/lib/db";
@@ -46,7 +47,10 @@ export async function POST(req: Request) {
       `Login: Session ID generated and saved for user ${user._id}: ${sessionId}`,
     );
 
-    if (user.isTwoFactorEnabled) {
+    const cookieStore = await cookies();
+    const remember2fa = cookieStore.get("remember_2fa")?.value;
+
+    if (user.isTwoFactorEnabled && remember2fa !== user._id.toString()) {
       if (user.twoFactorMethod === "email") {
         // Generate and send Email OTP
         const otp = crypto.randomInt(100000, 999999).toString();

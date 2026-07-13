@@ -29,7 +29,7 @@ export function PushNotificationBanner() {
       
       // Show banner if permission is not granted and not previously dismissed in this session
       if (Notification.permission === "default") {
-        const dismissed = sessionStorage.getItem("notification-banner-dismissed");
+        const dismissed = localStorage.getItem("notification-banner-dismissed");
         if (!dismissed) {
           setIsVisible(true);
         }
@@ -66,7 +66,7 @@ export function PushNotificationBanner() {
 
   const handleDismiss = () => {
     setIsVisible(false);
-    sessionStorage.setItem("notification-banner-dismissed", "true");
+    localStorage.setItem("notification-banner-dismissed", "true");
   };
 
   if (!isVisible || permission === "granted" || permission === "denied") {

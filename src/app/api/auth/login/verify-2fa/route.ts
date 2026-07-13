@@ -99,6 +99,14 @@ export async function POST(req: Request) {
       path: "/",
     });
 
+    response.cookies.set("remember_2fa", user._id.toString(), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 6, // 6 hours
+      path: "/",
+    });
+
     return response;
 
   } catch (error) {
