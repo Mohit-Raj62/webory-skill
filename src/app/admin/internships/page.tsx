@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Edit, Trash2, Search, FileText } from "lucide-react";
+import { Plus, Edit, Trash2, Search, FileText, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { InternshipActivityFeed } from "@/components/admin/internship-activity-feed";
@@ -15,6 +15,7 @@ interface Internship {
     stipend: string;
     price: number;
     createdAt: string;
+    isActive?: boolean;
 }
 
 export default function InternshipsAdminPage() {
@@ -28,7 +29,7 @@ export default function InternshipsAdminPage() {
 
     const fetchInternships = async () => {
         try {
-            const res = await fetch("/api/internships");
+            const res = await fetch("/api/admin/internships");
             if (res.ok) {
                 const data = await res.json();
                 setInternships(data.internships || []);
@@ -57,6 +58,29 @@ export default function InternshipsAdminPage() {
         } catch (error) {
             console.error("Delete error:", error);
             alert("Failed to delete internship");
+        }
+    };
+
+    const handleToggleVisibility = async (internshipId: string, currentStatus: boolean) => {
+        try {
+            const res = await fetch(`/api/admin/internships/${internshipId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ isActive: !currentStatus }),
+            });
+
+            if (res.ok) {
+                setInternships(internships.map((i) => 
+                    i._id === internshipId ? { ...i, isActive: !currentStatus } : i
+                ));
+            } else {
+                alert("Failed to update visibility");
+            }
+        } catch (error) {
+            console.error("Toggle visibility error:", error);
+            alert("Failed to update visibility");
         }
     };
 
@@ -159,6 +183,13 @@ export default function InternshipsAdminPage() {
                                     <td className="px-6 py-4 text-white font-semibold">₹{internship.price}</td>
                                     <td className="px-6 py-4">
                                         <div className="flex gap-2">
+                                            <button
+                                                onClick={() => handleToggleVisibility(internship._id, internship.isActive ?? true)}
+                                                className={`p-2 rounded-lg transition-colors ${internship.isActive !== false ? 'hover:bg-green-500/10 text-green-400' : 'hover:bg-gray-500/10 text-gray-500'}`}
+                                                title={internship.isActive !== false ? "Visible" : "Hidden"}
+                                            >
+                                                {internship.isActive !== false ? <Eye size={18} /> : <EyeOff size={18} />}
+                                            </button>
                                             <Link href={`/admin/internships/${internship._id}/edit`}>
                                                 <button className="p-2 hover:bg-blue-500/10 rounded-lg transition-colors text-blue-400">
                                                     <Edit size={18} />

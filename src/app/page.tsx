@@ -49,7 +49,7 @@ export default async function Home() {
         await dbConnect();
         const [users, internships, courses, popular, topLearners] = await Promise.all([
             User.countDocuments(),
-            Internship.countDocuments(),
+            Internship.countDocuments({ isActive: true }),
             Course.countDocuments({ isAvailable: true }),
             Course.find({ isPopular: true, isAvailable: true }).select('title level studentsCount color icon').limit(4).lean(),
             User.find({ role: "student", xp: { $gt: 0 } }).sort({ xp: -1 }).limit(50).select("firstName lastName avatar xp").lean(),

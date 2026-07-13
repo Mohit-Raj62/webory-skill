@@ -197,6 +197,10 @@ const InternshipSchema = new Schema({
     ],
     default: [],
   },
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const Internship = models.Internship || model("Internship", InternshipSchema);

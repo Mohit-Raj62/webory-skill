@@ -6,7 +6,7 @@ import { revalidateTag } from "next/cache";
 export async function GET() {
   try {
     await dbConnect();
-    const internships = await Internship.find({})
+    const internships = await Internship.find({ isActive: true })
       .select(
         "title company location type stipend tags price description color icon requirements responsibilities duration deadline perks tagline totalSeats filledSeats benefits",
       )
