@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CheckCircle, XCircle, Clock, Search, ExternalLink, Edit2, Save, X, Calendar, Award } from "lucide-react";
+import { CheckCircle, XCircle, Clock, Search, ExternalLink, Edit2, Save, X, Calendar, Award, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface Application {
@@ -198,6 +198,28 @@ export default function ApplicationsPage() {
         } catch (error) {
             console.error("Status update error:", error);
             alert("Failed to update status");
+        }
+    };
+
+    const handleDeleteApplication = async (appId: string) => {
+        if (!confirm("Are you sure you want to delete this application? This action cannot be undone.")) {
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/admin/applications/${appId}`, {
+                method: "DELETE",
+            });
+
+            if (res.ok) {
+                setApplications(applications.filter(app => app._id !== appId));
+                alert("Application deleted successfully");
+            } else {
+                alert("Failed to delete application");
+            }
+        } catch (error) {
+            console.error("Delete error:", error);
+            alert("Failed to delete application");
         }
     };
 
@@ -428,6 +450,14 @@ export default function ApplicationsPage() {
                                         Mark Completed
                                     </Button>
                                 )}
+
+                                <Button
+                                    onClick={() => handleDeleteApplication(app._id)}
+                                    className="bg-red-600/20 text-red-500 hover:bg-red-600 hover:text-white"
+                                    title="Delete Application"
+                                >
+                                    <Trash2 size={18} />
+                                </Button>
                             </div>
                         </div>
                     </div>
