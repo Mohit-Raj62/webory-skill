@@ -14,7 +14,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const courses = await Course.find({}).select("_id title updatedAt").lean();
 
   // Fetch all internships
-  const internships = await Internship.find({ isActive: true })
+  const internships = await Internship.find({ isActive: { $ne: false } })
     .select("_id title updatedAt")
     .lean();
 

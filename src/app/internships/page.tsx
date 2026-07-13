@@ -40,7 +40,7 @@ const getCachedInternshipsData = unstable_cache(
     async () => {
         try {
             await dbConnect();
-            const internships = await Internship.find({ isActive: true })
+            const internships = await Internship.find({ isActive: { $ne: false } })
                 .select("title company location type stipend tags price requirements responsibilities isFree description duration deadline perks tagline totalSeats filledSeats benefits hasTiers tiers modules")
                 .sort({ createdAt: -1 })
                 .lean();

@@ -29,7 +29,7 @@ export async function getCoursesContext() {
  */
 export async function getInternshipsContext() {
   await dbConnect();
-  const internships = await Internship.find({ isActive: true })
+  const internships = await Internship.find({ isActive: { $ne: false } })
     .select("title company location type stipend description requirements")
     .limit(20)
     .lean();
