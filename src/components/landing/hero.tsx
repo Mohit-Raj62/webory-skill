@@ -129,7 +129,7 @@ function ShatterCard({ icon: Icon, label, value, index }: { icon: any, label: st
                 <div className="w-10 h-10 md:w-14 md:h-14 bg-white/5 rounded-2xl flex items-center justify-center mb-3 md:mb-4 text-blue-400 border border-white/10 group-hover:text-white/50 transition-colors">
                     <Icon className="w-5 h-5 md:w-7 md:h-7 animate-pulse" />
                 </div>
-                <h3 className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400 mb-1 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">{displayValue}</h3>
+                <h3 className="text-3xl md:text-4xl font-black text-white mb-1 font-outfit tracking-tighter drop-shadow-sm">{displayValue}</h3>
                 <p className="text-gray-400 font-medium text-xs md:text-sm">{label}</p>
             </motion.div>
 
@@ -150,8 +150,8 @@ export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initi
             {/* Background Elements */}
             {/* Reduced background blur sizes on mobile to prevent excessive GPU overdraw */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl pointer-events-none">
-                <div className="absolute top-20 left-10 w-48 h-48 md:w-72 md:h-72 bg-blue-500/10 md:bg-blue-500/20 rounded-full blur-[60px] md:blur-[100px] will-change-transform" />
-                <div className="absolute bottom-20 right-10 w-48 h-48 md:w-96 md:h-96 bg-purple-500/10 md:bg-purple-500/20 rounded-full blur-[60px] md:blur-[100px] will-change-transform" />
+                <div className="absolute top-20 left-10 w-48 h-48 md:w-72 md:h-72 bg-indigo-500/10 md:bg-indigo-500/15 rounded-full blur-[80px] md:blur-[120px] will-change-transform" />
+                <div className="absolute bottom-20 right-10 w-48 h-48 md:w-96 md:h-96 bg-violet-500/10 md:bg-violet-500/15 rounded-full blur-[80px] md:blur-[120px] will-change-transform" />
             </div>
             
             {/* Interactive Particle Network */}
@@ -167,19 +167,18 @@ export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initi
                     className="w-full max-w-5xl mx-auto mb-12 lg:mb-16 relative group"
                 >
                     {/* Glowing Aura Background */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 via-blue-500/20 to-purple-500/20 blur-2xl rounded-[3rem] opacity-50 group-hover:opacity-70 transition-opacity duration-500" />
+                    <div className="absolute inset-0 bg-white/5 blur-2xl rounded-[3rem] opacity-50 group-hover:opacity-70 transition-opacity duration-500" />
                     
                     {/* Main Banner Container */}
-                    <div className="relative bg-[#030616]/80 backdrop-blur-xl border border-white/10 rounded-3xl md:rounded-[2rem] py-4 px-6 md:py-6 md:px-8 shadow-2xl flex flex-col items-center gap-5 md:gap-6 overflow-hidden">
+                    <div className="relative glass-card rounded-3xl md:rounded-[2rem] py-4 px-6 md:py-6 md:px-8 flex flex-col items-center gap-5 md:gap-6 overflow-hidden">
                         
                         {/* Premium Header */}
                         <div className="flex items-center gap-4 w-full justify-center px-4">
-                            <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-white/20" />
-                            <div className="flex items-center gap-2.5 bg-white/5 px-4 py-1.5 rounded-full border border-white/5">
-                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.8)]" />
-                                <span className="text-[10px] md:text-xs font-black text-gray-300 uppercase tracking-[0.25em]">Recognized & Backed By</span>
+                            <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-white/10" />
+                            <div className="flex items-center gap-2.5 bg-white/[0.03] px-4 py-1.5 rounded-full border border-white/5">
+                                <span className="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em]">Recognized By</span>
                             </div>
-                            <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-white/20" />
+                            <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-white/10" />
                         </div>
 
                         {/* Scrolling Logos - Seamless & Mobile Responsive */}
@@ -262,11 +261,11 @@ export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initi
                             </motion.span>
                         </div>
                         
-                        <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-6 md:mb-8 tracking-tight leading-[1.1] drop-shadow-2xl text-white">
-                            AI-Powered <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-500 animate-gradient-x">Skill</span> Platform
+                        <h1 className="text-4xl sm:text-5xl md:text-7xl font-black mb-6 md:mb-8 tracking-tighter leading-[1.05] text-white font-outfit">
+                            AI-Powered <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400 animate-gradient-x drop-shadow-sm">Skill</span> Platform
                             <br />
-                            <span className="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-300 block mt-2">
-                                for <span className="text-white border-b-4 border-purple-500/50 inline-block"><Typewriter words={["Industry-Ready", "High-Paying", "Future-Proof"]} /></span> Careers
+                            <span className="text-2xl sm:text-3xl md:text-5xl font-semibold text-gray-400 block mt-3 font-inter tracking-tight">
+                                for <span className="text-white"><Typewriter words={["Industry-Ready", "High-Paying", "Future-Proof"]} /></span> Careers
                             </span>
                         </h1>
                         
@@ -297,20 +296,20 @@ export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initi
 
                             <div className="flex flex-col sm:flex-row items-center gap-4 md:gap-6 w-full justify-center px-4">
                                 {!isLoggedIn ? (
-                                    <Link href="/signup" className="w-full sm:w-auto">
-                                        <Button size="lg" className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 text-base md:text-lg h-12 md:h-14 px-8 md:px-10 rounded-xl md:rounded-2xl shadow-[0_0_30px_-5px_rgba(59,130,246,0.4)] hover:shadow-[0_0_40px_-5px_rgba(139,92,246,0.6)] hover:-translate-y-1 transition-all duration-300 font-bold">
-                                            Get Your AI Roadmap <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
+                                    <Link href="/signup" className="w-full sm:w-auto group">
+                                        <Button size="lg" className="w-full bg-white text-black hover:bg-gray-100 border-0 text-base md:text-lg h-12 md:h-14 px-8 md:px-10 rounded-2xl shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_-15px_rgba(255,255,255,0.5)] transition-all duration-300 font-bold tracking-tight">
+                                            Get Your AI Roadmap <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5 group-hover:translate-x-1 transition-transform" />
                                         </Button>
                                     </Link>
                                 ) : (
-                                    <Link href="/ai-weboryskills" className="w-full sm:w-auto">
-                                        <Button size="lg" className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 text-base md:text-lg h-12 md:h-14 px-8 md:px-10 rounded-xl md:rounded-2xl shadow-[0_0_30px_-5px_rgba(59,130,246,0.4)] hover:shadow-[0_0_40px_-5px_rgba(139,92,246,0.6)] hover:-translate-y-1 transition-all duration-300 font-bold">
-                                            Get Your AI Roadmap <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
+                                    <Link href="/ai-weboryskills" className="w-full sm:w-auto group">
+                                        <Button size="lg" className="w-full bg-white text-black hover:bg-gray-100 border-0 text-base md:text-lg h-12 md:h-14 px-8 md:px-10 rounded-2xl shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_-15px_rgba(255,255,255,0.5)] transition-all duration-300 font-bold tracking-tight">
+                                            Get Your AI Roadmap <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5 group-hover:translate-x-1 transition-transform" />
                                         </Button>
                                     </Link>
                                 )}
                                 <Link href="/courses" className="w-full sm:w-auto">
-                                    <Button size="lg" variant="outline" className="w-full text-base md:text-lg h-12 md:h-14 px-8 md:px-10 rounded-xl md:rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 text-white hover:border-white/20 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 backdrop-blur-md font-bold">
+                                    <Button size="lg" variant="outline" className="w-full text-base md:text-lg h-12 md:h-14 px-8 md:px-10 rounded-2xl border-white/10 bg-black/20 backdrop-blur-xl hover:bg-white/10 text-white hover:border-white/20 transition-all duration-300 font-medium tracking-tight">
                                         Browse Courses
                                     </Button>
                                 </Link>

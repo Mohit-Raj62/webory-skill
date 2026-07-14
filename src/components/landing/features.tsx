@@ -97,10 +97,10 @@ export function Features() {
         <section id="features" className="py-20 relative" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
             <div className="container mx-auto px-4">
                 <div className="text-center mb-16">
-                    <h2 className="text-3xl md:text-5xl font-bold mb-4">
-                        Why <span className="text-emerald-400">Webory Skills?</span>
+                    <h2 className="text-4xl md:text-5xl font-black mb-4 font-outfit tracking-tighter">
+                        Why <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Webory Skills?</span>
                     </h2>
-                    <p className="text-gray-400 max-w-2xl mx-auto">
+                    <p className="text-gray-400 max-w-2xl mx-auto font-medium">
                         A complete ecosystem designed to bridge the gap between learning and earning.
                     </p>
                 </div>
@@ -108,7 +108,7 @@ export function Features() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                     {features.map((group, groupIndex) => (
                         <div key={groupIndex} className="space-y-8">
-                            <h3 className="text-2xl font-bold text-white border-l-4 border-emerald-500 pl-4">
+                            <h3 className="text-2xl font-black text-white border-l-4 border-indigo-500 pl-4 font-outfit tracking-tight">
                                 {group.title}
                             </h3>
                             <div className="grid gap-6 ">
@@ -124,14 +124,14 @@ export function Features() {
                                             viewport={{ once: true, margin: "100px" }}
                                             transition={{ delay: index * 0.1 }}
                                             onMouseEnter={() => setActiveIndex(currentGlobalIndex)}
-                                            className={`glass-card p-4 md:p-6 rounded-xl flex items-start space-x-4 will-change-transform will-change-opacity cursor-pointer transition-all duration-500 ${isActive ? 'bg-white/10 border-emerald-500/50 shadow-[0_0_30px_rgba(52,211,153,0.15)] scale-[1.02]' : 'border-white/5 hover:bg-white/5'}`}
+                                            className={`glass-card p-4 md:p-6 rounded-2xl flex items-start space-x-4 will-change-transform will-change-opacity cursor-pointer transition-all duration-500 ${isActive ? 'bg-white/[0.04] border-indigo-500/30 shadow-[0_10px_40px_-15px_rgba(99,102,241,0.3)] scale-[1.02] -translate-y-1' : 'border-white/5 hover:bg-white/5 hover:-translate-y-0.5'}`}
                                         >
-                                            <div className={`p-3 rounded-lg transition-colors duration-500 ${isActive ? 'bg-emerald-500/20 text-emerald-300 shadow-[0_0_15px_rgba(52,211,153,0.4)]' : 'bg-emerald-500/10 text-emerald-400'}`}>
+                                            <div className={`p-3 rounded-xl transition-colors duration-500 ${isActive ? 'bg-indigo-500/20 text-indigo-300 shadow-[0_0_15px_rgba(99,102,241,0.4)]' : 'bg-white/[0.02] text-gray-400'}`}>
                                                 <feature.icon size={24} className={isActive ? 'animate-pulse' : ''} />
                                             </div>
                                             <div>
-                                                <h4 className={`text-lg font-semibold mb-2 transition-colors duration-500 ${isActive ? 'text-emerald-300 drop-shadow-[0_0_5px_rgba(52,211,153,0.5)]' : 'text-white'}`}>{feature.title}</h4>
-                                                <p className="text-gray-400 text-sm">{feature.description}</p>
+                                                <h4 className={`text-lg font-bold mb-2 tracking-tight transition-colors duration-500 ${isActive ? 'text-indigo-300 drop-shadow-[0_0_5px_rgba(99,102,241,0.3)]' : 'text-white'}`}>{feature.title}</h4>
+                                                <p className="text-gray-400 text-sm font-medium leading-relaxed">{feature.description}</p>
                                             </div>
                                         </motion.div>
                                     );

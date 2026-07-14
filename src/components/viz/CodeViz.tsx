@@ -30,7 +30,12 @@ import {
   Wand2,
   HelpCircle,
   BookOpen,
-  ChevronDown
+  ChevronDown,
+  Send,
+  Wrench,
+  Clock,
+  Database,
+  MessageSquare
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { VizEngine, ExecutionStep } from "@/lib/viz/engine";
@@ -92,9 +97,16 @@ export default function CodeViz() {
   const [activeTab, setActiveTab] = useState<"code" | "viz" | "ai">("code");
   const [isMobile, setIsMobile] = useState(false);
 
+  const [chatHistory, setChatHistory] = useState<{role: string, text: string}[]>([]);
+  const [chatInput, setChatInput] = useState("");
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const [isExplaining, setIsExplaining] = useState(false);
-  const [explanation, setExplanation] = useState("");
-  const [isExplainOpen, setIsExplainOpen] = useState(false);
+  
+  const [complexity, setComplexity] = useState<{timeComplexity: string, spaceComplexity: string, summary: string} | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  
+  const [commentary, setCommentary] = useState<Record<string, string>>({});
+  const [isFixing, setIsFixing] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024);
@@ -110,25 +122,91 @@ export default function CodeViz() {
     java: "// Java Code\nint x = 10;\nint y = 20;\nint sum = x + y;"
   };
 
-  const explainCode = useCallback(async () => {
+  const sendMessage = useCallback(async (msg: string) => {
+     if (!msg.trim()) return;
+     const newMessage = { role: "user", text: msg };
+     setChatHistory(prev => [...prev, newMessage]);
+     setChatInput("");
      setIsExplaining(true);
      if (isMobile) setActiveTab("ai");
-     else setIsExplainOpen(true);
+     else setIsChatOpen(true);
      
      try {
-        const res = await fetch("/api/ai/explain", {
+        const res = await fetch("/api/ai/chat", {
+           method: "POST",
+           body: JSON.stringify({ code, language, history: chatHistory, message: msg }),
+           headers: { "Content-Type": "application/json" }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to chat");
+        setChatHistory(prev => [...prev, { role: "ai", text: data.reply }]);
+     } catch (e: any) {
+        setChatHistory(prev => [...prev, { role: "ai", text: e.message || "Connection failed." }]);
+     } finally {
+        setIsExplaining(false);
+     }
+  }, [code, language, isMobile, chatHistory]);
+
+  const explainCode = useCallback(() => {
+     if (chatHistory.length === 0) {
+        sendMessage("Explain this code step by step like I'm a beginner.");
+     } else {
+        if (isMobile) setActiveTab("ai");
+        else setIsChatOpen(true);
+     }
+  }, [sendMessage, chatHistory, isMobile]);
+
+  const fixCode = useCallback(async (errorMessage: string) => {
+     setIsFixing(true);
+     try {
+        const res = await fetch("/api/ai/fix", {
+           method: "POST",
+           body: JSON.stringify({ code, language, errorMessage }),
+           headers: { "Content-Type": "application/json" }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        setCode(data.fixedCode);
+        setChatHistory(prev => [...prev, { role: "ai", text: `I found the issue and fixed it!\n\n**Fix:** ${data.explanation}` }]);
+        if (isMobile) setActiveTab("ai"); else setIsChatOpen(true);
+     } catch (e) {
+        alert("Failed to auto-fix code.");
+     } finally {
+        setIsFixing(false);
+     }
+  }, [code, language, isMobile]);
+
+  const analyzeComplexity = useCallback(async () => {
+     setIsAnalyzing(true);
+     try {
+        const res = await fetch("/api/ai/analyze", {
            method: "POST",
            body: JSON.stringify({ code, language }),
            headers: { "Content-Type": "application/json" }
         });
         const data = await res.json();
-        setExplanation(data.explanation);
+        if (!res.ok) throw new Error(data.error);
+        setComplexity(data);
      } catch (e) {
-        setExplanation("Failed to connect to AI Mentor. Please try again.");
+        console.error("Complexity analysis failed", e);
      } finally {
-        setIsExplaining(false);
+        setIsAnalyzing(false);
      }
-  }, [code, language, isMobile]);
+  }, [code, language]);
+
+  const fetchCommentary = useCallback(async (currentCode: string) => {
+     try {
+        const res = await fetch("/api/ai/commentary", {
+           method: "POST",
+           body: JSON.stringify({ code: currentCode, language }),
+           headers: { "Content-Type": "application/json" }
+        });
+        const data = await res.json();
+        if (data.commentary) setCommentary(data.commentary);
+     } catch (e) {
+        console.error("Failed to fetch commentary", e);
+     }
+  }, [language]);
 
   const handleLanguageChange = useCallback((lang: string) => {
     setLanguage(lang);
@@ -173,6 +251,9 @@ export default function CodeViz() {
       if (result.length > 0) {
         setSteps(result);
         setCurrentStep(0);
+        setCommentary({});
+        fetchCommentary(code);
+        setComplexity(null);
         return true;
       }
     } catch (e) {
@@ -261,16 +342,15 @@ export default function CodeViz() {
                   </AnimatePresence>
                 </div>
                 <button onClick={() => { 
-                  if (explanation) { isMobile ? setActiveTab("ai") : setIsExplainOpen(true); } 
-                  else explainCode(); 
+                  explainCode(); 
                 }} className="flex items-center gap-2 group">
                    <div className="w-8 h-8 lg:w-9 lg:h-9 rounded-full bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 group-hover:bg-indigo-500/20 transition-all">
-                      <Brain className="w-4 h-4 text-indigo-400" />
+                      <MessageSquare className="w-4 h-4 text-indigo-400" />
                    </div>
                    {!isMobile && (
                      <div className="flex flex-col items-start leading-none gap-1">
                         <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400">AI Logic Mentor</span>
-                        <span className="text-[8px] text-gray-600 font-bold uppercase tracking-widest">Ask for help</span>
+                        <span className="text-[8px] text-gray-600 font-bold uppercase tracking-widest">Chat & Explain</span>
                      </div>
                    )}
                 </button>
@@ -394,6 +474,25 @@ export default function CodeViz() {
                  <span className="text-[10px] lg:text-[12px] font-black uppercase tracking-widest text-gray-200">Execution Map</span>
                  <span className="text-[8px] text-gray-600 font-bold uppercase mt-1 tracking-widest italic">{steps.length} Steps Found</span>
               </div>
+              <div className="flex items-center gap-3 ml-6 border-l border-white/5 pl-6 hidden md:flex">
+                 {complexity ? (
+                    <div className="flex gap-2">
+                       <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                          <Clock className="w-3.5 h-3.5 text-emerald-400" />
+                          <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">{complexity.timeComplexity}</span>
+                       </div>
+                       <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
+                          <Database className="w-3.5 h-3.5 text-indigo-400" />
+                          <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest">{complexity.spaceComplexity}</span>
+                       </div>
+                    </div>
+                 ) : (
+                    <button onClick={analyzeComplexity} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 transition-all border border-white/5 group">
+                       {isAnalyzing ? <Loader2 className="w-3.5 h-3.5 text-gray-400 animate-spin" /> : <Activity className="w-3.5 h-3.5 text-gray-400 group-hover:text-white" />}
+                       <span className="text-[9px] font-black text-gray-400 group-hover:text-white uppercase tracking-widest">{isAnalyzing ? "Analyzing..." : "Big-O Analysis"}</span>
+                    </button>
+                 )}
+              </div>
               <div className="flex items-center gap-4 lg:gap-10">
                  <div className="flex flex-col items-end">
                     <span className="text-[18px] lg:text-2xl font-black tabular-nums" style={{ color: accentColor.hex }}>{currentStep + 1}<span className="text-gray-800 text-xs">/{steps.length}</span></span>
@@ -428,6 +527,15 @@ export default function CodeViz() {
                        <div className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] flex items-center gap-3">
                           <Sparkles className="w-3.5 h-3.5" /> Virtual Memory
                        </div>
+                       
+                       <AnimatePresence mode="popLayout">
+                          {commentary[currentStepData.line] && (
+                             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9 }} className="px-5 py-3 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-medium leading-relaxed flex items-center gap-3">
+                                <MessageSquare className="w-4 h-4 text-indigo-400 shrink-0" />
+                                {commentary[currentStepData.line]}
+                             </motion.div>
+                          )}
+                       </AnimatePresence>
 
                        <div className="space-y-6">
                           {currentStepData.error && (
@@ -441,7 +549,10 @@ export default function CodeViz() {
                                 </div>
                                 <div className="pt-4 border-t border-red-500/10 flex items-center justify-between">
                                    <span className="text-[9px] font-black text-red-400/50 uppercase tracking-widest italic">Logic suggests a check here</span>
-                                   <button onClick={explainCode} className="text-[9px] font-black text-white bg-red-500 px-4 py-1.5 rounded-full uppercase tracking-widest">Get AI Fix</button>
+                                   <button onClick={() => currentStepData.error && fixCode(currentStepData.error)} disabled={isFixing} className="flex items-center gap-2 text-[9px] font-black text-white bg-red-500 px-4 py-1.5 rounded-full uppercase tracking-widest hover:scale-105 transition-all">
+                                      {isFixing ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wrench className="w-3 h-3" />}
+                                      {isFixing ? "Fixing..." : "Auto-Fix"}
+                                   </button>
                                 </div>
                              </motion.div>
                           )}
@@ -481,45 +592,64 @@ export default function CodeViz() {
         </section>
 
         {/* AI Mental Model Section (Panel or Mobile Tab) */}
-        <section className={`${isMobile ? (activeTab === 'ai' ? 'flex flex-col flex-1' : 'hidden') : (isExplainOpen ? 'fixed top-0 right-0 w-[550px] h-full z-[100] shadow-2xl flex flex-col backdrop-blur-3xl border-l' : 'hidden')} ${theme === 'dark' ? 'bg-black/95 border-white/10' : 'bg-white border-gray-200'}`}>
-            <div className={`p-8 lg:p-12 border-b border-white/5 flex items-center justify-between ${isMobile ? 'bg-indigo-500/5' : ''}`}>
+        <section className={`${isMobile ? (activeTab === 'ai' ? 'flex flex-col flex-1' : 'hidden') : (isChatOpen ? 'fixed top-0 right-0 w-[550px] h-full z-[100] shadow-2xl flex flex-col backdrop-blur-3xl border-l' : 'hidden')} ${theme === 'dark' ? 'bg-black/95 border-white/10' : 'bg-white border-gray-200'}`}>
+            <div className={`p-6 lg:p-8 border-b flex items-center justify-between ${theme === 'dark' ? 'border-white/5 bg-indigo-500/5' : 'border-gray-100 bg-indigo-50'}`}>
                <div className="flex items-center gap-4">
-                  <Brain className="w-8 h-8 text-indigo-400" />
+                  <Brain className="w-8 h-8 text-indigo-500" />
                   <div>
-                     <div className="text-xl font-black tracking-tighter">AI Mentor</div>
-                     <div className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Logic Analysis</div>
+                     <div className="text-xl font-black tracking-tighter text-indigo-500">AI Mentor</div>
+                     <div className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Live Chat Assistant</div>
                   </div>
                </div>
-               {!isMobile && <button onClick={() => setIsExplainOpen(false)}><X className="w-6 h-6 text-gray-500 hover:text-white" /></button>}
+               {!isMobile && <button onClick={() => setIsChatOpen(false)}><X className="w-6 h-6 text-gray-500 hover:text-indigo-500 transition-colors" /></button>}
             </div>
             
-            <div className="flex-1 overflow-y-auto p-8 lg:p-12 custom-scrollbar">
-               {isExplaining ? (
-                  <div className="h-full flex flex-col items-center justify-center gap-8">
-                     <Loader2 className="w-10 h-10 animate-spin text-indigo-400" />
-                     <span className="text-[11px] font-black uppercase tracking-widest text-gray-700">De-Coding Logic...</span>
-                  </div>
-               ) : (
-                  <div className="h-full">
-                     {!explanation ? (
-                        <div className="h-full flex flex-col items-center justify-center p-12 text-center gap-8">
-                           <Wand2 className="w-12 h-12 text-indigo-400 opacity-20" />
-                           <p className="text-sm text-gray-600 font-medium">Click "Explain My Code" to get a beginner-friendly logic breakdown.</p>
-                           <button onClick={explainCode} className="px-10 py-5 bg-indigo-500 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl">Explain Now</button>
+            <div className="flex-1 overflow-y-auto p-6 lg:p-8 custom-scrollbar space-y-6 flex flex-col">
+                {chatHistory.length === 0 ? (
+                    <div className="m-auto flex flex-col items-center justify-center text-center gap-6 opacity-60">
+                        <MessageSquare className="w-12 h-12 text-indigo-400" />
+                        <p className="text-sm text-gray-500 font-medium max-w-[200px]">Send a message or click "Explain Now" to start learning.</p>
+                        <button onClick={explainCode} className="px-8 py-3 bg-indigo-500 text-white rounded-full text-[11px] font-black uppercase tracking-widest shadow-xl">Explain Code</button>
+                    </div>
+                ) : (
+                    chatHistory.map((msg, i) => (
+                        <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                            <div className={`max-w-[85%] p-4 rounded-3xl ${msg.role === 'user' ? 'bg-indigo-500 text-white rounded-tr-sm' : (theme === 'dark' ? 'bg-white/5 border border-white/5 text-gray-300 rounded-tl-sm' : 'bg-gray-100 text-gray-800 rounded-tl-sm')}`}>
+                                {msg.role === 'ai' ? (
+                                    <div className="prose prose-sm prose-invert max-w-none prose-p:leading-relaxed">
+                                        <ReactMarkdown>{msg.text}</ReactMarkdown>
+                                    </div>
+                                ) : (
+                                    <p className="text-sm font-medium">{msg.text}</p>
+                                )}
+                            </div>
                         </div>
-                     ) : (
-                        <div className="prose prose-invert max-w-none prose-sm prose-p:text-gray-500 prose-headings:text-indigo-400 prose-headings:font-black">
-                           <ReactMarkdown>{explanation}</ReactMarkdown>
+                    ))
+                )}
+                {isExplaining && (
+                    <div className="flex justify-start">
+                        <div className="p-4 rounded-3xl bg-white/5 border border-white/5 rounded-tl-sm flex items-center gap-3">
+                            <Loader2 className="w-4 h-4 text-indigo-400 animate-spin" />
+                            <span className="text-xs text-gray-500 font-medium">Thinking...</span>
                         </div>
-                     )}
-                  </div>
-               )}
+                    </div>
+                )}
             </div>
-            {explanation && (
-              <div className="p-8 border-t border-white/5">
-                 <button onClick={explainCode} className="w-full py-5 bg-indigo-500 text-white rounded-3xl text-[11px] font-black uppercase tracking-widest shadow-xl">Refresh Insight</button>
-              </div>
-            )}
+
+            <div className={`p-4 border-t ${theme === 'dark' ? 'border-white/5 bg-black/50' : 'border-gray-100 bg-white'}`}>
+                <form onSubmit={(e) => { e.preventDefault(); sendMessage(chatInput); }} className="relative flex items-center">
+                    <input 
+                        type="text" 
+                        value={chatInput} 
+                        onChange={e => setChatInput(e.target.value)} 
+                        placeholder="Ask a question about this code..." 
+                        className={`w-full py-4 pl-6 pr-14 rounded-full outline-none text-sm font-medium border ${theme === 'dark' ? 'bg-white/5 border-white/10 text-white placeholder-gray-600 focus:border-indigo-500/50' : 'bg-gray-50 border-gray-200 text-gray-900 focus:border-indigo-500/30'} transition-all`} 
+                    />
+                    <button type="submit" disabled={!chatInput.trim() || isExplaining} className={`absolute right-2 w-10 h-10 rounded-full flex items-center justify-center transition-all ${chatInput.trim() ? 'bg-indigo-500 text-white hover:scale-105' : 'bg-transparent text-gray-500'}`}>
+                        <Send className="w-4 h-4" />
+                    </button>
+                </form>
+            </div>
         </section>
 
         {/* Premium Floating Playback Island */}

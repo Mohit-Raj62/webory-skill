@@ -11,7 +11,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No code provided" }, { status: 400 });
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const prompt = `
       You are an expert programming mentor for absolute beginners. 
