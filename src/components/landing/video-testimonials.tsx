@@ -12,9 +12,124 @@ interface VideoTestimonial {
     thumbnailUrl: string;
 }
 
+// Helper to get YouTube ID and Thumbnail if missing
+const getYouTubeId = (url: string) => {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+};
+
+const getThumbnail = (t: VideoTestimonial) => {
+    if (t.thumbnailUrl) return t.thumbnailUrl;
+    const ytId = getYouTubeId(t.videoUrl);
+    if (ytId) return `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
+    return "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800&auto=format&fit=crop"; // Fallback placeholder
+};
+
+const getEmbedUrl = (url: string, mute: boolean = false, controls: boolean = true) => {
+    const ytId = getYouTubeId(url);
+    if (ytId) {
+        return `https://www.youtube.com/embed/${ytId}?autoplay=1&mute=${mute ? 1 : 0}&controls=${controls ? 1 : 0}&loop=1&playlist=${ytId}&rel=0`;
+    }
+    return url;
+};
+
+function TestimonialCard({ testimonial, isActive, setActive }: { testimonial: VideoTestimonial, isActive: boolean, setActive: (id: string | null) => void }) {
+    const isNativeVideo = testimonial.videoUrl.match(/\.(mp4|webm|ogg)$/i) || testimonial.videoUrl.includes("/video/upload");
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const [isPlayingNative, setIsPlayingNative] = useState(false);
+
+    useEffect(() => {
+        if (isNativeVideo && videoRef.current) {
+            if (isActive) {
+                videoRef.current.muted = false;
+                videoRef.current.controls = true;
+                videoRef.current.currentTime = 0;
+                videoRef.current.play().catch(e => console.error(e));
+                setIsPlayingNative(true);
+            } else {
+                videoRef.current.muted = true;
+                videoRef.current.controls = false;
+                videoRef.current.play().catch(e => console.error(e));
+                setIsPlayingNative(false);
+            }
+        }
+    }, [isActive, isNativeVideo]);
+
+    const handleCardClick = () => {
+        if (!isActive) {
+            setActive(testimonial._id);
+        }
+    };
+
+    return (
+        <div className="w-full h-full relative group cursor-pointer bg-black" onClick={handleCardClick}>
+            {/* Close Button for Active State */}
+            {isActive && (
+                <button 
+                    className="absolute top-2 right-2 z-50 p-1.5 bg-black/60 hover:bg-black/90 rounded-full text-white transition-colors"
+                    onClick={(e) => { e.stopPropagation(); setActive(null); }}
+                >
+                    <X className="w-4 h-4" />
+                </button>
+            )}
+
+            {/* Native Video Handling */}
+            {isNativeVideo ? (
+                <video 
+                    ref={videoRef}
+                    src={testimonial.videoUrl} 
+                    autoPlay 
+                    muted 
+                    loop 
+                    playsInline
+                    className={`w-full h-full ${isActive ? 'object-contain' : 'object-cover pointer-events-none'}`}
+                />
+            ) : (
+                /* YouTube Video Handling */
+                <>
+                    {isActive ? (
+                        <iframe 
+                            src={getEmbedUrl(testimonial.videoUrl, false, true)}
+                            className="w-full h-full border-0 absolute inset-0 z-40"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                        />
+                    ) : (
+                        <img 
+                            src={getThumbnail(testimonial)} 
+                            alt={testimonial.studentName}
+                            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+                        />
+                    )}
+                </>
+            )}
+
+            {/* Overlays for Inactive State */}
+            {!isActive && (
+                <>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none z-10" />
+                    
+                    <div className="absolute inset-0 flex items-center justify-center opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all z-20">
+                        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-blue-600/90 backdrop-blur flex items-center justify-center shadow-[0_0_30px_rgba(37,99,235,0.6)]">
+                            <Play className="w-5 h-5 md:w-6 md:h-6 text-white ml-1" fill="currentColor" />
+                        </div>
+                    </div>
+
+                    <div className="absolute bottom-0 left-0 w-full p-3 md:p-5 text-left z-20 pointer-events-none">
+                        <h3 className="text-sm md:text-lg font-bold text-white leading-tight truncate">{testimonial.studentName}</h3>
+                        <p className="text-emerald-400 text-xs md:text-sm font-medium mt-1 truncate">{testimonial.roleOrCourse}</p>
+                    </div>
+                </>
+            )}
+        </div>
+    );
+}
+
 export function VideoTestimonialsSection() {
     const [testimonials, setTestimonials] = useState<VideoTestimonial[]>([]);
     const [activeVideo, setActiveVideo] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
     const carouselRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -27,32 +142,14 @@ export function VideoTestimonialsSection() {
                 }
             } catch (error) {
                 console.error("Failed to fetch video testimonials", error);
+            } finally {
+                setLoading(false);
             }
         };
         fetchVideos();
     }, []);
 
-    // Helper to get YouTube ID and Thumbnail if missing
-    const getYouTubeId = (url: string) => {
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-        const match = url.match(regExp);
-        return (match && match[2].length === 11) ? match[2] : null;
-    };
-
-    const getThumbnail = (t: VideoTestimonial) => {
-        if (t.thumbnailUrl) return t.thumbnailUrl;
-        const ytId = getYouTubeId(t.videoUrl);
-        if (ytId) return `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
-        return "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800&auto=format&fit=crop"; // Fallback placeholder
-    };
-
-    const getEmbedUrl = (url: string) => {
-        const ytId = getYouTubeId(url);
-        if (ytId) return `https://www.youtube.com/embed/${ytId}?autoplay=1`;
-        return url; // Assuming it's already an embed link or raw mp4 if not YT
-    };
-
-    if (testimonials.length === 0) return null;
+    if (!loading && testimonials.length === 0) return null;
 
     return (
         <section className="py-24 relative overflow-hidden bg-black">
@@ -95,47 +192,24 @@ export function VideoTestimonialsSection() {
                     className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scrollbar-hide md:justify-center"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
-                    {testimonials.map((testimonial, idx) => (
+                    {loading ? (
+                        [...Array(6)].map((_, idx) => (
+                            <div key={idx} className="snap-center shrink-0 w-[140px] h-[250px] md:w-[160px] md:h-[285px] relative rounded-3xl overflow-hidden bg-white/5 border border-white/10 animate-pulse" />
+                        ))
+                    ) : testimonials.map((testimonial, idx) => (
                         <motion.div
                             key={testimonial._id}
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: idx * 0.1 }}
-                            className="snap-center shrink-0 w-[220px] h-[390px] md:w-[240px] md:h-[426px] relative group rounded-3xl overflow-hidden bg-black border border-white/10 hover:border-blue-500/50 transition-colors shadow-2xl"
+                            viewport={{ once: true, margin: "-50px" }}
+                            transition={{ delay: idx * 0.05 }}
+                            className={`snap-center shrink-0 w-[140px] h-[250px] md:w-[160px] md:h-[285px] relative group rounded-3xl overflow-hidden bg-black border border-white/10 transition-all shadow-2xl ${activeVideo === testimonial._id ? 'w-[280px] md:w-[320px] ring-2 ring-blue-500' : 'hover:border-blue-500/50'}`}
                         >
-                            {activeVideo === testimonial._id ? (
-                                <iframe 
-                                    src={getEmbedUrl(testimonial.videoUrl)}
-                                    className="w-full h-full border-0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowFullScreen
-                                />
-                            ) : (
-                                <div className="w-full h-full relative overflow-hidden">
-                                    <img 
-                                        src={getThumbnail(testimonial)} 
-                                        alt={testimonial.studentName}
-                                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-                                    
-                                    {/* Play Button Overlay */}
-                                    <div className="absolute inset-0 flex items-center justify-center opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all cursor-pointer"
-                                         onClick={() => setActiveVideo(testimonial._id)}
-                                    >
-                                        <div className="w-16 h-16 rounded-full bg-blue-600/90 backdrop-blur flex items-center justify-center shadow-[0_0_30px_rgba(37,99,235,0.6)]">
-                                            <Play className="w-6 h-6 text-white ml-1" fill="currentColor" />
-                                        </div>
-                                    </div>
-
-                                    {/* Student Info */}
-                                    <div className="absolute bottom-0 left-0 w-full p-5 text-left">
-                                        <h3 className="text-lg font-bold text-white leading-tight">{testimonial.studentName}</h3>
-                                        <p className="text-emerald-400 text-sm font-medium mt-1">{testimonial.roleOrCourse}</p>
-                                    </div>
-                                </div>
-                            )}
+                            <TestimonialCard 
+                                testimonial={testimonial} 
+                                isActive={activeVideo === testimonial._id} 
+                                setActive={setActiveVideo} 
+                            />
                         </motion.div>
                     ))}
                 </div>

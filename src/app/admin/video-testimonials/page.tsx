@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, Link as LinkIcon, Film, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { uploadFile } from "@/lib/upload-utils";
 
 interface VideoTestimonial {
     _id: string;
@@ -21,6 +22,9 @@ export default function AdminVideoTestimonials() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState(false);
+    const [videoFile, setVideoFile] = useState<File | null>(null);
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [isUploading, setIsUploading] = useState(false);
 
     const [formData, setFormData] = useState({
         studentName: "",
@@ -50,6 +54,8 @@ export default function AdminVideoTestimonials() {
     };
 
     const handleOpenModal = (testimonial?: VideoTestimonial) => {
+        setVideoFile(null);
+        setUploadProgress(0);
         if (testimonial) {
             setEditingId(testimonial._id);
             setFormData({
@@ -77,6 +83,25 @@ export default function AdminVideoTestimonials() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitting(true);
+        
+        let finalVideoUrl = formData.videoUrl;
+
+        if (videoFile) {
+            setIsUploading(true);
+            try {
+                const data = await uploadFile(videoFile, "/api/upload/video", (progress) => {
+                    setUploadProgress(progress);
+                });
+                finalVideoUrl = data.url;
+            } catch (error) {
+                toast.error("Failed to upload video");
+                setIsUploading(false);
+                setSubmitting(false);
+                return;
+            }
+            setIsUploading(false);
+        }
+
         try {
             const url = editingId
                 ? `/api/admin/video-testimonials/${editingId}`
@@ -87,7 +112,7 @@ export default function AdminVideoTestimonials() {
             const res = await fetch(url, {
                 method,
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({ ...formData, videoUrl: finalVideoUrl }),
             });
 
             if (res.ok) {
@@ -258,13 +283,30 @@ export default function AdminVideoTestimonials() {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-1">Video URL (YouTube/MP4) *</label>
-                                <div className="flex gap-2">
-                                    <div className="relative flex-1">
+                                <label className="block text-sm font-medium text-gray-300 mb-1">Video URL (YouTube/MP4) OR Upload Video *</label>
+                                <div className="space-y-3">
+                                    <input
+                                        type="file"
+                                        accept="video/*"
+                                        onChange={(e) => {
+                                            if (e.target.files?.[0]) {
+                                                setVideoFile(e.target.files[0]);
+                                            } else {
+                                                setVideoFile(null);
+                                            }
+                                        }}
+                                        className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-400 hover:file:bg-blue-500/20"
+                                    />
+                                    <div className="flex items-center gap-4">
+                                        <div className="h-[1px] bg-white/10 flex-1"></div>
+                                        <span className="text-xs text-gray-500 uppercase font-bold">OR</span>
+                                        <div className="h-[1px] bg-white/10 flex-1"></div>
+                                    </div>
+                                    <div className="relative">
                                         <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                                         <input
                                             type="url"
-                                            required
+                                            required={!videoFile && !formData.videoUrl}
                                             value={formData.videoUrl}
                                             onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
                                             className="w-full bg-black/50 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:border-blue-500"
@@ -272,7 +314,13 @@ export default function AdminVideoTestimonials() {
                                         />
                                     </div>
                                 </div>
-                                <p className="text-xs text-gray-500 mt-1">For YouTube, standard links are automatically converted to embed format on the frontend.</p>
+                                <p className="text-xs text-gray-500 mt-2">Upload a video file or paste a YouTube/Direct URL. Uploaded videos will override the URL field.</p>
+                                {isUploading && (
+                                    <div className="mt-2 w-full bg-white/10 rounded-full h-2">
+                                        <div className="bg-blue-500 h-2 rounded-full transition-all duration-300" style={{ width: `${uploadProgress}%` }}></div>
+                                        <p className="text-xs text-center mt-1 text-gray-400">Uploading: {Math.round(uploadProgress)}%</p>
+                                    </div>
+                                )}
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-300 mb-1">Custom Thumbnail URL (Optional)</label>
