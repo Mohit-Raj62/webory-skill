@@ -189,7 +189,7 @@ export function VideoTestimonialsSection() {
                 {/* Video Carousel Grid */}
                 <div 
                     ref={carouselRef}
-                    className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scrollbar-hide md:justify-center"
+                    className="flex overflow-x-auto gap-4 md:gap-6 pb-8 px-4 md:px-8 snap-x snap-mandatory scrollbar-hide"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                     {loading ? (
