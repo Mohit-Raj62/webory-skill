@@ -15,7 +15,7 @@ export default function ConsentAdminPage() {
     const fetchLogs = async () => {
         setLoading(true);
         try {
-            const params = new URLSearchParams({ page: page.toString(), limit: "50" });
+            const params = new URLSearchParams({ page: page.toString(), limit: "25" });
             if (filterType) params.append("consentType", filterType);
             if (filterAction) params.append("action", filterAction);
 
