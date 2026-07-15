@@ -30,8 +30,8 @@ export function Typewriter({ words, textClassName = "" }: { words: string[], tex
 
         if (subIndex === 0 && reverse) {
             // Finished deleting, wait a bit before starting the next word
-            setReverse(false);
             const timeout = setTimeout(() => {
+                setReverse(false);
                 setIndex((prev) => (prev + 1) % words.length);
             }, 1000); // 1 second pause before typing next word
             return () => clearTimeout(timeout);

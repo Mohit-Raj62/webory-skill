@@ -129,7 +129,7 @@ function ShatterCard({ icon: Icon, label, value, index }: { icon: any, label: st
                 <div className="w-10 h-10 md:w-14 md:h-14 bg-white/5 rounded-2xl flex items-center justify-center mb-3 md:mb-4 text-blue-400 border border-white/10 group-hover:text-white/50 transition-colors">
                     <Icon className="w-5 h-5 md:w-7 md:h-7 animate-pulse" />
                 </div>
-                <h3 className="text-3xl md:text-4xl font-black text-white mb-1 font-outfit tracking-tighter drop-shadow-sm">{displayValue}</h3>
+                <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-1 tracking-tight drop-shadow-sm">{displayValue}</h3>
                 <p className="text-gray-400 font-medium text-xs md:text-sm">{label}</p>
             </motion.div>
 
@@ -261,11 +261,11 @@ export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initi
                             </motion.span>
                         </div>
                         
-                        <h1 className="text-4xl sm:text-5xl md:text-7xl font-black mb-6 md:mb-8 tracking-tighter leading-[1.05] text-white font-outfit">
-                            AI-Powered <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400 animate-gradient-x drop-shadow-sm">Skill</span> Platform
+                        <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 md:mb-8 tracking-tight leading-[1.1] drop-shadow-2xl text-white">
+                            AI-Powered <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-500 animate-gradient-x drop-shadow-sm">Skill</span> Platform
                             <br />
-                            <span className="text-2xl sm:text-3xl md:text-5xl font-semibold text-gray-400 block mt-3 font-inter tracking-tight">
-                                for <span className="text-white"><Typewriter words={["Industry-Ready", "High-Paying", "Future-Proof"]} /></span> Careers
+                            <span className="text-2xl sm:text-3xl md:text-5xl font-semibold text-gray-400 block mt-3 font-inter tracking-tight whitespace-nowrap">
+                                for <span className="text-white"><Typewriter words={["Industry-Ready", "High-Paying", "Future-Proof", "In-Demand", "World-Class", "Next-Gen"]} /></span> <span className="text-orange-500">Careers</span>
                             </span>
                         </h1>
                         
