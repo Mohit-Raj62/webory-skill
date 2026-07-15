@@ -227,8 +227,16 @@ export default function ApplicationsPage() {
         let matchesFilter = false;
         
         const isPaid = (app.internship?.price || 0) > 0;
-        const isPendingPayment = app.status === 'pending' && isPaid;
-        const isPendingReview = app.status === 'pending' && !isPaid;
+        
+        // Ignore placeholder transaction IDs like 'PENDING_PAYU' or 'PENDING_UPGRADE'
+        const isValidTransaction = app.transactionId && !app.transactionId.startsWith('PENDING');
+        const hasSubmittedPayment = isValidTransaction && (app.amountPaid || 0) > 0;
+        
+        // If it's a paid internship and they haven't submitted payment, it's Pending Payment.
+        const isPendingPayment = app.status === 'pending' && isPaid && !hasSubmittedPayment;
+        
+        // If it's a free internship, OR if they have submitted payment proof, it's Pending Review.
+        const isPendingReview = app.status === 'pending' && (!isPaid || hasSubmittedPayment);
 
         switch (filter) {
             case 'all':
@@ -367,7 +375,7 @@ export default function ApplicationsPage() {
                                     </h3>
                                     <span
                                         className={`px-3 py-1 rounded-full text-xs ${app.status === "pending"
-                                            ? (app.internship?.price || 0) > 0 
+                                            ? ((app.internship?.price || 0) > 0 && !(app.transactionId && !app.transactionId.startsWith('PENDING_') && (app.amountPaid || 0) > 0))
                                                 ? "bg-orange-500/20 text-orange-300 border border-orange-500/30"
                                                 : "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30"
                                             : app.status === "interview_pending"
@@ -380,7 +388,7 @@ export default function ApplicationsPage() {
                                             }`}
                                     >
                                         {app.status === 'pending' 
-                                            ? (app.internship?.price || 0) > 0 ? 'PAYMENT PENDING' : 'REVIEW NEEDED'
+                                            ? ((app.internship?.price || 0) > 0 && !(app.transactionId && !app.transactionId.startsWith('PENDING_') && (app.amountPaid || 0) > 0)) ? 'PAYMENT PENDING' : 'REVIEW NEEDED'
                                             : app.status === 'interview_pending' ? 'INTERVIEW PENDING'
                                             : app.status === 'accepted' && (app.internship?.price || 0) > 0 ? 'PAYMENT COMPLETE'
                                             : app.status.toUpperCase().replace('_', ' ')

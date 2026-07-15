@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, CreditCard, Lock, Tag, Check, AlertCircle, ArrowLeft } from "lucide-react";
+import { X, CreditCard, Lock, Tag, Check, AlertCircle, ArrowLeft, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -43,11 +43,22 @@ export function PaymentModal({
     const [validatingPromo, setValidatingPromo] = useState(false);
     const [appliedPromo, setAppliedPromo] = useState<any>(null);
     const effectiveOriginalPrice = (originalPrice && originalPrice > 0) ? originalPrice : price;
-    const initialGstAmount = Math.round(effectiveOriginalPrice * (gstPercentage / 100));
+    const initialGstAmount = Math.round(price * (gstPercentage / 100));
     const [finalPrice, setFinalPrice] = useState(price + initialGstAmount);
     const [basePrice, setBasePrice] = useState(price); // Price after course discount, before promo
     const [errorMessage, setErrorMessage] = useState("");
     const [phoneNumber, setPhoneNumber] = useState(mobileNumber || "");
+    const [showBreakdown, setShowBreakdown] = useState(false);
+
+    useEffect(() => {
+        if (isOpen) {
+            setBasePrice(price);
+            setFinalPrice(price + Math.round(price * (gstPercentage / 100)));
+            setAppliedPromo(null);
+            setPromoCode("");
+            setErrorMessage("");
+        }
+    }, [isOpen, price, gstPercentage]);
 
     const resourceId = resourceType === "course" ? courseId : internshipId;
 
@@ -126,7 +137,7 @@ export function PaymentModal({
                 }
 
                 setBasePrice(newBasePrice);
-                const gstAmount = Math.round(effectiveOriginalPrice * (gstPercentage / 100));
+                const gstAmount = Math.round(newBasePrice * (gstPercentage / 100));
                 setFinalPrice(newBasePrice + gstAmount);
 
                 toast.success(`Promo code applied! You save ₹${price - newBasePrice}`);
@@ -137,7 +148,7 @@ export function PaymentModal({
                 toast.error(msg);
                 setAppliedPromo(null);
                 setBasePrice(price);
-                const gstAmount = Math.round(effectiveOriginalPrice * (gstPercentage / 100));
+                const gstAmount = Math.round(price * (gstPercentage / 100));
                 setFinalPrice(price + gstAmount);
             }
         } catch (error) {
@@ -145,7 +156,7 @@ export function PaymentModal({
             setErrorMessage("Failed to validate promo code");
             setAppliedPromo(null);
             setBasePrice(price);
-            const gstAmount = Math.round(effectiveOriginalPrice * (gstPercentage / 100));
+            const gstAmount = Math.round(price * (gstPercentage / 100));
             setFinalPrice(price + gstAmount);
         } finally {
             setValidatingPromo(false);
@@ -156,7 +167,7 @@ export function PaymentModal({
         setAppliedPromo(null);
         setPromoCode("");
         setBasePrice(price);
-        const gstAmount = Math.round(effectiveOriginalPrice * (gstPercentage / 100));
+        const gstAmount = Math.round(price * (gstPercentage / 100));
         setFinalPrice(price + gstAmount);
         toast.info("Promo code removed");
     };
@@ -349,15 +360,58 @@ export function PaymentModal({
                 <div className="p-6 space-y-6">
                     {/* Price Display */}
                     <div className="bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col">
-                        <div className="flex justify-between items-center mb-2">
-                            <span className="text-gray-400 text-sm">Course Price</span>
+                        <div 
+                            className="flex justify-between items-center mb-2 cursor-pointer group"
+                            onClick={() => setShowBreakdown(!showBreakdown)}
+                        >
+                            <span className="text-gray-400 text-sm flex items-center gap-1 group-hover:text-gray-300 transition-colors">
+                                Price Breakdown 
+                                <ChevronDown size={14} className={`transform transition-transform duration-200 ${showBreakdown ? 'rotate-180' : ''}`} />
+                            </span>
                             <span className="text-white font-medium">₹{basePrice}</span>
                         </div>
+
+                        {showBreakdown && (
+                            <div className="mt-2 mb-4 p-3 bg-black/40 rounded-lg border border-white/5 space-y-2 text-sm">
+                                {effectiveOriginalPrice > price && (
+                                    <div className="flex justify-between items-center text-gray-400">
+                                        <span>Original Price</span>
+                                        <span className="line-through">₹{effectiveOriginalPrice}</span>
+                                    </div>
+                                )}
+                                {effectiveOriginalPrice > price && (
+                                    <div className="flex justify-between items-center text-green-400/90">
+                                        <span>Course Discount {discountPercentage ? `(${discountPercentage}%)` : ''}</span>
+                                        <span>-₹{effectiveOriginalPrice - price}</span>
+                                    </div>
+                                )}
+                                <div className="flex justify-between items-center text-gray-300">
+                                    <span>Current Price</span>
+                                    <span>₹{price}</span>
+                                </div>
+                                {appliedPromo && (
+                                    <div className="flex justify-between items-center text-green-400/90 font-medium">
+                                        <span>Promo Code ({appliedPromo.code})</span>
+                                        <span>-₹{price - basePrice}</span>
+                                    </div>
+                                )}
+                                <div className="flex justify-between items-center text-gray-300 pt-2 border-t border-white/10">
+                                    <span>Amount before GST</span>
+                                    <span>₹{basePrice}</span>
+                                </div>
+                                {gstPercentage > 0 && (
+                                    <div className="flex justify-between items-center text-gray-400">
+                                        <span>GST ({gstPercentage}%)</span>
+                                        <span>+₹{Math.round(basePrice * (gstPercentage / 100))}</span>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                         
-                        {gstPercentage > 0 && (
+                        {!showBreakdown && gstPercentage > 0 && (
                             <div className="flex justify-between items-center mb-2">
                                 <span className="text-gray-400 text-sm">GST ({gstPercentage}%)</span>
-                                <span className="text-white font-medium">₹{Math.round(effectiveOriginalPrice * (gstPercentage / 100))}</span>
+                                <span className="text-white font-medium">₹{Math.round(basePrice * (gstPercentage / 100))}</span>
                             </div>
                         )}
 

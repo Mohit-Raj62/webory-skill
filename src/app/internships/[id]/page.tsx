@@ -9,7 +9,7 @@ import { useParams, useRouter } from "next/navigation";
 import { 
     CheckCircle, Clock, BarChart, Users, Globe, PlayCircle, 
     Lock, FileText, Calendar, Video, ChevronDown, ChevronUp, 
-    Briefcase, Sparkles, ShieldCheck, ArrowLeft
+    Briefcase, Sparkles, ShieldCheck, ArrowLeft, Zap, GraduationCap, ArrowUpRight
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -74,7 +74,7 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                     const app = data.applications.find(
                         (a: any) => a.internship?._id?.toString() === id || a.internship?.toString() === id
                     );
-                    setIsAccepted(app?.status === 'accepted' || app?.status === 'completed' || (app?.amountPaid > 0 && app?.status !== 'rejected'));
+                    setIsAccepted(app?.status !== 'pending' && app?.status !== 'rejected');
                     if (app) setSelectedTier(app.selectedTier || "Basic");
                 }
             } catch (error) {

@@ -65,26 +65,35 @@ export async function POST(req: Request) {
       await handleInternshipApplication(userId, resourceId, txnid, amount);
     }
 
-    // Process Referral Reward
-    const referralCode = params.udf4;
-    if (referralCode) {
+    // Process Promo Code or Referral Reward
+    const code = params.udf4;
+    if (code) {
       try {
-        const Ambassador = (await import("@/models/Ambassador")).default;
-        const ambassador = await Ambassador.findOne({
-          referralCode: referralCode.toUpperCase(),
-        });
+        const PromoCode = (await import("@/models/PromoCode")).default;
+        const promo = await PromoCode.findOne({ code: code.toUpperCase() });
 
-        if (ambassador && ambassador.status === "active") {
-          // Award Points (e.g., 50 points per sale)
-          ambassador.points = (ambassador.points || 0) + 50;
-          ambassador.totalSignups = (ambassador.totalSignups || 0) + 1;
-          await ambassador.save();
-          console.log(
-            `Referral Reward: Awarded 50 points to ${ambassador.referralCode}`,
-          );
+        if (promo) {
+          promo.usedCount = (promo.usedCount || 0) + 1;
+          await promo.save();
+          console.log(`Promo Code Usage: Incremented count for ${promo.code}`);
+        } else {
+          const Ambassador = (await import("@/models/Ambassador")).default;
+          const ambassador = await Ambassador.findOne({
+            referralCode: code.toUpperCase(),
+          });
+
+          if (ambassador && ambassador.status === "active") {
+            // Award Points (e.g., 50 points per sale)
+            ambassador.points = (ambassador.points || 0) + 50;
+            ambassador.totalSignups = (ambassador.totalSignups || 0) + 1;
+            await ambassador.save();
+            console.log(
+              `Referral Reward: Awarded 50 points to ${ambassador.referralCode}`,
+            );
+          }
         }
       } catch (err) {
-        console.error("Referral Processing Error:", err);
+        console.error("Code Processing Error:", err);
       }
     }
 

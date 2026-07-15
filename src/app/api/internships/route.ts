@@ -3,12 +3,14 @@ import dbConnect from "@/lib/db";
 import Internship from "@/models/Internship";
 import { revalidateTag } from "next/cache";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     await dbConnect();
     const internships = await Internship.find({ isActive: { $ne: false } })
       .select(
-        "title company location type stipend tags price description color icon requirements responsibilities duration deadline perks tagline totalSeats filledSeats benefits",
+        "title company location type stipend tags price description color icon requirements responsibilities duration deadline perks tagline totalSeats filledSeats benefits hasTiers tiers originalPrice isFree gstPercentage",
       )
       .sort({ createdAt: -1 })
       .lean();

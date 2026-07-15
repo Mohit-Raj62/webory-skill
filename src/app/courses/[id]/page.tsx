@@ -239,7 +239,9 @@ export default function CourseDetailsPage() {
         // Calculate price based on current course settings
         const originalPrice = course.originalPrice || course.price;
         const discountPercentage = course.discountPercentage || 0;
-        const basePrice = course.price; // This is the final base price after discount
+        const basePrice = course.discountPercentage > 0 && course.originalPrice > 0
+            ? Math.round(course.originalPrice * (1 - course.discountPercentage / 100))
+            : course.price;
 
         const gstPercent = course.gstPercentage || 0;
         const totalAmount = Math.round(basePrice * (1 + gstPercent / 100));

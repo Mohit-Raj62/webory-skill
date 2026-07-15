@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/session-provider";
 import { 
     User, Mail, Award, Briefcase, LogOut, ExternalLink, Trophy, 
-    Calendar, Video, FileText, Clock, Upload, ChevronRight, Zap, Sparkles, Download, PlayCircle, Lock
+    Calendar, Video, FileText, Clock, Upload, ChevronRight, Zap, Sparkles, Download, PlayCircle, Lock, CreditCard
 } from "lucide-react";
 import dynamic from 'next/dynamic';
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +16,7 @@ const ActivityDashboard = dynamic(() => import('@/components/dashboard/activity-
 const GradesDashboard = dynamic(() => import('@/components/dashboard/grades-dashboard').then(mod => mod.GradesDashboard), { ssr: false });
 const PhoneCollectionModal = dynamic(() => import('@/components/profile/phone-collection-modal').then(mod => mod.PhoneCollectionModal), { ssr: false });
 const Invoice = dynamic(() => import('@/components/courses/invoice').then(mod => mod.Invoice), { ssr: false });
+const PaymentModal = dynamic(() => import('@/components/courses/payment-modal').then(mod => mod.PaymentModal), { ssr: false });
 
 export function ProfileClientContent({ 
     initialUser, 
@@ -38,6 +39,7 @@ export function ProfileClientContent({
     const [mounted, setMounted] = useState(false);
     const [showInvoice, setShowInvoice] = useState(false);
     const [transactionData, setTransactionData] = useState<any>(null);
+    const [paymentModalData, setPaymentModalData] = useState<any>(null);
     const router = useRouter();
     const { refreshAuth } = useAuth();
 
@@ -311,9 +313,20 @@ export function ProfileClientContent({
                                                 </p>
                                             </div>
                                         </div>
-                                        <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter ${app.status === 'pending' ? 'bg-amber-500/10 text-amber-500' : 'bg-emerald-500/10 text-emerald-500'}`}>{app.status.replace('_', ' ')}</span>
+                                        {app.status === 'pending' && (app.internship?.price || 0) > 0 && !(app.transactionId && !app.transactionId.startsWith('PENDING_') && (app.amountPaid || 0) > 0) ? (
+                                            <span className="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter bg-orange-500/10 text-orange-500 border border-orange-500/20">PAYMENT PENDING</span>
+                                        ) : app.status === 'pending' && (app.transactionId && !app.transactionId.startsWith('PENDING_') && (app.amountPaid || 0) > 0) ? (
+                                            <span className="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter bg-yellow-500/10 text-yellow-500 border border-yellow-500/20">UNDER REVIEW</span>
+                                        ) : (
+                                            <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter ${app.status === 'pending' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'}`}>{app.status.replace('_', ' ')}</span>
+                                        )}
                                     </div>
                                     <div className="flex flex-wrap gap-2 items-center">
+                                        {app.status === 'pending' && (app.internship?.price || 0) > 0 && !(app.transactionId && !app.transactionId.startsWith('PENDING_') && (app.amountPaid || 0) > 0) && (
+                                            <button onClick={() => setPaymentModalData(app)} className="h-8 px-4 flex items-center gap-2 bg-orange-500 hover:bg-orange-600 rounded-lg text-[10px] font-black uppercase tracking-widest text-white transition-all shadow-lg shadow-orange-500/20">
+                                                <CreditCard size={12} /> Pay Now
+                                            </button>
+                                        )}
                                         {app.resume && app.resume !== "Pending Upload" ? (
                                             <>
                                                 <a href={app.resume} target="_blank" rel="noopener noreferrer" className="h-8 px-4 flex items-center gap-2 bg-white/5 hover:bg-white/10 rounded-lg text-[10px] font-black uppercase tracking-widest text-slate-300 transition-all border border-white/5 shadow-sm"><FileText size={12} className="text-blue-400" /> Resume</a>
@@ -327,17 +340,21 @@ export function ProfileClientContent({
                                             </>
                                         )}
                                         {app.status === 'interview_scheduled' && <button onClick={() => app.interviewLink && window.open(app.interviewLink, '_blank')} className="h-8 px-4 bg-emerald-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-emerald-500/20"><Video size={12} /> Join Call</button>}
-                                        {(app.status === 'accepted' || app.status === 'completed' || (app.amountPaid > 0 && app.status !== 'rejected')) && (
+                                        {(app.status !== 'pending' && app.status !== 'rejected') && (
                                             <>
                                                 <button onClick={() => app.internship?._id && router.push(`/internships/${app.internship._id}`)} className="h-8 px-4 bg-blue-600 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-blue-600/20"><PlayCircle size={12} /> Content</button>
                                                 <button onClick={() => app.internship?._id && router.push(`/internships/${app.internship._id}/tasks`)} className="h-8 px-4 bg-purple-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-purple-500/20"><FileText size={12} /> Tasks</button>
-                                                <button 
-                                                    onClick={() => handleDownloadInvoice(app, 'internship')}
-                                                    className="h-8 px-4 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all"
-                                                >
-                                                    <Download size={12} /> Invoice
-                                                </button>
-                                                <button onClick={() => router.push(`/internships/applications/${app._id}/offer-letter`)} className="h-8 px-4 bg-white/5 hover:bg-white/10 border border-white/5 text-emerald-400 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2">📄 Offer</button>
+                                                {(app.amountPaid > 0) && (
+                                                    <button 
+                                                        onClick={() => handleDownloadInvoice(app, 'internship')}
+                                                        className="h-8 px-4 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all"
+                                                    >
+                                                        <Download size={12} /> Invoice
+                                                    </button>
+                                                )}
+                                                {(app.status === 'accepted' || app.status === 'completed') && (
+                                                    <button onClick={() => router.push(`/internships/applications/${app._id}/offer-letter`)} className="h-8 px-4 bg-white/5 hover:bg-white/10 border border-white/5 text-emerald-400 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2">📄 Offer</button>
+                                                )}
                                                 {app.status === 'completed' && <button onClick={() => router.push(`/internships/applications/${app._id}/certificate`)} className="h-8 px-4 bg-blue-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-blue-500/20">🎓 Cert</button>}
                                             </>
                                         )}
@@ -360,6 +377,24 @@ export function ProfileClientContent({
                 <Invoice
                     {...transactionData}
                     onClose={() => setShowInvoice(false)}
+                />
+            )}
+
+            {paymentModalData && (
+                <PaymentModal
+                    isOpen={!!paymentModalData}
+                    onClose={() => setPaymentModalData(null)}
+                    courseTitle={paymentModalData.internship?.title || "Unknown Career"}
+                    price={paymentModalData.internship?.price || 0}
+                    originalPrice={paymentModalData.internship?.price || 0}
+                    discountPercentage={0}
+                    gstPercentage={paymentModalData.internship?.gstPercentage || 0}
+                    internshipId={paymentModalData.internship?._id || paymentModalData.internship}
+                    userId={user?._id || user?.id}
+                    userName={`${user?.firstName} ${user?.lastName}`}
+                    userEmail={user?.email}
+                    mobileNumber={user?.phone}
+                    resourceType="internship"
                 />
             )}
         </div>

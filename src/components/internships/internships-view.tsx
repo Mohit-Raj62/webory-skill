@@ -3,7 +3,7 @@
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, IndianRupee, CheckCircle2, X, Search, Filter, Zap, Sparkles, GraduationCap, Globe, ArrowUpRight, ShieldCheck, Calendar, Briefcase, Download } from "lucide-react";
+import { MapPin, Clock, IndianRupee, CheckCircle2, X, Search, Filter, Zap, Sparkles, GraduationCap, Globe, ArrowUpRight, ShieldCheck, Calendar, Briefcase, Download, ChevronDown } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -174,6 +174,12 @@ export function InternshipsView({ internships, user, userApplications }: Interns
             }
 
             const internshipDetails = internships.find(i => i._id === selectedInternship);
+            const basePrice = internshipDetails?.isFree 
+                ? 0 
+                : (internshipDetails?.hasTiers 
+                    ? (internshipDetails.tiers?.find((t: any) => t.name === selectedTier)?.price || 0)
+                    : (internshipDetails?.price || 0));
+            const gstAmount = Math.round(basePrice * (internshipDetails?.gstPercentage || 0) / 100);
             
             const res = await fetch("/api/internships/apply", {
                 method: "POST",
@@ -192,11 +198,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                     referralCode: formData.referralCode,
                     transactionId: "PENDING_PAYU",
                     selectedTier: internshipDetails?.hasTiers ? selectedTier : "Basic",
-                    amountPaid: internshipDetails?.isFree 
-                        ? 0 
-                        : (internshipDetails?.hasTiers 
-                            ? (internshipDetails.tiers?.find((t: any) => t.name === selectedTier)?.price || 0)
-                            : (internshipDetails?.price || 0))
+                    amountPaid: 0 // Will be updated when payment actually succeeds
                 }),
             });
 
@@ -433,9 +435,53 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                                         
                                                         <div className="mb-8 text-center lg:text-left relative z-10">
                                                             <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-2">Onboarding Fee</p>
-                                                            <div className="flex items-baseline justify-center lg:justify-start gap-3">
-                                                                <span className="text-4xl md:text-5xl font-black text-white tracking-tighter">₹{job.price || 999}</span>
-                                                                <span className="text-sm text-slate-500 line-through">₹2,999</span>
+                                                            <div className="flex flex-col items-center lg:items-start gap-2 w-full">
+                                                                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 lg:gap-3 w-full">
+                                                                    <span className="text-4xl md:text-5xl font-black text-white tracking-tighter">₹{job.price || 999}</span>
+                                                                    {(job.originalPrice || 2999) > (job.price || 999) && (
+                                                                        <div className="flex items-center gap-2">
+                                                                            <span className="text-sm md:text-base text-slate-500 line-through shrink-0">₹{job.originalPrice || 2999}</span>
+                                                                            <span className="text-[10px] md:text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 whitespace-nowrap shrink-0">
+                                                                                {Math.round((((job.originalPrice || 2999) - (job.price || 999)) / (job.originalPrice || 2999)) * 100)}% OFF
+                                                                            </span>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                                
+                                                                <details className="w-full mt-2 group/breakdown">
+                                                                    <summary className="text-[10px] text-blue-400 font-bold uppercase tracking-widest cursor-pointer list-none flex items-center justify-center lg:justify-start gap-1 hover:text-blue-300 transition-colors">
+                                                                        View Price Breakdown
+                                                                        <ChevronDown size={12} className="group-open/breakdown:rotate-180 transition-transform" />
+                                                                    </summary>
+                                                                    <div className="mt-3 p-3 bg-black/40 rounded-xl border border-white/5 space-y-2 text-xs w-full max-w-sm text-left">
+                                                                        {(job.originalPrice || 2999) > (job.price || 999) && (
+                                                                            <>
+                                                                                <div className="flex justify-between items-center text-gray-400">
+                                                                                    <span>Original Price</span>
+                                                                                    <span className="line-through">₹{job.originalPrice || 2999}</span>
+                                                                                </div>
+                                                                                <div className="flex justify-between items-center text-emerald-400/90">
+                                                                                    <span>Discount</span>
+                                                                                    <span>-₹{(job.originalPrice || 2999) - (job.price || 999)}</span>
+                                                                                </div>
+                                                                            </>
+                                                                        )}
+                                                                        <div className="flex justify-between items-center text-gray-300">
+                                                                            <span>Base Price</span>
+                                                                            <span>₹{job.price || 999}</span>
+                                                                        </div>
+                                                                        {(job.gstPercentage || 0) > 0 && (
+                                                                            <div className="flex justify-between items-center text-gray-400">
+                                                                                <span>GST ({job.gstPercentage}%)</span>
+                                                                                <span>+₹{Math.round((job.price || 999) * (job.gstPercentage / 100))}</span>
+                                                                            </div>
+                                                                        )}
+                                                                        <div className="flex justify-between items-center text-white font-bold pt-2 border-t border-white/10 mt-2">
+                                                                            <span>Total Payable</span>
+                                                                            <span>₹{(job.price || 999) + Math.round((job.price || 999) * ((job.gstPercentage || 0) / 100))}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </details>
                                                             </div>
                                                             <p className="text-[11px] text-slate-400 mt-4 leading-relaxed font-medium">
                                                                 Includes lifetime certification, premium resources, and direct mentorship.
@@ -699,7 +745,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                         </button>
                                     )}
                             {/* LEFT SIDE: Internship Details / Perks (Hidden on Mobile) */}
-                            <div className="hidden md:flex w-2/5 bg-gradient-to-br from-emerald-950/30 to-black p-8 relative flex-col justify-between border-r border-white/5">
+                            <div className="hidden md:flex w-2/5 bg-gradient-to-br from-emerald-950/30 to-black p-8 relative flex-col justify-between border-r border-white/5 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-[80px]" />
                                 
                                 <div>
@@ -803,7 +849,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                 </div>
 
                                 {/* Scrollable Form Body */}
-                                <div className="flex-1 overflow-y-auto p-6 min-h-0 custom-scrollbar scroller">
+                                <div className="flex-1 overflow-y-auto p-6 min-h-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                                     <form onSubmit={handleSubmit} className="space-y-6 pb-4">
                                         
                                         {/* Personal & College Info */}

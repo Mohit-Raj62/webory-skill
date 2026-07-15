@@ -67,6 +67,21 @@ export async function PUT(
       paymentProof.verifiedAt = new Date();
       await paymentProof.save();
 
+      // Process Promo Code Usage
+      if (paymentProof.promoCode) {
+        try {
+          const PromoCode = (await import("@/models/PromoCode")).default;
+          const promo = await PromoCode.findOne({ code: paymentProof.promoCode.toUpperCase() });
+          if (promo) {
+            promo.usedCount = (promo.usedCount || 0) + 1;
+            await promo.save();
+            console.log(`Promo Code Usage: Incremented count for ${promo.code}`);
+          }
+        } catch (err) {
+          console.error("Promo Code Processing Error:", err);
+        }
+      }
+
       // Create enrollment based on payment type
       if (paymentProof.paymentType === "course") {
         // Check if already enrolled to prevent duplicate key error
