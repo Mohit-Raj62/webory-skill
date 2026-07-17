@@ -5,6 +5,7 @@ import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
 import { Video, Calendar, Clock, Link as LinkIcon, ExternalLink } from "lucide-react";
+import Link from "next/link";
 
 export default function LiveClassesPage() {
     const [liveClasses, setLiveClasses] = useState<any[]>([]);
@@ -93,16 +94,27 @@ export default function LiveClassesPage() {
 
                                     <div className="flex flex-col gap-3">
                                         {new Date(liveClass.date) > new Date() ? (
-                                            <a 
-                                                href={liveClass.meetingUrl} 
-                                                target="_blank" 
-                                                rel="noopener noreferrer"
-                                                className="w-full"
-                                            >
-                                                <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg shadow-blue-500/20">
-                                                    Join Live Class <ExternalLink size={16} className="ml-2" />
-                                                </Button>
-                                            </a>
+                                            liveClass.meetingUrl ? (
+                                                <a 
+                                                    href={liveClass.meetingUrl} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className="w-full"
+                                                >
+                                                    <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg shadow-blue-500/20">
+                                                        Join Live Class <ExternalLink size={16} className="ml-2" />
+                                                    </Button>
+                                                </a>
+                                            ) : (
+                                                <Link 
+                                                    href={`/live-classes/room/${liveClass._id}`} 
+                                                    className="w-full"
+                                                >
+                                                    <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg shadow-blue-500/20">
+                                                        Join Live Class <Video size={16} className="ml-2" />
+                                                    </Button>
+                                                </Link>
+                                            )
                                         ) : (
                                             <Button disabled className="w-full bg-gray-800 text-gray-500 cursor-not-allowed">
                                                 Class Ended

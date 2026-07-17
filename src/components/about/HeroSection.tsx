@@ -46,7 +46,7 @@ export function HeroSection() {
                               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
                             </span>
                             <span className="text-gray-200 text-sm font-medium tracking-wide">
-                                Recognized by <span className="text-white font-bold">Govt. of India</span> (MSME)
+                                Registered EdTech <span className="text-white font-bold">Startup</span> (MSME)
                             </span>
                         </div>
                     </div>

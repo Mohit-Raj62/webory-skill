@@ -268,7 +268,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                         </div>
 
                         <h1 className="text-2xl md:text-4xl lg:text-5xl font-black mb-5 tracking-tighter text-white leading-tight">
-                            Launch Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Career</span> <span className="text-slate-500 mx-2 font-light">|</span> <span className="text-slate-200 opacity-90">Earn While You Learn</span>
+                            Project-Based <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Training</span> <span className="text-slate-500 mx-2 font-light">|</span> <span className="text-slate-200 opacity-90">Build Real Experience</span>
                         </h1>
                         <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed font-light">
                             Gain <span className="text-white font-medium italic underline decoration-emerald-500/50">real-world experience</span> by working with 
@@ -434,7 +434,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                                         <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 blur-[80px] rounded-full" />
                                                         
                                                         <div className="mb-8 text-center lg:text-left relative z-10">
-                                                            <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-2">Onboarding Fee</p>
+                                                            <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-2">Training Program Fee</p>
                                                             <div className="flex flex-col items-center lg:items-start gap-2 w-full">
                                                                 <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 lg:gap-3 w-full">
                                                                     <span className="text-4xl md:text-5xl font-black text-white tracking-tighter">₹{job.price || 999}</span>
@@ -553,7 +553,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                                                     <div className="relative z-10 flex items-center justify-center gap-3">
                                                                         {isFull ? "Registration Closed" : (
                                                                             <>
-                                                                                APPLY NOW 
+                                                                                ENROLL NOW 
                                                                                 <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
                                                                                     <ArrowUpRight size={20} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                                                                                 </div>

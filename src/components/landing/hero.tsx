@@ -159,59 +159,6 @@ export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initi
             <BackgroundCodeAnimation />
 
             <div className="container mx-auto px-4 relative z-10">
-                {/* RECOGNIZED BY BANNER - PREMIUM DESIGN */}
-                <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.1 }}
-                    className="w-full max-w-5xl mx-auto mb-12 lg:mb-16 relative group"
-                >
-                    {/* Glowing Aura Background */}
-                    <div className="absolute inset-0 bg-white/5 blur-2xl rounded-[3rem] opacity-50 group-hover:opacity-70 transition-opacity duration-500" />
-                    
-                    {/* Main Banner Container */}
-                    <div className="relative glass-card rounded-3xl md:rounded-[2rem] py-4 px-6 md:py-6 md:px-8 flex flex-col items-center gap-5 md:gap-6 overflow-hidden">
-                        
-                        {/* Premium Header */}
-                        <div className="flex items-center gap-4 w-full justify-center px-4">
-                            <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-white/10" />
-                            <div className="flex items-center gap-2.5 bg-white/[0.03] px-4 py-1.5 rounded-full border border-white/5">
-                                <span className="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em]">Recognized By</span>
-                            </div>
-                            <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-white/10" />
-                        </div>
-
-                        {/* Scrolling Logos - Seamless & Mobile Responsive */}
-                        <div className="w-full relative overflow-hidden flex items-center h-16 md:h-20 mask-image-fade">
-                            {/* Seamless Fade Edges */}
-                            <div className="absolute inset-y-0 left-0 w-12 md:w-32 bg-gradient-to-r from-[#030616] via-[#030616]/80 to-transparent z-20 pointer-events-none" />
-                            <div className="absolute inset-y-0 right-0 w-12 md:w-32 bg-gradient-to-l from-[#030616] via-[#030616]/80 to-transparent z-20 pointer-events-none" />
-                            
-                            {/* Inner Marquee Container */}
-                            <div className="flex w-max animate-scroll hover:[animation-play-state:paused] items-center gap-8 md:gap-16 px-4 md:px-8">
-                                {[...Array(2)].map((_, i) => (
-                                    <div key={i} className="flex items-center gap-8 md:gap-16 shrink-0">
-                                        <div className="h-10 md:h-14 bg-white rounded-xl px-4 py-2 flex items-center justify-center hover:scale-110 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] shrink-0">
-                                            <img src="https://betacloud.ncs.gov.in/assets/logo/ncs-main-logo.svg" alt="NCS Logo" title="National Career Service" className="h-full w-auto object-contain" />
-                                        </div>
-                                        <div className="h-10 md:h-14 bg-white rounded-xl px-4 py-2 flex items-center justify-center hover:scale-110 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] shrink-0">
-                                            <img src="/assets/aicte.png" alt="AICTE Logo" title="AICTE" className="h-full w-auto object-contain" />
-                                        </div>
-                                        <div className="h-10 md:h-14 bg-white rounded-xl px-4 py-2 flex items-center justify-center hover:scale-110 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] shrink-0">
-                                            <img src="https://internship.aicte-india.org//images/new_logo/logo_internship_new.jpg" alt="AICTE Internship" title="AICTE Internship" className="h-full w-auto object-contain" />
-                                        </div>
-                                        <div className="h-10 md:h-14 bg-white rounded-xl px-4 py-2 flex items-center justify-center hover:scale-110 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] shrink-0">
-                                            <img src="https://www.msme.gov.in/static/uploads/2025/06/3b95c999bc86195fb00f36a0ce88b19d.jpg" alt="MSME" title="MSME" className="h-full w-auto object-contain" />
-                                        </div>
-                                        <div className="h-10 md:h-14 bg-white rounded-xl px-4 py-2 flex items-center justify-center hover:scale-110 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] shrink-0">
-                                            <img src="https://www.skillindiadigital.gov.in/assets/new-ux-img/skill-india-big-logo.svg" alt="Skill India" title="Skill India" className="h-full w-auto object-contain" />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </motion.div>
 
                 <div className="text-center max-w-4xl mx-auto">
                     <motion.div
@@ -229,7 +176,7 @@ export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initi
                                 <div className="flex items-center gap-2">
                                     <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-emerald-500 animate-pulse" />
                                     <span className="text-emerald-400 text-[10px] font-black tracking-widest uppercase whitespace-nowrap">
-                                        Govt. Recognized
+                                        Registered Startup
                                     </span>
                                 </div>
                                 <div className="w-px h-3 bg-white/10" />
@@ -289,8 +236,7 @@ export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initi
                                     <Rocket className="w-4 h-4 md:w-5 md:h-5 fill-current" />
                                 </div>
                                 <div className="text-left">
-                                    <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-emerald-600 leading-none mb-0.5 md:mb-1">Unmissable Value</p>
-                                    <h4 className="text-sm md:text-lg font-black leading-none whitespace-nowrap">Watch Module 1 <span className="text-emerald-500">FREE</span></h4>
+                                    <h4 className="text-sm md:text-lg font-black leading-none whitespace-nowrap">Start <span className="text-emerald-500">Free Trial</span></h4>
                                 </div>
                             </motion.div>
 
@@ -327,7 +273,7 @@ export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initi
                             { icon: Users, label: "Active Students", value: activeStudents },
                             { icon: BookOpen, label: "Courses Available", value: availableCourses },
                             { icon: Code, label: "Projects Completed", value: "50+" },
-                            { icon: Rocket, label: "Internships Launched", value: launchedInternships },
+                            { icon: Rocket, label: "Careers Accelerated", value: launchedInternships },
                         ].map((stat, index) => (
                             <ShatterCard key={index} {...stat} index={index} />
                         ))}

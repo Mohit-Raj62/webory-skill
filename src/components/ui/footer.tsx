@@ -50,18 +50,7 @@ export function Footer({ className }: { className?: string }) {
                             Empowering the next generation of developers with AI-driven learning, real-world projects, and expert mentorship. Build your future with Webory.
                         </p>
                         
-                        <div className="pt-2">
-                             <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 hover:border-orange-500/30 transition-colors group/msme">
-                                <div className="text-orange-500 font-black text-xl tracking-tighter group-hover/msme:scale-110 transition-transform">
-                                    MSME
-                                </div>
-                                <div className="w-px h-8 bg-white/10"></div>
-                                 <div className="flex flex-col min-w-0">
-                                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider truncate">Registered Enterprise</span>
-                                    <span className="text-[10px] text-orange-400/80 font-mono break-all">UDYAM-BR-26-0208472</span>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
 
                     {/* Navigation Links - Hidden in App Mode since they are in Explore Hub */}
@@ -147,52 +136,7 @@ export function Footer({ className }: { className?: string }) {
                     )}
                 </div>
 
-                {/* Accreditations & Recognitions */}
-                <div className="mt-16 pt-10 border-t border-white/5 relative group">
-                    <div className="absolute inset-0 bg-gradient-to-b from-blue-500/5 to-transparent pointer-events-none" />
-                    
-                    <div className="flex flex-col items-center space-y-8 relative z-10">
-                        {/* Premium Header */}
-                        <div className="flex items-center gap-4 w-full justify-center px-4 max-w-3xl mx-auto">
-                            <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-white/10" />
-                            <div className="flex items-center gap-2.5 bg-white/5 px-5 py-2 rounded-full border border-white/10 shadow-lg backdrop-blur-md">
-                                <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse shadow-[0_0_10px_rgba(96,165,250,0.8)]" />
-                                <span className="text-[10px] md:text-xs font-black text-gray-300 uppercase tracking-[0.2em]">Recognized & Accredited By</span>
-                            </div>
-                            <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-white/10" />
-                        </div>
 
-                        {/* Premium Marquee Container */}
-                        <div className="w-full relative overflow-hidden flex items-center h-20 md:h-24 max-w-5xl mx-auto bg-black/40 backdrop-blur-xl border border-white/5 rounded-2xl md:rounded-3xl py-2 shadow-2xl">
-                            {/* Seamless Fade Edges */}
-                            <div className="absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-[#050505] via-[#050505]/90 to-transparent z-20 pointer-events-none" />
-                            <div className="absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-[#050505] via-[#050505]/90 to-transparent z-20 pointer-events-none" />
-                            
-                            {/* Inner Marquee Container */}
-                            <div className="flex w-max animate-scroll hover:[animation-play-state:paused] items-center gap-8 md:gap-16 px-4 md:px-8">
-                                {[...Array(2)].map((_, i) => (
-                                    <div key={i} className="flex items-center gap-8 md:gap-16 shrink-0">
-                                        <div className="h-10 md:h-12 flex items-center justify-center bg-white rounded-xl px-4 py-2 hover:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_25px_rgba(255,255,255,0.25)] shrink-0">
-                                            <img src="https://betacloud.ncs.gov.in/assets/logo/ncs-main-logo.svg" alt="NCS Logo" title="National Career Service" className="h-full w-auto object-contain" />
-                                        </div>
-                                        <div className="h-10 md:h-12 flex items-center justify-center bg-white rounded-xl px-4 py-2 hover:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_25px_rgba(255,255,255,0.25)] shrink-0">
-                                            <img src="/assets/aicte.png" alt="AICTE Logo" title="AICTE" className="h-full w-auto object-contain" />
-                                        </div>
-                                        <div className="h-10 md:h-12 flex items-center justify-center bg-white rounded-xl px-4 py-2 hover:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_25px_rgba(255,255,255,0.25)] shrink-0">
-                                            <img src="https://internship.aicte-india.org//images/new_logo/logo_internship_new.jpg" alt="AICTE Internship" title="AICTE Internship" className="h-full w-auto object-contain" />
-                                        </div>
-                                        <div className="h-10 md:h-12 flex items-center justify-center bg-white rounded-xl px-4 py-2 hover:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_25px_rgba(255,255,255,0.25)] shrink-0">
-                                            <img src="https://www.msme.gov.in/static/uploads/2025/06/3b95c999bc86195fb00f36a0ce88b19d.jpg" alt="MSME" title="MSME" className="h-full w-auto object-contain" />
-                                        </div>
-                                        <div className="h-10 md:h-12 flex items-center justify-center bg-white rounded-xl px-4 py-2 hover:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_25px_rgba(255,255,255,0.25)] shrink-0">
-                                            <img src="https://www.skillindiadigital.gov.in/assets/new-ux-img/skill-india-big-logo.svg" alt="Skill India" title="Skill India" className="h-full w-auto object-contain" />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 <div className="mt-12">
                     <div className="w-full flex flex-col md:flex-row justify-between items-center gap-6 p-6 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm">

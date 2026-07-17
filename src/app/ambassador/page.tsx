@@ -177,7 +177,7 @@ export default function AmbassadorPage() {
                 <BenefitCard 
                     icon={<Trophy className="text-yellow-400" size={32} />}
                     title="Official Certificate"
-                    description="Get a recognized Campus Ambassador certificate from a Govt. (MSME) registered platform."
+                    description="Get a recognized Campus Ambassador certificate from a verified tech startup."
                     color="bg-yellow-500/10 border-yellow-500/20"
                 />
                  <BenefitCard 
@@ -411,7 +411,7 @@ export default function AmbassadorPage() {
             />
             <FaqItem
               question="Will I get a certificate?"
-              answer="Yes! Every ambassador receives an official certificate from Webory Skills, which is MSME Government registered."
+              answer="Yes! Every ambassador receives an official certificate from Webory Skills."
             />
             <FaqItem
               question="How do I earn rewards and points?"

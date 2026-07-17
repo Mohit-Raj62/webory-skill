@@ -41,16 +41,26 @@ function TestimonialCard({ testimonial, isActive, setActive }: { testimonial: Vi
 
     useEffect(() => {
         if (isNativeVideo && videoRef.current) {
+            const playPromise = videoRef.current.play();
+            
             if (isActive) {
                 videoRef.current.muted = false;
                 videoRef.current.controls = true;
                 videoRef.current.currentTime = 0;
-                videoRef.current.play().catch(e => console.error(e));
+                if (playPromise !== undefined) {
+                    playPromise.catch(e => {
+                        if (e.name !== 'AbortError') console.error(e);
+                    });
+                }
                 setIsPlayingNative(true);
             } else {
                 videoRef.current.muted = true;
                 videoRef.current.controls = false;
-                videoRef.current.play().catch(e => console.error(e));
+                if (playPromise !== undefined) {
+                    playPromise.catch(e => {
+                        if (e.name !== 'AbortError') console.error(e);
+                    });
+                }
                 setIsPlayingNative(false);
             }
         }

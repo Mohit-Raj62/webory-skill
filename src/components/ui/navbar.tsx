@@ -159,9 +159,7 @@ export function Navbar() {
                             </span>
                         </Link>
                         
-                        <div className="hidden sm:flex items-center gap-3 pl-3 ml-3 border-l border-white/20 h-8">
-                            <img src="/assets/aicte.png" alt="AICTE Logo" className="h-full w-auto object-contain bg-white rounded px-1" />
-                        </div>
+
                     </div>
 
                     {/* Desktop Menu */}

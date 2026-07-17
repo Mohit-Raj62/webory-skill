@@ -45,8 +45,8 @@ const features = [
         items: [
              {
                 icon: ShieldCheck,
-                title: "Government Recognized Platform",
-                description: "Trust in a platform that is officially registered and recognized by the Ministry of MSME, Govt. of India.",
+                title: "Verified Startup",
+                description: "Trust in a registered tech startup dedicated to bringing you the best in project-based learning.",
             },
              {
                 icon: Trophy,
@@ -65,8 +65,8 @@ const features = [
             },
             {
                 icon: Building2,
-                title: "Internship Support",
-                description: "Unlock exclusive internship opportunities to gain work experience while you learn.",
+                title: "Internship Assistance",
+                description: "Get dedicated support and guidance to land top internship opportunities after mastering your skills.",
             },
             {
                 icon: BrainCircuit,

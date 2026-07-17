@@ -34,7 +34,7 @@ const LiveClassSchema = new Schema<ILiveClass>({
   },
   meetingUrl: {
     type: String,
-    required: [true, "Please provide a meeting URL"],
+    // Optional now. If empty, internal platform Jitsi room is used.
   },
   recordingUrl: {
     type: String,

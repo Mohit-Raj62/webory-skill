@@ -80,6 +80,11 @@ export default function LiveClassesAdminPage() {
                 date: dateTime,
             };
 
+            // Mongoose ObjectId validation fails if referenceId is an empty string
+            if (!payload.referenceId) {
+                delete (payload as any).referenceId;
+            }
+
             const url = editingClass
                 ? `/api/admin/live-classes/${editingClass._id}`
                 : "/api/admin/live-classes";
@@ -236,16 +241,27 @@ export default function LiveClassesAdminPage() {
                             </div>
 
                             <div className="flex flex-col gap-2">
-                                <a 
-                                    href={liveClass.meetingUrl} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="w-full"
-                                >
-                                    <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                                        Join Meeting <ExternalLink size={16} className="ml-2" />
-                                    </Button>
-                                </a>
+                                {liveClass.meetingUrl ? (
+                                    <a 
+                                        href={liveClass.meetingUrl} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="w-full"
+                                    >
+                                        <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                                            Join Meeting <ExternalLink size={16} className="ml-2" />
+                                        </Button>
+                                    </a>
+                                ) : (
+                                    <Link 
+                                        href={`/admin/live-classes/room/${liveClass._id}`} 
+                                        className="w-full"
+                                    >
+                                        <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                                            Start Class <Video size={16} className="ml-2" />
+                                        </Button>
+                                    </Link>
+                                )}
                                 {liveClass.recordingUrl && (
                                     <a 
                                         href={liveClass.recordingUrl} 
@@ -324,17 +340,7 @@ export default function LiveClassesAdminPage() {
                                     onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) })}
                                 />
                             </div>
-                            <div>
-                                <label className="text-sm text-gray-300 block mb-2">Meeting URL</label>
-                                <input
-                                    type="url"
-                                    required
-                                    placeholder="https://meet.google.com/..."
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none"
-                                    value={formData.meetingUrl}
-                                    onChange={(e) => setFormData({ ...formData, meetingUrl: e.target.value })}
-                                />
-                            </div>
+
                             <div>
                                 <label className="text-sm text-gray-300 block mb-2">Recording URL (Optional)</label>
                                 <input

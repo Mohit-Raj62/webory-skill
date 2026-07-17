@@ -15,14 +15,14 @@ export function CertificateShowcase() {
                         </div>
                         <h2 className="text-2xl md:text-5xl font-bold text-white mb-6">Earn a <span className="text-yellow-400">Prestigious Certificate</span></h2>
                         <p className="text-gray-400 text-lg leading-relaxed mb-8">
-                            Stand out to employers with certificates that validate your skills. Our certifications are recognized by MSME (Govt. of India) and top tech companies.
+                            Stand out to employers with certificates that validate your skills. Our certifications are valued by top tech startups and companies.
                         </p>
                         
                         <div className="space-y-4">
                             {[
                                 "Verifiable via unique ID",
                                 "Shareable on LinkedIn",
-                                "Recognized by MSME & ISO",
+                                "Industry Recognized",
                                 "Lifetime validity"
                             ].map((feature, i) => (
                                 <div key={i} className="flex items-center gap-3">
@@ -62,7 +62,7 @@ export function CertificateShowcase() {
                                         </div>
                                     </div>
                                     <div className="text-[8px] text-gray-500 uppercase tracking-wider font-semibold">
-                                        Govt. of India Recognized Startup<br/>MSME Reg: UDYAM-BR-26-000472
+                                        Registered Tech Startup<br/>MSME Reg: UDYAM-BR-26-000472
                                     </div>
                                 </div>
 
