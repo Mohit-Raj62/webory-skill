@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
-import { CheckCircle2, PlayCircle, BookOpen, Clock, Award, Shield, Star, Users, ArrowRight, Share2, Heart, Play, Lock, ChevronDown, Check, Globe, Layout, Zap, Tablet, Trophy } from "lucide-react";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { CheckCircle2, PlayCircle, BookOpen, Clock, Award, Shield, Star, Users, ArrowRight, Share2, Heart, Play, Lock, ChevronDown, Check, Globe, Layout, Zap, Tablet, Trophy, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
@@ -30,6 +30,23 @@ interface CourseHeaderProps {
 }
 
 export const CourseHeader = ({ course, safeDate }: CourseHeaderProps) => {
+  const [showPromo, setShowPromo] = useState(false);
+
+  const getEmbedUrl = (url: string) => {
+    if (!url) return "";
+    let embedUrl = url;
+    if (url.includes("youtube.com/watch?v=")) {
+      embedUrl = url.replace("watch?v=", "embed/");
+    } else if (url.includes("youtu.be/")) {
+      embedUrl = url.replace("youtu.be/", "youtube.com/embed/");
+    }
+    const ampersandIndex = embedUrl.indexOf("&");
+    if (ampersandIndex !== -1 && embedUrl.includes("youtube.com/embed/")) {
+        embedUrl = embedUrl.substring(0, ampersandIndex);
+    }
+    return embedUrl;
+  };
+
   return (
     <div className="relative pt-32 pb-20 overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-full -z-10">
@@ -40,14 +57,19 @@ export const CourseHeader = ({ course, safeDate }: CourseHeaderProps) => {
       <div className="container mx-auto px-4 md:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }}>
-            <div className="flex items-center gap-2 mb-6">
+            <div className="flex flex-wrap items-center gap-2 mb-6">
               <span className="px-4 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded-full text-blue-400 text-xs font-bold uppercase tracking-widest">
-                {course.category}
+                {course.category || "Skill Path"}
               </span>
               <div className="flex items-center gap-1 text-yellow-500 bg-yellow-500/10 px-3 py-1.5 rounded-full border border-yellow-500/20">
                 <Star size={14} fill="currentColor" />
                 <span className="text-xs font-bold">4.9 (2.4k reviews)</span>
               </div>
+              {course.launchDate && (
+                <div className="flex items-center gap-1 text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20">
+                  <span className="text-xs font-bold uppercase tracking-widest">LAUNCH: {course.launchDate}</span>
+                </div>
+              )}
             </div>
             
             <h1 className="text-4xl md:text-6xl font-black text-white mb-6 leading-[1.1] tracking-tight">
@@ -97,12 +119,9 @@ export const CourseHeader = ({ course, safeDate }: CourseHeaderProps) => {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="relative">
-            <a 
-              href={course.promoVideoUrl || "#"} 
-              target={course.promoVideoUrl ? "_blank" : "_self"} 
-              rel={course.promoVideoUrl ? "noopener noreferrer" : ""}
-              className="relative block aspect-video rounded-3xl overflow-hidden border border-white/10 shadow-2xl group"
-              onClick={(e) => { if (!course.promoVideoUrl) e.preventDefault(); }}
+            <div 
+              className="relative block aspect-video rounded-3xl overflow-hidden border border-white/10 shadow-2xl group cursor-pointer"
+              onClick={() => { if (course.promoVideoUrl) setShowPromo(true); }}
             >
               <Image 
                 src={course.thumbnail} 
@@ -121,10 +140,41 @@ export const CourseHeader = ({ course, safeDate }: CourseHeaderProps) => {
                 </p>
                 <p className="text-white/60 text-xs font-bold">{course.promoVideoDuration ? course.promoVideoDuration.toUpperCase() : "00:00 MINS"}</p>
               </div>
-            </a>
+            </div>
           </motion.div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {showPromo && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4"
+          >
+            <div className="relative w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+              <button
+                onClick={() => setShowPromo(false)}
+                className="absolute top-4 right-4 z-10 w-10 h-10 bg-black/50 hover:bg-black/80 rounded-full flex items-center justify-center text-white transition-colors"
+              >
+                <X size={20} />
+              </button>
+              
+              {course.promoVideoUrl?.includes('youtube.com') || course.promoVideoUrl?.includes('youtu.be') ? (
+                <iframe
+                  src={getEmbedUrl(course.promoVideoUrl)}
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              ) : (
+                <video src={course.promoVideoUrl} className="w-full h-full" controls autoPlay />
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

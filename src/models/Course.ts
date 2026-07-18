@@ -91,6 +91,10 @@ const CourseSchema = new Schema({
     type: String,
     default: "", // e.g. "02:45 MINS"
   },
+  launchDate: {
+    type: String,
+    default: "", // e.g. "August 2025" or "Coming Soon"
+  },
   icon: {
     type: String,
     required: true, // Store icon name as string, e.g., "Globe", "Palette"

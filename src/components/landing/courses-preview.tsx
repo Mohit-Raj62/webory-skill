@@ -116,10 +116,15 @@ export function CoursesPreview({ popularCourses = [] }: CoursesPreviewProps) {
                                         </span>
                                     </div>
 
-                                    <div className="flex items-center gap-2 mb-6">
+                                    <div className="flex flex-wrap items-center gap-2 mb-6">
                                         <span className="px-2.5 py-1 bg-white/5 rounded-lg text-[10px] font-black uppercase tracking-widest text-slate-400 border border-white/5">
                                             {course.level}
                                         </span>
+                                        {course.launchDate && (
+                                            <span className="px-2.5 py-1 bg-emerald-500/10 rounded-lg text-[10px] font-black uppercase tracking-widest text-emerald-400 border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
+                                                Launch: {course.launchDate}
+                                            </span>
+                                        )}
                                     </div>
 
                                     <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/5 text-[11px] font-bold text-slate-500">

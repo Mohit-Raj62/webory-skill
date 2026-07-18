@@ -180,6 +180,12 @@ export function CoursesView({ courses, enrolledCourseIds }: CoursesViewProps) {
                                              <span className="px-4 py-1.5 bg-cyan-500/80 backdrop-blur-md text-white text-[11px] font-black uppercase tracking-tighter rounded-full shadow-[0_4px_12px_rgba(6,182,212,0.4)]">
                                                 {course.level}
                                              </span>
+                                             {course.launchDate && (
+                                                <span className="px-4 py-1.5 bg-emerald-500/80 backdrop-blur-md text-white text-[11px] font-black uppercase tracking-tighter rounded-full shadow-[0_4px_12px_rgba(16,185,129,0.4)] flex items-center gap-1">
+                                                    <Clock size={12} className="fill-current/50" />
+                                                    Launch: {course.launchDate}
+                                                </span>
+                                             )}
                                         </div>
                                     </div>
 

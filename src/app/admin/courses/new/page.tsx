@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus, X, Upload, Image, PenTool } from "lucide-react";
+import { ArrowLeft, Plus, X, Upload, Image, PenTool, Video, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { uploadFile } from "@/lib/upload-utils";
 import { SignaturesSection } from "@/components/admin/course-edit/SignaturesSection";
@@ -14,6 +14,7 @@ export default function NewCoursePage() {
     const [uploadingVideo, setUploadingVideo] = useState(false);
     const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
     const [uploadingCertificate, setUploadingCertificate] = useState(false);
+    const [uploadingPromoVideo, setUploadingPromoVideo] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [formData, setFormData] = useState({
         title: "",
@@ -27,6 +28,7 @@ export default function NewCoursePage() {
         language: "English/Hindi",
         promoVideoUrl: "",
         promoVideoDuration: "",
+        launchDate: "",
         lastUpdatedDate: "",
         color: "from-blue-500 to-purple-500",
         icon: "Globe",
@@ -147,6 +149,37 @@ export default function NewCoursePage() {
 
     const removeProject = (index: number) => {
         setFormData({ ...formData, projects: formData.projects.filter((_, i) => i !== index) });
+    };
+
+    const handlePromoVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const maxSize = 500 * 1024 * 1024; // 500MB
+        if (file.size > maxSize) {
+            alert(`File too large! Maximum size is 500MB.`);
+            e.target.value = "";
+            return;
+        }
+
+        setUploadingPromoVideo(true);
+        try {
+            const data = await uploadFile(file, "/api/upload/video", (progress) => {
+                setUploadProgress(progress);
+            });
+            setFormData((prev) => ({ 
+                ...prev, 
+                promoVideoUrl: data.url,
+                promoVideoDuration: data.duration ? Math.floor(data.duration).toString() + "s" : prev.promoVideoDuration
+            }));
+            alert("Promo video uploaded successfully!");
+        } catch (error: any) {
+            console.error("Upload error:", error);
+            alert(error.message || "Failed to upload promo video.");
+        } finally {
+            setUploadingPromoVideo(false);
+            e.target.value = "";
+        }
     };
 
     const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -348,24 +381,44 @@ export default function NewCoursePage() {
                         </div>
 
                         <div>
-                            <label className="text-sm text-gray-300 block mb-2">Promo Video URL</label>
-                            <input
-                                type="text"
-                                placeholder="e.g. YouTube URL"
-                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                value={formData.promoVideoUrl}
-                                onChange={(e) => setFormData({ ...formData, promoVideoUrl: e.target.value })}
-                            />
+                            <label className="text-sm text-gray-300 block mb-2">Promo Video</label>
+                            <div className="relative rounded-2xl overflow-hidden border border-white/10 aspect-video flex items-center justify-center bg-black/40 mb-3 md:w-1/2">
+                                {formData.promoVideoUrl ? (
+                                    <video src={formData.promoVideoUrl} className="w-full h-full object-cover" controls />
+                                ) : (
+                                    <Video size={32} className="text-gray-600" />
+                                )}
+                                <label htmlFor="promo-video-upload" className="absolute inset-0 cursor-pointer flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition-opacity">
+                                    {uploadingPromoVideo ? <Loader2 className="animate-spin text-white" size={24} /> : <Upload size={24} className="text-white"/>}
+                                </label>
+                                <input type="file" id="promo-video-upload" className="hidden" accept="video/*" onChange={handlePromoVideoUpload} disabled={uploadingPromoVideo} />
+                            </div>
+                            <div className="flex gap-2 items-center">
+                                <input
+                                    type="text"
+                                    placeholder="URL (optional)"
+                                    className="flex-1 bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                    value={formData.promoVideoUrl}
+                                    onChange={(e) => setFormData({ ...formData, promoVideoUrl: e.target.value })}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Duration"
+                                    className="w-32 bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
+                                    value={formData.promoVideoDuration}
+                                    onChange={(e) => setFormData({ ...formData, promoVideoDuration: e.target.value })}
+                                />
+                            </div>
                         </div>
 
                         <div>
-                            <label className="text-sm text-gray-300 block mb-2">Promo Video Duration</label>
+                            <label className="text-sm text-gray-300 block mb-2">Launch Date (Optional)</label>
                             <input
                                 type="text"
-                                placeholder="e.g. 02:45 MINS"
+                                placeholder="e.g. Coming Soon, 15th August 2025"
                                 className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
-                                value={formData.promoVideoDuration}
-                                onChange={(e) => setFormData({ ...formData, promoVideoDuration: e.target.value })}
+                                value={formData.launchDate}
+                                onChange={(e) => setFormData({ ...formData, launchDate: e.target.value })}
                             />
                         </div>
 
