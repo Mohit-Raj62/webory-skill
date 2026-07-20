@@ -218,7 +218,7 @@ export default function CourseCertificate({
                     </div>
 
                     {/* Signatures Grid */}
-                    <div className={`w-full grid ${signatures?.partner ? 'grid-cols-3' : 'grid-cols-2'} gap-8 items-end px-12`}>
+                    <div className={`w-full grid ${signatures?.partner?.name?.trim() ? 'grid-cols-3' : 'grid-cols-2'} gap-8 items-end px-12`}>
                         {/* Signature 1 (Left) - Founder */}
                         <div className="text-center">
                             <div className="h-12 flex items-end justify-center mb-1">
@@ -245,15 +245,15 @@ export default function CourseCertificate({
                         </div>
 
                         {/* Signature 3 (Partner) - Only if collaboration */}
-                        {signatures?.partner && (
+                        {signatures?.partner?.name?.trim() && (
                             <div className="text-center">
                                 <div className="h-12 flex items-end justify-center mb-1">
                                     <span className="font-signature text-4xl text-[#c5a059] whitespace-nowrap px-2">
-                                        {signatures?.partner?.name || "Partner Rep."}
+                                        {signatures.partner.name}
                                     </span>
                                 </div>
                                 <div className="border-b border-gray-400 w-full mb-1"></div>
-                                <p className="text-xs text-gray-600 font-bold uppercase tracking-widest">{signatures?.partner?.title || "Authorized Signatory"}</p>
+                                <p className="text-xs text-gray-600 font-bold uppercase tracking-widest">{signatures.partner.title || "Authorized Signatory"}</p>
                             </div>
                         )}
 
