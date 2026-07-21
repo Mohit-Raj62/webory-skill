@@ -44,6 +44,16 @@ const nextConfig: NextConfig = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
+  webpack: (config) => {
+    // Suppress Webpack warnings from Sentry/OpenTelemetry dynamic requires
+    config.ignoreWarnings = [
+      ...(config.ignoreWarnings || []),
+      { module: /node_modules\/@opentelemetry\/instrumentation/ },
+      { module: /node_modules\/@sentry/ },
+      /Critical dependency: the request of a dependency is an expression/
+    ];
+    return config;
+  },
 };
 
 export default withPWA({
