@@ -4,6 +4,9 @@ import ActivityLog from "@/models/ActivityLog";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+
 export async function GET(req: Request) {
   try {
     await dbConnect();

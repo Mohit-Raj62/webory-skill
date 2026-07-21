@@ -36,6 +36,14 @@ export async function DELETE(
     // Delete user
     await User.findByIdAndDelete(id);
 
+    const { logActivity } = await import("@/lib/logger");
+    await logActivity(
+      decoded.userId || decoded.id,
+      "DELETE_USER",
+      `Deleted user: ${id}`,
+      req.headers.get("x-forwarded-for") || "unknown"
+    );
+
     return NextResponse.json({ message: "User deleted successfully" });
   } catch (error) {
     console.error("Delete user error:", error);
@@ -79,6 +87,14 @@ export async function PATCH(
       { role },
       { new: true }
     ).select("-password");
+
+    const { logActivity } = await import("@/lib/logger");
+    await logActivity(
+      decoded.userId || decoded.id,
+      "VERIFY_USER",
+      `Updated role of user ${id} to ${role}`,
+      req.headers.get("x-forwarded-for") || "unknown"
+    );
 
     return NextResponse.json({ user });
   } catch (error) {

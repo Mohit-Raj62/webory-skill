@@ -21,6 +21,14 @@ export async function POST(req: Request) {
     // If using tags
     // revalidateTag('courses');
 
+    const { logActivity } = await import("@/lib/logger");
+    await logActivity(
+      decoded.userId || decoded.id,
+      "CLEAR_CACHE",
+      `Cleared site cache`,
+      req.headers.get("x-forwarded-for") || "unknown"
+    );
+
     return NextResponse.json({
       success: true,
       message:

@@ -82,6 +82,14 @@ export async function POST(req: Request) {
 
     const duration = Date.now() - startTime;
 
+    const { logActivity } = await import("@/lib/logger");
+    await logActivity(
+      decoded.userId || decoded.id,
+      "OPTIMIZE_DB",
+      `Optimized database in ${duration}ms`,
+      req.headers.get("x-forwarded-for") || "unknown"
+    );
+
     return NextResponse.json({
       success: true,
       message: `Database optimization completed in ${duration}ms`,

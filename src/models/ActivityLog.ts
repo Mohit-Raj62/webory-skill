@@ -16,6 +16,7 @@ const ActivityLogSchema = new Schema({
       "VERIFY_USER",
       "DELETE_USER",
       "LOGIN",
+      "LOGOUT",
       "EXPORT_DATA",
       "CLEAR_CACHE",
       "CLEANUP_ASSETS",
@@ -33,6 +34,7 @@ const ActivityLogSchema = new Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+    expires: "30d", // Automatically delete document after 30 days
   },
 });
 

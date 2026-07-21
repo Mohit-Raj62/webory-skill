@@ -275,7 +275,7 @@ function ActivityLogsTable() {
 
     const fetchLogs = (page = pagination.page) => {
         setLoading(true);
-        fetch(`/api/admin/maintenance/logs?page=${page}&limit=${pagination.limit}`)
+        fetch(`/api/admin/maintenance/logs?page=${page}&limit=${pagination.limit}&_t=${Date.now()}`, { cache: 'no-store' })
             .then(res => res.json())
             .then(data => {
                 if(data.logs) setLogs(data.logs);

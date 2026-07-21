@@ -90,6 +90,14 @@ export async function POST(req: Request) {
 
     const csvString = [header, ...rows].join("\n");
 
+    const { logActivity } = await import("@/lib/logger");
+    await logActivity(
+      decoded.userId || decoded.id,
+      "EXPORT_DATA",
+      `Exported ${data.length} ${type} records`,
+      req.headers.get("x-forwarded-for") || "unknown"
+    );
+
     return new NextResponse(csvString, {
       status: 200,
       headers: {

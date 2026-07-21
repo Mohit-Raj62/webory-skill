@@ -150,6 +150,14 @@ export async function POST(req: Request) {
       }
     }
 
+    const { logActivity } = await import("@/lib/logger");
+    await logActivity(
+      decoded.userId || decoded.id,
+      "CLEANUP_ASSETS",
+      `Deleted ${totalDeleted} orphaned assets`,
+      req.headers.get("x-forwarded-for") || "unknown"
+    );
+
     return NextResponse.json({
       success: true,
       message: `Cleanup complete. Scanned ${scannedCount} assets. Deleted ${totalDeleted} orphans.`,
