@@ -209,7 +209,7 @@ export default function OfferLetterPage() {
                     {/* Heading / Title */}
                     <div className="mb-8 print:mb-1 flex flex-col items-center justify-center text-center">
                         <h1 className="text-2xl print:text-lg font-black text-[#1a237e] tracking-[0.15em] uppercase font-serif mb-2 border-b-2 border-[#c5a059] pb-1 inline-block px-2">
-                            Internship Offer Letter
+                           OFFICIAL Internship Offer Letter
                         </h1>
                         <p className="text-base print:text-sm font-bold text-gray-800">
                             For the Position of <span className="text-[#c5a059]">{data.internship.title}</span>
