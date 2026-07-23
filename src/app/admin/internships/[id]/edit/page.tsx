@@ -176,18 +176,30 @@ export default function EditInternshipPage() {
     // Curriculum Methods
     const addModule = () => {
         if (moduleInput.title.trim()) {
-            const newModule = {
-                title: moduleInput.title,
-                description: moduleInput.description,
-                order: formData.modules.length,
-                videos: []
-            };
-            setFormData({
-                ...formData,
-                modules: [...formData.modules, newModule]
-            });
+            if (editingModule !== null) {
+                const newModules = [...formData.modules];
+                newModules[editingModule] = {
+                    ...newModules[editingModule],
+                    title: moduleInput.title,
+                    description: moduleInput.description
+                };
+                setFormData({ ...formData, modules: newModules });
+                setEditingModule(null);
+            } else {
+                const newModule = {
+                    title: moduleInput.title,
+                    description: moduleInput.description,
+                    order: formData.modules.length,
+                    videos: [],
+                    tierAccess: ["Basic", "Intermediate", "Advanced"]
+                };
+                setFormData({
+                    ...formData,
+                    modules: [...formData.modules, newModule]
+                });
+                setSelectedModuleIndex(formData.modules.length);
+            }
             setModuleInput({ title: "", description: "" });
-            setSelectedModuleIndex(formData.modules.length);
         }
     };
 
@@ -209,7 +221,12 @@ export default function EditInternshipPage() {
             if (!newModules[selectedModuleIndex].videos) {
                 newModules[selectedModuleIndex].videos = [];
             }
-            newModules[selectedModuleIndex].videos.push({ ...videoInput });
+            if (editingVideo) {
+                newModules[editingVideo.moduleIndex].videos[editingVideo.videoIndex] = { ...videoInput };
+                setEditingVideo(null);
+            } else {
+                newModules[selectedModuleIndex].videos.push({ ...videoInput });
+            }
             setFormData({ ...formData, modules: newModules });
             setVideoInput({ title: "", url: "", duration: "" });
         }
@@ -708,8 +725,13 @@ export default function EditInternshipPage() {
                                 </div>
                             </div>
                             <Button type="button" onClick={addModule} className="w-full bg-blue-600 hover:bg-blue-700">
-                                <Plus size={18} className="mr-2" /> Create Module
+                                <Plus size={18} className="mr-2" /> {editingModule !== null ? "Update Module" : "Create Module"}
                             </Button>
+                            {editingModule !== null && (
+                                <Button type="button" variant="outline" onClick={() => { setEditingModule(null); setModuleInput({ title: "", description: "" }); }} className="w-full mt-2">
+                                    Cancel Edit
+                                </Button>
+                            )}
                         </div>
 
                         <div className="space-y-6">
@@ -761,6 +783,13 @@ export default function EditInternshipPage() {
                                             >
                                                 {selectedModuleIndex === mIdx ? "Adding Content" : "Select"}
                                             </Button>
+                                            <button type="button" onClick={(e) => {
+                                                e.stopPropagation();
+                                                setModuleInput({ title: module.title, description: module.description });
+                                                setEditingModule(mIdx);
+                                            }} className="p-2 text-blue-500/70 hover:text-blue-400">
+                                                <PenTool size={18} />
+                                            </button>
                                             <button type="button" onClick={() => removeModule(mIdx)} className="p-2 text-red-500/70 hover:text-red-400">
                                                 <Trash2 size={18} />
                                             </button>
@@ -775,9 +804,16 @@ export default function EditInternshipPage() {
                                                 <input type="text" placeholder="YouTube URL" className="bg-black/20 border border-white/10 rounded-xl p-3 text-sm text-white" value={videoInput.url} onChange={(e) => setVideoInput({...videoInput, url: e.target.value})} />
                                                 <input type="text" placeholder="Duration (e.g. 12:30)" className="bg-black/20 border border-white/10 rounded-xl p-3 text-sm text-white" value={videoInput.duration} onChange={(e) => setVideoInput({...videoInput, duration: e.target.value})} />
                                             </div>
-                                            <Button type="button" onClick={addVideoToModule} className="w-full bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/30">
-                                                <Plus size={16} className="mr-2" /> Add Lesson
-                                            </Button>
+                                            <div className="flex gap-2">
+                                                <Button type="button" onClick={addVideoToModule} className="flex-1 bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/30">
+                                                    <Plus size={16} className="mr-2" /> {editingVideo ? "Update Lesson" : "Add Lesson"}
+                                                </Button>
+                                                {editingVideo && (
+                                                    <Button type="button" variant="outline" onClick={() => { setEditingVideo(null); setVideoInput({ title: "", url: "", duration: "" }); }}>
+                                                        Cancel
+                                                    </Button>
+                                                )}
+                                            </div>
                                         </div>
                                     )}
 
@@ -791,9 +827,18 @@ export default function EditInternshipPage() {
                                                         <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{video.duration}</p>
                                                     </div>
                                                 </div>
-                                                <button type="button" onClick={() => removeVideoFromModule(mIdx, vIdx)} className="p-2 text-red-500/50 hover:text-red-400">
-                                                    <Trash2 size={16} />
-                                                </button>
+                                                <div className="flex">
+                                                    <button type="button" onClick={() => {
+                                                        setVideoInput({ ...video });
+                                                        setEditingVideo({ moduleIndex: mIdx, videoIndex: vIdx });
+                                                        setSelectedModuleIndex(mIdx);
+                                                    }} className="p-2 text-blue-500/50 hover:text-blue-400">
+                                                        <PenTool size={16} />
+                                                    </button>
+                                                    <button type="button" onClick={() => removeVideoFromModule(mIdx, vIdx)} className="p-2 text-red-500/50 hover:text-red-400">
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
