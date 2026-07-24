@@ -10,6 +10,14 @@ const InternshipSchema = new Schema({
     unique: true,
     sparse: true,
   },
+  instructor: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  },
+  coInstructors: {
+    type: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    default: [], // Additional teachers assigned to the internship
+  },
   company: {
     type: String,
     required: true,

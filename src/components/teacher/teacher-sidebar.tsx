@@ -20,6 +20,7 @@ const menuItems = [
     { name: "Back to Website", href: "/", icon: Home },
     { name: "Dashboard", href: "/teacher", icon: LayoutDashboard },
     { name: "My Courses", href: "/teacher/courses", icon: BookOpen },
+    { name: "My Internships", href: "/teacher/internships", icon: FileText },
     { name: "My Blogs", href: "/teacher/blogs", icon: FileText },
     { name: "Live Classes", href: "/teacher/live-classes", icon: Video },
     { name: "Create Course", href: "/teacher/courses/create", icon: PlusCircle },

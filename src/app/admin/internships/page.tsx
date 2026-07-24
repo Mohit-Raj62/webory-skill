@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Edit, Trash2, Search, FileText, Eye, EyeOff } from "lucide-react";
+import { Plus, Edit, Trash2, Search, FileText, Eye, EyeOff, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { InternshipActivityFeed } from "@/components/admin/internship-activity-feed";
@@ -16,12 +16,18 @@ interface Internship {
     price: number;
     createdAt: string;
     isActive?: boolean;
+    instructor?: string;
+    coInstructors?: string[];
 }
+
+import { ManageInternshipTeachersModal } from "@/components/admin/ManageInternshipTeachersModal";
 
 export default function InternshipsAdminPage() {
     const [internships, setInternships] = useState < Internship[] > ([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
+    const [isTeachersModalOpen, setIsTeachersModalOpen] = useState(false);
+    const [selectedInternshipForTeachers, setSelectedInternshipForTeachers] = useState<Internship | null>(null);
 
     useEffect(() => {
         fetchInternships();
@@ -190,6 +196,16 @@ export default function InternshipsAdminPage() {
                                             >
                                                 {internship.isActive !== false ? <Eye size={18} /> : <EyeOff size={18} />}
                                             </button>
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedInternshipForTeachers(internship);
+                                                    setIsTeachersModalOpen(true);
+                                                }}
+                                                className="p-2 hover:bg-blue-500/10 rounded-lg transition-colors text-blue-400"
+                                                title="Manage Teachers"
+                                            >
+                                                <Users size={18} />
+                                            </button>
                                             <Link href={`/admin/internships/${internship._id}/edit`}>
                                                 <button className="p-2 hover:bg-blue-500/10 rounded-lg transition-colors text-blue-400">
                                                     <Edit size={18} />
@@ -218,6 +234,12 @@ export default function InternshipsAdminPage() {
                     <div className="text-center py-12 text-gray-400">No internships found</div>
                 )}
             </div>
+            <ManageInternshipTeachersModal
+                isOpen={isTeachersModalOpen}
+                onClose={() => setIsTeachersModalOpen(false)}
+                internship={selectedInternshipForTeachers}
+                onSuccess={fetchInternships}
+            />
         </div>
     );
 }

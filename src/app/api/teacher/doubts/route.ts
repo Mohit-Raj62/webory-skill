@@ -4,6 +4,7 @@ import dbConnect from "@/lib/db";
 import Doubt from "@/models/Doubt";
 import User from "@/models/User";
 import Course from "@/models/Course";
+import Internship from "@/models/Internship";
 
 // Get all doubts for teacher's courses
 export async function GET(req: NextRequest) {
@@ -32,13 +33,23 @@ export async function GET(req: NextRequest) {
     }).select("_id");
     const courseIds = teacherCourses.map((course) => course._id);
 
+    const teacherInternships = await Internship.find({
+      $or: [{ instructor: decoded.userId }, { coInstructors: decoded.userId }],
+    }).select("_id");
+    const internshipIds = teacherInternships.map((internship) => internship._id);
+
     // Get query parameters for filtering
     const { searchParams } = new URL(req.url);
     const status = searchParams.get("status");
     const courseId = searchParams.get("courseId");
 
     // Build query - only show doubts from teacher's courses
-    const query: any = { course: { $in: courseIds } };
+    const query: any = { 
+      $or: [
+        { course: { $in: courseIds } },
+        { internship: { $in: internshipIds } }
+      ]
+    };
     if (status) query.status = status;
     if (courseId) query.course = courseId;
 
@@ -47,6 +58,7 @@ export async function GET(req: NextRequest) {
       .sort({ createdAt: -1 })
       .populate("student", "name email")
       .populate("course", "title")
+      .populate("internship", "title")
       .populate("answeredBy", "name email");
 
     return NextResponse.json({ doubts });
