@@ -66,6 +66,10 @@ export async function POST(req: Request) {
       careerOutcomes,
     } = data;
 
+    if (data.title && !data.slug) {
+      data.slug = data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    }
+
     const course = (await Course.create({
       ...data,
       outcome: outcome || "",

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Course from "@/models/Course";
+import mongoose from "mongoose";
 
 export const dynamic = "force-dynamic";
 
@@ -18,11 +19,20 @@ export async function GET(
     const courseId = params.id;
 
     // Non-blocking increment of views, then lean fetch
-    const course = await Course.findByIdAndUpdate(
-      courseId,
-      { $inc: { views: 1 } },
-      { new: true },
-    ).lean();
+    let course;
+    if (mongoose.isValidObjectId(courseId)) {
+      course = await Course.findByIdAndUpdate(
+        courseId,
+        { $inc: { views: 1 } },
+        { new: true },
+      ).lean();
+    } else {
+      course = await Course.findOneAndUpdate(
+        { slug: courseId },
+        { $inc: { views: 1 } },
+        { new: true },
+      ).lean();
+    }
 
     if (!course) {
       return NextResponse.json({ error: "Course not found" }, { status: 404 });

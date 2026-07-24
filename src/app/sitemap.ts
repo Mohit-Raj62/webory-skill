@@ -11,26 +11,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Fetch all courses
   // Fetch all courses
-  const courses = await Course.find({}).select("_id title updatedAt").lean();
+  const courses = await Course.find({}).select("_id title slug updatedAt").lean();
 
   // Fetch all internships
   const internships = await Internship.find({ isActive: { $ne: false } })
-    .select("_id title updatedAt")
+    .select("_id title slug updatedAt")
     .lean();
 
   const courseUrls = courses.map((course) => ({
-    url: `${baseUrl}/courses/${course.title.toLowerCase().replace(/ /g, "-")}-${
-      course._id
-    }`,
+    url: `${baseUrl}/courses/${course.slug || course._id}`,
     lastModified: course.updatedAt || new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.8,
   }));
 
   const internshipUrls = internships.map((internship) => ({
-    url: `${baseUrl}/internships/${internship.title
-      .toLowerCase()
-      .replace(/ /g, "-")}-${internship._id}`,
+    url: `${baseUrl}/internships/${internship.slug || internship._id}`,
     lastModified: internship.updatedAt || new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.8,

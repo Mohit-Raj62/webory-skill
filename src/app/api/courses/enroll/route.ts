@@ -35,10 +35,17 @@ export async function POST(req: Request) {
       );
     }
 
+    const mongoose = require("mongoose");
+    let actualCourseId = courseId;
+    if (!mongoose.isValidObjectId(courseId)) {
+        const courseDoc = await Course.findOne({ slug: courseId }).select("_id");
+        if (courseDoc) actualCourseId = courseDoc._id.toString();
+    }
+
     // Check if already enrolled
     const existing = await Enrollment.findOne({
       student: decoded.userId,
-      course: courseId,
+      course: actualCourseId,
     });
 
     if (existing) {
@@ -49,7 +56,7 @@ export async function POST(req: Request) {
     }
 
     // Get course details
-    const course = await Course.findById(courseId);
+    const course = await Course.findById(actualCourseId);
     if (!course) {
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }

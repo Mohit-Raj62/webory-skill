@@ -5,6 +5,11 @@ const InternshipSchema = new Schema({
     type: String,
     required: true,
   },
+  slug: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
   company: {
     type: String,
     required: true,

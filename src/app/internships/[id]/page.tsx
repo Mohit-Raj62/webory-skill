@@ -50,6 +50,10 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                 if (!internshipData || !internshipData.internship) throw new Error("Internship not found");
 
                 setInternship(internshipData.internship);
+                if (internshipData.internship.slug && id !== internshipData.internship.slug) {
+                    router.replace(`/internships/${internshipData.internship.slug}`);
+                    return; // Prevent further rendering with old ID
+                }
                 if (liveClassData) setLiveClasses(liveClassData.liveClasses || []);
 
             } catch (error) {
@@ -183,9 +187,9 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
 
             <div className="container mx-auto px-4 pb-20">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                    <div className="lg:col-span-2">
+                    <div className="lg:col-span-2 flex flex-col">
                         {/* Internship Stats */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+                        <div className={`grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 ${isAccepted ? 'order-3' : 'order-1'}`}>
                             <div className="bg-slate-900/40 border border-white/5 p-4 rounded-2xl">
                                 <Clock className="text-blue-400 mb-2" size={20} />
                                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Duration</p>
@@ -210,7 +214,7 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
 
                         {/* Live Classes Section */}
                         {liveClasses.length > 0 && (
-                            <div className="bg-slate-900/40 border border-purple-500/20 rounded-[2.5rem] p-8 mb-12 relative overflow-hidden group">
+                            <div className={`bg-slate-900/40 border border-purple-500/20 rounded-[2.5rem] p-8 mb-12 relative overflow-hidden group ${isAccepted ? 'order-2' : 'order-2'}`}>
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 blur-[80px] -z-10" />
                                 <div className="flex items-center gap-3 mb-8">
                                     <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400">
@@ -274,7 +278,7 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
 
                         {/* Tier Comparison Section */}
                         {internship.hasTiers && (
-                            <div className="mb-12 relative overflow-hidden">
+                            <div className={`mb-12 relative overflow-hidden ${isAccepted ? 'order-4' : 'order-3'}`}>
                                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-blue-500/10 rounded-full blur-[120px] -z-10" />
                                 <div className="text-center mb-12">
                                     <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] mb-4">
@@ -351,7 +355,7 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                         )}
 
                         {/* Video Curriculum Section */}
-                        <div className="bg-slate-900/40 border border-white/5 rounded-[2.5rem] p-8 mb-12">
+                        <div className={`bg-slate-900/40 border border-white/5 rounded-[2.5rem] p-8 mb-12 ${isAccepted ? 'order-1' : 'order-4'}`}>
                             <h2 className="text-2xl font-black text-white tracking-tight mb-8">Video Curriculum</h2>
                             
                             {internship.modules && internship.modules.length > 0 && internship.modules.some((m: any) => m.videos && m.videos.length > 0) ? (

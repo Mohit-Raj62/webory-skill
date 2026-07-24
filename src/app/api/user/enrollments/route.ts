@@ -24,7 +24,7 @@ export async function GET() {
 
     // Fetch enrollments and populate course details
     const enrollments = await Enrollment.find({ student: decoded.userId })
-      .populate("course", "title thumbnail level color icon price description")
+      .populate("course", "title thumbnail level color icon price description slug")
       .sort({ enrolledAt: -1 })
       .lean(); // Use lean() for performance
 

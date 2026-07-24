@@ -5,6 +5,7 @@ import Application from "@/models/Application";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { revalidateTag, revalidatePath } from "next/cache";
+import mongoose from "mongoose";
 
 // GET single internship
 export async function GET(
@@ -15,7 +16,12 @@ export async function GET(
     await dbConnect();
 
     const { id } = await params;
-    const internship = await Internship.findById(id);
+    let internship;
+    if (mongoose.isValidObjectId(id)) {
+      internship = await Internship.findById(id);
+    } else {
+      internship = await Internship.findOne({ slug: id });
+    }
 
     if (!internship) {
       return NextResponse.json({ error: "Internship not found" }, { status: 404 });

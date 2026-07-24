@@ -256,7 +256,7 @@ export function ProfileClientContent({
                                             <h3 className="text-white font-black tracking-tight group-hover/course:text-blue-400 transition-colors">{enrollment.course?.title || "Unknown Course"}</h3>
                                             <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mt-1">{enrollment.course?.level || "Professional"}</p>
                                         </div>
-                                        <button onClick={() => enrollment.course?._id && router.push(`/courses/${enrollment.course._id}`)} className="p-2.5 rounded-xl bg-white/5 hover:bg-white hover:text-black transition-all duration-300 text-blue-400"><ChevronRight size={18} /></button>
+                                        <button onClick={() => enrollment.course?._id && router.push(`/courses/${enrollment.course.slug || enrollment.course._id}`)} className="p-2.5 rounded-xl bg-white/5 hover:bg-white hover:text-black transition-all duration-300 text-blue-400"><ChevronRight size={18} /></button>
                                     </div>
                                     <div className="space-y-2">
                                         <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-tighter">
@@ -275,7 +275,7 @@ export function ProfileClientContent({
                                             <Download size={12} /> Invoice
                                         </button>
                                         <button 
-                                            onClick={() => enrollment.course?._id && router.push(`/courses/${enrollment.course._id}`)}
+                                            onClick={() => enrollment.course?._id && router.push(`/courses/${enrollment.course.slug || enrollment.course._id}`)}
                                             className="flex-[1.5] h-9 flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow-lg shadow-blue-500/20"
                                         >
                                             Continue Course <ChevronRight size={12} />
@@ -342,8 +342,8 @@ export function ProfileClientContent({
                                         {app.status === 'interview_scheduled' && <button onClick={() => app.interviewLink && window.open(app.interviewLink, '_blank')} className="h-8 px-4 bg-emerald-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-emerald-500/20"><Video size={12} /> Join Call</button>}
                                         {(app.status !== 'pending' && app.status !== 'rejected') && (
                                             <>
-                                                <button onClick={() => app.internship?._id && router.push(`/internships/${app.internship._id}`)} className="h-8 px-4 bg-blue-600 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-blue-600/20"><PlayCircle size={12} /> Content</button>
-                                                <button onClick={() => app.internship?._id && router.push(`/internships/${app.internship._id}/tasks`)} className="h-8 px-4 bg-purple-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-purple-500/20"><FileText size={12} /> Tasks</button>
+                                                <button onClick={() => app.internship?._id && router.push(`/internships/${app.internship.slug || app.internship._id}`)} className="h-8 px-4 bg-blue-600 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-blue-600/20"><PlayCircle size={12} /> Content</button>
+                                                <button onClick={() => app.internship?._id && router.push(`/internships/${app.internship.slug || app.internship._id}/tasks`)} className="h-8 px-4 bg-purple-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-purple-500/20"><FileText size={12} /> Tasks</button>
                                                 {(app.amountPaid > 0) && (
                                                     <button 
                                                         onClick={() => handleDownloadInvoice(app, 'internship')}
@@ -353,9 +353,9 @@ export function ProfileClientContent({
                                                     </button>
                                                 )}
                                                 {(app.status === 'accepted' || app.status === 'completed') && (
-                                                    <button onClick={() => router.push(`/internships/applications/${app._id}/offer-letter`)} className="h-8 px-4 bg-white/5 hover:bg-white/10 border border-white/5 text-emerald-400 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2">📄 Offer</button>
+                                                    <button onClick={() => router.push(`/internships/${app.internship?.slug || app.internship?._id}/offer-letter`)} className="h-8 px-4 bg-white/5 hover:bg-white/10 border border-white/5 text-emerald-400 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2">📄 Offer</button>
                                                 )}
-                                                {app.status === 'completed' && <button onClick={() => router.push(`/internships/applications/${app._id}/certificate`)} className="h-8 px-4 bg-blue-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-blue-500/20">🎓 Cert</button>}
+                                                {app.status === 'completed' && <button onClick={() => router.push(`/internships/${app.internship?.slug || app.internship?._id}/certificate`)} className="h-8 px-4 bg-blue-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-blue-500/20">🎓 Cert</button>}
                                             </>
                                         )}
                                     </div>

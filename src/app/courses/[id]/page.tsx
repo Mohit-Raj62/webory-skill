@@ -91,6 +91,10 @@ export default function CourseDetailsPage() {
                 if (!courseData || !courseData.course) throw new Error("Course not found");
 
                 setCourse(courseData.course);
+                if (courseData.course.slug && id !== courseData.course.slug) {
+                    router.replace(`/courses/${courseData.course.slug}`);
+                    return; // Prevent further rendering with old ID
+                }
                 
                 if (courseData.course.pdfResources) {
                     setPdfs(courseData.course.pdfResources.sort((a: any, b: any) => {

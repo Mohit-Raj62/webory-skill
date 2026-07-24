@@ -37,8 +37,8 @@ export default function OfferLetterPage() {
             setLoading(true);
             setError(null);
             try {
-                console.log(`[Offer Letter] Fetching for App: ${params.id}`);
-                const res = await fetch(`/api/internships/applications/${params.id}/offer-letter`);
+                console.log(`[Offer Letter] Fetching for Internship: ${params.id}`);
+                const res = await fetch(`/api/student/internships/${params.id}/offer-letter`);
                 const json = await res.json();
 
                 if (!res.ok) {

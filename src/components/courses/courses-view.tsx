@@ -265,14 +265,14 @@ export function CoursesView({ courses, enrolledCourseIds }: CoursesViewProps) {
                                         <div className="relative">
                                             {enrolledCourseIds.includes(course._id) ? (
                                                 <Button 
-                                                    onClick={() => router.push(`/courses/${course._id}`)}
+                                                    onClick={() => router.push(`/courses/${course.slug || course._id}`)}
                                                     className="w-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 h-11 rounded-xl font-black uppercase tracking-widest text-[9px] shadow-[0_0_15px_rgba(16,185,129,0.1)] hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] transition-all"
                                                 >
                                                     <PlayCircle className="mr-2 h-4 w-4" /> Continue Learning
                                                 </Button>
                                             ) : (
                                                 <Button
-                                                    onClick={() => router.push(`/courses/${course._id}`)}
+                                                    onClick={() => router.push(`/courses/${course.slug || course._id}`)}
                                                     className="w-full bg-white hover:bg-cyan-500 text-black hover:text-white border-0 h-11 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg hover:shadow-cyan-500/30 hover:-translate-y-1 transition-all duration-300 group/btn relative overflow-hidden"
                                                 >
                                                     <span className="relative z-20 flex items-center justify-center">

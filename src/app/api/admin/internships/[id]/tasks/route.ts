@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import InternshipTask from "@/models/InternshipTask";
+import Internship from "@/models/Internship";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 // GET - Fetch all tasks for an internship
 export async function GET(
@@ -25,7 +27,17 @@ export async function GET(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const tasks = await InternshipTask.find({ internship: id }).sort({
+    let actualId = id;
+    if (!mongoose.isValidObjectId(id)) {
+      const internship = await Internship.findOne({ slug: id }).select("_id");
+      if (internship) {
+        actualId = internship._id.toString();
+      } else {
+        return NextResponse.json({ error: "Internship not found" }, { status: 404 });
+      }
+    }
+
+    const tasks = await InternshipTask.find({ internship: actualId }).sort({
       createdAt: -1,
     });
 
@@ -61,8 +73,18 @@ export async function POST(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
+    let actualId = id;
+    if (!mongoose.isValidObjectId(id)) {
+      const internship = await Internship.findOne({ slug: id }).select("_id");
+      if (internship) {
+        actualId = internship._id.toString();
+      } else {
+        return NextResponse.json({ error: "Internship not found" }, { status: 404 });
+      }
+    }
+
     const task = await InternshipTask.create({
-      internship: id,
+      internship: actualId,
       ...data,
     });
 

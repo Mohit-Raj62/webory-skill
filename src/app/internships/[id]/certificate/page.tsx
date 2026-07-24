@@ -45,7 +45,7 @@ export default function CertificatePage() {
             setLoading(true);
             setError(null);
             try {
-                const res = await fetch(`/api/internships/applications/${id}/certificate`);
+                const res = await fetch(`/api/student/internships/${id}/certificate`);
                 const data = await res.json();
                 
                 if (!res.ok) {

@@ -56,7 +56,8 @@ const getCachedCoursesData = unstable_cache(
                         price: 1, 
                         originalPrice: 1,
                         discountPercentage: 1, 
-                        thumbnail: 1 
+                        thumbnail: 1,
+                        slug: 1
                     } 
                 },
                 {

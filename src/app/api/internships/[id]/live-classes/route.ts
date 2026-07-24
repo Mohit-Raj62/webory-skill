@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import LiveClass from "@/models/LiveClass";
+import Internship from "@/models/Internship";
+import mongoose from "mongoose";
 
 export const dynamic = "force-dynamic";
 
@@ -13,9 +15,19 @@ export async function GET(
     await dbConnect();
     const { id } = await params;
 
+    let actualId = id;
+    if (!mongoose.isValidObjectId(id)) {
+      const internship = await Internship.findOne({ slug: id }).select("_id");
+      if (internship) {
+        actualId = internship._id.toString();
+      } else {
+        return NextResponse.json({ liveClasses: [] });
+      }
+    }
+
     const liveClasses = await LiveClass.find({
       type: "internship",
-      referenceId: id,
+      referenceId: actualId,
     })
       .sort({ date: 1 }) // Ascending order (upcoming first)
       .populate("instructor", "firstName lastName")

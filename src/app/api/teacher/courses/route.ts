@@ -74,8 +74,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    let slug;
+    if (title) {
+      slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    }
+
     const newCourse = new Course({
       title,
+      slug,
       description,
       level,
       color,

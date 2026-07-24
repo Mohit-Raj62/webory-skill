@@ -104,7 +104,7 @@ export async function PATCH(
             }
             const appUrl =
               process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in";
-            const offerLink = `${appUrl}/internships/applications/${application._id}/offer-letter`;
+            const offerLink = `${appUrl}/internships/${internship.slug}/offer-letter`;
             await sendEmail(
               student.email,
               `Congratulations! Offer for ${internship.title}`,

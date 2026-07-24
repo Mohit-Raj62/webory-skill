@@ -9,7 +9,12 @@ const VideoFeedbackSchema = new Schema({
   courseId: {
     type: Schema.Types.ObjectId,
     ref: "Course",
-    required: true,
+    required: false,
+  },
+  internshipId: {
+    type: Schema.Types.ObjectId,
+    ref: "Internship",
+    required: false,
   },
   videoIndex: {
     type: Number,
@@ -43,7 +48,11 @@ VideoFeedbackSchema.pre("save", function (next: CallbackWithoutResultAndOptional
 // Compound index just to be safe, though logic will handle upsert
 VideoFeedbackSchema.index(
   { user: 1, courseId: 1, videoIndex: 1 },
-  { unique: true },
+  { unique: true, sparse: true }
+);
+VideoFeedbackSchema.index(
+  { user: 1, internshipId: 1, videoIndex: 1 },
+  { unique: true, sparse: true }
 );
 
 const VideoFeedback =

@@ -60,6 +60,32 @@ const ApplicationSchema = new Schema({
     enum: ["Basic", "Intermediate", "Advanced"],
     default: "Basic",
   },
+  progress: {
+    type: Number,
+    default: 0, // 0 to 100
+  },
+  completed: {
+    type: Boolean,
+    default: false,
+  },
+  watchedVideos: [
+    {
+      videoIndex: { type: Number, required: true },
+      videoTitle: { type: String, required: true },
+      watchedAt: { type: Date, default: Date.now },
+      watchedPercentage: { type: Number, default: 0 },
+    },
+  ],
+  notes: [
+    {
+      videoIndex: { type: Number, required: true },
+      videoTitle: { type: String, required: true },
+      content: { type: String, required: true },
+      timestamp: { type: String, default: "" },
+      createdAt: { type: Date, default: Date.now },
+      updatedAt: { type: Date, default: Date.now },
+    },
+  ],
   appliedAt: {
     type: Date,
     default: Date.now,

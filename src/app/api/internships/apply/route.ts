@@ -45,10 +45,17 @@ export async function POST(req: Request) {
       );
     }
 
+    const mongoose = require("mongoose");
+    let actualInternshipId = internshipId;
+    if (!mongoose.isValidObjectId(internshipId)) {
+        const intDoc = await Internship.findOne({ slug: internshipId }).select("_id");
+        if (intDoc) actualInternshipId = intDoc._id.toString();
+    }
+
     // Check if already applied
     let application = await Application.findOne({
       student: decoded.userId,
-      internship: internshipId,
+      internship: actualInternshipId,
     });
 
     if (application) {
@@ -92,7 +99,7 @@ export async function POST(req: Request) {
       // Create new
       application = await Application.create({
         student: decoded.userId,
-        internship: internshipId,
+        internship: actualInternshipId,
         resume,
         resumeType,
         coverLetter,

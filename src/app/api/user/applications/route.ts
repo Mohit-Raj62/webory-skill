@@ -25,7 +25,7 @@ export async function GET() {
         student: decoded.userId, 
         status: { $ne: "rejected" } 
     })
-    .populate("internship", "title company")
+    .populate("internship", "title company slug")
     .lean();
 
     return NextResponse.json({ applications }, { status: 200 });

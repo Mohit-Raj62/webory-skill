@@ -9,7 +9,12 @@ const DoubtSchema = new Schema({
   course: {
     type: Schema.Types.ObjectId,
     ref: 'Course',
-    required: true,
+    required: false,
+  },
+  internship: {
+    type: Schema.Types.ObjectId,
+    ref: 'Internship',
+    required: false,
   },
   videoIndex: {
     type: Number,
@@ -49,6 +54,7 @@ const DoubtSchema = new Schema({
 
 // Index for faster queries
 DoubtSchema.index({ student: 1, course: 1 });
+DoubtSchema.index({ student: 1, internship: 1 });
 DoubtSchema.index({ status: 1 });
 
 const Doubt = models.Doubt || model('Doubt', DoubtSchema);

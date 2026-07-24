@@ -93,7 +93,7 @@ export async function PUT(
               if (user && internship) {
                 const certificateLink = `${
                   process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in"
-                }/internships/applications/${application._id}/certificate`;
+                }/internships/${internship.slug}/certificate`;
 
                 await sendEmail(
                   user.email,

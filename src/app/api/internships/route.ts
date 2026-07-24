@@ -28,6 +28,11 @@ export async function POST(req: Request) {
   try {
     await dbConnect();
     const data = await req.json();
+    
+    if (data.title && !data.slug) {
+      data.slug = data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    }
+
     const internship = await Internship.create(data);
     revalidateTag('internships');
     return NextResponse.json({ internship }, { status: 201 });
