@@ -28,9 +28,12 @@ export async function DELETE(
 
     const { id } = await params;
 
+    const isObjectId = mongoose.Types.ObjectId.isValid(id);
+    const query = isObjectId ? { _id: id } : { slug: id };
+
     // Verify ownership
     const course = await Course.findOne({
-      _id: id,
+      ...query,
       $or: [{ instructor: decoded.userId }, { coInstructors: decoded.userId }],
     });
     if (!course) {
@@ -90,9 +93,16 @@ export async function PUT(
     const { id } = await params;
     const data = await req.json();
 
+    if (data.title && !data.slug) {
+      data.slug = data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    }
+
+    const isObjectId = mongoose.Types.ObjectId.isValid(id);
+    const query = isObjectId ? { _id: id } : { slug: id };
+
     // Verify ownership
     const existingCourse = await Course.findOne({
-      _id: id,
+      ...query,
       $or: [{ instructor: decoded.userId }, { coInstructors: decoded.userId }],
     });
     if (!existingCourse) {
@@ -111,7 +121,7 @@ export async function PUT(
       data.videos = flattenedVideos;
     }
 
-    const course = await Course.findByIdAndUpdate(id, data, { new: true });
+    const course = await Course.findOneAndUpdate(query, data, { new: true });
 
     const { logActivity } = await import("@/lib/logger");
     await logActivity(

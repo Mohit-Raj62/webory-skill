@@ -1,0 +1,138 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Plus, Calendar, FileText, Trash2, Edit } from "lucide-react";
+import Link from "next/link";
+
+export default function AssignmentsListPage() {
+    const router = useRouter();
+    const params = useParams();
+    const internshipId = params.id as string;
+    const [assignments, setAssignments] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetchAssignments();
+    }, []);
+
+    const fetchAssignments = async () => {
+        try {
+            const res = await fetch(`/api/teacher/internships/${internshipId}/assignments`);
+            if (res.ok) {
+                const data = await res.json();
+                setAssignments(data.assignments);
+            }
+        } catch (error) {
+            console.error("Failed to fetch assignments", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const deleteAssignment = async (assignmentId: string) => {
+        if (!confirm("Are you sure you want to delete this assignment?")) return;
+
+        try {
+            const res = await fetch(`/api/teacher/internships/${internshipId}/assignments/${assignmentId}`, {
+                method: "DELETE",
+            });
+
+            if (res.ok) {
+                alert("Assignment deleted successfully");
+                fetchAssignments();
+            } else {
+                alert("Failed to delete assignment");
+            }
+        } catch (error) {
+            console.error("Delete error:", error);
+            alert("Failed to delete assignment");
+        }
+    };
+
+    return (
+        <div className="p-8">
+            <div className="mb-8">
+                <Link href="/teacher/internships">
+                    <Button variant="ghost" className="mb-4">
+                        <ArrowLeft size={20} className="mr-2" />
+                        Back to Internships
+                    </Button>
+                </Link>
+                <div className="flex justify-between items-center">
+                    <div>
+                        <h1 className="text-4xl font-bold text-white mb-2">Assignments</h1>
+                        <p className="text-gray-400">Manage internship assignments</p>
+                    </div>
+                    <Link href={`/teacher/internships/${internshipId}/assignments/new`}>
+                        <Button className="bg-gradient-to-r from-green-600 to-blue-600">
+                            <Plus size={20} className="mr-2" />
+                            Create Assignment
+                        </Button>
+                    </Link>
+                </div>
+            </div>
+
+            {loading ? (
+                <div className="text-white">Loading assignments...</div>
+            ) : assignments.length === 0 ? (
+                <div className="glass-card p-12 rounded-2xl text-center">
+                    <p className="text-gray-400 mb-4">No assignments created yet</p>
+                    <Link href={`/teacher/internships/${internshipId}/assignments/new`}>
+                        <Button>Create Your First Assignment</Button>
+                    </Link>
+                </div>
+            ) : (
+                <div className="grid gap-4">
+                    {assignments.map((assignment) => (
+                        <div key={assignment._id} className="glass-card p-6 rounded-2xl">
+                            <div className="flex justify-between items-start">
+                                <div className="flex-1">
+                                    <h3 className="text-2xl font-bold text-white mb-2">{assignment.title}</h3>
+                                    <p className="text-gray-400 mb-3">{assignment.description}</p>
+
+                                    <div className="flex flex-wrap gap-4 text-sm text-gray-300">
+                                        <span className="flex items-center gap-1">
+                                            <Calendar size={16} />
+                                            Due: {new Date(assignment.dueDate).toLocaleDateString()}
+                                        </span>
+                                        <span className="flex items-center gap-1">
+                                            <FileText size={16} />
+                                            {assignment.totalMarks} marks
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => router.push(`/teacher/internships/${internshipId}/assignments/${assignment._id}/submissions`)}
+                                    >
+                                        View Submissions
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => router.push(`/teacher/internships/${internshipId}/assignments/${assignment._id}/edit`)}
+                                    >
+                                        <Edit size={16} />
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => deleteAssignment(assignment._id)}
+                                        className="text-red-400 hover:text-red-300"
+                                    >
+                                        <Trash2 size={16} />
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}

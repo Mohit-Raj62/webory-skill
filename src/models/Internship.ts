@@ -210,6 +210,31 @@ const InternshipSchema = new Schema({
     ],
     default: [],
   },
+  thumbnail: {
+    type: String,
+    default: "",
+  },
+  certificateImage: {
+    type: String,
+    default: "",
+  },
+  pdfResources: {
+    type: [
+      {
+        title: { type: String, required: true },
+        description: { type: String, default: "" },
+        fileUrl: { type: String, required: true },
+        fileName: { type: String, required: true },
+        fileSize: { type: Number, required: true },
+        afterModule: { type: Number, default: 0 },
+        order: { type: Number, default: 0 },
+        uploadedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+        cloudinaryId: { type: String, required: true },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
+    default: [],
+  },
   isActive: {
     type: Boolean,
     default: true,

@@ -9,7 +9,8 @@ import { useParams, useRouter } from "next/navigation";
 import { 
     CheckCircle, Clock, BarChart, Users, Globe, PlayCircle, 
     Lock, FileText, Calendar, Video, ChevronDown, ChevronUp, 
-    Briefcase, Sparkles, ShieldCheck, ArrowLeft, Zap, GraduationCap, ArrowUpRight
+    Briefcase, Sparkles, ShieldCheck, ArrowLeft, Zap, GraduationCap, ArrowUpRight,
+    ClipboardList
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -23,6 +24,9 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
     const [isAccepted, setIsAccepted] = useState(false);
     const [selectedTier, setSelectedTier] = useState<string | null>(null);
     const [liveClasses, setLiveClasses] = useState<any[]>([]);
+    const [assignments, setAssignments] = useState<any[]>([]);
+    const [quizzes, setQuizzes] = useState<any[]>([]);
+    const [pdfs, setPdfs] = useState<any[]>([]);
     const [expandedModules, setExpandedModules] = useState<Record<number, boolean>>({ 0: true });
     const fetchingRef = useRef(false);
 
@@ -41,10 +45,14 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
             try {
                 const internshipPromise = fetch(`/api/admin/internships/${id}`).then(r => r.ok ? r.json() : null).catch(() => null);
                 const liveClassesPromise = fetch(`/api/internships/${id}/live-classes`).then(r => r.ok ? r.json() : null).catch(() => null);
+                const assignmentsPromise = fetch(`/api/admin/internships/${id}/assignments`).then(r => r.ok ? r.json() : null).catch(() => null);
+                const quizzesPromise = fetch(`/api/admin/internships/${id}/quizzes`).then(r => r.ok ? r.json() : null).catch(() => null);
 
-                const [internshipData, liveClassData] = await Promise.all([
+                const [internshipData, liveClassData, assignmentData, quizData] = await Promise.all([
                     internshipPromise,
-                    liveClassesPromise
+                    liveClassesPromise,
+                    assignmentsPromise,
+                    quizzesPromise
                 ]);
 
                 if (!internshipData || !internshipData.internship) throw new Error("Internship not found");
@@ -54,7 +62,17 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                     router.replace(`/internships/${internshipData.internship.slug}`);
                     return; // Prevent further rendering with old ID
                 }
+                
+                if (internshipData.internship.pdfResources) {
+                    setPdfs(internshipData.internship.pdfResources.sort((a: any, b: any) => {
+                        if (a.afterModule !== b.afterModule) return a.afterModule - b.afterModule;
+                        return (a.order || 0) - (b.order || 0);
+                    }));
+                }
+                
                 if (liveClassData) setLiveClasses(liveClassData.liveClasses || []);
+                if (assignmentData) setAssignments(assignmentData.assignments || []);
+                if (quizData) setQuizzes(quizData.quizzes || []);
 
             } catch (error) {
                 console.error("Failed to fetch internship data", error);
@@ -88,6 +106,18 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
 
         checkApplicationStatus();
     }, [id, user, authLoading]);
+
+    const trackPDFAccess = async (pdfId: string, downloaded: boolean = false) => {
+        try {
+            await fetch(`/api/student/internships/${id}/pdfs/${pdfId}/access`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ downloaded }),
+            });
+        } catch (error) {
+            console.error("Failed to track PDF access", error);
+        }
+    };
 
     if (loading) {
         return (
@@ -403,33 +433,141 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                                                     </div>
                                                     
                                                     {expandedModules[moduleIndex] && (
-                                                        <div className="p-2 space-y-2 bg-black/20">
-                                                        {(module.videos || []).map((video: any, videoIndex: number) => {
-                                                            const globalIndex = startIndex + videoIndex;
-                                                            return (
-                                                                <div key={videoIndex} className="flex items-center justify-between p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-all group/video">
-                                                                    <div className="flex items-center gap-4">
-                                                                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isModuleUnlocked ? "bg-blue-500/10 text-blue-400" : "bg-slate-800 text-slate-600"}`}>
-                                                                            <PlayCircle size={18} />
+                                                        <>
+                                                            <div className="p-2 space-y-2 bg-black/20">
+                                                            {(module.videos || []).map((video: any, videoIndex: number) => {
+                                                                const globalIndex = startIndex + videoIndex;
+                                                                return (
+                                                                    <div key={videoIndex} className="flex items-center justify-between p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-all group/video">
+                                                                        <div className="flex items-center gap-4">
+                                                                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isModuleUnlocked ? "bg-blue-500/10 text-blue-400" : "bg-slate-800 text-slate-600"}`}>
+                                                                                <PlayCircle size={18} />
+                                                                            </div>
+                                                                            <div>
+                                                                                <span className="text-white font-medium text-sm block">{video.title}</span>
+                                                                                <span className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">{video.duration}</span>
+                                                                            </div>
                                                                         </div>
-                                                                        <div>
-                                                                            <span className="text-white font-medium text-sm block">{video.title}</span>
-                                                                            <span className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">{video.duration}</span>
-                                                                        </div>
+                                                                        {isModuleUnlocked ? (
+                                                                            <Link href={`/internships/${id}/video/${globalIndex}`}>
+                                                                                <Button size="sm" variant="ghost" className="text-blue-400 hover:text-blue-300 h-8 text-[10px] font-black uppercase tracking-widest">
+                                                                                    Play
+                                                                                </Button>
+                                                                            </Link>
+                                                                        ) : (
+                                                                            <Lock size={14} className="text-slate-700 mr-2" />
+                                                                        )}
                                                                     </div>
-                                                                    {isModuleUnlocked ? (
-                                                                        <Link href={`/internships/${id}/video/${globalIndex}`}>
-                                                                            <Button size="sm" variant="ghost" className="text-blue-400 hover:text-blue-300 h-8 text-[10px] font-black uppercase tracking-widest">
-                                                                                Play
-                                                                            </Button>
-                                                                        </Link>
-                                                                    ) : (
-                                                                        <Lock size={14} className="text-slate-700 mr-2" />
-                                                                    )}
-                                                                </div>
-                                                            );
-                                                        })}
-                                                        </div>
+                                                                );
+                                                            })}
+                                                            </div>
+                                                            
+                                                            {/* Module specific PDFs */}
+                                                        {isModuleUnlocked && pdfs.some(p => p.afterModule === moduleIndex + 1) && (
+                                                            <div className="my-2 space-y-2 border-t border-white/5 pt-2">
+                                                                {pdfs.filter(p => p.afterModule === moduleIndex + 1)
+                                                                    .sort((a, b) => (a.order || 0) - (b.order || 0))
+                                                                    .map((pdf) => (
+                                                                        <div key={pdf._id} className={`flex items-center justify-between p-3 rounded-xl border transition-all ml-4 ${isModuleUnlocked
+                                                                            ? 'bg-blue-500/5 border-blue-500/10 hover:bg-blue-500/10'
+                                                                            : 'bg-white/5 border-white/5 opacity-50'
+                                                                            }`}>
+                                                                            <div className="flex items-center text-gray-300 flex-1">
+                                                                                <FileText className={`mr-3 ${isModuleUnlocked ? "text-blue-400" : "text-gray-600"}`} size={18} />
+                                                                                <div>
+                                                                                    <span className="text-white font-medium text-sm">{pdf.title}</span>
+                                                                                    <p className="text-xs text-gray-500">
+                                                                                        PDF • {(pdf.fileSize / (1024 * 1024)).toFixed(2)} MB
+                                                                                    </p>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className="flex gap-2">
+                                                                                {isModuleUnlocked ? (
+                                                                                    <button
+                                                                                        onClick={(e) => {
+                                                                                            e.preventDefault();
+                                                                                            const proxyUrl = `/api/pdf-proxy?url=${encodeURIComponent(pdf.fileUrl)}`;
+                                                                                            window.open(proxyUrl, '_blank');
+                                                                                            trackPDFAccess(pdf._id, false);
+                                                                                        }}
+                                                                                        className="text-xs bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 px-3 py-1.5 rounded-lg transition-colors border border-blue-500/20 flex items-center gap-1"
+                                                                                    >
+                                                                                        View
+                                                                                    </button>
+                                                                                ) : (
+                                                                                    <Lock size={14} className="text-gray-600" />
+                                                                                )}
+                                                                            </div>
+                                                                        </div>
+                                                                    ))}
+                                                            </div>
+                                                        )}
+                                                        
+                                                        {/* Module specific Quizzes */}
+                                                        {isModuleUnlocked && quizzes.some(q => q.afterModule === moduleIndex + 1) && (
+                                                            <div className="my-2 space-y-2 border-t border-white/5 pt-2">
+                                                                {quizzes.filter(q => q.afterModule === moduleIndex + 1)
+                                                                    .map((quiz) => (
+                                                                        <div key={quiz._id} className={`flex items-center justify-between p-3 rounded-xl border transition-all ml-4 ${isModuleUnlocked
+                                                                            ? 'bg-purple-500/5 border-purple-500/10 hover:bg-purple-500/10'
+                                                                            : 'bg-white/5 border-white/5 opacity-50'
+                                                                            }`}>
+                                                                            <div className="flex items-center text-gray-300 flex-1">
+                                                                                <ClipboardList className={`mr-3 ${isModuleUnlocked ? "text-purple-400" : "text-gray-600"}`} size={18} />
+                                                                                <div>
+                                                                                    <span className="text-white font-medium text-sm">{quiz.title}</span>
+                                                                                    <p className="text-xs text-gray-500">
+                                                                                        {quiz.type === 'exam' ? 'Exam' : quiz.type === 'test' ? 'Test' : 'Quiz'} • {quiz.questions.length} Qs • {quiz.duration} min
+                                                                                    </p>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className="flex gap-2">
+                                                                                {isModuleUnlocked ? (
+                                                                                    <Link href={`/internships/${id}/quiz/${quiz._id}`}>
+                                                                                        <button
+                                                                                            className="text-xs bg-purple-500/20 text-purple-300 hover:bg-purple-500/30 px-3 py-1.5 rounded-lg transition-colors border border-purple-500/20"
+                                                                                        >
+                                                                                            Start
+                                                                                        </button>
+                                                                                    </Link>
+                                                                                ) : (
+                                                                                    <Lock size={14} className="text-gray-600" />
+                                                                                )}
+                                                                            </div>
+                                                                        </div>
+                                                                    ))}
+                                                            </div>
+                                                        )}
+
+                                                        {/* Module specific Assignments */}
+                                                        {isModuleUnlocked && assignments.some(a => a.afterModule === moduleIndex + 1) && (
+                                                            <div className="my-2 space-y-2 border-t border-white/5 pt-2">
+                                                                {assignments.filter(a => a.afterModule === moduleIndex + 1)
+                                                                    .map((assignment) => (
+                                                                        <div key={assignment._id} className="flex items-center justify-between p-3 rounded-xl border border-green-500/10 bg-green-500/5 hover:bg-green-500/10 transition-all ml-4">
+                                                                            <div className="flex items-center text-gray-300 flex-1">
+                                                                                <FileText className="mr-3 text-green-400" size={18} />
+                                                                                <div>
+                                                                                    <span className="text-white font-medium text-sm">{assignment.title}</span>
+                                                                                    <p className="text-xs text-gray-500">
+                                                                                        Assignment • Due: {new Date(assignment.dueDate).toLocaleDateString()}
+                                                                                    </p>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className="flex gap-2">
+                                                                                <Link href={`/internships/${id}/assignment/${assignment._id}`}>
+                                                                                    <button
+                                                                                        className="text-xs bg-green-500/20 text-green-300 hover:bg-green-500/30 px-3 py-1.5 rounded-lg transition-colors border border-green-500/20"
+                                                                                    >
+                                                                                        Submit
+                                                                                    </button>
+                                                                                </Link>
+                                                                            </div>
+                                                                        </div>
+                                                                    ))}
+                                                            </div>
+                                                        )}
+                                                        </>
                                                     )}
                                                 </div>
                                             );
@@ -465,6 +603,98 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                                 </div>
                             )}
                         </div>
+
+                        {/* General Resources (PDFs) */}
+                        {isAccepted && pdfs.some(p => !p.afterModule || p.afterModule === 0) && (
+                            <div className="bg-slate-900/40 border border-white/5 p-5 md:p-8 rounded-[2.5rem] mt-6">
+                                <h2 className="text-2xl font-bold text-white mb-6">Resources (PDFs)</h2>
+                                <div className="space-y-4">
+                                    {pdfs.filter(p => !p.afterModule || p.afterModule === 0).map((pdf) => (
+                                        <div key={pdf._id} className="p-4 rounded-xl border bg-white/5 border-white/10 hover:bg-white/10 transition-all">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <FileText className="text-blue-400" size={20} />
+                                                    <div>
+                                                        <h3 className="text-white font-medium">{pdf.title}</h3>
+                                                        <p className="text-gray-400 text-sm">
+                                                            {(pdf.fileSize / (1024 * 1024)).toFixed(2)} MB
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        const proxyUrl = `/api/pdf-proxy?url=${encodeURIComponent(pdf.fileUrl)}`;
+                                                        window.open(proxyUrl, '_blank');
+                                                        trackPDFAccess(pdf._id, false);
+                                                    }}
+                                                    className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 h-9 px-4 py-2 rounded-md bg-gradient-to-r from-blue-600 to-indigo-600 text-primary-foreground shadow hover:from-blue-700 hover:to-indigo-700"
+                                                >
+                                                    View PDF
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* General Assignments & Quizzes Section */}
+                        {isAccepted && assignments.some(a => !a.afterModule || a.afterModule === 0) && (
+                            <div className="bg-slate-900/40 border border-white/5 p-5 md:p-8 rounded-[2.5rem] mt-6">
+                                <h2 className="text-2xl font-bold text-white mb-6">Assignments</h2>
+                                <div className="space-y-4">
+                                    {assignments.filter(a => !a.afterModule || a.afterModule === 0).map((assignment) => (
+                                        <div key={assignment._id} className="p-4 rounded-xl border bg-white/5 border-white/10 hover:bg-white/10 transition-all">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <FileText className="text-green-400" size={20} />
+                                                    <div>
+                                                        <h3 className="text-white font-medium">{assignment.title}</h3>
+                                                        <p className="text-gray-400 text-sm">
+                                                            Due: {new Date(assignment.dueDate).toLocaleDateString()} • {assignment.totalMarks} marks
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <Link href={`/internships/${id}/assignment/${assignment._id}`}>
+                                                    <Button size="sm" className="bg-gradient-to-r from-green-600 to-teal-600">
+                                                        Submit
+                                                    </Button>
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {isAccepted && quizzes.some(q => !q.afterModule || q.afterModule === 0) && (
+                            <div className="bg-slate-900/40 border border-white/5 p-5 md:p-8 rounded-[2.5rem] mt-6">
+                                <h2 className="text-2xl font-bold text-white mb-6">Quizzes & Exams</h2>
+                                <div className="space-y-4">
+                                    {quizzes.filter(q => !q.afterModule || q.afterModule === 0).map((quiz) => (
+                                        <div key={quiz._id} className="p-4 rounded-xl border bg-white/5 border-white/10 hover:bg-white/10 transition-all">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <ClipboardList className="text-purple-400" size={20} />
+                                                    <div>
+                                                        <h3 className="text-white font-medium">{quiz.title}</h3>
+                                                        <p className="text-gray-400 text-sm">
+                                                            {quiz.type === 'exam' ? 'Exam' : quiz.type === 'test' ? 'Test' : 'Quiz'} • {quiz.questions.length} Qs • {quiz.duration} min
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <Link href={`/internships/${id}/quiz/${quiz._id}`}>
+                                                    <Button size="sm" className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
+                                                        Start
+                                                    </Button>
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Sidebar: Benefits & Info */}

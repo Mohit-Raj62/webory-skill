@@ -4,6 +4,7 @@ import Assignment from "@/models/Assignment";
 import Course from "@/models/Course";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 // GET - Fetch all assignments for a course
 export async function GET(
@@ -28,8 +29,9 @@ export async function GET(
     }
 
     // Verify ownership or shared access
+    const isObjectId = mongoose.Types.ObjectId.isValid(id);
     const course = await Course.findOne({
-      _id: id,
+      ...(isObjectId ? { _id: id } : { slug: id }),
       $or: [{ instructor: decoded.userId }, { coInstructors: decoded.userId }],
     });
     if (!course) {
@@ -40,7 +42,7 @@ export async function GET(
     }
 
     const assignments = await Assignment.find({
-      courseId: id,
+      courseId: course._id,
       isActive: true,
     }).sort({ createdAt: -1 });
 
@@ -79,8 +81,9 @@ export async function POST(
     const data = await req.json();
 
     // Verify ownership or shared access
+    const isObjectId = mongoose.Types.ObjectId.isValid(id);
     const course = await Course.findOne({
-      _id: id,
+      ...(isObjectId ? { _id: id } : { slug: id }),
       $or: [{ instructor: decoded.userId }, { coInstructors: decoded.userId }],
     });
     if (!course) {
@@ -92,7 +95,7 @@ export async function POST(
 
     const assignment = await Assignment.create({
       ...data,
-      courseId: id,
+      courseId: course._id,
     });
 
     return NextResponse.json({ assignment });

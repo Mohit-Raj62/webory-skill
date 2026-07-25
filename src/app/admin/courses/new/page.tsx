@@ -18,6 +18,7 @@ export default function NewCoursePage() {
     const [uploadProgress, setUploadProgress] = useState(0);
     const [formData, setFormData] = useState({
         title: "",
+        slug: "",
         description: "",
         level: "Beginner",
         price: 0,

@@ -21,6 +21,7 @@ export default function EditCoursePage() {
     const [uploadProgress, setUploadProgress] = useState(0);
     const [formData, setFormData] = useState({
         title: "",
+        slug: "",
         description: "",
         level: "Beginner",
         price: 0,
@@ -101,6 +102,7 @@ export default function EditCoursePage() {
                 
                 setFormData({
                     title: data.course.title || "",
+                    slug: data.course.slug || "",
                     description: data.course.description || "",
                     level: data.course.level || "Beginner",
                     price: data.course.price || 0,
@@ -560,6 +562,17 @@ export default function EditCoursePage() {
                                         value={formData.title}
                                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                         placeholder="e.g. Full Stack Web Development"
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="text-sm text-gray-400 font-medium mb-2 block">Slug</label>
+                                    <input
+                                        type="text"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder-gray-500 focus:border-blue-500/50 outline-none transition-all focus:bg-white/10 focus:ring-1 focus:ring-blue-500/20 text-lg"
+                                        value={formData.slug}
+                                        onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                                        placeholder="Auto-generated if left empty"
                                     />
                                 </div>
 

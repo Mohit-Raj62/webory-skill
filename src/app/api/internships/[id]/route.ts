@@ -22,14 +22,16 @@ export async function PUT(
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
 
-    if (decoded.role !== "admin") {
+    if (decoded.role !== "admin" && decoded.role !== "teacher") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const { id } = await params;
     const data = await req.json();
 
-    const internship = await Internship.findByIdAndUpdate(id, data, { new: true });
+    const isObjectId = mongoose.Types.ObjectId.isValid(id);
+    const query = isObjectId ? { _id: id } : { slug: id };
+    const internship = await Internship.findOneAndUpdate(query, data, { new: true });
 
     return NextResponse.json({ internship });
   } catch (error) {
@@ -75,7 +77,7 @@ export async function GET(
       return NextResponse.json({ error: "Internship not found" }, { status: 404 });
     }
 
-    if (!internship.isAvailable && !includeUnavailable) {
+    if (!internship.isActive && !includeUnavailable) {
       return NextResponse.json({ error: "Internship not found" }, { status: 404 });
     }
 

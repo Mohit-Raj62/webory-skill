@@ -128,7 +128,7 @@ export default function TeacherCoursesPage() {
                         <div className="flex items-start justify-between mb-4">
                             <h3 className="text-xl font-bold text-white">{course.title}</h3>
                             <div className="flex gap-2">
-                                <Link href={`/teacher/courses/${course._id}/edit`}>
+                                <Link href={`/teacher/courses/${course.slug || course._id}/edit`}>
                                     <button className="p-2 hover:bg-blue-500/10 rounded-lg transition-colors text-blue-400">
                                         <Edit size={18} />
                                     </button>
@@ -162,16 +162,22 @@ export default function TeacherCoursesPage() {
                                 <span className="text-gray-400 text-sm">{course.studentsCount} students</span>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                <Link href={`/teacher/courses/${course._id}/quizzes`}>
+                                <Link href={`/teacher/courses/${course.slug || course._id}/quizzes`}>
                                     <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
                                         <ClipboardList size={16} className="mr-1" />
                                         Quizzes
                                     </Button>
                                 </Link>
-                                <Link href={`/teacher/courses/${course._id}/assignments`}>
+                                <Link href={`/teacher/courses/${course.slug || course._id}/assignments`}>
                                     <Button className="w-full bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700">
                                         <FileText size={16} className="mr-1" />
                                         Assignments
+                                    </Button>
+                                </Link>
+                                <Link href={`/teacher/courses/${course.slug || course._id}/edit`} className="sm:col-span-2">
+                                    <Button className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700">
+                                        <Edit size={16} className="mr-1" />
+                                        Edit Details
                                     </Button>
                                 </Link>
                             </div>

@@ -650,7 +650,6 @@ export default function CourseDetailsPage() {
                                                                         </div>
                                                                     ))}
                                                             </div>
-
                                                         )}
 
                                                         {/* Module specific Quizzes */}
@@ -833,8 +832,40 @@ export default function CourseDetailsPage() {
                             </div>
                         )}
 
+                        {isEnrolled && pdfs.some(p => !p.afterModule || p.afterModule === 0) && (
+                            <div className="glass-card p-5 md:p-8 rounded-2xl mt-6">
+                                <h2 className="text-2xl font-bold text-white mb-6">Resources (PDFs)</h2>
+                                <div className="space-y-4">
+                                    {pdfs.filter(p => !p.afterModule || p.afterModule === 0).map((pdf) => (
+                                        <div key={pdf._id} className="p-4 rounded-xl border bg-white/5 border-white/10 hover:bg-white/10 transition-all">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <FileText className="text-blue-400" size={20} />
+                                                    <div>
+                                                        <h3 className="text-white font-medium">{pdf.title}</h3>
+                                                        <p className="text-gray-400 text-sm">
+                                                            {(pdf.fileSize / (1024 * 1024)).toFixed(2)} MB
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <a
+                                                    href={pdf.fileUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    onClick={() => trackPDFAccess(pdf._id, false)}
+                                                    className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 h-9 px-4 py-2 rounded-md bg-gradient-to-r from-blue-600 to-indigo-600 text-primary-foreground shadow hover:from-blue-700 hover:to-indigo-700"
+                                                >
+                                                    View PDF
+                                                </a>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                         {isEnrolled && assignments.some(a => !a.afterModule || a.afterModule === 0) && (
-                            <div className="glass-card p-5 md:p-8 rounded-2xl">
+                            <div className="glass-card p-5 md:p-8 rounded-2xl mt-6">
                                 <h2 className="text-2xl font-bold text-white mb-6">Assignments</h2>
                                 <div className="space-y-4">
                                     {assignments.filter(a => !a.afterModule || a.afterModule === 0).map((assignment) => (
@@ -854,6 +885,40 @@ export default function CourseDetailsPage() {
                                                         Submit
                                                     </Button>
                                                 </Link>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {isEnrolled && quizzes.some(q => !q.afterModule || q.afterModule === 0) && (
+                            <div className="glass-card p-5 md:p-8 rounded-2xl mt-6">
+                                <h2 className="text-2xl font-bold text-white mb-6">Quizzes & Exams</h2>
+                                <div className="space-y-4">
+                                    {quizzes.filter(q => !q.afterModule || q.afterModule === 0).map((quiz) => (
+                                        <div key={quiz._id} className={`p-4 rounded-xl border transition-all ${quizzesUnlocked ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white/5 border-white/5 opacity-50'}`}>
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <ClipboardList className={quizzesUnlocked ? "text-purple-400" : "text-gray-600"} size={20} />
+                                                    <div>
+                                                        <h3 className="text-white font-medium">{quiz.title}</h3>
+                                                        <p className="text-gray-400 text-sm">
+                                                            {quiz.type === 'exam' ? 'Exam' : quiz.type === 'test' ? 'Test' : 'Quiz'} • {quiz.questions.length} Qs • {quiz.duration} min
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    {quizzesUnlocked ? (
+                                                        <Link href={`/courses/${id}/quiz/${quiz._id}`}>
+                                                            <Button size="sm" className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
+                                                                Start
+                                                            </Button>
+                                                        </Link>
+                                                    ) : (
+                                                        <Lock size={16} className="text-gray-600" />
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     ))}

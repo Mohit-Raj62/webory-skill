@@ -50,6 +50,7 @@ export async function POST(request: NextRequest) {
     const reqBody = await request.json();
     const {
       title,
+      slug: providedSlug,
       description,
       level,
       color,
@@ -74,8 +75,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let slug;
-    if (title) {
+    let slug = providedSlug;
+    if (title && !slug) {
       slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     }
 

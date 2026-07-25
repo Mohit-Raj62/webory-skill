@@ -4,7 +4,10 @@ const AssignmentSchema = new mongoose.Schema({
   courseId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Course",
-    required: true,
+  },
+  internshipId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Internship",
   },
   title: {
     type: String,

@@ -13,6 +13,7 @@ export default function CreateCourse() {
     const [uploadingPromoVideo, setUploadingPromoVideo] = useState(false);
     const [formData, setFormData] = useState({
         title: "",
+        slug: "",
         description: "",
         level: "Beginner",
         price: "",
@@ -149,11 +150,20 @@ export default function CreateCourse() {
                                 value={formData.title}
                                 onChange={handleChange}
                                 required
-                                className="w-full bg-gray-800 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
-                                placeholder="e.g. Advanced React Patterns"
+                                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
                             />
                         </div>
-
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-400">Slug</label>
+                            <input
+                                type="text"
+                                name="slug"
+                                placeholder="Auto-generated if left empty"
+                                value={formData.slug}
+                                onChange={handleChange}
+                                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
+                            />
+                        </div>
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-gray-400">Level</label>
                             <select

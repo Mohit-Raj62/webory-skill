@@ -28,9 +28,12 @@ export async function DELETE(
 
     const { id } = await params;
 
+    const isObjectId = mongoose.Types.ObjectId.isValid(id);
+    const query = isObjectId ? { _id: id } : { slug: id };
+
     // Verify ownership
     const internship = await Internship.findOne({
-      _id: id,
+      ...query,
       $or: [{ instructor: decoded.userId }, { coInstructors: decoded.userId }],
     });
     if (!internship) {
@@ -90,9 +93,12 @@ export async function PUT(
     const { id } = await params;
     const data = await req.json();
 
+    const isObjectId = mongoose.Types.ObjectId.isValid(id);
+    const query = isObjectId ? { _id: id } : { slug: id };
+
     // Verify ownership
     const existingInternship = await Internship.findOne({
-      _id: id,
+      ...query,
       $or: [{ instructor: decoded.userId }, { coInstructors: decoded.userId }],
     });
     if (!existingInternship) {
@@ -111,7 +117,8 @@ export async function PUT(
       data.videos = flattenedVideos;
     }
 
-    const internship = await Internship.findByIdAndUpdate(id, data, { new: true });
+    // Update internship
+    const internship = await Internship.findOneAndUpdate(query, data, { new: true });
 
     const { logActivity } = await import("@/lib/logger");
     await logActivity(

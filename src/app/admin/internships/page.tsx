@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Edit, Trash2, Search, FileText, Eye, EyeOff, Users } from "lucide-react";
+import { Plus, Edit, Trash2, Search, FileText, Eye, EyeOff, Users, ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { InternshipActivityFeed } from "@/components/admin/internship-activity-feed";
@@ -220,6 +220,11 @@ export default function InternshipsAdminPage() {
                                             <Link href={`/admin/internships/${internship._id}/tasks`}>
                                                 <button className="p-2 hover:bg-purple-500/10 rounded-lg transition-colors text-purple-400" title="Manage Tasks">
                                                     <FileText size={18} />
+                                                </button>
+                                            </Link>
+                                            <Link href={`/admin/internships/${internship._id}/quizzes`}>
+                                                <button className="p-2 hover:bg-pink-500/10 rounded-lg transition-colors text-pink-400" title="Manage Quizzes">
+                                                    <ClipboardList size={18} />
                                                 </button>
                                             </Link>
                                         </div>

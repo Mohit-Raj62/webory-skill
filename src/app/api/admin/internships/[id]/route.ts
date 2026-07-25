@@ -61,12 +61,19 @@ export async function PUT(
     const { id } = await params;
     const updateData = await req.json();
 
+    if (updateData.title && !updateData.slug) {
+      updateData.slug = updateData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    }
+
     // Remove internal fields if present
     delete updateData._id;
     delete updateData.__v;
 
-    const internship = await Internship.findByIdAndUpdate(
-      id,
+    const isObjectId = mongoose.Types.ObjectId.isValid(id);
+    const query = isObjectId ? { _id: id } : { slug: id };
+
+    const internship = await Internship.findOneAndUpdate(
+      query,
       updateData, // Update everything sent
       { new: true, runValidators: true }
     );
@@ -115,11 +122,20 @@ export async function DELETE(
 
     const { id } = await params;
 
+    const isObjectId = mongoose.Types.ObjectId.isValid(id);
+    const query = isObjectId ? { _id: id } : { slug: id };
+
+    // Find the internship first to get its actual _id
+    const internship = await Internship.findOne(query);
+    if (!internship) {
+      return NextResponse.json({ error: "Internship not found" }, { status: 404 });
+    }
+
     // Delete applications for this internship
-    await Application.deleteMany({ internship: id });
+    await Application.deleteMany({ internship: internship._id });
 
     // Delete internship
-    await Internship.findByIdAndDelete(id);
+    await Internship.findOneAndDelete(query);
 
     return NextResponse.json({ message: "Internship deleted successfully" });
   } catch (error) {

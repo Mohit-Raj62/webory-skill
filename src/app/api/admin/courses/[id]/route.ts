@@ -28,8 +28,11 @@ export async function DELETE(
 
     const { id } = await params;
 
+    const isObjectId = mongoose.Types.ObjectId.isValid(id);
+    const query = isObjectId ? { _id: id } : { slug: id };
+
     // Find course first to get assets
-    const course = await Course.findById(id);
+    const course = await Course.findOne(query);
     if (!course) {
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
@@ -78,10 +81,10 @@ export async function DELETE(
     }
 
     // Delete enrollments for this course
-    await Enrollment.deleteMany({ course: id });
+    await Enrollment.deleteMany({ course: course._id });
 
-    // Delete course
-    await Course.findByIdAndDelete(id);
+    // Delete the course
+    await Course.findOneAndDelete(query);
 
     // Log Activity
     const { logActivity } = await import("@/lib/logger");
@@ -133,8 +136,11 @@ export async function PUT(
       data.collaboration
     );
 
+    const isObjectId = mongoose.Types.ObjectId.isValid(id);
+    const query = isObjectId ? { _id: id } : { slug: id };
+
     // 1. Fetch current course to compare
-    const currentCourse = await Course.findById(id);
+    const currentCourse = await Course.findOne(query);
     if (!currentCourse) {
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
@@ -220,7 +226,7 @@ export async function PUT(
       }
     })();
 
-    const course = await Course.findByIdAndUpdate(id, data, {
+    const course = await Course.findOneAndUpdate(query, data, {
       new: true,
       strict: false,
     });
