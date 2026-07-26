@@ -98,26 +98,15 @@ export default function VideoPlayerPage() {
 
     // Reordered Helper Functions (Pre-defined for useEffect hooks)
     const handleEnded = () => {
-        const checkFreeTrialCompletion = () => {
-            if (!internship || !internship.modules || isAccepted) return;
-            const sortedModules = [...internship.modules].sort((a: any, b: any) => a.order - b.order);
-            const firstModule = sortedModules[0];
-            const firstModuleVideoCount = firstModule.videos?.length || 0;
-            if (currentIndex === firstModuleVideoCount - 1) {
-                setShowTrialEndedModal(true);
-            }
-        };
 
         if (!hasMarkedAsWatched) {
             markAsWatched(100);
-            checkFreeTrialCompletion();
         } else {
             // Only show if not already shown in this watch session
             if (!hasShownOverlayRef.current) {
                 setShowCompletionOverlay(true);
                 hasShownOverlayRef.current = true;
             }
-            checkFreeTrialCompletion();
         }
     };
 
@@ -412,7 +401,7 @@ export default function VideoPlayerPage() {
                         const enrollData = await resEnroll.json();
                         const enrolled = enrollData.applications.some((e: any) => {
                             const enrollInternshipId = e.internship?._id || e.internship;
-                            return String(enrollInternshipId) === String(internshipId);
+                            return String(enrollInternshipId) === String(internshipId) || e.internship?.slug === internshipId;
                         });
                         setIsEnrolled(enrolled);
                     }
@@ -425,6 +414,13 @@ export default function VideoPlayerPage() {
         };
         fetchUserAndEnrollment();
     }, [internshipId]);
+
+    useEffect(() => {
+        if (!loading && !checkingEnrollment && !isAccepted) {
+            toast.error("You must be enrolled to view this content");
+            router.push(`/internships/${internshipId}`);
+        }
+    }, [loading, checkingEnrollment, isAccepted, internshipId, router]);
 
     // Load YouTube API
     useEffect(() => {

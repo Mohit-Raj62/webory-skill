@@ -94,7 +94,7 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                 if (res.ok) {
                     const data = await res.json();
                     const app = data.applications.find(
-                        (a: any) => a.internship?._id?.toString() === id || a.internship?.toString() === id
+                        (a: any) => a.internship?._id?.toString() === id || a.internship?.toString() === id || a.internship?.slug === id
                     );
                     setIsAccepted(app?.status !== 'pending' && app?.status !== 'rejected');
                     if (app) setSelectedTier(app.selectedTier || "Basic");
@@ -404,7 +404,7 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                                                 .slice(0, moduleIndex)
                                                 .reduce((acc: number, m: any) => acc + (m.videos?.length || 0), 0);
                                             
-                                            const isModuleUnlocked = isAccepted || moduleIndex === 0;
+                                            const isModuleUnlocked = isAccepted;
 
                                             return (
                                                 <div key={moduleIndex} className="border border-white/5 rounded-2xl overflow-hidden bg-white/5">
@@ -420,7 +420,7 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                                                                 {module.videos?.length || 0} Lessons
                                                                 {moduleIndex === 0 && !isAccepted && (
                                                                     <span className="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[8px] border border-emerald-500/20">
-                                                                        Free Preview
+                                                                        Module 1
                                                                     </span>
                                                                 )}
                                                             </p>
