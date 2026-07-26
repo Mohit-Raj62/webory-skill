@@ -18,6 +18,7 @@ interface Internship {
     isActive?: boolean;
     instructor?: string;
     coInstructors?: string[];
+    slug?: string;
 }
 
 import { ManageInternshipTeachersModal } from "@/components/admin/ManageInternshipTeachersModal";
@@ -206,7 +207,7 @@ export default function InternshipsAdminPage() {
                                             >
                                                 <Users size={18} />
                                             </button>
-                                            <Link href={`/admin/internships/${internship._id}/edit`}>
+                                            <Link href={`/admin/internships/${internship.slug || internship._id}/edit`}>
                                                 <button className="p-2 hover:bg-blue-500/10 rounded-lg transition-colors text-blue-400">
                                                     <Edit size={18} />
                                                 </button>
@@ -217,12 +218,12 @@ export default function InternshipsAdminPage() {
                                             >
                                                 <Trash2 size={18} />
                                             </button>
-                                            <Link href={`/admin/internships/${internship._id}/tasks`}>
+                                            <Link href={`/admin/internships/${internship.slug || internship._id}/tasks`}>
                                                 <button className="p-2 hover:bg-purple-500/10 rounded-lg transition-colors text-purple-400" title="Manage Tasks">
                                                     <FileText size={18} />
                                                 </button>
                                             </Link>
-                                            <Link href={`/admin/internships/${internship._id}/quizzes`}>
+                                            <Link href={`/admin/internships/${internship.slug || internship._id}/quizzes`}>
                                                 <button className="p-2 hover:bg-pink-500/10 rounded-lg transition-colors text-pink-400" title="Manage Quizzes">
                                                     <ClipboardList size={18} />
                                                 </button>
