@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus, X, Upload, Image, FileText, Trash2, Video, DollarSign, Users, Clock, Tag, Layers, CheckCircle, Loader2, Save } from "lucide-react";
+import { ArrowLeft, Plus, X, Upload, Image, FileText, Trash2, Video, DollarSign, Users, Clock, Tag, Layers, CheckCircle, Loader2, Save, Edit } from "lucide-react";
 import Link from "next/link";
 import { uploadFile, uploadPDFToCloudinary } from "@/lib/upload-utils";
 import { toast } from "sonner";
