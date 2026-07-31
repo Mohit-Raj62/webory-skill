@@ -66,6 +66,41 @@ export function InternshipsView({ internships, user, userApplications }: Interns
         });
     }, [internships, searchQuery, selectedType]);
 
+    // Handle incoming apply param
+    useEffect(() => {
+        if (!internships.length) return;
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const applyId = urlParams.get('apply');
+        const tierParam = urlParams.get('tier');
+        
+        if (applyId && internships.find(i => i._id === applyId)) {
+            // Small timeout to ensure component is fully mounted
+            setTimeout(() => {
+                const internship = internships.find(i => i._id === applyId);
+                if (internship) {
+                    if (!user) {
+                        setSelectedInternship(applyId);
+                        setIsLeadModalOpen(true);
+                    } else if (applyId.length >= 24) { // Not a demo
+                        setSelectedInternship(applyId);
+                        setApplyStep(1);
+                        setSelectedTier(tierParam || "Basic");
+                        
+                        // Track view
+                        fetch(`/api/student/internships/${applyId}/views`, { method: "POST" }).catch(() => {});
+                    }
+                }
+            }, 100);
+            
+            // Clean up the URL
+            const url = new URL(window.location.href);
+            url.searchParams.delete('apply');
+            url.searchParams.delete('tier');
+            window.history.replaceState({}, '', url.pathname + url.search);
+        }
+    }, [internships, user]);
+
     // File Handler
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];

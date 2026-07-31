@@ -199,7 +199,7 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                             </div>
                         ) : (
                             <Button 
-                                onClick={() => router.push('/internships')}
+                                onClick={() => router.push(`/internships?apply=${internship._id}`)}
                                 className="relative overflow-hidden group h-16 px-12 rounded-[2rem] font-black uppercase tracking-[0.2em] text-[11px] text-white border-none shadow-[0_20px_50px_-15px_rgba(16,185,129,0.4)] hover:shadow-[0_25px_60px_-12px_rgba(16,185,129,0.5)] transition-all duration-500 hover:scale-[1.02]"
                                 style={{
                                     background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
@@ -367,7 +367,7 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                                             </div>
 
                                             <Button 
-                                                onClick={() => router.push('/internships')}
+                                                onClick={() => router.push(`/internships?apply=${internship._id}&tier=${tier.name}`)}
                                                 disabled={selectedTier === tier.name}
                                                 className={`w-full h-12 rounded-xl font-black uppercase tracking-[0.2em] text-[9px] transition-all duration-300 ${
                                                     selectedTier === tier.name ? 'bg-slate-800 text-slate-500 cursor-not-allowed' :
