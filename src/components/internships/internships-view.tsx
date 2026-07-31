@@ -551,9 +551,11 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                                                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-[shimmer_3s_infinite]" />
                                                                     )}
                                                                     <div className="relative z-10 flex items-center justify-center gap-2 md:gap-3 w-full">
-                                                                        {isFull ? "Registration Closed" : (
+                                                                        {isFull ? (
+                                                                            <span className="whitespace-nowrap tracking-wider text-[10px] sm:text-xs md:text-sm">REGISTRATION CLOSED</span>
+                                                                        ) : (
                                                                             <>
-                                                                                ENROLL NOW 
+                                                                                <span className="whitespace-nowrap">ENROLL NOW</span> 
                                                                                 <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors shrink-0">
                                                                                     <ArrowUpRight size={16} className="md:w-5 md:h-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                                                                                 </div>
