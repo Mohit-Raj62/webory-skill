@@ -539,7 +539,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                                                 <Button
                                                                     onClick={() => !isFull && handleApplyClick(job._id)}
                                                                     disabled={isFull}
-                                                                    className={`w-full h-16 md:h-18 rounded-[2rem] font-black text-xs md:text-sm tracking-[0.2em] uppercase relative overflow-hidden transition-all duration-500 ${isFull ? 'opacity-40 grayscale cursor-not-allowed bg-slate-800' : 'hover:scale-[1.02] active:scale-[0.98] hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.5)] shadow-xl'}`}
+                                                                    className={`w-full h-16 md:h-18 rounded-[2rem] font-black text-[10px] md:text-sm tracking-widest uppercase relative overflow-hidden transition-all duration-500 px-2 md:px-4 ${isFull ? 'opacity-40 grayscale cursor-not-allowed bg-slate-800' : 'hover:scale-[1.02] active:scale-[0.98] hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.5)] shadow-xl'}`}
                                                                     style={{
                                                                         background: isFull 
                                                                             ? '#1e293b' 
@@ -550,12 +550,12 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                                                     {!isFull && (
                                                                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-[shimmer_3s_infinite]" />
                                                                     )}
-                                                                    <div className="relative z-10 flex items-center justify-center gap-3">
+                                                                    <div className="relative z-10 flex items-center justify-center gap-2 md:gap-3 w-full">
                                                                         {isFull ? "Registration Closed" : (
                                                                             <>
                                                                                 ENROLL NOW 
-                                                                                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
-                                                                                    <ArrowUpRight size={20} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                                                                                <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors shrink-0">
+                                                                                    <ArrowUpRight size={16} className="md:w-5 md:h-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                                                                                 </div>
                                                                             </>
                                                                         )}
