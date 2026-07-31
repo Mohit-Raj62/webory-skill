@@ -29,6 +29,7 @@ export async function POST(req: Request) {
       portfolio,
       linkedin,
       college,
+      collegeApprovalLetter,
       currentYear,
       startDate,
       preferredDuration,
@@ -80,6 +81,7 @@ export async function POST(req: Request) {
         application.portfolio = portfolio;
         application.linkedin = linkedin;
         application.college = college;
+        application.collegeApprovalLetter = collegeApprovalLetter;
         application.currentYear = currentYear;
         application.startDate = startDate;
         application.preferredDuration = preferredDuration;
@@ -106,6 +108,7 @@ export async function POST(req: Request) {
         portfolio,
         linkedin,
         college,
+        collegeApprovalLetter,
         currentYear,
         startDate,
         preferredDuration,

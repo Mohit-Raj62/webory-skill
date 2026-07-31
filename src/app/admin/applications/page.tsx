@@ -31,6 +31,7 @@ interface Application {
     portfolio?: string;
     preferredDuration?: string;
     referralCode?: string;
+    collegeApprovalLetter?: string;
 }
 
 export default function ApplicationsPage() {
@@ -582,6 +583,20 @@ export default function ApplicationsPage() {
                                         </div>
                                      )}
                                 </div>
+                                
+                                {viewApp.collegeApprovalLetter && (
+                                    <div className="bg-black/30 p-4 rounded-xl border border-white/5 mt-2">
+                                        <div className="flex justify-between items-center mb-2">
+                                            <p className="text-xs text-gray-400">College Approval Letter</p>
+                                            <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded text-gray-400 uppercase">PDF</span>
+                                        </div>
+                                        <a href={viewApp.collegeApprovalLetter} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-blue-400 hover:underline bg-blue-500/5 p-3 rounded-lg border border-blue-500/20">
+                                            <CheckCircle size={16}/>
+                                            <span className="text-sm font-bold">Open Approval Letter</span>
+                                            <ExternalLink size={12} className="ml-auto"/>
+                                        </a>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Cover Letter */}

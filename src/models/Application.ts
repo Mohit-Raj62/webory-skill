@@ -21,6 +21,7 @@ const ApplicationSchema = new Schema({
     default: "file",
   },
   college: String,
+  collegeApprovalLetter: String,
   currentYear: String,
   startDate: Date,
   preferredDuration: String,

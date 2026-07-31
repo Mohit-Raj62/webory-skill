@@ -32,6 +32,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
 
     const [resumeType, setResumeType] = useState<'file' | 'link'>('file');
     const [file, setFile] = useState<File | null>(null);
+    const [approvalLetterFile, setApprovalLetterFile] = useState<File | null>(null);
     const [uploading, setUploading] = useState(false);
 
     const [formData, setFormData] = useState({
@@ -116,6 +117,24 @@ export function InternshipsView({ internships, user, userApplications }: Interns
       }
     };
 
+    const handleApprovalLetterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) {
+          if (file.type !== 'application/pdf') {
+              toast.error("Please upload a PDF file for the approval letter.");
+              e.target.value = '';
+              return;
+          }
+          if (file.size > 500 * 1024) {
+              toast.error("File is too large! Please upload a PDF under 500KB.");
+              e.target.value = '';
+              return;
+          }
+          setApprovalLetterFile(file);
+      } else {
+          setApprovalLetterFile(null);
+      }
+    };
 
     const handleApplyClick = (id: string) => {
         const internship = internships.find(i => i._id === id);
@@ -178,9 +197,15 @@ export function InternshipsView({ internships, user, userApplications }: Interns
             toast.error("Please provide a resume link");
             return;
         }
+        
+        if (!approvalLetterFile) {
+            toast.error("Please upload your college approval letter");
+            return;
+        }
 
         setSubmitting(true);
         let resumeUrl = formData.resume;
+        let collegeApprovalLetterUrl = "";
 
         try {
              // Upload File if selected
@@ -208,6 +233,23 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                 setUploading(false);
             }
 
+            if (approvalLetterFile) {
+                setUploading(true);
+                const uploadData = new FormData();
+                uploadData.append("file", approvalLetterFile);
+                
+                const uploadRes = await fetch("/api/upload/resume", {
+                    method: "POST",
+                    body: uploadData
+                });
+                
+                if (!uploadRes.ok) throw new Error("Failed to upload approval letter.");
+                const uploadResult = await uploadRes.json();
+                if (!uploadResult.success) throw new Error(uploadResult.error || "Failed to upload approval letter");
+                collegeApprovalLetterUrl = uploadResult.url;
+                setUploading(false);
+            }
+
             const internshipDetails = internships.find(i => i._id === selectedInternship);
             const basePrice = internshipDetails?.isFree 
                 ? 0 
@@ -227,6 +269,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                     portfolio: formData.portfolio,
                     linkedin: formData.linkedin,
                     college: formData.college,
+                    collegeApprovalLetter: collegeApprovalLetterUrl,
                     currentYear: formData.currentYear,
                     startDate: formData.startDate,
                     preferredDuration: formData.preferredDuration,
@@ -925,6 +968,17 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                                         <option value="Graduated">Graduated</option>
                                                     </select>
                                                 </div>
+                                            </div>
+                                            
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-medium text-gray-400">College Approval Letter (PDF, max 500KB) <span className="text-red-500">*</span></label>
+                                                <input
+                                                    type="file"
+                                                    accept=".pdf"
+                                                    required
+                                                    onChange={handleApprovalLetterChange}
+                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:border-emerald-500/50 outline-none transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-500/10 file:text-emerald-400 hover:file:bg-emerald-500/20"
+                                                />
                                             </div>
                                         </div>
 
