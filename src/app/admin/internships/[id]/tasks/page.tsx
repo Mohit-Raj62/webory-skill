@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Calendar, FileText, ArrowLeft } from "lucide-react";
+import { Plus, Trash2, Calendar, FileText, ArrowLeft, Edit } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -22,6 +22,7 @@ export default function InternshipTasksPage({ params }: { params: Promise<{ id: 
     const [tasks, setTasks] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
     const [formData, setFormData] = useState<TaskFormData>({
         title: "",
         description: "",
@@ -53,8 +54,13 @@ export default function InternshipTasksPage({ params }: { params: Promise<{ id: 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const res = await fetch(`/api/admin/internships/${id}/tasks`, {
-                method: "POST",
+            const url = editingTaskId 
+                ? `/api/admin/internships/${id}/tasks/${editingTaskId}` 
+                : `/api/admin/internships/${id}/tasks`;
+            const method = editingTaskId ? "PUT" : "POST";
+
+            const res = await fetch(url, {
+                method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
             });
@@ -62,15 +68,53 @@ export default function InternshipTasksPage({ params }: { params: Promise<{ id: 
             if (res.ok) {
                 fetchTasks();
                 setIsModalOpen(false);
+                setEditingTaskId(null);
                 setFormData({ title: "", description: "", dueDate: "", isSimulated: false, initialCode: "", expectedRegex: "", tierAccess: ["Basic", "Intermediate", "Advanced"] });
-                alert("Task created successfully!");
+                alert(`Task ${editingTaskId ? 'updated' : 'created'} successfully!`);
             } else {
-                alert("Failed to create task");
+                alert(`Failed to ${editingTaskId ? 'update' : 'create'} task`);
             }
         } catch (error) {
-            console.error("Create task error:", error);
-            alert("Failed to create task");
+            console.error(`${editingTaskId ? 'Update' : 'Create'} task error:`, error);
+            alert(`Failed to ${editingTaskId ? 'update' : 'create'} task`);
         }
+    };
+
+    const handleDelete = async (taskId: string) => {
+        if (!confirm("Are you sure you want to delete this task?")) return;
+        try {
+            const res = await fetch(`/api/admin/internships/${id}/tasks/${taskId}`, {
+                method: "DELETE",
+            });
+            if (res.ok) {
+                fetchTasks();
+                alert("Task deleted successfully!");
+            } else {
+                alert("Failed to delete task");
+            }
+        } catch (error) {
+            console.error("Delete task error:", error);
+            alert("Failed to delete task");
+        }
+    };
+
+    const handleEditClick = (task: any) => {
+        let formattedDueDate = "";
+        if (task.dueDate) {
+            const d = new Date(task.dueDate);
+            formattedDueDate = d.toISOString().split('T')[0];
+        }
+        setFormData({
+            title: task.title || "",
+            description: task.description || "",
+            dueDate: formattedDueDate,
+            isSimulated: task.isSimulated || false,
+            initialCode: task.initialCode || "",
+            expectedRegex: task.expectedRegex || "",
+            tierAccess: task.tierAccess || ["Basic", "Intermediate", "Advanced"],
+        });
+        setEditingTaskId(task._id);
+        setIsModalOpen(true);
     };
 
     return (
@@ -85,7 +129,11 @@ export default function InternshipTasksPage({ params }: { params: Promise<{ id: 
                 </div>
                 <div className="ml-auto">
                     <Button
-                        onClick={() => setIsModalOpen(true)}
+                        onClick={() => {
+                            setEditingTaskId(null);
+                            setFormData({ title: "", description: "", dueDate: "", isSimulated: false, initialCode: "", expectedRegex: "", tierAccess: ["Basic", "Intermediate", "Advanced"] });
+                            setIsModalOpen(true);
+                        }}
                         className="bg-blue-600 hover:bg-blue-700"
                     >
                         <Plus size={20} className="mr-2" />
@@ -142,8 +190,16 @@ export default function InternshipTasksPage({ params }: { params: Promise<{ id: 
                                         </Button>
                                     </Link>
                                     <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleEditClick(task)}
+                                    >
+                                        <Edit size={16} />
+                                    </Button>
+                                    <Button
                                         variant="ghost"
                                         size="sm"
+                                        onClick={() => handleDelete(task._id)}
                                         className="text-red-400 hover:text-red-300"
                                     >
                                         <Trash2 size={18} />
@@ -165,7 +221,7 @@ export default function InternshipTasksPage({ params }: { params: Promise<{ id: 
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
                     <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl w-full max-w-md p-6">
-                        <h2 className="text-2xl font-bold text-white mb-6">Add New Task</h2>
+                        <h2 className="text-2xl font-bold text-white mb-6">{editingTaskId ? "Edit Task" : "Add New Task"}</h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
                                 <label className="text-sm text-gray-300 block mb-2">Title</label>
@@ -270,7 +326,7 @@ export default function InternshipTasksPage({ params }: { params: Promise<{ id: 
                                         type="submit"
                                         className="flex-1 bg-blue-600 hover:bg-blue-700"
                                     >
-                                        Create Task
+                                        {editingTaskId ? "Update Task" : "Create Task"}
                                     </Button>
                                 </div>
                             </form>

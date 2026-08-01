@@ -5,6 +5,7 @@ import AssignmentSubmission from "@/models/AssignmentSubmission";
 import Internship from "@/models/Internship";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 // GET - Fetch specific assignment
 export async function GET(
@@ -28,9 +29,9 @@ export async function GET(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Verify ownership or shared access
+    const isObjectId = mongoose.Types.ObjectId.isValid(id);
     const internship = await Internship.findOne({
-      _id: id,
+      ...(isObjectId ? { _id: id } : { slug: id }),
       $or: [{ instructor: decoded.userId }, { coInstructors: decoded.userId }],
     });
     if (!internship) {
@@ -42,7 +43,7 @@ export async function GET(
 
     const assignment = await Assignment.findOne({
       _id: assignmentId,
-      internshipId: id,
+      internshipId: internship._id,
     });
     if (!assignment) {
       return NextResponse.json(
@@ -84,9 +85,9 @@ export async function PUT(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Verify ownership or shared access
+    const isObjectId = mongoose.Types.ObjectId.isValid(id);
     const internship = await Internship.findOne({
-      _id: id,
+      ...(isObjectId ? { _id: id } : { slug: id }),
       $or: [{ instructor: decoded.userId }, { coInstructors: decoded.userId }],
     });
     if (!internship) {
@@ -97,7 +98,7 @@ export async function PUT(
     }
 
     const assignment = await Assignment.findOneAndUpdate(
-      { _id: assignmentId, internshipId: id },
+      { _id: assignmentId, internshipId: internship._id },
       data,
       { new: true },
     );
@@ -141,9 +142,9 @@ export async function DELETE(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Verify ownership or shared access
+    const isObjectId = mongoose.Types.ObjectId.isValid(id);
     const internship = await Internship.findOne({
-      _id: id,
+      ...(isObjectId ? { _id: id } : { slug: id }),
       $or: [{ instructor: decoded.userId }, { coInstructors: decoded.userId }],
     });
     if (!internship) {
@@ -155,7 +156,7 @@ export async function DELETE(
 
     const assignment = await Assignment.findOneAndDelete({
       _id: assignmentId,
-      internshipId: id,
+      internshipId: internship._id,
     });
 
     if (!assignment) {
