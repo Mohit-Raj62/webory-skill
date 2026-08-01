@@ -3,6 +3,7 @@ import dbConnect from "@/lib/db";
 import Quiz from "@/models/Quiz";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 // GET - Fetch all quizzes for a internship
 export async function GET(
@@ -13,7 +14,17 @@ export async function GET(
     await dbConnect();
     const { id } = await params;
 
-    const quizzes = await Quiz.find({ internshipId: id })
+    let actualId = id;
+    if (!mongoose.isValidObjectId(id)) {
+      const internship = await Internship.findOne({ slug: id }).select("_id");
+      if (internship) {
+        actualId = internship._id.toString();
+      } else {
+        return NextResponse.json({ error: "Internship not found" }, { status: 404 });
+      }
+    }
+
+    const quizzes = await Quiz.find({ internshipId: actualId })
       .sort({ createdAt: -1 })
       .lean();
 
@@ -51,9 +62,19 @@ export async function POST(
     const { id } = await params;
     const data = await req.json();
 
+    let actualId = id;
+    if (!mongoose.isValidObjectId(id)) {
+      const internship = await Internship.findOne({ slug: id }).select("_id");
+      if (internship) {
+        actualId = internship._id.toString();
+      } else {
+        return NextResponse.json({ error: "Internship not found" }, { status: 404 });
+      }
+    }
+
     const quiz = await Quiz.create({
       ...data,
-      internshipId: id,
+      internshipId: actualId,
     });
 
     return NextResponse.json({ quiz });

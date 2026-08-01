@@ -4,6 +4,7 @@ import Quiz from "@/models/Quiz";
 import Internship from "@/models/Internship";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 // GET - Fetch specific quiz (Admin)
 export async function GET(
@@ -27,7 +28,17 @@ export async function GET(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const quiz = await Quiz.findOne({ _id: quizId, internshipId: id });
+    let actualId = id;
+    if (!mongoose.isValidObjectId(id)) {
+      const internship = await Internship.findOne({ slug: id }).select("_id");
+      if (internship) {
+        actualId = internship._id.toString();
+      } else {
+        return NextResponse.json({ error: "Internship not found" }, { status: 404 });
+      }
+    }
+
+    const quiz = await Quiz.findOne({ _id: quizId, internshipId: actualId });
     if (!quiz) {
       return NextResponse.json({ error: "Quiz not found" }, { status: 404 });
     }
@@ -65,8 +76,18 @@ export async function PUT(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
+    let actualId = id;
+    if (!mongoose.isValidObjectId(id)) {
+      const internship = await Internship.findOne({ slug: id }).select("_id");
+      if (internship) {
+        actualId = internship._id.toString();
+      } else {
+        return NextResponse.json({ error: "Internship not found" }, { status: 404 });
+      }
+    }
+
     const quiz = await Quiz.findOneAndUpdate(
-      { _id: quizId, internshipId: id },
+      { _id: quizId, internshipId: actualId },
       data,
       { new: true },
     );
@@ -107,7 +128,17 @@ export async function DELETE(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const quiz = await Quiz.findOneAndDelete({ _id: quizId, internshipId: id });
+    let actualId = id;
+    if (!mongoose.isValidObjectId(id)) {
+      const internship = await Internship.findOne({ slug: id }).select("_id");
+      if (internship) {
+        actualId = internship._id.toString();
+      } else {
+        return NextResponse.json({ error: "Internship not found" }, { status: 404 });
+      }
+    }
+
+    const quiz = await Quiz.findOneAndDelete({ _id: quizId, internshipId: actualId });
 
     if (!quiz) {
       return NextResponse.json({ error: "Quiz not found" }, { status: 404 });
