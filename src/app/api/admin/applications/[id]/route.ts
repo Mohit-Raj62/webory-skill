@@ -85,15 +85,18 @@ export async function PATCH(
         const { student, internship } = application;
 
         if (student && internship) {
-          if (status === "interview_scheduled" && interviewDate) {
+          const finalInterviewDate = interviewDate || application.interviewDate;
+          const finalInterviewLink = interviewLink || application.interviewLink;
+
+          if (status === "interview_scheduled" && finalInterviewDate) {
             await sendEmail(
               student.email,
               `Interview Scheduled: ${internship.title}`,
               emailTemplates.interviewScheduled(
                 student.firstName,
                 internship.title,
-                interviewDate,
-                interviewLink,
+                finalInterviewDate,
+                finalInterviewLink,
               ),
             );
           } else if (status === "pending") {
