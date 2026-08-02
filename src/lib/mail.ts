@@ -99,6 +99,24 @@ export const emailTemplates = {
       <p>Best Wishes,<br/>Webory Skills Team</p>
     </div>
   `,
+  applicationPending: (name: string, internshipTitle: string) => `
+    <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+      <h2 style="color: #2563eb;">Application Status: Pending ⏳</h2>
+      <p>Hi ${name},</p>
+      <p>Your application for the <strong>${internshipTitle}</strong> internship is currently <strong>Pending</strong>.</p>
+      <p>Our team will review it shortly. We will notify you once there is an update.</p>
+      <p>Best Regards,<br/>Webory Skills Team</p>
+    </div>
+  `,
+  applicationInterviewPending: (name: string, internshipTitle: string) => `
+    <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+      <h2 style="color: #f59e0b;">Application Status: In Review 🔍</h2>
+      <p>Hi ${name},</p>
+      <p>Your application for the <strong>${internshipTitle}</strong> internship is currently <strong>In Review (Interview Pending)</strong>.</p>
+      <p>We are evaluating your profile and will update you soon regarding the next steps.</p>
+      <p>Best Regards,<br/>Webory Skills Team</p>
+    </div>
+  `,
   passwordReset: (name: string, resetLink: string) => `
     <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #2563eb;">Password Reset Request 🔐</h2>

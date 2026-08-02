@@ -96,6 +96,24 @@ export async function PATCH(
                 interviewLink,
               ),
             );
+          } else if (status === "pending") {
+            await sendEmail(
+              student.email,
+              `Application Update: ${internship.title}`,
+              emailTemplates.applicationPending(
+                student.firstName,
+                internship.title,
+              ),
+            );
+          } else if (status === "interview_pending") {
+            await sendEmail(
+              student.email,
+              `Application Update: ${internship.title}`,
+              emailTemplates.applicationInterviewPending(
+                student.firstName,
+                internship.title,
+              ),
+            );
           } else if (status === "accepted") {
             if (!application.offerDate) {
               await Application.findByIdAndUpdate(application._id, {
