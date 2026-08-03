@@ -59,14 +59,18 @@ export const emailTemplates = {
   interviewScheduled: (
     name: string,
     internshipTitle: string,
-    date: string,
+    date?: string | Date,
     link?: string,
   ) => `
     <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
       <h2 style="color: #9333ea;">Interview Scheduled! 📅</h2>
       <p>Hi ${name},</p>
       <p>Great news! We have scheduled an interview for your <strong>${internshipTitle}</strong> application.</p>
-      <p><strong>Date & Time:</strong> ${new Date(date).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })} ${new Date(date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p>
+      ${
+        date
+          ? `<p><strong>Date & Time:</strong> ${new Date(date).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })} ${new Date(date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p>`
+          : `<p>We will communicate the exact Date & Time shortly.</p>`
+      }
       ${
         link
           ? `<p><strong>Meeting Link:</strong> <a href="${link}">${link}</a></p>`
