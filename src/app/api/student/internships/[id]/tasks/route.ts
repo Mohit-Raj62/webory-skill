@@ -4,6 +4,7 @@ import InternshipTask from "@/models/InternshipTask";
 import Application from "@/models/Application";
 import InternshipSubmission from "@/models/InternshipSubmission";
 import Internship from "@/models/Internship";
+import User from "@/models/User";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
@@ -52,22 +53,23 @@ export async function GET(
 
     // Fetch tasks filtered by the user's selected tier
     const userTier = application.selectedTier || "Basic";
-    const tasks = await InternshipTask.find({ 
+    const allTasks = await InternshipTask.find({ 
       internship: actualId,
-      $or: [
-        { tierAccess: { $exists: false } },
-        { tierAccess: { $size: 0 } },
-        { tierAccess: userTier }
-      ]
     }).sort({
       createdAt: -1,
-    });
+    }).lean();
+
+    const tasks = allTasks.filter(t => 
+      !t.tierAccess || 
+      t.tierAccess.length === 0 || 
+      t.tierAccess.includes(userTier)
+    );
 
     // Fetch student's submissions for these tasks to show status
     const submissions = await InternshipSubmission.find({
       task: { $in: tasks.map((t) => t._id) },
       student: userId,
-    });
+    }).lean();
 
     // Map submissions to tasks
     const tasksWithStatus = tasks.map((task) => {
@@ -75,7 +77,7 @@ export async function GET(
         (s) => s.task.toString() === task._id.toString()
       );
       return {
-        ...task.toObject(),
+        ...task,
         submission: submission || null,
       };
     });

@@ -4,6 +4,7 @@ import Quiz from "@/models/Quiz";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
+import Internship from "@/models/Internship";
 
 // GET - Fetch all quizzes for a internship
 export async function GET(

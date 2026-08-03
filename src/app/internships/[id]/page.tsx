@@ -22,11 +22,13 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
     const [internship, setInternship] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [isAccepted, setIsAccepted] = useState(false);
+    const [applicationStatus, setApplicationStatus] = useState<string | null>(null);
     const [selectedTier, setSelectedTier] = useState<string | null>(null);
     const [liveClasses, setLiveClasses] = useState<any[]>([]);
     const [assignments, setAssignments] = useState<any[]>([]);
     const [quizzes, setQuizzes] = useState<any[]>([]);
     const [pdfs, setPdfs] = useState<any[]>([]);
+    const [activeLiveSession, setActiveLiveSession] = useState<any>(null);
     const [expandedModules, setExpandedModules] = useState<Record<number, boolean>>({ 0: true });
     const fetchingRef = useRef(false);
 
@@ -47,12 +49,14 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                 const liveClassesPromise = fetch(`/api/internships/${id}/live-classes`).then(r => r.ok ? r.json() : null).catch(() => null);
                 const assignmentsPromise = fetch(`/api/admin/internships/${id}/assignments`).then(r => r.ok ? r.json() : null).catch(() => null);
                 const quizzesPromise = fetch(`/api/admin/internships/${id}/quizzes`).then(r => r.ok ? r.json() : null).catch(() => null);
+                const activeLiveSessionPromise = fetch(`/api/live/active?internshipId=${id}`).then(r => r.ok ? r.json() : null).catch(() => null);
 
-                const [internshipData, liveClassData, assignmentData, quizData] = await Promise.all([
+                const [internshipData, liveClassData, assignmentData, quizData, activeSessionData] = await Promise.all([
                     internshipPromise,
                     liveClassesPromise,
                     assignmentsPromise,
-                    quizzesPromise
+                    quizzesPromise,
+                    activeLiveSessionPromise
                 ]);
 
                 if (!internshipData || !internshipData.internship) throw new Error("Internship not found");
@@ -73,6 +77,7 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                 if (liveClassData) setLiveClasses(liveClassData.liveClasses || []);
                 if (assignmentData) setAssignments(assignmentData.assignments || []);
                 if (quizData) setQuizzes(quizData.quizzes || []);
+                if (activeSessionData && activeSessionData.session) setActiveLiveSession(activeSessionData.session);
 
             } catch (error) {
                 console.error("Failed to fetch internship data", error);
@@ -96,8 +101,11 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                     const app = data.applications.find(
                         (a: any) => a.internship?._id?.toString() === id || a.internship?.toString() === id || a.internship?.slug === id
                     );
-                    setIsAccepted(app?.status !== 'pending' && app?.status !== 'rejected');
-                    if (app) setSelectedTier(app.selectedTier || "Basic");
+                    if (app) {
+                        setApplicationStatus(app.status);
+                        setIsAccepted(app.status === 'accepted' || app.status === 'completed');
+                        setSelectedTier(app.selectedTier || "Basic");
+                    }
                 }
             } catch (error) {
                 console.error("Failed to fetch application status", error);
@@ -195,6 +203,45 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                                     className="w-full h-14 bg-gradient-to-r from-blue-600 to-indigo-600 hover:shadow-[0_15px_35px_-10px_rgba(37,99,235,0.4)] transition-all duration-500 rounded-2xl font-black uppercase tracking-widest text-[10px] text-white border-none"
                                 >
                                     <FileText size={16} className="mr-2" /> View Assigned Tasks
+                                </Button>
+                            </div>
+                        ) : applicationStatus === 'interview_pending' || applicationStatus === 'interview_scheduled' ? (
+                            <div className="flex flex-col gap-4">
+                                {activeLiveSession && (
+                                    <button 
+                                        onClick={() => window.location.href = `/live/${activeLiveSession.roomId}`}
+                                        className="flex items-center justify-center w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-2xl shadow-[0_0_20px_rgba(16,185,129,0.3)] animate-pulse hover:animate-none hover:scale-105 transition-all relative z-50 cursor-pointer border-none"
+                                    >
+                                        <Video className="mr-2" size={24} />
+                                        Join Live Interview
+                                    </button>
+                                )}
+                                <div className="bg-[#0a0a0b] border border-yellow-500/20 px-6 py-4 rounded-2xl flex items-center gap-4 shadow-2xl relative overflow-hidden group">
+                                    <div className="w-12 h-12 rounded-xl bg-yellow-500/10 flex items-center justify-center text-yellow-400 group-hover:scale-110 transition-transform duration-500 relative z-10 shadow-inner">
+                                        <Clock size={24} />
+                                    </div>
+                                    <div className="relative z-10">
+                                        <p className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Interview Phase</p>
+                                        <p className="text-slate-500 font-bold text-[10px] tracking-tight uppercase">Clear interview to unlock tasks</p>
+                                    </div>
+                                </div>
+                                <Button disabled className="w-full h-14 bg-slate-800 text-slate-500 cursor-not-allowed rounded-2xl font-black uppercase tracking-widest text-[10px] border-none">
+                                    <Lock size={16} className="mr-2" /> Content Locked
+                                </Button>
+                            </div>
+                        ) : applicationStatus === 'pending' ? (
+                            <div className="flex flex-col gap-4">
+                                <div className="bg-[#0a0a0b] border border-blue-500/20 px-6 py-4 rounded-2xl flex items-center gap-4 shadow-2xl relative overflow-hidden group">
+                                    <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform duration-500 relative z-10 shadow-inner">
+                                        <Clock size={24} />
+                                    </div>
+                                    <div className="relative z-10">
+                                        <p className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Application Pending</p>
+                                        <p className="text-slate-500 font-bold text-[10px] tracking-tight uppercase">Under Review</p>
+                                    </div>
+                                </div>
+                                <Button disabled className="w-full h-14 bg-slate-800 text-slate-500 cursor-not-allowed rounded-2xl font-black uppercase tracking-widest text-[10px] border-none">
+                                    <Lock size={16} className="mr-2" /> Content Locked
                                 </Button>
                             </div>
                         ) : (
