@@ -21,16 +21,8 @@ export default function StudentLivePage({ params }: { params: Promise<{ roomId: 
     if (!name.trim()) return;
 
     try {
-      // Connect to Express backend to get token
-      const res = await fetch("http://localhost:5000/api/live/token", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          roomId,
-          participantName: name,
-          isInstructor: false,
-        }),
-      });
+      // Connect to Next.js backend to get token
+      const res = await fetch(`/api/livekit/token?room=${roomId}&username=${encodeURIComponent(name)}`);
 
       const data = await res.json();
       if (data.token) {

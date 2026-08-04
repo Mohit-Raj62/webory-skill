@@ -17,15 +17,7 @@ export default function AdminLiveRoomPage({ params }: { params: Promise<{ roomId
   useEffect(() => {
     const fetchToken = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/live/token", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            roomId,
-            participantName: `Instructor-${Math.floor(Math.random() * 10000)}`, // Unique identity
-            isInstructor: true,
-          }),
-        });
+        const res = await fetch(`/api/livekit/token?room=${roomId}&isHost=true`);
 
         const data = await res.json();
         if (data.token) {
@@ -44,10 +36,10 @@ export default function AdminLiveRoomPage({ params }: { params: Promise<{ roomId
     
     try {
       // Send end request to backend
-      await fetch("http://localhost:5000/api/live/end", {
+      await fetch("/api/live/end", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId: "MOCK_SESSION_ID" }), // Should ideally get session ID from URL or context
+        body: JSON.stringify({ roomId }),
       });
       router.push("/admin/live");
     } catch (error) {

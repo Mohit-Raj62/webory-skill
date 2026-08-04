@@ -42,14 +42,13 @@ function LiveDashboardContent() {
     setLoading(true);
     
     try {
-      // Connect to Express backend to create live session
-      const res = await fetch("http://localhost:5000/api/live/create", {
+      // Connect to Next.js API to create live session
+      const res = await fetch("/api/live/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title,
           description,
-          instructorId: "60b8d295f1d29300155b9a8f", // Mock ID for now, get from Auth in prod
           sessionType,
           courseId: selectedCourse || undefined,
           internshipId: selectedInternship || undefined,
