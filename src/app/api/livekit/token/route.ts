@@ -37,10 +37,27 @@ export async function GET(req: NextRequest) {
   // Get user from our custom auth to assign correct identity
   const user = await getUserFromToken(req);
   
-  // If not logged in, they can still join if they provided a username (guest)
-  // For production, you might want to block guests, but we allow it for now.
-  const participantName = user ? `${user.firstName} ${user.lastName}` : (username || "Guest Student");
+  // Extract a clean name from the user object if possible
+  let derivedName = "Guest Student";
+  if (user) {
+    if (user.firstName && user.lastName) derivedName = `${user.firstName} ${user.lastName}`;
+    else if (user.firstName) derivedName = user.firstName;
+    else if (user.name) derivedName = user.name;
+    else if (user.email) derivedName = user.email.split('@')[0];
+  } else if (username) {
+    derivedName = username;
+  }
+  
+  const participantName = derivedName;
   const participantIdentity = user ? user.userId as string : `guest_${Math.random().toString(36).substring(7)}`;
+
+  // Check if user is blocked from this room
+  if ((global as any).blockedParticipants) {
+    const blockedMap = (global as any).blockedParticipants as Map<string, Set<string>>;
+    if (blockedMap.has(room) && blockedMap.get(room)!.has(participantIdentity)) {
+      return NextResponse.json({ error: "You are blocked from this room" }, { status: 403 });
+    }
+  }
 
   // Determine permissions based on role
   // Teachers and Admins have full control

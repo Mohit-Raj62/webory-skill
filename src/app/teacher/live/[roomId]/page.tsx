@@ -9,7 +9,7 @@ import "@livekit/components-styles";
 import { useRouter } from "next/navigation";
 import PremiumLiveClassroom from "@/components/live-classes/PremiumLiveClassroom";
 
-export default function AdminLiveRoomPage({ params }: { params: Promise<{ roomId: string }> }) {
+export default function TeacherLiveRoomPage({ params }: { params: Promise<{ roomId: string }> }) {
   const { roomId } = use(params);
   const router = useRouter();
   const [token, setToken] = useState("");
@@ -41,7 +41,7 @@ export default function AdminLiveRoomPage({ params }: { params: Promise<{ roomId
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ roomId }),
       });
-      router.push("/admin/live");
+      router.push("/teacher/live-classes");
     } catch (error) {
       console.error("Error ending class", error);
     }
@@ -51,7 +51,7 @@ export default function AdminLiveRoomPage({ params }: { params: Promise<{ roomId
     return (
       <div className="min-h-screen bg-[#020617] flex items-center justify-center text-white">
         <div className="flex flex-col items-center">
-          <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
           <h2 className="text-xl font-bold">Initializing Live Room...</h2>
         </div>
       </div>

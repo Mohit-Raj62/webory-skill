@@ -2,7 +2,7 @@
 
 import { TeacherSidebar } from "@/components/teacher/teacher-sidebar";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 
 export default function TeacherLayout({
@@ -14,6 +14,9 @@ export default function TeacherLayout({
     const [isTeacher, setIsTeacher] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const router = useRouter();
+
+    const pathname = usePathname();
+    const isLiveRoom = pathname?.includes("/room/") || pathname?.match(/\/live\/[^/]+$/);
 
     useEffect(() => {
         const checkTeacher = async () => {
@@ -55,22 +58,26 @@ export default function TeacherLayout({
 
     return (
         <div className="flex min-h-screen bg-background">
-            <TeacherSidebar
-                isOpen={isSidebarOpen}
-                onClose={() => setIsSidebarOpen(false)}
-            />
+            {!isLiveRoom && (
+                <TeacherSidebar
+                    isOpen={isSidebarOpen}
+                    onClose={() => setIsSidebarOpen(false)}
+                />
+            )}
 
             <main className="flex-1 overflow-auto flex flex-col">
                 {/* Mobile Header */}
-                <div className="md:hidden p-4 border-b border-white/10 flex items-center justify-between bg-gray-900/50 backdrop-blur-sm sticky top-0 z-30">
-                    <h1 className="text-lg font-bold text-white">Teacher Panel</h1>
-                    <button
-                        onClick={() => setIsSidebarOpen(true)}
-                        className="p-2 text-gray-400 hover:text-white"
-                    >
-                        <Menu size={24} />
-                    </button>
-                </div>
+                {!isLiveRoom && (
+                    <div className="md:hidden p-4 border-b border-white/10 flex items-center justify-between bg-gray-900/50 backdrop-blur-sm sticky top-0 z-30">
+                        <h1 className="text-lg font-bold text-white">Teacher Panel</h1>
+                        <button
+                            onClick={() => setIsSidebarOpen(true)}
+                            className="p-2 text-gray-400 hover:text-white"
+                        >
+                            <Menu size={24} />
+                        </button>
+                    </div>
+                )}
 
                 {children}
             </main>

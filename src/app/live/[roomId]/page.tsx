@@ -3,11 +3,11 @@
 import { useEffect, useState, use } from "react";
 import {
   LiveKitRoom,
-  VideoConference,
   RoomAudioRenderer,
 } from "@livekit/components-react";
 import "@livekit/components-styles";
 import { useRouter } from "next/navigation";
+import PremiumLiveClassroom from "@/components/live-classes/PremiumLiveClassroom";
 
 export default function StudentLivePage({ params }: { params: Promise<{ roomId: string }> }) {
   const { roomId } = use(params);
@@ -75,10 +75,14 @@ export default function StudentLivePage({ params }: { params: Promise<{ roomId: 
       serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL || "ws://localhost:7880"}
       connect={true}
       data-lk-theme="default"
-      style={{ height: "100vh" }}
+      style={{ height: "100vh", width: "100vw", overflow: "hidden" }}
       onDisconnected={() => console.log("LiveKit disconnected!")}
     >
-      <VideoConference />
+      <PremiumLiveClassroom 
+        roomName={roomId} 
+        isHost={false} 
+        onEndClass={() => router.push("/")} 
+      />
       <RoomAudioRenderer />
     </LiveKitRoom>
   );
