@@ -364,13 +364,19 @@ export default function OfferLetterPage() {
                             </div>
                         </div>
 
-                        {/* 3. MSME Logo (Right) */}
+                        {/* 3. Official Logos (Right) */}
                         <div className="flex flex-col items-end justify-end pb-2 w-1/3">
-                            <div className="flex flex-col items-center w-full max-w-[150px] print:max-w-[110px]">
+                            <div className="flex gap-2 w-full max-w-[180px] print:max-w-[140px] justify-end">
+                                <img 
+                                    src="/assets/skill-india.png" 
+                                    alt="Skill India Logo" 
+                                    className="w-1/2 h-auto object-contain bg-white rounded shadow-sm border border-gray-100 p-1.5"
+                                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                                />
                                 <img 
                                     src="/assets/msme-logo.jpg" 
                                     alt="MSME Logo" 
-                                    className="w-full h-auto object-contain bg-white rounded shadow-sm border border-gray-100 p-2"
+                                    className="w-1/2 h-auto object-contain bg-white rounded shadow-sm border border-gray-100 p-1.5"
                                 />
                             </div>
                         </div>
