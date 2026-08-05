@@ -38,6 +38,7 @@ interface Application {
 export default function ApplicationsPage() {
     const [applications, setApplications] = useState < Application[] > ([]);
     const [loading, setLoading] = useState(true);
+    const [errorMsg, setErrorMsg] = useState("");
     const [filter, setFilter] = useState("all");
     const [searchTerm, setSearchTerm] = useState("");
 
@@ -71,9 +72,13 @@ export default function ApplicationsPage() {
             if (res.ok) {
                 const data = await res.json();
                 setApplications(data.applications || []);
+                setErrorMsg("");
+            } else {
+                setErrorMsg("Failed to load applications. The server might be busy.");
             }
         } catch (error) {
             console.error("Failed to fetch applications", error);
+            setErrorMsg("Network error. Please check your connection.");
         } finally {
             setLoading(false);
         }
@@ -277,7 +282,23 @@ export default function ApplicationsPage() {
     if (loading) {
         return (
             <div className="p-8">
-                <div className="text-white">Loading applications...</div>
+                <div className="text-white flex items-center gap-3">
+                   <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                   Loading applications...
+                </div>
+            </div>
+        );
+    }
+
+    if (errorMsg) {
+        return (
+            <div className="p-8">
+                <div className="bg-red-500/10 border border-red-500/20 p-6 rounded-xl text-center">
+                    <p className="text-red-400 mb-4">{errorMsg}</p>
+                    <Button onClick={() => { setLoading(true); fetchApplications(); }} className="bg-red-600 hover:bg-red-700">
+                       Try Again
+                    </Button>
+                </div>
             </div>
         );
     }

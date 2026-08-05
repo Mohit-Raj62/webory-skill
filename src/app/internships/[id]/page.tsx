@@ -198,6 +198,15 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                                         <p className="text-slate-500 font-bold text-[10px] tracking-tight uppercase">Access Granted</p>
                                     </div>
                                 </div>
+                                {activeLiveSession && (
+                                    <button 
+                                        onClick={() => window.location.href = `/live/${activeLiveSession.roomId}`}
+                                        className="flex items-center justify-center w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-2xl shadow-[0_0_20px_rgba(16,185,129,0.3)] animate-pulse hover:animate-none hover:scale-105 transition-all relative z-50 cursor-pointer border-none mb-2"
+                                    >
+                                        <Video className="mr-2" size={24} />
+                                        Join Live Class
+                                    </button>
+                                )}
                                 <Button 
                                     onClick={() => router.push(`/internships/${id}/tasks`)}
                                     className="w-full h-14 bg-gradient-to-r from-blue-600 to-indigo-600 hover:shadow-[0_15px_35px_-10px_rgba(37,99,235,0.4)] transition-all duration-500 rounded-2xl font-black uppercase tracking-widest text-[10px] text-white border-none"

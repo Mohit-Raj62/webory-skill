@@ -28,7 +28,8 @@ export async function GET(req: Request) {
     const applications = await Application.find()
       .populate("student", "firstName lastName email")
       .populate("internship", "title company price")
-      .sort({ appliedAt: -1 });
+      .sort({ appliedAt: -1 })
+      .lean();
 
     return NextResponse.json({ applications });
   } catch (error) {

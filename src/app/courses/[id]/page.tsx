@@ -45,6 +45,7 @@ export default function CourseDetailsPage() {
     const [quizzes, setQuizzes] = useState < any[] > ([]);
     const [assignments, setAssignments] = useState < any[] > ([]);
     const [liveClasses, setLiveClasses] = useState < any[] > ([]);
+    const [activeLiveSession, setActiveLiveSession] = useState<any>(null);
     const [certificateData, setCertificateData] = useState < any > (null);
     const [pdfs, setPdfs] = useState < any[] > ([]);
     const [enrollmentData, setEnrollmentData] = useState < any > (null);
@@ -141,6 +142,12 @@ export default function CourseDetailsPage() {
                             if (resCert.ok) {
                                 const certData = await resCert.json();
                                 setCertificateData(certData);
+                            }
+                            
+                            const resActive = await fetch(`/api/live/active?courseId=${id}`);
+                            if (resActive.ok) {
+                                const activeData = await resActive.json();
+                                setActiveLiveSession(activeData);
                             }
                         } catch (e) {
                             console.error("Failed to fetch cert data", e);
@@ -296,6 +303,18 @@ export default function CourseDetailsPage() {
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                     <div className="lg:col-span-2">
+
+                        {isEnrolled && activeLiveSession && (
+                            <div className="mb-8">
+                                <button 
+                                    onClick={() => window.location.href = `/live/${activeLiveSession.roomId}`}
+                                    className="flex items-center justify-center w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-2xl shadow-[0_0_20px_rgba(16,185,129,0.3)] animate-pulse hover:animate-none hover:scale-105 transition-all relative z-50 cursor-pointer border-none"
+                                >
+                                    <Video className="mr-2" size={24} />
+                                    Join Live Class
+                                </button>
+                            </div>
+                        )}
 
                         <div className="flex flex-wrap gap-6 mb-12">
                             <div className="flex items-center text-gray-300">
