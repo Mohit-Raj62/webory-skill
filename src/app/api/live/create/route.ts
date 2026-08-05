@@ -44,6 +44,7 @@ export async function POST(req: Request) {
       applicationId: data.applicationId || undefined,
       moduleId: data.moduleId || undefined,
       status: "active",
+      scheduledAt: new Date(),
       startedAt: new Date(),
     });
 
