@@ -23,6 +23,16 @@ export async function POST(req: Request) {
 
     const roomId = `room_${Math.random().toString(36).substring(2, 9)}_${Date.now()}`;
 
+    // Close any previous active sessions for this context to prevent students from joining old ghost sessions
+    const query: any = { status: "active" };
+    if (data.applicationId) query.applicationId = data.applicationId;
+    else if (data.internshipId) query.internshipId = data.internshipId;
+    else if (data.courseId) query.courseId = data.courseId;
+    
+    if (Object.keys(query).length > 1) {
+       await LiveSession.updateMany(query, { $set: { status: "ended", endedAt: new Date() } });
+    }
+
     const liveSession = await LiveSession.create({
       title: data.title,
       description: data.description,
@@ -33,8 +43,8 @@ export async function POST(req: Request) {
       internshipId: data.internshipId || undefined,
       applicationId: data.applicationId || undefined,
       moduleId: data.moduleId || undefined,
-      status: "scheduled",
-      scheduledAt: new Date(),
+      status: "active",
+      startedAt: new Date(),
     });
 
     return NextResponse.json({ success: true, roomId: liveSession.roomId, session: liveSession }, { status: 201 });
