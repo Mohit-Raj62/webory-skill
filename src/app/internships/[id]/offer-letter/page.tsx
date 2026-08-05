@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Printer, MapPin, Mail, Globe, ShieldCheck, Award, Phone } from "lucide-react";
+import { Printer, MapPin, Mail, Globe, ShieldCheck, Award, Phone, Download } from "lucide-react";
 
 interface OfferLetterData {
     student: {
@@ -26,6 +26,7 @@ interface OfferLetterData {
     duration: string;
     appliedAt: string;
     refNo?: string;
+    hasApprovedCollegeLetter?: boolean;
 }
 
 export default function OfferLetterPage() {
@@ -147,6 +148,15 @@ export default function OfferLetterPage() {
                 <Button onClick={() => router.push("/profile")} variant="outline" className="bg-white/90 backdrop-blur shadow-sm border-gray-200 text-black hover:bg-gray-100">
                     Back to Profile
                 </Button>
+                {data.hasApprovedCollegeLetter && (
+                    <Button 
+                        onClick={() => window.open(`/api/student/internships/${params.id}/approved-college-letter`, '_blank')} 
+                        className="bg-green-600 hover:bg-green-700 text-white shadow-lg"
+                    >
+                        <Download className="mr-2 h-4 w-4" />
+                        Approved NOC
+                    </Button>
+                )}
                 <Button onClick={handlePrint} className="bg-[#1a237e] hover:bg-[#1a237e]/90 text-white shadow-lg">
                     <Printer className="mr-2 h-4 w-4" />
                     Print Offer Letter

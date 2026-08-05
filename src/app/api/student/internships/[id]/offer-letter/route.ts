@@ -87,6 +87,7 @@ export async function GET(
       status: application.status,
       refNo: `WS/INT/${new Date(application.appliedAt || new Date()).getFullYear()}${String(new Date(application.appliedAt || new Date()).getMonth() + 1).padStart(2, '0')}/${String(parseInt(application._id.toString().slice(-5), 16) % 100000).padStart(5, '0')}`,
       isDemo: false,
+      hasApprovedCollegeLetter: !!application.collegeApprovalLetter,
     };
 
     return NextResponse.json(responseData);
