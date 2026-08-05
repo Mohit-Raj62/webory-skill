@@ -11,6 +11,8 @@ interface OfferLetterData {
         lastName: string;
         email: string;
         gender?: string;
+        college?: string;
+        currentYear?: string;
     };
     internship: {
         title: string;
@@ -226,6 +228,16 @@ export default function OfferLetterPage() {
                             {data.student.firstName} {data.student.lastName}
                         </p>
                         <p className="text-sm text-gray-600 print:text-xs mt-1">{data.student.email}</p>
+                        {data.student.college && data.student.college !== "N/A" && (
+                            <p className="text-sm text-gray-600 print:text-xs mt-1">
+                                <span className="font-semibold text-gray-800">College:</span> {data.student.college}
+                            </p>
+                        )}
+                        {data.student.currentYear && data.student.currentYear !== "N/A" && (
+                            <p className="text-sm text-gray-600 print:text-xs mt-1">
+                                <span className="font-semibold text-gray-800">Year:</span> {data.student.currentYear}
+                            </p>
+                        )}
                     </div>
 
 

@@ -66,6 +66,8 @@ export async function GET(
         firstName: application.student?.firstName || "Student",
         lastName: application.student?.lastName || "Name",
         email: application.student?.email || "email@example.com",
+        college: application.college || "N/A",
+        currentYear: application.currentYear || "N/A",
       },
       internship: {
         title: application.internship?.title || "Internship Position",
