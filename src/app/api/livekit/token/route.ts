@@ -1,6 +1,10 @@
 import { AccessToken } from "livekit-server-sdk";
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
+import dbConnect from "@/lib/db";
+import LiveSession from "@/models/LiveSession";
+import Enrollment from "@/models/Enrollment";
+import Application from "@/models/Application";
 
 // Standard function to parse our custom JWT
 const getUserFromToken = async (req: NextRequest) => {
@@ -36,9 +40,58 @@ export async function GET(req: NextRequest) {
 
   // Get user from our custom auth to assign correct identity
   const user = await getUserFromToken(req);
+
+  // Require login to join
+  if (!user) {
+    return NextResponse.json({ error: "You must be logged in to join a live session." }, { status: 401 });
+  }
+
+  const hasFullControl = user.role === "teacher" || user.role === "admin" || isHost;
+
+  // Authorization Check for Students
+  if (!hasFullControl) {
+    try {
+      await dbConnect();
+      const session = await LiveSession.findOne({ roomId: room }).lean();
+      
+      if (!session) {
+        return NextResponse.json({ error: "Live session not found." }, { status: 404 });
+      }
+
+      if (session.sessionType === "course" && session.courseId) {
+        const isEnrolled = await Enrollment.exists({
+            student: user.userId,
+            course: session.courseId
+        });
+        if (!isEnrolled) {
+            return NextResponse.json({ error: "You are not enrolled in this course." }, { status: 403 });
+        }
+      } else if (session.sessionType === "internship" && session.internshipId) {
+        const isAccepted = await Application.exists({
+            student: user.userId,
+            internship: session.internshipId,
+            status: "accepted"
+        });
+        if (!isAccepted) {
+            return NextResponse.json({ error: "You do not have access to this internship session." }, { status: 403 });
+        }
+      } else if (session.sessionType === "interview" && session.applicationId) {
+        const isInterviewCandidate = await Application.exists({
+            _id: session.applicationId,
+            student: user.userId
+        });
+        if (!isInterviewCandidate) {
+            return NextResponse.json({ error: "This is not your scheduled interview session." }, { status: 403 });
+        }
+      }
+    } catch (err) {
+      console.error("Error authorizing live session:", err);
+      return NextResponse.json({ error: "Internal server error during authorization." }, { status: 500 });
+    }
+  }
   
   // Extract a clean name from the user object if possible
-  let derivedName = "Guest Student";
+  let derivedName = "Student";
   if (user) {
     if (user.firstName && user.lastName) derivedName = `${user.firstName} ${user.lastName}`;
     else if (user.firstName) derivedName = user.firstName;
@@ -58,10 +111,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "You are blocked from this room" }, { status: 403 });
     }
   }
-
-  // Determine permissions based on role
-  // Teachers and Admins have full control
-  const hasFullControl = user && (user.role === "teacher" || user.role === "admin" || isHost);
 
   const at = new AccessToken(apiKey, apiSecret, {
     identity: participantIdentity,

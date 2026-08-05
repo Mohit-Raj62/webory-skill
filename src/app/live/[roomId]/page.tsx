@@ -8,60 +8,64 @@ import {
 import "@livekit/components-styles";
 import { useRouter } from "next/navigation";
 import PremiumLiveClassroom from "@/components/live-classes/PremiumLiveClassroom";
+import { Button } from "@/components/ui/button";
+import { ShieldAlert } from "lucide-react";
 
 export default function StudentLivePage({ params }: { params: Promise<{ roomId: string }> }) {
   const { roomId } = use(params);
   const router = useRouter();
   const [token, setToken] = useState("");
-  const [name, setName] = useState("");
-  const [hasJoined, setHasJoined] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const handleJoin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim()) return;
-
-    try {
-      // Connect to Next.js backend to get token
-      const res = await fetch(`/api/livekit/token?room=${roomId}&username=${encodeURIComponent(name)}`);
-
-      const data = await res.json();
-      if (data.token) {
-        setToken(data.token);
-        setHasJoined(true);
-      } else {
-        alert("Failed to get token");
+  useEffect(() => {
+    const fetchToken = async () => {
+      try {
+        // Automatically request token using the logged-in user's credentials
+        const res = await fetch(`/api/livekit/token?room=${roomId}`);
+        const data = await res.json();
+        
+        if (res.ok && data.token) {
+          setToken(data.token);
+        } else {
+          setErrorMsg(data.error || "Failed to authorize. You might not have access to this class.");
+        }
+      } catch (error) {
+        console.error("Error joining room:", error);
+        setErrorMsg("Network error while joining the session.");
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Error joining room:", error);
-    }
-  };
+    };
 
-  if (!hasJoined) {
+    fetchToken();
+  }, [roomId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#020617] flex flex-col items-center justify-center text-white p-4">
+         <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+         <p className="text-emerald-400 font-bold tracking-widest uppercase text-sm animate-pulse">Authenticating...</p>
+      </div>
+    );
+  }
+
+  if (errorMsg || !token) {
     return (
       <div className="min-h-screen bg-[#020617] flex items-center justify-center text-white p-4">
-        <div className="bg-slate-900/40 border border-white/10 p-8 rounded-2xl max-w-md w-full backdrop-blur-xl">
-          <h1 className="text-2xl font-black mb-2 tracking-tight">Join Live Class</h1>
-          <p className="text-slate-400 mb-6 text-sm">Enter your name to join the session. No account required.</p>
+        <div className="bg-red-500/10 border border-red-500/20 p-8 rounded-3xl max-w-md w-full backdrop-blur-xl text-center">
+          <div className="w-16 h-16 bg-red-500/20 rounded-2xl flex items-center justify-center text-red-500 mx-auto mb-6">
+             <ShieldAlert size={32} />
+          </div>
+          <h1 className="text-2xl font-black mb-2 tracking-tight text-white">Access Denied</h1>
+          <p className="text-red-300/80 mb-8 text-sm">{errorMsg}</p>
           
-          <form onSubmit={handleJoin} className="space-y-4">
-            <div>
-              <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Your Name</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full bg-black/20 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50 transition-colors"
-                placeholder="John Doe"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black uppercase tracking-widest text-xs py-3.5 rounded-xl transition-all"
-            >
-              Join Session
-            </button>
-          </form>
+          <Button
+            onClick={() => router.push("/")}
+            className="w-full bg-slate-800 hover:bg-slate-700 text-white font-black uppercase tracking-widest text-xs py-6 rounded-xl transition-all"
+          >
+            Return to Dashboard
+          </Button>
         </div>
       </div>
     );
