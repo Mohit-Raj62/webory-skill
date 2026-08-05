@@ -378,7 +378,7 @@ export default function OfferLetterPage() {
                         <div className="flex flex-col items-end justify-end pb-2 w-1/3">
                             <div className="flex gap-2 w-full max-w-[180px] print:max-w-[140px] justify-end">
                                 <img 
-                                    src="https://upload.wikimedia.org/wikipedia/en/8/87/Skill_India.png" 
+                                    src="/assets/skill-india.svg" 
                                     alt="Skill India Logo" 
                                     className="w-1/2 h-auto object-contain bg-white rounded shadow-sm border border-gray-100 p-1.5"
                                 />
