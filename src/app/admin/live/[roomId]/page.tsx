@@ -6,6 +6,7 @@ import {
   RoomAudioRenderer,
 } from "@livekit/components-react";
 import "@livekit/components-styles";
+import { VideoPresets } from "livekit-client";
 import { useRouter } from "next/navigation";
 import PremiumLiveClassroom from "@/components/live-classes/PremiumLiveClassroom";
 
@@ -67,6 +68,16 @@ export default function AdminLiveRoomPage({ params }: { params: Promise<{ roomId
       connect={true}
       data-lk-theme="default"
       style={{ height: "100vh", width: "100vw", overflow: "hidden" }}
+      options={{
+        videoCaptureDefaults: {
+          resolution: VideoPresets.h1440.resolution,
+        },
+        publishDefaults: {
+          videoSimulcast: false, // Disable simulcast to force max quality on local testing
+        },
+        adaptiveStream: false, // Force max quality delivery to clients
+        dynacast: false
+      }}
       onDisconnected={() => console.log("LiveKit disconnected!")}
     >
       <PremiumLiveClassroom 

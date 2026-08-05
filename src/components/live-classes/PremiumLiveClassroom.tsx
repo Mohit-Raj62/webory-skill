@@ -1,7 +1,15 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { motion, AnimatePresence } from "framer-motion";
+import dynamic from "next/dynamic";
+
+const Excalidraw = dynamic(
+  () => import("@excalidraw/excalidraw").then((mod) => mod.Excalidraw),
+  { ssr: false }
+);
+import "@excalidraw/excalidraw/index.css";
 import {
   useTracks,
   ControlBar,
@@ -16,6 +24,7 @@ import {
   AudioTrack,
   useChat,
   useTrackToggle,
+  useIsSpeaking,
 } from "@livekit/components-react";
 import { Track, RoomEvent } from "livekit-client";
 import { 
@@ -39,7 +48,12 @@ import {
   MoreHorizontal,
   MonitorUp,
   Maximize,
-  Minimize
+  Minimize,
+  Smile,
+  Focus,
+  PenTool,
+  PictureInPicture,
+  Sparkles
 } from "lucide-react";
 
 interface PremiumLiveClassroomProps {
@@ -75,6 +89,7 @@ function CustomParticipantTile({
   const name = participant.name || participant.identity || "Student";
   const initial = name.charAt(0).toUpperCase();
 
+  const isSpeaking = useIsSpeaking(participant);
   const [isFit, setIsFit] = useState(objectFit === 'contain');
 
   // Update internal state if prop changes (e.g. switching from main stage to side tile)
@@ -93,7 +108,7 @@ function CustomParticipantTile({
       className={`relative w-full h-full group ${onClick ? 'cursor-pointer' : ''}`}
     >
       {/* Background Media Container with rounded corners */}
-      <div className={`absolute inset-0 w-full h-full bg-slate-800 ${fullScreenMobile ? 'md:rounded-xl rounded-none md:border md:shadow-lg' : 'rounded-xl shadow-lg border border-white/10'} overflow-hidden transition-all ${onClick ? 'group-hover:ring-2 group-hover:ring-blue-500' : ''}`}>
+      <div className={`absolute inset-0 w-full h-full bg-slate-800 ${fullScreenMobile ? 'md:rounded-xl rounded-none md:border md:shadow-lg' : 'rounded-xl shadow-lg border border-white/10'} overflow-hidden transition-all duration-300 ${isSpeaking ? 'ring-2 ring-blue-500 shadow-[0_0_30px_rgba(59,130,246,0.5)] scale-[1.02]' : (onClick ? 'group-hover:ring-2 group-hover:ring-blue-500/50' : '')}`}>
         <style>{`
           .custom-fit-contain video { object-fit: contain !important; width: 100% !important; height: 100% !important; }
           .custom-fit-cover video { object-fit: cover !important; width: 100% !important; height: 100% !important; }
@@ -124,16 +139,16 @@ function CustomParticipantTile({
       </div>
       
       {/* Name Overlay and Controls (Placed outside the overflow-hidden box!) */}
-      <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between z-10 pointer-events-none">
-        <div className="bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-md text-xs font-semibold text-white shadow-lg truncate max-w-[80%] border border-white/10 flex items-center gap-2 pointer-events-auto">
-          {handRaised && <span className="text-yellow-400">✋</span>}
+      <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between z-10 pointer-events-none">
+        <div className="bg-black/40 backdrop-blur-xl px-4 py-1.5 rounded-full text-xs font-medium text-white shadow-[0_4px_20px_rgba(0,0,0,0.5)] truncate max-w-[70%] border border-white/20 flex items-center gap-2 pointer-events-auto transition-all hover:bg-black/50">
+          {handRaised && <span className="text-yellow-400 animate-bounce">✋</span>}
           {name}
         </div>
         
-        <div className="flex items-center gap-1 pointer-events-auto">
+        <div className="flex items-center gap-1.5 pointer-events-auto">
           {!isMicrophoneEnabled && (
-            <div className="bg-red-500/80 backdrop-blur-md p-1 rounded-md text-white shadow-lg border border-red-400/20">
-               <PhoneOff size={12} />
+            <div className="bg-red-500/80 backdrop-blur-xl p-1.5 rounded-full text-white shadow-[0_0_10px_rgba(239,68,68,0.5)] border border-red-400/30">
+               <PhoneOff size={14} />
             </div>
           )}
 
@@ -142,7 +157,7 @@ function CustomParticipantTile({
             <div className="relative moderation-menu pointer-events-auto">
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger asChild>
-                  <button className="bg-black/60 hover:bg-black/80 backdrop-blur-md p-1 rounded-md text-white shadow-lg border border-white/10 transition-colors">
+                  <button className="bg-black/40 hover:bg-white/20 backdrop-blur-xl p-1.5 rounded-full text-white shadow-lg border border-white/20 transition-all">
                     <MoreVertical size={14} />
                   </button>
                 </DropdownMenu.Trigger>
@@ -193,8 +208,8 @@ function CustomMicButton() {
   };
 
   return (
-    <button onClick={handleToggle} className={`p-2.5 sm:p-3 rounded-xl transition-all flex flex-col items-center justify-center gap-1 ${enabled ? 'bg-white/5 text-gray-300 hover:bg-white/10' : 'bg-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.5)]'}`}>
-      {enabled ? <Mic size={18} /> : <MicOff size={18} />}
+    <button onClick={handleToggle} className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full transition-all active:scale-95 flex flex-col items-center justify-center gap-1 ${enabled ? 'bg-white/10 text-white hover:bg-white/20 border border-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]' : 'bg-red-500 text-white shadow-[0_0_20px_rgba(239,68,68,0.6)] border border-red-400 hover:shadow-[0_0_25px_rgba(239,68,68,0.8)]'}`}>
+      {enabled ? <Mic size={20} /> : <MicOff size={20} />}
     </button>
   );
 }
@@ -212,9 +227,11 @@ function CustomCameraButton() {
   };
 
   return (
-    <button onClick={handleToggle} className={`p-2.5 sm:p-3 rounded-xl transition-all flex flex-col items-center justify-center gap-1 ${enabled ? 'bg-white/5 text-gray-300 hover:bg-white/10' : 'bg-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.5)]'}`}>
-      {enabled ? <Video size={18} /> : <VideoOff size={18} />}
-    </button>
+    <div className="flex items-center gap-1">
+      <button onClick={handleToggle} className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full transition-all active:scale-95 flex flex-col items-center justify-center gap-1 ${enabled ? 'bg-white/10 text-white hover:bg-white/20 border border-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]' : 'bg-red-500 text-white shadow-[0_0_20px_rgba(239,68,68,0.6)] border border-red-400 hover:shadow-[0_0_25px_rgba(239,68,68,0.8)]'}`}>
+        {enabled ? <Video size={20} /> : <VideoOff size={20} />}
+      </button>
+    </div>
   );
 }
 
@@ -231,8 +248,8 @@ function CustomScreenShareButton() {
   };
 
   return (
-    <button onClick={handleToggle} className={`p-2.5 sm:p-3 rounded-xl transition-all flex flex-col items-center justify-center gap-1 ${enabled ? 'bg-green-500 text-white shadow-[0_0_15px_rgba(34,197,94,0.5)]' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}>
-      <MonitorUp size={18} />
+    <button onClick={handleToggle} className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full transition-all active:scale-95 flex flex-col items-center justify-center gap-1 ${enabled ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.6)] border border-emerald-400 hover:shadow-[0_0_25px_rgba(16,185,129,0.8)]' : 'bg-white/10 text-white hover:bg-white/20 border border-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]'}`}>
+      <MonitorUp size={20} />
     </button>
   );
 }
@@ -344,6 +361,17 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
   const [processedMessages, setProcessedMessages] = useState<Set<string>>(new Set());
   const { send: sendChat, chatMessages } = useChat();
 
+  // Premium Features State
+  const [isFocusMode, setIsFocusMode] = useState(false);
+  const [isWhiteboardActive, setIsWhiteboardActive] = useState(false);
+  
+  // Excalidraw State
+  const [excalidrawAPI, setExcalidrawAPI] = useState<any>(null);
+  const lastWhiteboardSync = useRef<number>(0);
+  const [reactions, setReactions] = useState<{ id: number, emoji: string, x: number }[]>([]);
+  const [isBlurEnabled, setIsBlurEnabled] = useState(false);
+  const videoStageRef = useRef<HTMLDivElement>(null);
+
   // Update clock
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -388,6 +416,15 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
            setRaisedHands(prev => { const next = new Set(prev); next.add(senderIdentity); return next; });
         } else if (data.action === 'LOWER_HAND') {
            setRaisedHands(prev => { const next = new Set(prev); next.delete(senderIdentity); return next; });
+        } else if (data.action === 'REACTION') {
+           // Show floating emoji
+           const newReaction = { id: Date.now(), emoji: data.emoji, x: Math.random() * 80 + 10 };
+           setReactions(prev => [...prev, newReaction]);
+           setTimeout(() => {
+             setReactions(prev => prev.filter(r => r.id !== newReaction.id));
+           }, 3000);
+        } else if (data.action === 'WHITEBOARD_TOGGLE') {
+           setIsWhiteboardActive(data.isActive);
         } else if (data.action === 'POLL_START') {
            const newPoll = {
              id: data.id,
@@ -408,6 +445,10 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
            }));
         } else if (data.action === 'POLL_END') {
            setPolls(prev => prev.map(p => p.id === data.id ? { ...p, isActive: false } : p));
+        } else if (data.action === 'WHITEBOARD_SYNC') {
+           if (excalidrawAPI) {
+             excalidrawAPI.updateScene({ elements: data.elements });
+           }
         }
       } catch (e) {
         console.error("Data received error", e);
@@ -470,20 +511,61 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
 
   // Toggle Hand Raise
   const toggleHandRaise = async () => {
+    if (!localParticipant) return;
     const newState = !isHandRaised;
     setIsHandRaised(newState);
     const msg = JSON.stringify({ action: newState ? 'RAISE_HAND' : 'LOWER_HAND' });
     try {
-      await localParticipant.publishData(new TextEncoder().encode(msg), { reliable: true, topic: 'handraise' });
+      await localParticipant.publishData(new TextEncoder().encode(msg), { reliable: true });
     } catch(e) { console.error(e) }
     
-    // Update local state for self
-    setRaisedHands(prev => {
-       const next = new Set(prev);
-       if (newState) next.add(localParticipant.identity);
-       else next.delete(localParticipant.identity);
-       return next;
-    });
+    // Update local state immediately
+    if (newState) {
+      setRaisedHands(prev => { const next = new Set(prev); next.add(localParticipant.identity); return next; });
+    } else {
+      setRaisedHands(prev => { const next = new Set(prev); next.delete(localParticipant.identity); return next; });
+    }
+  };
+
+  const sendReaction = (emoji: string) => {
+    if (!localParticipant) return;
+    
+    // Show locally
+    const newReaction = { id: Date.now(), emoji, x: Math.random() * 80 + 10 };
+    setReactions(prev => [...prev, newReaction]);
+    setTimeout(() => {
+      setReactions(prev => prev.filter(r => r.id !== newReaction.id));
+    }, 3000);
+
+    // Broadcast
+    const payload = JSON.stringify({ action: 'REACTION', emoji });
+    localParticipant.publishData(new TextEncoder().encode(payload), { reliable: false });
+  };
+
+  const toggleWhiteboard = () => {
+    if (!localParticipant || !isHost) return;
+    const newState = !isWhiteboardActive;
+    setIsWhiteboardActive(newState);
+    
+    const payload = JSON.stringify({ action: 'WHITEBOARD_TOGGLE', isActive: newState });
+    localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true });
+  };
+
+  const togglePiP = async () => {
+    try {
+      if (document.pictureInPictureElement) {
+        await document.exitPictureInPicture();
+      } else if (videoStageRef.current) {
+        const videoElement = videoStageRef.current.querySelector('video');
+        if (videoElement) {
+          await videoElement.requestPictureInPicture();
+        } else {
+          console.warn("No video element found for PiP");
+        }
+      }
+    } catch (error) {
+      console.error("PiP failed", error);
+    }
   };
 
   // Poll Handlers
@@ -561,29 +643,68 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
   const sideTracks = tracks.filter(t => t.participant.identity !== mainTrack?.participant.identity);
 
   return (
-    <div className="flex w-full h-[100dvh] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800 via-[#020617] to-black text-white font-sans overflow-hidden">
+    <div className="relative flex w-full h-[100dvh] bg-[#020617] text-white font-sans overflow-hidden">
       
+      {/* Ambient Grain Overlay */}
+      <div className="absolute inset-0 z-0 opacity-20 pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}></div>
+      
+      {/* Ambient Glowing Orbs */}
+      <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-blue-600/10 blur-[120px] pointer-events-none mix-blend-screen animate-pulse"></div>
+      <div className="absolute bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-purple-600/10 blur-[120px] pointer-events-none mix-blend-screen animate-pulse" style={{ animationDelay: '2s' }}></div>
+      
+      {/* Floating Emojis Container */}
+      <div className="absolute bottom-24 left-1/2 -translate-x-1/2 pointer-events-none z-50 w-full max-w-2xl h-64 overflow-hidden">
+        <AnimatePresence>
+          {reactions.map((r) => (
+            <motion.div
+              key={r.id}
+              initial={{ opacity: 1, y: 100, x: `${r.x}%`, scale: 0.5 }}
+              animate={{ opacity: 0, y: -200, x: `${r.x + (Math.random() * 20 - 10)}%`, scale: 1.5 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 3, ease: "easeOut" }}
+              className="absolute bottom-0 text-4xl sm:text-5xl drop-shadow-xl"
+            >
+              {r.emoji}
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+
+      {isFocusMode && (
+        <button 
+          onClick={() => setIsFocusMode(false)}
+          className="absolute top-6 right-6 z-50 bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 text-white font-medium text-sm shadow-2xl hover:bg-white/20 transition-all pointer-events-auto flex items-center gap-2 animate-in fade-in"
+        >
+          <Focus size={16} /> Exit Focus Mode
+        </button>
+      )}
+
       <LayoutContextProvider>
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col relative transition-all duration-300">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="flex-1 flex flex-col relative transition-all duration-300 z-10"
+        >
           
           {/* Top Header / Status Bar */}
-          <div className="absolute top-0 left-0 w-full h-20 p-4 flex justify-between items-start z-20 pointer-events-none bg-gradient-to-b from-black/90 via-black/50 to-transparent">
+          <div className={`absolute top-0 left-0 w-full p-4 sm:p-6 flex justify-between items-start z-20 transition-all duration-500 pointer-events-none bg-gradient-to-b from-black/80 to-transparent ${isFocusMode ? 'opacity-0 -translate-y-full' : 'opacity-100 translate-y-0'}`}>
             <div className="flex items-center gap-3">
-              <div className="flex items-center space-x-2 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-lg pointer-events-auto">
+              <div className="flex items-center space-x-2 bg-red-500/10 backdrop-blur-xl px-4 py-1.5 rounded-full border border-red-500/30 shadow-[0_0_20px_rgba(239,68,68,0.2)] pointer-events-auto">
                 <span className="relative flex h-2.5 w-2.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
                 </span>
-                <span className="text-white font-semibold text-xs tracking-wider uppercase">Live</span>
+                <span className="text-white font-bold text-xs tracking-widest uppercase">Live</span>
               </div>
               
-              <div className="bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-lg pointer-events-auto hidden sm:block">
-                <span className="text-gray-300 font-medium text-sm truncate max-w-[150px] inline-block align-bottom">{title || "Live Session"}</span>
+              <div className="bg-white/10 backdrop-blur-xl px-4 py-1.5 rounded-full border border-white/20 shadow-lg pointer-events-auto hidden sm:block">
+                <span className="text-white font-medium text-sm truncate max-w-[200px] inline-block align-bottom">{title || "Live Session"}</span>
               </div>
 
               {isHost && (
-                <div className="hidden md:flex items-center text-blue-400 bg-blue-500/10 backdrop-blur-md border border-blue-500/20 px-3 py-1.5 rounded-full text-xs font-semibold shadow-lg pointer-events-auto">
+                <div className="hidden md:flex items-center text-blue-300 bg-blue-500/10 backdrop-blur-xl border border-blue-500/30 px-4 py-1.5 rounded-full text-xs font-bold shadow-[0_0_15px_rgba(59,130,246,0.2)] pointer-events-auto">
                   <ShieldAlert className="w-3.5 h-3.5 mr-1.5" />
                   Host
                 </div>
@@ -591,14 +712,14 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
             </div>
 
             <div className="flex items-center gap-3 pointer-events-auto">
-              <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-lg">
-                <Wifi className={`w-3.5 h-3.5 ${
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-xl px-3 py-1.5 rounded-full border border-white/20 shadow-lg">
+                <Wifi className={`w-4 h-4 ${
                   connectionQuality === 'excellent' ? 'text-emerald-400' : 
                   connectionQuality === 'good' ? 'text-yellow-400' : 'text-red-400'
                 }`} />
               </div>
-              <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-lg text-sm font-medium text-gray-200">
-                <Clock className="w-3.5 h-3.5 text-gray-400" />
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-xl px-4 py-1.5 rounded-full border border-white/20 shadow-lg text-sm font-semibold text-white">
+                <Clock className="w-4 h-4 text-blue-300" />
                 {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </div>
             </div>
@@ -610,9 +731,52 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
               ? 'fixed inset-0 z-10 bg-black h-[100dvh]' // Full screen but keeps z-10 so controls (z-30) float on top!
               : 'aspect-video w-full shrink-0 md:aspect-auto md:flex-1 md:h-full mt-20 md:mt-0' // Fixed at top for mobile (16:9), edge-to-edge for desktop
           }`}>
-            {/* Center Stage (Host) */}
-            <div className={`flex-1 relative p-0`}>
-              {mainTrack ? (
+            {/* Center Stage (Host or Whiteboard) */}
+            <div className={`flex-1 relative p-0`} ref={videoStageRef}>
+              {isWhiteboardActive ? (
+                 <div className="absolute inset-0 z-10 flex items-center justify-center p-2 sm:p-4 md:p-8 bg-black/40 backdrop-blur-sm pointer-events-auto">
+                   <div className="w-[98vw] md:w-[92vw] lg:w-[85vw] max-w-7xl h-[88vh] md:h-[82vh] bg-white rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] relative flex flex-col border border-white/20">
+                     <style>{`
+                       .excalidraw-wrapper * {
+                         box-sizing: border-box;
+                       }
+                       .excalidraw-wrapper svg {
+                         display: revert !important;
+                         vertical-align: revert !important;
+                         max-width: none !important;
+                         height: auto !important;
+                       }
+                     `}</style>
+                     
+                     <div className="bg-slate-900 px-4 py-3 flex items-center justify-between border-b border-white/10 shrink-0">
+                       <span className="text-white font-medium text-sm flex items-center gap-2">
+                         <PenTool size={16} className="text-pink-400" /> Collaborative Whiteboard
+                       </span>
+                       <button onClick={toggleWhiteboard} className="text-gray-400 hover:text-white p-1 rounded-md hover:bg-white/10 transition-colors">
+                         <X size={18} />
+                       </button>
+                     </div>
+                     
+                     <div className="flex-1 relative w-full h-full bg-white excalidraw-wrapper">
+                       <Excalidraw 
+                         theme="light" 
+                         excalidrawAPI={(api) => {
+                           if (!excalidrawAPI) setExcalidrawAPI(api);
+                         }}
+                         onChange={(elements) => {
+                           if (!localParticipant) return;
+                           const now = Date.now();
+                           if (now - lastWhiteboardSync.current > 1000) {
+                             lastWhiteboardSync.current = now;
+                             const payload = JSON.stringify({ action: 'WHITEBOARD_SYNC', elements });
+                             localParticipant.publishData(new TextEncoder().encode(payload), { reliable: false });
+                           }
+                         }}
+                       />
+                     </div>
+                   </div>
+                 </div>
+              ) : mainTrack ? (
                 <div className={`w-full h-full overflow-hidden bg-black relative group`}>
                   {isMainScreenShare ? (
                      <div className="w-full h-full flex items-center justify-center p-2">
@@ -631,6 +795,15 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
                   {/* Subtle inner glow (Desktop only) */}
                   <div className="hidden md:block absolute inset-0 ring-1 ring-inset ring-white/5 pointer-events-none"></div>
                   
+                  {/* PiP Button */}
+                  <button 
+                    onClick={togglePiP}
+                    className="absolute top-4 right-4 md:right-4 z-40 p-2 bg-black/50 backdrop-blur-md rounded-lg text-white/80 hover:text-white transition-all shadow-lg pointer-events-auto opacity-0 group-hover:opacity-100"
+                    title="Picture-in-Picture"
+                  >
+                    <PictureInPicture size={18} />
+                  </button>
+
                   {/* YouTube Style Fullscreen Toggle (Mobile Only) */}
                   <button 
                     onClick={() => setIsMobileFullScreen(!isMobileFullScreen)}
@@ -664,7 +837,7 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
                 <div className="relative z-10 flex flex-col items-center text-center space-y-5">
                   <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 p-1 shadow-inner border border-white/10 flex-shrink-0">
                     <div className="w-full h-full bg-slate-900/80 rounded-xl flex items-center justify-center">
-                       <img src="/logo.png" alt="Logo" className="w-12 h-12 object-contain" onError={(e) => {
+                       <img src="/favicon.png" alt="Logo" className="w-12 h-12 object-contain" onError={(e) => {
                          const target = e.currentTarget as HTMLImageElement;
                          target.style.display = 'none';
                          target.parentElement!.innerHTML = '<span class="text-2xl font-bold text-white/50">W</span>';
@@ -696,15 +869,15 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
           </div>
           
           {/* Floating Bottom Control Bar */}
-          <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 w-[95vw] sm:w-[90vw] md:w-auto max-w-full pointer-events-none flex justify-center">
-            <div className="pointer-events-auto flex items-center justify-center gap-1 sm:gap-2 bg-slate-900/90 backdrop-blur-2xl border border-white/10 p-2 sm:p-3 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.6)]">
+          <div className={`absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 z-30 w-auto max-w-[95vw] pointer-events-none flex justify-center transition-all duration-500 ${isFocusMode ? 'opacity-0 translate-y-20 hover:opacity-100 hover:translate-y-0' : 'opacity-100 translate-y-0'}`}>
+            <div className="pointer-events-auto flex items-center justify-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-2xl border border-white/20 px-4 py-3 sm:px-6 sm:py-4 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
               
-              <div className="flex items-center gap-1 sm:gap-2">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <CustomMicButton />
                 <CustomCameraButton />
               </div>
               
-              <div className="hidden md:block w-px h-8 bg-white/10 mx-2"></div>
+              <div className="hidden md:block w-px h-10 bg-white/20 mx-1"></div>
               
               {/* Chat Toggle (Always visible) */}
               <button 
@@ -712,12 +885,10 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
                   setShowChat(!showChat);
                   if (!showChat) { setShowParticipants(false); setShowPollsPanel(false); }
                 }}
-                className={`p-2.5 sm:p-3 rounded-xl transition-all flex flex-col items-center justify-center gap-1 ${showChat ? 'bg-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.5)]' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}
+                className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full transition-all active:scale-95 flex flex-col items-center justify-center gap-1 ${showChat ? 'bg-blue-500 text-white shadow-[0_0_20px_rgba(59,130,246,0.6)] border border-blue-400' : 'bg-white/10 text-white hover:bg-white/20 border border-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]'}`}
               >
-                <MessageSquare size={18} />
+                <MessageSquare size={20} />
               </button>
-              
-              <div className="hidden md:block w-px h-8 bg-white/10 mx-1"></div>
               
               {/* Participants Toggle (Always visible) */}
               <button 
@@ -725,29 +896,55 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
                   setShowParticipants(!showParticipants);
                   if (!showParticipants) { setShowChat(false); setShowPollsPanel(false); }
                 }}
-                className={`p-2.5 sm:p-3 rounded-xl transition-all flex flex-col items-center justify-center gap-1 ${showParticipants ? 'bg-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.5)]' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}
+                className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full transition-all active:scale-95 flex flex-col items-center justify-center gap-1 ${showParticipants ? 'bg-blue-500 text-white shadow-[0_0_20px_rgba(59,130,246,0.6)] border border-blue-400' : 'bg-white/10 text-white hover:bg-white/20 border border-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]'}`}
               >
-                <Users size={18} />
+                <Users size={20} />
               </button>
               
-              <div className="hidden md:block w-px h-8 bg-white/10 mx-1"></div>
+              <div className="hidden md:block w-px h-10 bg-white/20 mx-1"></div>
+
+              {/* Emoji Reactions Dropdown */}
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger asChild>
+                  <button className="w-11 h-11 sm:w-12 sm:h-12 rounded-full transition-all active:scale-95 flex flex-col items-center justify-center gap-1 bg-white/10 text-white hover:bg-white/20 border border-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                    <Smile size={20} />
+                  </button>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Portal>
+                  <DropdownMenu.Content 
+                    className="flex gap-2 p-2 bg-slate-800/90 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl mb-4" 
+                    sideOffset={10}
+                    align="center"
+                  >
+                    {['❤️', '👍', '🎉', '😂', '👏', '🔥'].map(emoji => (
+                      <button 
+                        key={emoji} 
+                        onClick={() => sendReaction(emoji)}
+                        className="text-2xl hover:scale-125 transition-transform p-2 cursor-pointer"
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </DropdownMenu.Content>
+                </DropdownMenu.Portal>
+              </DropdownMenu.Root>
 
               {/* Desktop Only Buttons */}
-              <div className="hidden md:flex items-center gap-2">
+              <div className="hidden md:flex items-center gap-2 sm:gap-3">
                 <button 
                   onClick={toggleHandRaise}
-                  className={`p-3 rounded-xl transition-all flex flex-col items-center justify-center gap-1 min-w-[50px] ${isHandRaised ? 'bg-yellow-500 text-white shadow-[0_0_15px_rgba(234,179,8,0.5)]' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}
+                  className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full transition-all active:scale-95 flex flex-col items-center justify-center gap-1 ${isHandRaised ? 'bg-yellow-500 text-white shadow-[0_0_20px_rgba(234,179,8,0.6)] border border-yellow-400' : 'bg-white/10 text-white hover:bg-white/20 border border-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]'}`}
                 >
-                  <Hand size={18} />
+                  <Hand size={20} />
                 </button>
 
                 {isHost && (
                   <button 
                     onClick={() => setIsAutoReplyEnabled(!isAutoReplyEnabled)}
-                    className={`p-3 rounded-xl transition-all flex flex-col items-center justify-center gap-1 min-w-[50px] ${isAutoReplyEnabled ? 'bg-purple-500 text-white shadow-[0_0_15px_rgba(168,85,247,0.5)]' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}
+                    className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full transition-all active:scale-95 flex flex-col items-center justify-center gap-1 ${isAutoReplyEnabled ? 'bg-purple-500 text-white shadow-[0_0_20px_rgba(168,85,247,0.6)] border border-purple-400' : 'bg-white/10 text-white hover:bg-white/20 border border-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]'}`}
                     title={isAutoReplyEnabled ? "AI Assistant Active" : "Enable AI Assistant"}
                   >
-                    <Bot size={18} />
+                    <Bot size={20} />
                   </button>
                 )}
 
@@ -756,10 +953,30 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
                     setShowPollsPanel(!showPollsPanel);
                     if (!showPollsPanel) { setShowParticipants(false); setShowChat(false); }
                   }}
-                  className={`p-3 rounded-xl transition-all flex flex-col items-center justify-center gap-1 min-w-[50px] ${showPollsPanel ? 'bg-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.5)]' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}
+                  className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full transition-all active:scale-95 flex flex-col items-center justify-center gap-1 ${showPollsPanel ? 'bg-blue-500 text-white shadow-[0_0_20px_rgba(59,130,246,0.6)] border border-blue-400' : 'bg-white/10 text-white hover:bg-white/20 border border-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]'}`}
                   title="Poll History"
                 >
-                  <BarChart2 size={18} />
+                  <BarChart2 size={20} />
+                </button>
+
+                {/* Whiteboard Toggle (Host Only) */}
+                {isHost && (
+                   <button 
+                     onClick={toggleWhiteboard}
+                     className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full transition-all active:scale-95 flex flex-col items-center justify-center gap-1 ${isWhiteboardActive ? 'bg-pink-500 text-white shadow-[0_0_20px_rgba(236,72,153,0.6)] border border-pink-400' : 'bg-white/10 text-white hover:bg-white/20 border border-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]'}`}
+                     title="Whiteboard"
+                   >
+                     <PenTool size={20} />
+                   </button>
+                )}
+                
+                {/* Focus Mode Toggle */}
+                <button 
+                  onClick={() => setIsFocusMode(!isFocusMode)}
+                  className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full transition-all active:scale-95 flex flex-col items-center justify-center gap-1 ${isFocusMode ? 'bg-orange-500 text-white shadow-[0_0_20px_rgba(249,115,22,0.6)] border border-orange-400' : 'bg-white/10 text-white hover:bg-white/20 border border-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]'}`}
+                  title="Focus Mode"
+                >
+                  <Focus size={20} />
                 </button>
                 
                 <CustomScreenShareButton />
@@ -767,19 +984,19 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
 
               {/* Mobile "More" Menu Toggle */}
               <div className="md:hidden relative">
-                 <button onClick={() => setShowMoreMenu(!showMoreMenu)} className={`p-2.5 rounded-xl transition-all ${showMoreMenu ? 'bg-white/15' : 'bg-white/5'} text-gray-300 hover:bg-white/10`}>
-                   <MoreHorizontal size={18} />
+                 <button onClick={() => setShowMoreMenu(!showMoreMenu)} className={`w-11 h-11 rounded-full transition-all flex flex-col items-center justify-center ${showMoreMenu ? 'bg-white/20 text-white' : 'bg-white/10 text-white hover:bg-white/20'} border border-white/10`}>
+                   <MoreHorizontal size={20} />
                  </button>
               </div>
               
-              <div className="w-px h-8 bg-white/10 mx-1 sm:mx-2"></div>
+              <div className="w-px h-10 bg-white/20 mx-1 sm:mx-2"></div>
               
               {/* End Call Button */}
               <button 
                 onClick={onEndClass}
-                className="px-3 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold transition-all shadow-[0_0_20px_rgba(239,68,68,0.4)] flex items-center gap-2 whitespace-nowrap"
+                className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-full bg-red-600 hover:bg-red-500 text-white font-bold transition-all active:scale-95 shadow-[0_0_20px_rgba(239,68,68,0.5)] flex items-center gap-2 whitespace-nowrap border border-red-400/50"
               >
-                <PhoneOff size={18} />
+                <PhoneOff size={20} />
                 <span className="hidden sm:inline">{isHost ? 'End Class' : 'Leave'}</span>
               </button>
             </div>
@@ -802,15 +1019,23 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
                     <Bot size={16} className={isAutoReplyEnabled ? 'text-purple-400' : 'text-gray-400'} /> AI Assistant
                   </button>
                 )}
+                {isHost && (
+                  <button onClick={() => { toggleWhiteboard(); setShowMoreMenu(false); }} className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 text-sm font-medium text-white transition-colors">
+                    <PenTool size={16} className={isWhiteboardActive ? 'text-pink-400' : 'text-gray-400'} /> Whiteboard
+                  </button>
+                )}
+                <button onClick={() => { setIsFocusMode(true); setShowMoreMenu(false); }} className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 text-sm font-medium text-white transition-colors">
+                  <Focus size={16} className="text-gray-400" /> Focus Mode
+                </button>
               </div>
             )}
           </div>
-        </div>
+        </motion.div>
         
         {/* Participants Sidebar */}
         <div 
           className={`bg-slate-900/80 backdrop-blur-3xl border-l border-white/10 h-[100dvh] md:h-full flex flex-col transition-all duration-300 ease-out fixed inset-0 md:relative md:inset-auto md:right-0 z-[100] md:z-40 shadow-2xl ${
-            showParticipants ? 'w-full md:w-[320px] translate-x-0' : 'w-[320px] translate-x-full md:hidden'
+            showParticipants && !isFocusMode ? 'w-full md:w-[320px] translate-x-0' : 'w-[320px] translate-x-full md:hidden'
           }`}
           style={{ display: showParticipants ? 'flex' : 'none' }}
         >
@@ -857,7 +1082,7 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
         {/* Chat Sidebar */}
         <div 
           className={`bg-slate-900/80 backdrop-blur-3xl border-l border-white/10 h-[100dvh] md:h-full flex flex-col transition-all duration-300 ease-out fixed inset-0 md:relative md:inset-auto md:right-0 z-[100] md:z-40 shadow-2xl ${
-            showChat ? 'w-full md:w-[360px] translate-x-0' : 'w-[360px] translate-x-full md:hidden'
+            showChat && !isFocusMode ? 'w-full md:w-[360px] translate-x-0' : 'w-[360px] translate-x-full md:hidden'
           }`}
           style={{ display: showChat ? 'flex' : 'none' }}
         >
