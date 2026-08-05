@@ -371,7 +371,6 @@ export default function OfferLetterPage() {
                                     src="/assets/skill-india.png" 
                                     alt="Skill India Logo" 
                                     className="w-1/2 h-auto object-contain bg-white rounded shadow-sm border border-gray-100 p-1.5"
-                                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
                                 />
                                 <img 
                                     src="/assets/msme-logo.jpg" 
