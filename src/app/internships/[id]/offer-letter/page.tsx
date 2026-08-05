@@ -25,6 +25,7 @@ interface OfferLetterData {
     offerDate: string;
     duration: string;
     appliedAt: string;
+    refNo?: string;
 }
 
 export default function OfferLetterPage() {
@@ -202,7 +203,7 @@ export default function OfferLetterPage() {
                     {/* Meta Info (Date / Ref) */}
                     <div className="flex justify-between items-end mb-10 print:mb-1">
                         <div className="text-sm text-gray-700 print:text-xs font-mono bg-gray-50 print:bg-transparent print:border-none print:px-0 px-3 py-1.5 rounded border border-gray-100">
-                            <span className="font-bold text-gray-900">Ref No:</span> {`WS/INT/${new Date(data.appliedAt || new Date()).getFullYear()}${String(new Date(data.appliedAt || new Date()).getMonth() + 1).padStart(2, '0')}/${(params.id as string)?.length >= 24 ? String(parseInt((params.id as string).substring(18, 24), 16) % 100000).padStart(5, '0') : (params.id as string)?.substring(0, 5).toUpperCase() || '00001'}`}
+                            <span className="font-bold text-gray-900">Ref No:</span> {data.refNo || `WS/INT/${new Date(data.appliedAt || new Date()).getFullYear()}${String(new Date(data.appliedAt || new Date()).getMonth() + 1).padStart(2, '0')}/${(params.id as string)?.length >= 24 ? String(parseInt((params.id as string).substring(18, 24), 16) % 100000).padStart(5, '0') : '00001'}`}
                         </div>
                         <div className="text-sm text-gray-700 print:text-xs font-mono bg-gray-50 print:bg-transparent print:border-none print:px-0 px-3 py-1.5 rounded border border-gray-100">
                             <span className="font-bold text-gray-900">Date:</span> {offerDate}
