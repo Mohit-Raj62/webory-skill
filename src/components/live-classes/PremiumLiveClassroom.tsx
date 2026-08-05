@@ -95,8 +95,8 @@ function CustomParticipantTile({
       {/* Background Media Container with rounded corners */}
       <div className={`absolute inset-0 w-full h-full bg-slate-800 ${fullScreenMobile ? 'md:rounded-xl rounded-none md:border md:shadow-lg' : 'rounded-xl shadow-lg border border-white/10'} overflow-hidden transition-all ${onClick ? 'group-hover:ring-2 group-hover:ring-blue-500' : ''}`}>
         <style>{`
-          .custom-fit-contain video { object-fit: contain !important; }
-          .custom-fit-cover video { object-fit: cover !important; }
+          .custom-fit-contain video { object-fit: contain !important; width: 100% !important; height: 100% !important; }
+          .custom-fit-cover video { object-fit: cover !important; width: 100% !important; height: 100% !important; }
         `}</style>
         {hasVideo && trackRef.publication ? (
           <VideoTrack 
@@ -608,7 +608,7 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
           <div className={`w-full relative flex transition-all duration-300 ${
             isMobileFullScreen
               ? 'fixed inset-0 z-10 bg-black h-[100dvh]' // Full screen but keeps z-10 so controls (z-30) float on top!
-              : 'aspect-video w-full shrink-0 md:flex-1 md:h-[100dvh] mt-20 md:mt-0' // Fixed at top for mobile (16:9), edge-to-edge for desktop
+              : 'aspect-video w-full shrink-0 md:aspect-auto md:flex-1 md:h-full mt-20 md:mt-0' // Fixed at top for mobile (16:9), edge-to-edge for desktop
           }`}>
             {/* Center Stage (Host) */}
             <div className={`flex-1 relative p-0`}>
