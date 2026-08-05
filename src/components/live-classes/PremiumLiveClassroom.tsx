@@ -63,7 +63,7 @@ function CustomParticipantTile({
   trackRef: any; 
   onClick?: () => void;
   isHost?: boolean;
-  onModerate?: (action: 'mute_mic' | 'disable_camera' | 'remove' | 'block', identity: string) => void;
+  onModerate?: (action: 'mute_mic' | 'unmute_mic' | 'disable_camera' | 'enable_camera' | 'remove' | 'block', identity: string) => void;
   handRaised?: boolean;
   fullScreenMobile?: boolean;
   objectFit?: 'cover' | 'contain';
@@ -98,9 +98,9 @@ function CustomParticipantTile({
           .custom-fit-contain video { object-fit: contain !important; }
           .custom-fit-cover video { object-fit: cover !important; }
         `}</style>
-        {hasVideo ? (
+        {hasVideo && trackRef.publication ? (
           <VideoTrack 
-            trackRef={trackRef} 
+            trackRef={trackRef as any} 
             className={`absolute inset-0 w-full h-full transition-all duration-300 ${isFit ? 'custom-fit-contain' : 'custom-fit-cover'}`} 
           />
         ) : (
@@ -616,7 +616,7 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
                 <div className={`w-full h-full overflow-hidden bg-black relative group`}>
                   {isMainScreenShare ? (
                      <div className="w-full h-full flex items-center justify-center p-2">
-                        <VideoTrack trackRef={mainTrack} className="w-full h-full object-contain" />
+                        <VideoTrack trackRef={mainTrack as any} className="w-full h-full object-contain" />
                      </div>
                   ) : (
                      <CustomParticipantTile 
