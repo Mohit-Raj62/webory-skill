@@ -459,7 +459,7 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
     return () => {
       room.off(RoomEvent.DataReceived, handleDataReceived);
     };
-  }, [room, localParticipant]);
+  }, [room, localParticipant, excalidrawAPI]);
 
   // AI Auto-Reply Effect
   useEffect(() => {
@@ -752,18 +752,22 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
                        <span className="text-white font-medium text-sm flex items-center gap-2">
                          <PenTool size={16} className="text-pink-400" /> Collaborative Whiteboard
                        </span>
-                       <button onClick={toggleWhiteboard} className="text-gray-400 hover:text-white p-1 rounded-md hover:bg-white/10 transition-colors">
-                         <X size={18} />
-                       </button>
+                       {isHost && (
+                         <button onClick={toggleWhiteboard} className="text-gray-400 hover:text-white p-1 rounded-md hover:bg-white/10 transition-colors">
+                           <X size={18} />
+                         </button>
+                       )}
                      </div>
                      
                      <div className="flex-1 relative w-full h-full bg-white excalidraw-wrapper">
                        <Excalidraw 
-                         theme="light" 
+                         theme="light"
+                         viewModeEnabled={!isHost} 
                          excalidrawAPI={(api) => {
                            if (!excalidrawAPI) setExcalidrawAPI(api);
                          }}
                          onChange={(elements) => {
+                           if (!isHost) return;
                            if (!localParticipant) return;
                            const now = Date.now();
                            if (now - lastWhiteboardSync.current > 1000) {
