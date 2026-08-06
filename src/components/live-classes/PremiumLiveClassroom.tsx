@@ -378,6 +378,26 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
     return () => clearInterval(timer);
   }, []);
 
+  // Request media permissions explicitly on mount
+  useEffect(() => {
+    const requestPermissions = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        // Stop tracks immediately after getting permission
+        stream.getTracks().forEach(track => track.stop());
+      } catch (err) {
+        console.warn("User denied or devices not found for initial permission request:", err);
+      }
+    };
+    
+    // Slight delay to ensure UI mounts first
+    const timeout = setTimeout(() => {
+      requestPermissions();
+    }, 1000);
+    
+    return () => clearTimeout(timeout);
+  }, []);
+
   // Monitor connection quality
   useEffect(() => {
     if (!room) return;
