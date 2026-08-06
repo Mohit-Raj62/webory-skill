@@ -365,9 +365,9 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
   const [isFocusMode, setIsFocusMode] = useState(false);
   const [isWhiteboardActive, setIsWhiteboardActive] = useState(false);
   
-  // Excalidraw State
   const [excalidrawAPI, setExcalidrawAPI] = useState<any>(null);
   const lastWhiteboardSync = useRef<number>(0);
+  const whiteboardElementsRef = useRef<any[]>([]);
   const [reactions, setReactions] = useState<{ id: number, emoji: string, x: number }[]>([]);
   const [isBlurEnabled, setIsBlurEnabled] = useState(false);
   const videoStageRef = useRef<HTMLDivElement>(null);
@@ -425,6 +425,9 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
            }, 3000);
         } else if (data.action === 'WHITEBOARD_TOGGLE') {
            setIsWhiteboardActive(data.isActive);
+           if (data.elements) {
+               whiteboardElementsRef.current = data.elements;
+           }
         } else if (data.action === 'POLL_START') {
            const newPoll = {
              id: data.id,
@@ -446,6 +449,9 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
         } else if (data.action === 'POLL_END') {
            setPolls(prev => prev.map(p => p.id === data.id ? { ...p, isActive: false } : p));
         } else if (data.action === 'WHITEBOARD_SYNC') {
+           if (data.elements) {
+               whiteboardElementsRef.current = data.elements;
+           }
            if (excalidrawAPI) {
              excalidrawAPI.updateScene({ elements: data.elements });
            }
@@ -547,7 +553,7 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
     const newState = !isWhiteboardActive;
     setIsWhiteboardActive(newState);
     
-    const payload = JSON.stringify({ action: 'WHITEBOARD_TOGGLE', isActive: newState });
+    const payload = JSON.stringify({ action: 'WHITEBOARD_TOGGLE', isActive: newState, elements: whiteboardElementsRef.current });
     localParticipant.publishData(new TextEncoder().encode(payload), { reliable: true });
   };
 
@@ -762,11 +768,13 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
                      <div className="flex-1 relative w-full h-full bg-white excalidraw-wrapper">
                        <Excalidraw 
                          theme="light"
+                         initialData={{ elements: whiteboardElementsRef.current }}
                          viewModeEnabled={!isHost} 
                          excalidrawAPI={(api) => {
                            if (!excalidrawAPI) setExcalidrawAPI(api);
                          }}
                          onChange={(elements) => {
+                           whiteboardElementsRef.current = elements;
                            if (!isHost) return;
                            if (!localParticipant) return;
                            const now = Date.now();
