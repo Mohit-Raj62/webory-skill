@@ -199,15 +199,15 @@ async function handleInternshipApplication(
       // Update existing application
       application.transactionId = txnid;
       application.amountPaid = amount;
-      // Mark as accepted immediately since payment is verified
-      application.status = "accepted";
+      // Require interview after payment
+      application.status = "interview_pending";
       await application.save();
     } else {
       // Create if didn't exist (edge case)
       application = await Application.create({
         student: userId,
         internship: internshipId,
-        status: "accepted", // Auto-accept paid internship
+        status: "interview_pending", // Require interview after payment
         appliedAt: new Date(),
         transactionId: txnid,
         amountPaid: amount,
