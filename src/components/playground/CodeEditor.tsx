@@ -1,4 +1,4 @@
-
+﻿
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -192,7 +192,7 @@ print("Hello, World!")
             return (
                 <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-gray-800 p-4">
                     <h1 className="text-4xl font-bold mb-4 text-blue-600">
-                        Hello from Webory DevLab! 🚀
+                        Hello from Webory DevLab! ≡ƒÜÇ
                     </h1>
                     <p className="text-lg mb-6 text-center max-w-md">
                         This is a live React environment with Tailwind CSS support.
@@ -286,7 +286,8 @@ export default function CodeEditor() {
     
     // Resizable Layout State
     // Resizable Layout State
-    const [editorWidth, setEditorWidth] = useState(60); // Percentage width
+    const [editorHeight, setEditorHeight] = useState(60);
+    const [showTerminal, setShowTerminal] = useState(true); // Percentage width
     const [isDragging, setIsDragging] = useState(false);
     const [isDesktop, setIsDesktop] = useState(true); 
     
@@ -690,7 +691,7 @@ export default function CodeEditor() {
                 caseStudy: caseStudyData.caseStudy
             });
             setDeploymentStep("success");
-            toast.success("One-Click PoW Deployment Successful! 🚀");
+            toast.success("One-Click PoW Deployment Successful! ≡ƒÜÇ");
 
         } catch (error: any) {
             console.error("Deployment Flow Error:", error);
@@ -899,11 +900,11 @@ export default function CodeEditor() {
             const container = document.getElementById("editor-container");
             if (container) {
                 const containerRect = container.getBoundingClientRect();
-                const newWidth = ((mouseMoveEvent.clientX - containerRect.left) / containerRect.width) * 100;
+                const newWidth = ((mouseMoveEvent.clientY - containerRect.top) / containerRect.height) * 100;
                 
                 // Limit width between 30% and 90%
                 if (newWidth >= 30 && newWidth <= 90) {
-                    setEditorWidth(newWidth);
+                    setEditorHeight(newWidth);
                 }
             }
         }
@@ -919,7 +920,7 @@ export default function CodeEditor() {
     }, [resize, stopResizing]);
 
     return (
-        <div className="flex flex-col lg:grid lg:grid-cols-[250px_1fr] lg:gap-0 bg-[#0d1117] h-[calc(100dvh-180px)] lg:h-[75vh] font-sans border border-[#30363d] rounded-lg overflow-hidden shadow-2xl relative">
+        <div className="flex flex-col lg:grid lg:grid-cols-[250px_1fr] lg:grid-rows-[1fr_auto] lg:gap-0 bg-[#0d1117] h-[calc(100dvh-180px)] lg:h-[75vh] font-sans border border-[#30363d] rounded-lg overflow-hidden shadow-2xl relative">
             
             {/* Sidebar / File Explorer */}
             <AnimatePresence mode="wait">
@@ -1018,7 +1019,7 @@ export default function CodeEditor() {
             </AnimatePresence>
 
             {/* Main Content Area */}
-            <div id="editor-container" className={`${activeMobileTab === 'editor' || activeMobileTab === 'output' ? 'flex' : 'hidden'} lg:flex flex-col lg:flex-row lg:col-start-2 bg-[#0d1117] min-w-0 h-full overflow-hidden`}>
+            <div id="editor-container" className={`${activeMobileTab === 'editor' || activeMobileTab === 'output' ? 'flex' : 'hidden'} lg:flex flex-col lg:col-start-2 bg-[#0d1117] min-w-0 h-full overflow-hidden`}>
                 {/* Editor Panel */}
                 <AnimatePresence mode="wait">
                     {(isDesktop || activeMobileTab === 'editor') && (
@@ -1026,8 +1027,8 @@ export default function CodeEditor() {
                             initial={!isDesktop ? { opacity: 0, y: 10 } : undefined}
                             animate={!isDesktop ? { opacity: 1, y: 0 } : undefined}
                             exit={!isDesktop ? { opacity: 0, y: -10 } : undefined}
-                            className={`${activeMobileTab === 'editor' ? 'flex' : 'hidden'} lg:flex flex-col bg-[#0d1117] min-h-0 relative h-full lg:h-auto w-full lg:w-[var(--editor-width)] transition-[width] duration-0 lg:border-r border-[#30363d]`}
-                            style={{ '--editor-width': `${editorWidth}%` } as React.CSSProperties}
+                            className={`${activeMobileTab === 'editor' ? 'flex' : 'hidden'} lg:flex flex-col bg-[#0d1117] min-h-0 relative h-full ${showTerminal ? "lg:h-[var(--editor-height)]" : "lg:h-full"} w-full transition-[height] duration-0 lg:border-b border-[#30363d]`}
+                            style={{ '--editor-height': `${editorHeight}%` } as React.CSSProperties}
                         >
                     
                     {/* File Tab Look Header */}
@@ -1241,12 +1242,14 @@ export default function CodeEditor() {
                     )}
                 </AnimatePresence>
 
+                {showTerminal && (
+                <>
                 {/* Resizer Handle (Desktop Only) */}
                 <div
-                    className="hidden lg:flex w-1 bg-[#161b22] hover:bg-blue-500 cursor-col-resize items-center justify-center transition-colors group z-10"
+                    className="hidden lg:flex h-1 bg-[#161b22] hover:bg-blue-500 cursor-row-resize items-center justify-center transition-colors group z-10"
                     onMouseDown={startResizing}
                 >
-                    <div className="w-[1px] h-4 bg-gray-600 group-hover:bg-white" />
+                    <div className="h-[1px] w-4 bg-gray-600 group-hover:bg-white" />
                 </div>
 
                 {/* Output Panel / Terminal */}
@@ -1256,7 +1259,7 @@ export default function CodeEditor() {
                             initial={!isDesktop ? { opacity: 0, x: 20 } : undefined}
                             animate={!isDesktop ? { opacity: 1, x: 0 } : undefined}
                             exit={!isDesktop ? { opacity: 0, x: 20 } : undefined}
-                            className={`${activeMobileTab === 'output' ? 'flex' : 'hidden'} lg:flex flex-col h-full lg:h-full lg:flex-1 bg-[#010409] border-t border-[#30363d] lg:border-t-0 min-w-0`}
+                            className={`${activeMobileTab === 'output' ? 'flex' : 'hidden'} lg:flex flex-col h-full lg:h-full lg:flex-1 bg-[#010409] min-h-0`}
                         >
                      {/* Terminal Header */}
                      <div className="flex items-center justify-between h-10 px-4 bg-[#161b22] border-b border-[#30363d] shrink-0">
@@ -1443,6 +1446,8 @@ export default function CodeEditor() {
                         </motion.div>
                     )}
                 </AnimatePresence>
+                </>
+                )}
             </div>
 
             {/* Mobile Bottom Navigation - Glassmorphism */}

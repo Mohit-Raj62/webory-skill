@@ -118,7 +118,7 @@ export function InstallPWA({ variant = "sidebar" }: InstallPWAProps) {
     }
 
     return (
-        <div className="relative">
+        <div className="relative print:!hidden">
             {message && (
                 <div className="fixed inset-x-4 bottom-24 z-[9999] animate-in fade-in slide-in-from-bottom-10 duration-500">
                     <div className="bg-slate-900/95 backdrop-blur-md text-white p-5 rounded-2xl shadow-2xl border border-blue-500/30 ring-1 ring-white/10">
