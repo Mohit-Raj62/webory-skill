@@ -94,8 +94,6 @@ export async function extractTextFromImage(
         const sharp = require("sharp");
         processedBuffer = await sharp(imageBuffer)
           .resize(1800, 1800, { fit: "inside", withoutEnlargement: true }) // Limit size
-          .grayscale() // Enhance text contrast
-          .normalize() // Improve brightness/contrast
           .toBuffer();
         console.log("[OCR Service] Image optimized successfully.");
       } catch (sharpError) {
