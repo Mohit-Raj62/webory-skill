@@ -107,7 +107,7 @@ export function MobileBottomNav() {
     return (
         <>
             <div 
-                className="lg:hidden fixed bottom-0 left-0 right-0 z-[100] pointer-events-none origin-bottom"
+                className="lg:hidden fixed bottom-0 left-0 right-0 z-[100] pointer-events-none origin-bottom print:hidden"
                 style={{ WebkitTransform: 'translateZ(0)', transform: 'translateZ(0)' }}
             >
                 <motion.nav 
