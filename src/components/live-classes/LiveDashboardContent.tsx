@@ -132,11 +132,9 @@ export default function LiveDashboardContent({ role }: LiveDashboardContentProps
             >
               <option value="general">General (Open to all)</option>
               <option value="course">Course specific</option>
+              <option value="internship">Internship specific</option>
               {role === "admin" && (
-                <>
-                    <option value="internship">Internship specific</option>
-                    <option value="interview">1-on-1 Interview</option>
-                </>
+                <option value="interview">1-on-1 Interview</option>
               )}
             </select>
           </div>
@@ -158,7 +156,7 @@ export default function LiveDashboardContent({ role }: LiveDashboardContentProps
             </div>
           )}
 
-          {sessionType === "internship" && role === "admin" && (
+          {sessionType === "internship" && (
             <div>
               <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Select Internship</label>
               <select
