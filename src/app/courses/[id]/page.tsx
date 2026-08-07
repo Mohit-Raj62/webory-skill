@@ -174,8 +174,9 @@ export default function CourseDetailsPage() {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
-                             courseId: course._id,
-                             courseName: course.title 
+                             relatedId: course._id,
+                             category: "course",
+                             metadata: { courseName: course.title }
                         }),
                     });
                 } catch (err) {
