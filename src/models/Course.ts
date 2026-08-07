@@ -14,6 +14,10 @@ const CourseSchema = new Schema({
     type: String,
     required: true,
   },
+  syllabus: {
+    type: String,
+    default: "", // Rich text or detailed list for syllabus
+  },
   outcome: {
     type: String,
     default: "", // One-line outcome (e.g. "Build real-world apps...")

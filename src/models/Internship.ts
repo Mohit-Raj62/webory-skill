@@ -78,6 +78,10 @@ const InternshipSchema = new Schema({
     type: String,
     required: true,
   },
+  syllabus: {
+    type: String,
+    default: "", // Rich text or detailed list for syllabus
+  },
   requirements: {
     type: [String],
     default: [],

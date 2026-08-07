@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { SyllabusRenderer } from "@/components/SyllabusRenderer";
 
 export default function InternshipDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
@@ -436,6 +437,18 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                                             </Button>
                                         </div>
                                     ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Syllabus Section */}
+                        {internship.syllabus && (
+                            <div className={`bg-slate-900/40 border border-blue-500/20 rounded-[2.5rem] p-8 mb-12 relative overflow-hidden ${isAccepted ? 'order-1' : 'order-4'}`}>
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 blur-[80px] -z-10" />
+                                <h2 className="text-2xl font-black text-white tracking-tight mb-2">Syllabus Roadmap</h2>
+                                <p className="text-slate-400 mb-8 text-sm">Your learning journey step-by-step.</p>
+                                <div className="max-h-[500px] overflow-y-auto pr-4 roadmap-scrollbar">
+                                    <SyllabusRenderer content={internship.syllabus} />
                                 </div>
                             </div>
                         )}

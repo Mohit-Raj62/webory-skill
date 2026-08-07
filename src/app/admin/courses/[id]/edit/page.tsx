@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { SmartFormatButton } from "@/components/admin/SmartFormatButton";
 import { 
     ArrowLeft, Plus, X, Upload, Image, FileText, Trash2, Video, 
     DollarSign, Users, Clock, Tag, Layers, CheckCircle, PenTool, Loader2 
@@ -535,6 +536,20 @@ export default function EditCoursePage() {
                                         value={formData.description}
                                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                         placeholder="Detailed description..."
+                                    />
+                                </div>
+
+                                <div>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <label className="text-sm text-gray-400 font-medium">Syllabus (Markdown Supported)</label>
+                                        <SmartFormatButton text={formData.syllabus} onFormatted={(text) => setFormData({ ...formData, syllabus: text })} />
+                                    </div>
+                                    <textarea
+                                        rows={8}
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder-gray-500 focus:border-blue-500/50 outline-none transition-all resize-y font-mono text-sm"
+                                        value={formData.syllabus}
+                                        onChange={(e) => setFormData({ ...formData, syllabus: e.target.value })}
+                                        placeholder="Use Markdown for Roadmap style:&#10;## Week 1: Basics&#10;- HTML & CSS&#10;- JavaScript&#10;&#10;## Week 2: Advanced&#10;- React & Next.js"
                                     />
                                 </div>
 

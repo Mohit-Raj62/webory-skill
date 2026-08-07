@@ -7,6 +7,7 @@ import { ArrowLeft, Plus, X, Upload, Image, Trash2, Video, DollarSign, Tag, Laye
 import Link from "next/link";
 import { uploadFile } from "@/lib/upload-utils";
 import { toast } from "sonner";
+import { SmartFormatButton } from "@/components/admin/SmartFormatButton";
 import { SignaturesSection } from "@/components/admin/course-edit/SignaturesSection";
 
 export default function NewInternshipPage() {
@@ -27,6 +28,7 @@ export default function NewInternshipPage() {
         discountPercentage: 0,
         gstPercentage: 0,
         description: "",
+        syllabus: "",
         requirements: [] as string[],
         responsibilities: [] as string[],
         tags: [] as string[],
@@ -259,6 +261,13 @@ export default function NewInternshipPage() {
                             <div className="md:col-span-2">
                                 <label className="text-sm font-medium text-gray-300 block mb-2">Description *</label>
                                 <textarea rows={4} className="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-white focus:border-blue-500 outline-none" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
+                            </div>
+                            <div className="md:col-span-2">
+                                <div className="flex items-center justify-between mb-2">
+                                    <label className="text-sm font-medium text-gray-300">Syllabus (Markdown Supported)</label>
+                                    <SmartFormatButton text={formData.syllabus} onFormatted={(text) => setFormData({ ...formData, syllabus: text })} />
+                                </div>
+                                <textarea rows={8} placeholder="Use Markdown for Roadmap style:&#10;## Week 1: Basics&#10;- Topic 1&#10;- Topic 2&#10;&#10;## Week 2: Advanced&#10;- Topic 3" className="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-white focus:border-blue-500 outline-none font-mono text-sm" value={formData.syllabus} onChange={(e) => setFormData({ ...formData, syllabus: e.target.value })} />
                             </div>
                         </div>
                     </div>

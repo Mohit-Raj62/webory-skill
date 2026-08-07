@@ -14,6 +14,7 @@ import { useParams, useRouter } from "next/navigation";
 import { CheckCircle, Clock, BarChart, Users, Globe, PlayCircle, Lock, ClipboardList, FileText, Calendar, Video, ChevronDown, ChevronUp, Brain } from "lucide-react";
 import { CourseHeader, Curriculum, CourseBenefits } from "@/components/courses/course-details-components";
 import Link from "next/link";
+import { SyllabusRenderer } from "@/components/SyllabusRenderer";
 
 // Helper for safe date parsing on iOS/Safari
 const safeDate = (date: any): string => {
@@ -430,6 +431,16 @@ export default function CourseDetailsPage() {
                                 ))}
                             </div>
                         </div>
+
+                        {course.syllabus && (
+                            <div className="glass-card p-5 md:p-8 rounded-2xl mb-12 border border-blue-500/20 bg-blue-500/5">
+                                <h2 className="text-2xl font-bold text-white mb-2">Syllabus Roadmap</h2>
+                                <p className="text-gray-400 mb-8 text-sm">Your learning journey step-by-step.</p>
+                                <div className="max-h-[500px] overflow-y-auto pr-4 roadmap-scrollbar">
+                                    <SyllabusRenderer content={course.syllabus} />
+                                </div>
+                            </div>
+                        )}
 
                         {/* Projects Section */}
                          <div className="glass-card p-5 md:p-8 rounded-2xl mb-12 border border-purple-500/20 bg-purple-500/5">

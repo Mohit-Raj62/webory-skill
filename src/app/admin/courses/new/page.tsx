@@ -7,6 +7,7 @@ import { ArrowLeft, Plus, X, Upload, Image, PenTool, Video, Loader2 } from "luci
 import Link from "next/link";
 import { uploadFile } from "@/lib/upload-utils";
 import { SignaturesSection } from "@/components/admin/course-edit/SignaturesSection";
+import { SmartFormatButton } from "@/components/admin/SmartFormatButton";
 
 export default function NewCoursePage() {
     const router = useRouter();
@@ -20,6 +21,7 @@ export default function NewCoursePage() {
         title: "",
         slug: "",
         description: "",
+        syllabus: "",
         level: "Beginner",
         price: 0,
         originalPrice: 0,
@@ -449,6 +451,20 @@ export default function NewCoursePage() {
                             className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none"
                             value={formData.description}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        />
+                    </div>
+
+                    <div>
+                        <div className="flex items-center justify-between mb-2">
+                            <label className="text-sm text-gray-300">Syllabus (Markdown Supported)</label>
+                            <SmartFormatButton text={formData.syllabus} onFormatted={(text) => setFormData({ ...formData, syllabus: text })} />
+                        </div>
+                        <textarea
+                            rows={8}
+                            placeholder="Use Markdown for Roadmap style:&#10;## Week 1: Basics&#10;- HTML & CSS&#10;- JavaScript&#10;&#10;## Week 2: Advanced&#10;- React & Next.js"
+                            className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-white focus:border-blue-500/50 outline-none font-mono text-sm"
+                            value={formData.syllabus}
+                            onChange={(e) => setFormData({ ...formData, syllabus: e.target.value })}
                         />
                     </div>
 
