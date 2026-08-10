@@ -408,6 +408,7 @@ const PUSH_TEMPLATES = [
 export default function BroadcastPage() {
     const [subject, setSubject] = useState("");
     const [message, setMessage] = useState("");
+    const [whatsappTemplate, setWhatsappTemplate] = useState("");
     const [pushImage, setPushImage] = useState("");
     const [isPushImageAuto, setIsPushImageAuto] = useState(true);
     const [loading, setLoading] = useState<string | null>(null); // 'email', 'push', 'both' or null
@@ -438,6 +439,30 @@ export default function BroadcastPage() {
             setMessage("");
             setUploadedImages([]);
             setPushImage("");
+        } catch (error: any) {
+            setStatus({ type: "error", message: error.message });
+        } finally {
+            setLoading(null);
+        }
+    };
+
+    const handleWhatsAppSend = async () => {
+        setLoading("whatsapp");
+        setStatus(null);
+
+        try {
+            const res = await fetch("/api/admin/broadcast", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ mode: "whatsapp", templateName: whatsappTemplate }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) throw new Error(data.error || "Failed to send WhatsApp broadcast");
+
+            setStatus({ type: "success", message: data.message });
+            setWhatsappTemplate("");
         } catch (error: any) {
             setStatus({ type: "error", message: error.message });
         } finally {
@@ -739,6 +764,43 @@ export default function BroadcastPage() {
                             Send Both (Email + Push)
                         </Button>
                     </div>
+                </CardContent>
+            </Card>
+
+            {/* WhatsApp Broadcast Form */}
+            <Card className="bg-gray-900 border-white/10 text-white shadow-xl mt-8">
+                <CardHeader>
+                    <CardTitle className="text-green-500 flex items-center gap-2">WhatsApp Template Broadcast</CardTitle>
+                    <CardDescription>
+                        Send an approved Meta WhatsApp template to all users. Meta requires all marketing/utility broadcasts to be pre-approved templates.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <div className="grid grid-cols-1 gap-6">
+                        <div className="space-y-2">
+                            <Label htmlFor="whatsappTemplate" className="text-gray-300">Meta Template Name</Label>
+                            <Input
+                                id="whatsappTemplate"
+                                value={whatsappTemplate}
+                                onChange={(e) => setWhatsappTemplate(e.target.value)}
+                                placeholder="e.g., diwali_offer or new_course_alert"
+                                required
+                                className="bg-gray-800 border-white/10 text-white focus:ring-green-500 h-11"
+                            />
+                            <p className="text-[10px] text-green-400 mt-2">
+                                Note: The system will automatically map the {"{{1}}"} variable to the student's First Name. Make sure your Meta template is formatted correctly.
+                            </p>
+                        </div>
+                    </div>
+
+                    <Button 
+                        onClick={handleWhatsAppSend}
+                        disabled={!!loading || !whatsappTemplate} 
+                        className="bg-green-600 hover:bg-green-700 w-full h-12 rounded-xl text-xs font-bold shadow-lg shadow-green-900/20"
+                    >
+                        {loading === "whatsapp" ? <Loader2 className="animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                        Send WhatsApp Broadcast
+                    </Button>
                 </CardContent>
             </Card>
         </div>

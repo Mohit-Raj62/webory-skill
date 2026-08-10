@@ -118,6 +118,37 @@ export async function POST(req: Request) {
       // Don't fail signup if email fails
     }
 
+    // Send WhatsApp Welcome Message (If phone number exists)
+    if (user.phone) {
+      try {
+        // We import it dynamically here so we don't break the build if the file isn't needed everywhere
+        const { sendWhatsAppTemplateMessage } = await import("@/lib/whatsapp");
+        
+        // Ensure phone number starts with country code (e.g., 91 for India)
+        // This is a basic sanitization. Meta requires country code without '+'.
+        let cleanPhone = user.phone.replace(/\D/g, "");
+        if (cleanPhone.length === 10) cleanPhone = `91${cleanPhone}`; 
+        
+        await sendWhatsAppTemplateMessage(
+          cleanPhone,
+          "welcome_message", // Change this to your actual template name in Meta
+          "en",
+          [
+            {
+              type: "body",
+              parameters: [
+                { type: "text", text: user.firstName } // Maps to {{1}} in template
+              ]
+            }
+          ]
+        );
+        console.log("✅ Welcome WhatsApp message sent to:", cleanPhone);
+      } catch (waError) {
+        console.error("❌ Failed to send WhatsApp welcome message:", waError);
+        // Don't fail signup if WhatsApp fails
+      }
+    }
+
     return NextResponse.json(
       { message: "User created successfully", userId: user._id },
       { status: 201 },

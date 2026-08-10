@@ -40,11 +40,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const { subject, message, mode = "both", pushImage } = await req.json();
+    const { subject, message, mode = "both", pushImage, templateName } = await req.json();
 
-    if (!subject || !message) {
+    if (mode !== "whatsapp" && (!subject || !message)) {
       return NextResponse.json(
-        { error: "Subject and message are required" },
+        { error: "Subject and message are required for email/push" },
+        { status: 400 }
+      );
+    }
+
+    if (mode === "whatsapp" && !templateName) {
+      return NextResponse.json(
+        { error: "Template name is required for WhatsApp broadcast" },
         { status: 400 }
       );
     }
@@ -124,9 +131,51 @@ export async function POST(req: Request) {
       await Promise.all(pushPromises);
     }
 
+    let waSentCount = 0;
+    let waFailedCount = 0;
+
+    // Parallel Delivery - WhatsApp
+    if (mode === "whatsapp") {
+      const { sendWhatsAppTemplateMessage } = await import("@/lib/whatsapp");
+      
+      const users = await User.find(
+        { phone: { $exists: true, $ne: null, $ne: "" } },
+        "phone firstName"
+      );
+
+      console.log(`Found ${users.length} users with phone numbers for WhatsApp broadcast.`);
+
+      const waPromises = users.map(async (user) => {
+        try {
+          let cleanPhone = user.phone.replace(/\D/g, "");
+          if (cleanPhone.length === 10) cleanPhone = `91${cleanPhone}`; 
+          
+          await sendWhatsAppTemplateMessage(
+            cleanPhone,
+            templateName,
+            "en",
+            [
+              {
+                type: "body",
+                parameters: [
+                  { type: "text", text: user.firstName || "Student" }
+                ]
+              }
+            ]
+          );
+          waSentCount++;
+        } catch (error) {
+          waFailedCount++;
+        }
+      });
+
+      await Promise.all(waPromises);
+    }
+
     let resultMessage = "";
     if (mode === "email") resultMessage = `Emails: ${sentCount} sent, ${errors.length} failed.`;
     else if (mode === "push") resultMessage = `Push: ${pushSentCount} sent, ${pushFailedCount} failed.`;
+    else if (mode === "whatsapp") resultMessage = `WhatsApp: ${waSentCount} sent, ${waFailedCount} failed.`;
     else resultMessage = `Emails: ${sentCount} sent, ${errors.length} failed. Push: ${pushSentCount} sent, ${pushFailedCount} failed.`;
 
     return NextResponse.json({
@@ -135,7 +184,9 @@ export async function POST(req: Request) {
       sentCount,
       failedCount: errors.length,
       pushSentCount,
-      pushFailedCount
+      pushFailedCount,
+      waSentCount,
+      waFailedCount
     });
   } catch (error: any) {
     console.error("Broadcast error detail:", error);
