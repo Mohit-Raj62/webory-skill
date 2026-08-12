@@ -1,4 +1,4 @@
-import { logger } from "./logger";
+// import { logger } from "./logger"; // Removed because logger object does not exist in logger.ts
 
 // Define Types
 export interface WhatsAppMessageResponse {
@@ -29,7 +29,7 @@ const getWhatsAppCredentials = () => {
   const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
 
   if (!token || !phoneNumberId) {
-    logger.warn("WhatsApp credentials (WHATSAPP_ACCESS_TOKEN or WHATSAPP_PHONE_NUMBER_ID) are missing from environment variables.");
+    console.warn("WhatsApp credentials (WHATSAPP_ACCESS_TOKEN or WHATSAPP_PHONE_NUMBER_ID) are missing from environment variables.");
   }
 
   return { token, phoneNumberId };
@@ -76,13 +76,13 @@ export async function sendWhatsAppTextMessage(to: string, text: string): Promise
 
     if (!response.ok) {
       const errorData = data as WhatsAppErrorResponse;
-      logger.error(`WhatsApp API Error (${errorData.error.code}): ${errorData.error.message}`);
-      throw new Error(`WhatsApp API Error: ${errorData.error.message}`);
+      console.error(`WhatsApp API Error (${errorData.error?.code}): ${errorData.error?.message}`);
+      throw new Error(`WhatsApp API Error: ${errorData.error?.message}`);
     }
 
     return data as WhatsAppMessageResponse;
   } catch (error: any) {
-    logger.error("Failed to send WhatsApp message", error);
+    console.error("Failed to send WhatsApp message", error);
     throw error;
   }
 }
@@ -138,13 +138,13 @@ export async function sendWhatsAppTemplateMessage(
 
     if (!response.ok) {
       const errorData = data as WhatsAppErrorResponse;
-      logger.error(`WhatsApp API Template Error (${errorData.error.code}): ${errorData.error.message}`);
-      throw new Error(`WhatsApp API Error: ${errorData.error.message}`);
+      console.error(`WhatsApp API Template Error (${errorData.error?.code}): ${errorData.error?.message}`);
+      throw new Error(`WhatsApp API Error: ${errorData.error?.message}`);
     }
 
     return data as WhatsAppMessageResponse;
   } catch (error: any) {
-    logger.error("Failed to send WhatsApp template message", error);
+    console.error("Failed to send WhatsApp template message", error);
     throw error;
   }
 }

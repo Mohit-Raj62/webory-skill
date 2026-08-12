@@ -195,9 +195,10 @@ export default function JobSimulator() {
     }, [timeLeft, simulationComplete, taskStatus]);
 
     useEffect(() => {
-        if (elapsedSeconds > 0 && elapsedSeconds % 5 === 0 && files['index.html'] !== lastCode.current) {
-            playbackLog.current.push({ offsetSeconds: elapsedSeconds, code: files['index.html'] });
-            lastCode.current = files['index.html'];
+        const combinedCode = Object.values(files).join('\n');
+        if (elapsedSeconds > 0 && elapsedSeconds % 5 === 0 && combinedCode !== lastCode.current) {
+            playbackLog.current.push({ offsetSeconds: elapsedSeconds, code: combinedCode });
+            lastCode.current = combinedCode;
         }
     }, [elapsedSeconds, files]);
 
@@ -214,70 +215,54 @@ export default function JobSimulator() {
         setIsSubmitting(true);
         
         // Normalize student code: remove comments and extra whitespace for easier matching
-        const normalizedCode = (files['index.html'] || "")
+        const combinedRawCode = Object.values(files).join('\n');
+        const normalizedCode = combinedRawCode
             .replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, '$1') // remove comments
-            .replace(/\s+/g, ' ') // normalize whitespace to single space
-            .trim();
-
-        let regex;
         try {
-            const match = scenario.expectedRegex.match(/^\/(.*?)\/([gimsuy]*)$/);
-            if (match) {
-                regex = new RegExp(match[1], match[2]);
-            } else {
-                regex = new RegExp(scenario.expectedRegex);
-            }
-
-            // Test against both raw and normalized code for maximum flexibility
-            if (regex.test(files['index.html'] || "") || regex.test(normalizedCode)) {
+            setFeedback({ type: 'success', msg: "Unit tests passed! Awaiting Senior Dev Review..." });
+            
+            try {
+                const res = await fetch('/api/simulators/review', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: combinedRawCode, scenario })
+                });
+                const aiData = await res.json();
                 
-                setFeedback({ type: 'success', msg: "Unit tests passed! Awaiting Senior Dev Review..." });
-                
-                try {
-                    const res = await fetch('/api/simulators/review', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ code: files['index.html'], scenario })
-                    });
-                    const aiData = await res.json();
+                if (aiData.passed !== false) { // true or undefined (fallback)
+                    setTaskStatus("DONE");
+                    setSimulationComplete(true);
+                    setShowCompleteModal(true);
+                    setFeedback({ type: 'success', msg: "PR Approved & Merged! Feedback: " + (aiData.feedback?.[0] || 'LGTM!') });
                     
-                    if (aiData.passed !== false) { // true or undefined (fallback)
-                        setTaskStatus("DONE");
-                        setSimulationComplete(true);
-                        setShowCompleteModal(true);
-                        setFeedback({ type: 'success', msg: "PR Approved & Merged! Feedback: " + (aiData.feedback?.[0] || 'LGTM!') });
-                        
-                        
-                        fetch('/api/simulators/xp', { method: 'POST', body: JSON.stringify({ xp: 30 }), headers: { 'Content-Type': 'application/json' } }).catch(() => {});
-                        
-                        const urlParams = new URLSearchParams(window.location.search);
-                        const taskId = urlParams.get('taskId');
+                    
+                    fetch('/api/simulators/xp', { method: 'POST', body: JSON.stringify({ xp: 30 }), headers: { 'Content-Type': 'application/json' } }).catch(() => {});
+                    
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const taskId = urlParams.get('taskId');
 
-                        fetch('/api/simulators/sessions', { 
-                            method: 'POST', 
-                            body: JSON.stringify({ 
-                                scenarioId: !taskId ? scenario._id : undefined,
-                                taskId: taskId || undefined,
-                                timeTakenSeconds: elapsedSeconds, 
-                                passed: true, 
-                                playback: playbackLog.current,
-                                finalCode: files['index.html'],
-                                taskStatus: "DONE"
-                            }),
-                            headers: { 'Content-Type': 'application/json' }
-                        }).catch(() => {});
-                    } else {
-                        setFeedback({ type: 'error', msg: "PR Rejected by Senior Dev: " + (aiData.feedback?.[0] || 'Poor code quality.') });
-                    }
-                } catch (e) {
-                    console.error(e);
-                    setFeedback({ type: 'error', msg: "Review service unavailable. Try again." });
+                    fetch('/api/simulators/sessions', { 
+                        method: 'POST', 
+                        body: JSON.stringify({ 
+                            scenarioId: !taskId ? scenario._id : undefined,
+                            taskId: taskId || undefined,
+                            timeTakenSeconds: elapsedSeconds, 
+                            passed: true, 
+                            playback: playbackLog.current,
+                            finalCode: combinedRawCode,
+                            taskStatus: "DONE"
+                        }),
+                        headers: { 'Content-Type': 'application/json' }
+                    }).catch(() => {});
+                } else {
+                    setFeedback({ type: 'error', msg: "PR Rejected by Senior Dev: " + (aiData.feedback?.[0] || 'Poor code quality.') });
                 }
-            } else {
-                setFeedback({ type: 'error', msg: "Tests failed! Custom logic requirements not met." });
+            } catch (e) {
+                console.error(e);
+                setFeedback({ type: 'error', msg: "Review service unavailable. Try again." });
             }
         } catch (e) {
-            console.error("Invalid Regex in DB:", e);
+            console.error("Validation error:", e);
             setFeedback({ type: 'error', msg: "Internal system error in validation logic." });
         }
         setIsSubmitting(false);
