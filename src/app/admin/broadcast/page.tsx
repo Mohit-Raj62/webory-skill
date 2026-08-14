@@ -416,6 +416,8 @@ export default function BroadcastPage() {
     const [copiedEmailTemplate, setCopiedEmailTemplate] = useState<number | null>(null);
     const [copiedPushTemplate, setCopiedPushTemplate] = useState<number | null>(null);
     const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
+    const [targetAudience, setTargetAudience] = useState<"all" | "custom">("all");
+    const [customEmails, setCustomEmails] = useState("");
 
     const handleSend = async (mode: "email" | "push" | "both") => {
         setLoading(mode);
@@ -424,10 +426,22 @@ export default function BroadcastPage() {
         const finalPushImage = pushImage || (isPushImageAuto && uploadedImages.length > 0 ? uploadedImages[0] : "");
 
         try {
+            const parsedCustomEmails = customEmails
+                .split(",")
+                .map((e) => e.trim())
+                .filter((e) => e);
+
             const res = await fetch("/api/admin/broadcast", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ subject, message, mode, pushImage: finalPushImage }),
+                body: JSON.stringify({ 
+                    subject, 
+                    message, 
+                    mode, 
+                    pushImage: finalPushImage,
+                    targetAudience,
+                    customEmails: targetAudience === "custom" ? parsedCustomEmails : []
+                }),
             });
 
             const data = await res.json();
@@ -587,6 +601,50 @@ export default function BroadcastPage() {
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <div className="grid grid-cols-1 gap-6">
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <Label className="text-gray-300">Target Audience (Email)</Label>
+                                <div className="flex gap-4 mt-2">
+                                    <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                                        <input 
+                                            type="radio" 
+                                            name="targetAudience" 
+                                            value="all" 
+                                            checked={targetAudience === "all"} 
+                                            onChange={() => setTargetAudience("all")}
+                                            className="accent-blue-500"
+                                        />
+                                        All Users
+                                    </label>
+                                    <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                                        <input 
+                                            type="radio" 
+                                            name="targetAudience" 
+                                            value="custom" 
+                                            checked={targetAudience === "custom"} 
+                                            onChange={() => setTargetAudience("custom")}
+                                            className="accent-blue-500"
+                                        />
+                                        Custom Emails
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            {targetAudience === "custom" && (
+                                <div className="space-y-2">
+                                    <Label htmlFor="customEmails" className="text-gray-300">Custom Email Addresses</Label>
+                                    <textarea
+                                        id="customEmails"
+                                        value={customEmails}
+                                        onChange={(e) => setCustomEmails(e.target.value)}
+                                        placeholder="Enter comma-separated emails (e.g., a@example.com, b@example.com)"
+                                        required={targetAudience === "custom"}
+                                        className="w-full min-h-[80px] rounded-md border border-white/10 bg-gray-800 px-3 py-2 text-sm text-white focus:ring-blue-500 placeholder:text-gray-500"
+                                    />
+                                </div>
+                            )}
+                        </div>
+
                         <div className="space-y-2">
                             <Label htmlFor="subject" className="text-gray-300">Subject / Title</Label>
                             <Input

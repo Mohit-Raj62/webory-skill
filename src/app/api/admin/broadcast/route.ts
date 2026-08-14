@@ -40,7 +40,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const { subject, message, mode = "both", pushImage, templateName } = await req.json();
+    const { subject, message, mode = "both", pushImage, templateName, targetAudience = "all", customEmails = [] } = await req.json();
 
     if (mode !== "whatsapp" && (!subject || !message)) {
       return NextResponse.json(
@@ -63,14 +63,31 @@ export async function POST(req: Request) {
 
     // Parallel Delivery - Emails
     if (mode === "email" || mode === "both") {
-      const users = await User.find(
-        { email: { $exists: true, $ne: null } },
-        "email firstName"
-      );
+      let emailTargets: { email: string; firstName: string }[] = [];
 
-      console.log(`Found ${users.length} users for email broadcast. Parallelizing...`);
+      if (targetAudience === "all") {
+        const users = await User.find(
+          { email: { $exists: true, $ne: null } },
+          "email firstName"
+        );
+        emailTargets = users.map(u => ({ email: u.email, firstName: u.firstName || "User" }));
+      } else if (targetAudience === "custom") {
+        emailTargets = customEmails.map((email: string) => ({ email: email.trim(), firstName: "User" }));
+      }
 
-      const emailPromises = users.map(async (user) => {
+      // Remove duplicates
+      const uniqueTargets = [];
+      const seenEmails = new Set();
+      for (const target of emailTargets) {
+          if (!seenEmails.has(target.email) && target.email) {
+              seenEmails.add(target.email);
+              uniqueTargets.push(target);
+          }
+      }
+
+      console.log(`Found ${uniqueTargets.length} targets for email broadcast. Parallelizing...`);
+
+      const emailPromises = uniqueTargets.map(async (user) => {
         let personalizedMessage = message;
         if (message.includes("{{name}}")) {
           personalizedMessage = message.replace(
