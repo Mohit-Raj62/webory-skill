@@ -395,7 +395,7 @@ export default function VideoPlayerPage() {
                         const enrollData = await resEnroll.json();
                         const enrolled = enrollData.enrollments.some((e: any) => {
                             const enrollCourseId = e.course?._id || e.course;
-                            return String(enrollCourseId) === String(courseId);
+                            return String(enrollCourseId) === String(courseId) || e.course?.slug === courseId;
                         });
                         setIsEnrolled(enrolled);
                     }

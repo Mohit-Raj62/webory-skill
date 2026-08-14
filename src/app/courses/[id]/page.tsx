@@ -131,7 +131,7 @@ export default function CourseDetailsPage() {
                 if (resEnroll.ok) {
                     const enrollData = await resEnroll.json();
                     const currentEnrollment = enrollData.enrollments.find(
-                        (e: any) => e.course?._id?.toString() === id
+                        (e: any) => e.course?._id?.toString() === id || e.course?.slug === id
                     );
                     const enrolled = !!currentEnrollment;
                     setIsEnrolled(enrolled);

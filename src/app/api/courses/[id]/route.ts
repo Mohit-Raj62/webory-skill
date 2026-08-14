@@ -58,7 +58,7 @@ export async function GET(
         },
       ];
       // Background update for DB without blocking
-      Course.findByIdAndUpdate(courseId, { modules: course.modules })
+      Course.findByIdAndUpdate(course._id, { modules: course.modules })
         .exec()
         .catch((e) => console.error(e));
     } else if (course.modules && course.modules.length > 0) {
@@ -69,7 +69,7 @@ export async function GET(
       if (JSON.stringify(course.videos) !== JSON.stringify(flattenedVideos)) {
         course.videos = flattenedVideos;
         // Background update for DB
-        Course.findByIdAndUpdate(courseId, { videos: flattenedVideos })
+        Course.findByIdAndUpdate(course._id, { videos: flattenedVideos })
           .exec()
           .catch((e) => console.error(e));
       }
