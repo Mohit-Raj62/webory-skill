@@ -10,6 +10,7 @@ import Course from "@/models/Course";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { sendEmail, emailTemplates } from "@/lib/mail";
+import mongoose from "mongoose";
 
 export async function GET(
   req: Request,
@@ -31,20 +32,28 @@ export async function GET(
     };
     const userId = decoded.userId;
 
-    // 1. Video Progress
-    const enrollment = await Enrollment.findOne({
-      student: userId,
-      course: courseId,
-    });
-    const videoProgress = enrollment?.progress || 0;
+    let course;
+    if (mongoose.isValidObjectId(courseId)) {
+      course = await Course.findById(courseId);
+    } else {
+      course = await Course.findOne({ slug: courseId });
+    }
 
-    const course = await Course.findById(courseId);
     if (!course) {
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 
+    const resolvedCourseId = course._id;
+
+    // 1. Video Progress
+    const enrollment = await Enrollment.findOne({
+      student: userId,
+      course: resolvedCourseId,
+    });
+    const videoProgress = enrollment?.progress || 0;
+
     // 2. Quizzes
-    const quizzes = await Quiz.find({ courseId, isActive: true });
+    const quizzes = await Quiz.find({ courseId: resolvedCourseId, isActive: true });
     let totalQuizPercentage = 0;
     let attemptedQuizzes = 0;
 
@@ -62,7 +71,7 @@ export async function GET(
     }
 
     // 3. Assignments
-    const assignments = await Assignment.find({ courseId, isActive: true });
+    const assignments = await Assignment.find({ courseId: resolvedCourseId, isActive: true });
     let totalAssignmentPercentage = 0;
     let submittedAssignments = 0;
 
