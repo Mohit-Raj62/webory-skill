@@ -52,8 +52,41 @@ export function TestimonialsSection() {
     if (loading) return null;
     if (feedbacks.length === 0) return null;
 
+    const averageRating = feedbacks.reduce((acc, curr) => acc + curr.rating, 0) / feedbacks.length;
+    
+    const schemaData = {
+        "@context": "https://schema.org/",
+        "@type": "EducationalOrganization",
+        "name": "Webory Skills",
+        "url": "https://weboryskills.in",
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": averageRating.toFixed(1),
+            "bestRating": "5",
+            "worstRating": "1",
+            "ratingCount": feedbacks.length.toString()
+        },
+        "review": feedbacks.slice(0, 5).map(f => ({
+            "@type": "Review",
+            "reviewRating": {
+                "@type": "Rating",
+                "ratingValue": f.rating.toString(),
+                "bestRating": "5"
+            },
+            "author": {
+                "@type": "Person",
+                "name": `${f.user?.firstName || 'Unknown'} ${f.user?.lastName || 'User'}`
+            },
+            "reviewBody": f.comment
+        }))
+    };
+
     return (
         <section className="py-20 relative overflow-hidden">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
+            />
             <div className="container mx-auto px-4 mb-12 text-center relative z-10">
                 <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
                     What Our Users Say

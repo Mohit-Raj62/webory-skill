@@ -412,5 +412,23 @@ export const emailTemplates = {
       <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
       <p style="color: #999; font-size: 12px; text-align: center;">Best Regards,<br/>Webory Skills Team</p>
     </div>
+  feedbackRequest: (name: string, feedbackLink: string, source: string) => `
+    <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #2563eb;">We'd Love Your Feedback! 🌟</h2>
+      <p>Hi ${name},</p>
+      <p>Thank you for participating in the <strong>${source}</strong> process at Webory Skills.</p>
+      <p>We are constantly looking to improve and provide the best experience for our community. Could you take a moment to share your feedback with us?</p>
+      
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${feedbackLink}" style="background-color: #2563eb; color: white; padding: 14px 35px; text-decoration: none; border-radius: 12px; display: inline-block; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Leave a Review</a>
+      </div>
+
+      <p style="color: #666; font-size: 14px; line-height: 1.6;">
+        It only takes a minute, and your insights help us grow!
+      </p>
+      
+      <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+      <p style="color: #999; font-size: 12px; text-align: center;">Best Regards,<br/>Webory Skills Team</p>
+    </div>
   `,
 };

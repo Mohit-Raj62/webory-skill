@@ -135,6 +135,16 @@ export async function PATCH(
                 offerLink,
               ),
             );
+            // Send feedback request as well
+            await sendEmail(
+              student.email,
+              `We'd love your feedback on the interview process!`,
+              emailTemplates.feedbackRequest(
+                student.firstName,
+                `${appUrl}/feedback`,
+                "internship interview"
+              ),
+            );
           } else if (status === "rejected") {
             await sendEmail(
               student.email,
@@ -142,6 +152,19 @@ export async function PATCH(
               emailTemplates.applicationRejected(
                 student.firstName,
                 internship.title,
+              ),
+            );
+            
+            const appUrl =
+              process.env.NEXT_PUBLIC_APP_URL || "https://weboryskills.in";
+            // Send feedback request as well
+            await sendEmail(
+              student.email,
+              `We'd love your feedback on the interview process!`,
+              emailTemplates.feedbackRequest(
+                student.firstName,
+                `${appUrl}/feedback`,
+                "internship interview"
               ),
             );
           }
