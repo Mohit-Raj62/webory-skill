@@ -412,6 +412,7 @@ export const emailTemplates = {
       <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
       <p style="color: #999; font-size: 12px; text-align: center;">Best Regards,<br/>Webory Skills Team</p>
     </div>
+  `,
   feedbackRequest: (name: string, feedbackLink: string, source: string) => `
     <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #2563eb;">We'd Love Your Feedback! 🌟</h2>
