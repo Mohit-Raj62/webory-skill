@@ -16,7 +16,10 @@ export async function GET(req: Request) {
     await dbConnect();
 
     const activeSession = await LiveSession.findOne({
-      applicationId: applicationId,
+      $or: [
+        { applicationId: applicationId },
+        { applicationIds: applicationId }
+      ],
       status: "active"
     }).sort({ createdAt: -1 }).lean();
 

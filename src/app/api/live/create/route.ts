@@ -26,6 +26,7 @@ export async function POST(req: Request) {
     // Close any previous active sessions for this context to prevent students from joining old ghost sessions
     const query: any = { status: "active" };
     if (data.applicationId) query.applicationId = data.applicationId;
+    else if (data.applicationIds && data.applicationIds.length > 0) query.applicationIds = { $in: data.applicationIds };
     else if (data.internshipId) query.internshipId = data.internshipId;
     else if (data.courseId) query.courseId = data.courseId;
     
@@ -42,6 +43,7 @@ export async function POST(req: Request) {
       courseId: data.courseId || undefined,
       internshipId: data.internshipId || undefined,
       applicationId: data.applicationId || undefined,
+      applicationIds: data.applicationIds || undefined,
       moduleId: data.moduleId || undefined,
       status: "active",
       scheduledAt: new Date(),

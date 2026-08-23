@@ -83,6 +83,14 @@ export async function GET(req: NextRequest) {
         if (!isInterviewCandidate) {
             return NextResponse.json({ error: "This is not your scheduled interview session." }, { status: 403 });
         }
+      } else if (session.sessionType === "group-interview" && session.applicationIds && session.applicationIds.length > 0) {
+        const isInterviewCandidate = await Application.exists({
+            _id: { $in: session.applicationIds },
+            student: user.userId
+        });
+        if (!isInterviewCandidate) {
+            return NextResponse.json({ error: "This is not your scheduled group interview session." }, { status: 403 });
+        }
       }
     } catch (err) {
       console.error("Error authorizing live session:", err);

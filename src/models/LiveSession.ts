@@ -51,6 +51,10 @@ const LiveSessionSchema = new Schema<ILiveSession>({
     type: Schema.Types.ObjectId,
     ref: "Application", // For interview sessions
   },
+  applicationIds: [{
+    type: Schema.Types.ObjectId,
+    ref: "Application", // For group interview sessions
+  }],
   moduleId: {
     type: String, // String or ObjectId to link to the specific curriculum module
   },

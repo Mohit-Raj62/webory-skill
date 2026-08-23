@@ -24,6 +24,7 @@ export default function LiveDashboardContent({ role }: LiveDashboardContentProps
   const [selectedCourse, setSelectedCourse] = useState(searchParams.get("courseId") || "");
   const [selectedInternship, setSelectedInternship] = useState(searchParams.get("internshipId") || "");
   const [selectedApplication, setSelectedApplication] = useState(searchParams.get("applicationId") || "");
+  const [selectedApplications, setSelectedApplications] = useState<string[]>([]);
   const [selectedModule, setSelectedModule] = useState("");
 
   useEffect(() => {
@@ -59,7 +60,8 @@ export default function LiveDashboardContent({ role }: LiveDashboardContentProps
           sessionType,
           courseId: selectedCourse || undefined,
           internshipId: selectedInternship || undefined,
-          applicationId: selectedApplication || undefined,
+          applicationId: sessionType === "interview" ? (selectedApplication || undefined) : undefined,
+          applicationIds: sessionType === "group-interview" ? (selectedApplications.length > 0 ? selectedApplications : undefined) : undefined,
           moduleId: selectedModule || undefined,
         }),
       });
@@ -126,6 +128,7 @@ export default function LiveDashboardContent({ role }: LiveDashboardContentProps
                 setSelectedCourse("");
                 setSelectedInternship("");
                 setSelectedApplication("");
+                setSelectedApplications([]);
                 setSelectedModule("");
               }}
               className="w-full bg-black/20 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 transition-colors"
@@ -134,7 +137,10 @@ export default function LiveDashboardContent({ role }: LiveDashboardContentProps
               <option value="course">Course specific</option>
               <option value="internship">Internship specific</option>
               {role === "admin" && (
-                <option value="interview">1-on-1 Interview</option>
+                <>
+                  <option value="interview">1-on-1 Interview</option>
+                  <option value="group-interview">Group Interview</option>
+                </>
               )}
             </select>
           </div>
@@ -173,13 +179,13 @@ export default function LiveDashboardContent({ role }: LiveDashboardContentProps
             </div>
           )}
 
-          {sessionType === "interview" && role === "admin" && (
+          {(sessionType === "interview" || sessionType === "group-interview") && role === "admin" && (
             <>
               <div>
                 <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Select Internship (Role)</label>
                 <select
                   value={selectedInternship}
-                  onChange={(e) => { setSelectedInternship(e.target.value); setSelectedApplication(""); }}
+                  onChange={(e) => { setSelectedInternship(e.target.value); setSelectedApplication(""); setSelectedApplications([]); }}
                   className="w-full bg-black/20 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 transition-colors"
                   required
                 >
@@ -192,22 +198,51 @@ export default function LiveDashboardContent({ role }: LiveDashboardContentProps
 
               {selectedInternship && (
                 <div>
-                  <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Select Interview Candidate</label>
-                  <select
-                    value={selectedApplication}
-                    onChange={(e) => setSelectedApplication(e.target.value)}
-                    className="w-full bg-black/20 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 transition-colors"
-                    required
-                  >
-                    <option value="">-- Choose Candidate --</option>
-                    {options.interviews
-                      .filter((app: any) => app.internship?._id === selectedInternship)
-                      .map((app: any) => (
-                        <option key={app._id} value={app._id}>
-                          {app.student?.firstName} {app.student?.lastName} - {new Date(app.interviewDate || app.appliedAt || Date.now()).toLocaleDateString()}
-                        </option>
-                      ))}
-                  </select>
+                  <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Select Interview Candidate(s)</label>
+                  {sessionType === "interview" ? (
+                    <select
+                      value={selectedApplication}
+                      onChange={(e) => setSelectedApplication(e.target.value)}
+                      className="w-full bg-black/20 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 transition-colors"
+                      required
+                    >
+                      <option value="">-- Choose Candidate --</option>
+                      {options.interviews
+                        .filter((app: any) => app.internship?._id === selectedInternship)
+                        .map((app: any) => (
+                          <option key={app._id} value={app._id}>
+                            {app.student?.firstName} {app.student?.lastName} - {new Date(app.interviewDate || app.appliedAt || Date.now()).toLocaleDateString()}
+                          </option>
+                        ))}
+                    </select>
+                  ) : (
+                    <div className="space-y-2 max-h-48 overflow-y-auto bg-black/20 border border-white/5 rounded-xl p-4">
+                      {options.interviews
+                        .filter((app: any) => app.internship?._id === selectedInternship)
+                        .map((app: any) => (
+                          <label key={app._id} className="flex items-center space-x-3 cursor-pointer p-2 hover:bg-white/5 rounded-lg transition-colors">
+                            <input
+                              type="checkbox"
+                              checked={selectedApplications.includes(app._id)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedApplications([...selectedApplications, app._id]);
+                                } else {
+                                  setSelectedApplications(selectedApplications.filter(id => id !== app._id));
+                                }
+                              }}
+                              className="h-4 w-4 rounded border-white/10 bg-black/50 text-emerald-500 focus:ring-emerald-500/50"
+                            />
+                            <span className="text-sm text-slate-300">
+                              {app.student?.firstName} {app.student?.lastName} - {new Date(app.interviewDate || app.appliedAt || Date.now()).toLocaleDateString()}
+                            </span>
+                          </label>
+                        ))}
+                      {options.interviews.filter((app: any) => app.internship?._id === selectedInternship).length === 0 && (
+                        <p className="text-sm text-slate-500 text-center py-2">No candidates found.</p>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
             </>
