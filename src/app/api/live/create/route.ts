@@ -45,12 +45,13 @@ export async function POST(req: Request) {
       applicationId: data.applicationId || undefined,
       applicationIds: data.applicationIds || undefined,
       moduleId: data.moduleId || undefined,
+      inviteCode: Math.random().toString(36).substring(2, 10).toUpperCase(),
       status: "active",
       scheduledAt: new Date(),
       startedAt: new Date(),
     });
 
-    return NextResponse.json({ success: true, roomId: liveSession.roomId, session: liveSession }, { status: 201 });
+    return NextResponse.json({ success: true, roomId: liveSession.roomId, inviteCode: liveSession.inviteCode, session: liveSession }, { status: 201 });
   } catch (error: any) {
     console.error("Create live session error:", error);
     return NextResponse.json(

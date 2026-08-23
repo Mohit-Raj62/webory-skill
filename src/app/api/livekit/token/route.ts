@@ -38,29 +38,38 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Server misconfigured" }, { status: 500 });
   }
 
+  // Fetch session to check rules and get inviteCode
+  let session = null;
+  try {
+    await dbConnect();
+    session = await LiveSession.findOne({ roomId: room }).lean();
+  } catch (err) {
+    console.error("Error finding live session:", err);
+  }
+
+  const inviteCode = req.nextUrl.searchParams.get("inviteCode");
+  const isInvited = inviteCode && session?.inviteCode && inviteCode === session.inviteCode;
+
   // Get user from our custom auth to assign correct identity
   const user = await getUserFromToken(req);
 
-  // Require login to join
-  if (!user) {
-    return NextResponse.json({ error: "You must be logged in to join a live session." }, { status: 401 });
+  // Require login to join if not invited
+  if (!user && !isInvited) {
+    return NextResponse.json({ error: "You must be logged in to join a live session unless you have an invite code." }, { status: 401 });
   }
 
-  const hasFullControl = user.role === "teacher" || user.role === "admin" || isHost;
+  const hasFullControl = user && (user.role === "teacher" || user.role === "admin" || isHost);
+
+  if (!session && !hasFullControl) {
+    return NextResponse.json({ error: "Live session not found." }, { status: 404 });
+  }
 
   // Authorization Check for Students
-  if (!hasFullControl) {
+  if (!hasFullControl && session && !isInvited) {
     try {
-      await dbConnect();
-      const session = await LiveSession.findOne({ roomId: room }).lean();
-      
-      if (!session) {
-        return NextResponse.json({ error: "Live session not found." }, { status: 404 });
-      }
-
       if (session.sessionType === "course" && session.courseId) {
         const isEnrolled = await Enrollment.exists({
-            student: user.userId,
+            student: user?.userId,
             course: session.courseId
         });
         if (!isEnrolled) {
@@ -68,7 +77,7 @@ export async function GET(req: NextRequest) {
         }
       } else if (session.sessionType === "internship" && session.internshipId) {
         const isAccepted = await Application.exists({
-            student: user.userId,
+            student: user?.userId,
             internship: session.internshipId,
             status: "accepted"
         });
@@ -78,7 +87,7 @@ export async function GET(req: NextRequest) {
       } else if (session.sessionType === "interview" && session.applicationId) {
         const isInterviewCandidate = await Application.exists({
             _id: session.applicationId,
-            student: user.userId
+            student: user?.userId
         });
         if (!isInterviewCandidate) {
             return NextResponse.json({ error: "This is not your scheduled interview session." }, { status: 403 });
@@ -86,7 +95,7 @@ export async function GET(req: NextRequest) {
       } else if (session.sessionType === "group-interview" && session.applicationIds && session.applicationIds.length > 0) {
         const isInterviewCandidate = await Application.exists({
             _id: { $in: session.applicationIds },
-            student: user.userId
+            student: user?.userId
         });
         if (!isInterviewCandidate) {
             return NextResponse.json({ error: "This is not your scheduled group interview session." }, { status: 403 });
@@ -135,5 +144,5 @@ export async function GET(req: NextRequest) {
     roomAdmin: hasFullControl ? true : false,
   });
 
-  return NextResponse.json({ token: await at.toJwt() });
+  return NextResponse.json({ token: await at.toJwt(), inviteCode: session?.inviteCode });
 }

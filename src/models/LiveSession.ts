@@ -11,6 +11,7 @@ export interface ILiveSession extends Document {
   startedAt?: Date;
   endedAt?: Date;
   recordingId?: mongoose.Types.ObjectId; // Link to the recording after it ends
+  inviteCode?: string; // For adding external/unassigned participants
   createdAt: Date;
 }
 
@@ -57,6 +58,11 @@ const LiveSessionSchema = new Schema<ILiveSession>({
   }],
   moduleId: {
     type: String, // String or ObjectId to link to the specific curriculum module
+  },
+  inviteCode: {
+    type: String,
+    unique: true,
+    sparse: true,
   },
   status: {
     type: String,

@@ -14,6 +14,7 @@ export default function TeacherLiveRoomPage({ params }: { params: Promise<{ room
   const { roomId } = use(params);
   const router = useRouter();
   const [token, setToken] = useState("");
+  const [inviteCode, setInviteCode] = useState("");
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -23,6 +24,7 @@ export default function TeacherLiveRoomPage({ params }: { params: Promise<{ room
         const data = await res.json();
         if (data.token) {
           setToken(data.token);
+          if (data.inviteCode) setInviteCode(data.inviteCode);
         }
       } catch (error) {
         console.error("Error fetching token:", error);
@@ -84,6 +86,7 @@ export default function TeacherLiveRoomPage({ params }: { params: Promise<{ room
         roomName={roomId} 
         isHost={true} 
         onEndClass={handleEndClass} 
+        inviteCode={inviteCode}
       />
       <RoomAudioRenderer />
     </LiveKitRoom>

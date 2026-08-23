@@ -53,7 +53,9 @@ import {
   Focus,
   PenTool,
   PictureInPicture,
-  Sparkles
+  Sparkles,
+  UserPlus,
+  Copy
 } from "lucide-react";
 
 interface PremiumLiveClassroomProps {
@@ -62,6 +64,7 @@ interface PremiumLiveClassroomProps {
   onEndClass: () => void;
   title?: string;
   instructor?: string;
+  inviteCode?: string;
 }
 
 // Custom Participant Tile to guarantee video fills the box and name always shows
@@ -320,7 +323,7 @@ function CustomChat() {
   );
 }
 
-export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, title, instructor }: PremiumLiveClassroomProps) {
+export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, title, instructor, inviteCode }: PremiumLiveClassroomProps) {
   const [showChat, setShowChat] = useState(false);
   const [showParticipants, setShowParticipants] = useState(false);
   const [isMobileFullScreen, setIsMobileFullScreen] = useState(false);
@@ -643,6 +646,16 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
     } catch(e) { console.error(e) }
   };
 
+  const handleCopyInvite = () => {
+    if (!inviteCode) {
+      alert("No invite code available for this session.");
+      return;
+    }
+    const inviteLink = `${window.location.origin}/live/${roomName}?inviteCode=${inviteCode}`;
+    navigator.clipboard.writeText(inviteLink);
+    alert("Invite link copied to clipboard!\nShare this link to invite others.");
+  };
+
   // Fetch all camera and screenshare tracks
   const tracks = useTracks(
     [
@@ -730,9 +743,20 @@ export default function PremiumLiveClassroom({ roomName, isHost, onEndClass, tit
               </div>
 
               {isHost && (
-                <div className="hidden md:flex items-center text-blue-300 bg-blue-500/10 backdrop-blur-xl border border-blue-500/30 px-4 py-1.5 rounded-full text-xs font-bold shadow-[0_0_15px_rgba(59,130,246,0.2)] pointer-events-auto">
-                  <ShieldAlert className="w-3.5 h-3.5 mr-1.5" />
-                  Host
+                <div className="flex items-center gap-2">
+                  <div className="hidden md:flex items-center text-blue-300 bg-blue-500/10 backdrop-blur-xl border border-blue-500/30 px-4 py-1.5 rounded-full text-xs font-bold shadow-[0_0_15px_rgba(59,130,246,0.2)] pointer-events-auto">
+                    <ShieldAlert className="w-3.5 h-3.5 mr-1.5" />
+                    Host
+                  </div>
+                  {inviteCode && (
+                    <button 
+                      onClick={handleCopyInvite}
+                      className="flex items-center text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 backdrop-blur-xl border border-emerald-500/30 px-4 py-1.5 rounded-full text-xs font-bold shadow-[0_0_15px_rgba(16,185,129,0.2)] pointer-events-auto transition-colors"
+                    >
+                      <UserPlus className="w-3.5 h-3.5 mr-1.5" />
+                      Invite
+                    </button>
+                  )}
                 </div>
               )}
             </div>

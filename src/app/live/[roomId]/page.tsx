@@ -22,8 +22,12 @@ export default function StudentLivePage({ params }: { params: Promise<{ roomId: 
   useEffect(() => {
     const fetchToken = async () => {
       try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const inviteCode = urlParams.get("inviteCode");
+        const queryParams = inviteCode ? `&inviteCode=${inviteCode}` : "";
+        
         // Automatically request token using the logged-in user's credentials
-        const res = await fetch(`/api/livekit/token?room=${roomId}`);
+        const res = await fetch(`/api/livekit/token?room=${roomId}${queryParams}`);
         const data = await res.json();
         
         if (res.ok && data.token) {
