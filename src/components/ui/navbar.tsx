@@ -10,6 +10,7 @@ import dynamic from "next/dynamic";
 
 const FeedbackForm = dynamic(() => import("@/components/feedback/FeedbackForm").then(mod => mod.FeedbackForm), { ssr: false });
 const InstallPWA = dynamic(() => import("@/components/InstallPWA").then(mod => mod.InstallPWA), { ssr: false });
+import { NavbarExpandableSearch, MobileNavbarSearch } from "@/components/ui/GlobalSearch";
 
 
 const NavLink = ({ href, children, onClick, badge, icon: Icon }: {
@@ -158,12 +159,13 @@ export function Navbar() {
                                 </span>
                             </span>
                         </Link>
-                        
-
                     </div>
 
                     {/* Desktop Menu */}
                     <div className="hidden lg:flex items-center gap-0.5 xl:gap-2 ml-auto">
+                        {/* Search Icon Button beside Courses */}
+                        <NavbarExpandableSearch />
+
                         <NavLink href="/courses" icon={GraduationCap} badge="Free">Courses</NavLink>
                         <NavLink href="/internships" icon={Briefcase}>Internships</NavLink>
 
@@ -186,7 +188,7 @@ export function Navbar() {
                         <div className="mx-1">
                             <InstallPWA variant="navbar" />
                         </div>
-                        
+
                         <div className="w-px h-6 bg-white/10 mx-2" />
 
                         {user ? (
@@ -227,7 +229,8 @@ export function Navbar() {
 
                     {/* Mobile Quick Actions (Feedback & Profile) - Only in Standalone/App */}
                     {isStandalone && (
-                        <div className="lg:hidden flex items-center gap-2">
+                        <div className="lg:hidden flex items-center gap-1.5">
+                            <MobileNavbarSearch />
                             <button
                                 onClick={() => setIsFeedbackOpen(true)}
                                 className="p-2 rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-400 hover:text-white transition-all active:scale-90"
@@ -253,23 +256,26 @@ export function Navbar() {
 
                     {/* Mobile Menu Button - Shown only in Browser/Non-Standalone */}
                     {!isStandalone && (
-                        <motion.button
-                            whileTap={{ scale: 0.9 }}
-                            className="lg:hidden relative w-10 h-10 flex items-center justify-center rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-300 hover:text-white hover:border-white/20 transition-all"
-                            onClick={() => setIsOpen(!isOpen)}
-                        >
-                            <AnimatePresence mode="wait">
-                                {isOpen ? (
-                                    <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                                        <X size={20} />
-                                    </motion.div>
-                                ) : (
-                                    <motion.div key="menu" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                                        <Menu size={20} />
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </motion.button>
+                        <div className="lg:hidden flex items-center gap-1.5">
+                            <MobileNavbarSearch />
+                            <motion.button
+                                whileTap={{ scale: 0.9 }}
+                                className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-300 hover:text-white hover:border-white/20 transition-all"
+                                onClick={() => setIsOpen(!isOpen)}
+                            >
+                                <AnimatePresence mode="wait">
+                                    {isOpen ? (
+                                        <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                                            <X size={20} />
+                                        </motion.div>
+                                    ) : (
+                                        <motion.div key="menu" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                                            <Menu size={20} />
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </motion.button>
+                        </div>
                     )}
                 </div>
 
