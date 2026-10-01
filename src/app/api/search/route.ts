@@ -321,6 +321,10 @@ export async function GET(req: NextRequest) {
           tools: matchingStatic.filter((s) => s.type === "tool").length,
           pages: matchingStatic.filter((s) => s.type === "page").length,
         },
+      }, {
+        headers: {
+          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120",
+        },
       });
     }
 
@@ -339,7 +343,6 @@ export async function GET(req: NextRequest) {
             { title: regex },
             { description: regex },
             { outcome: regex },
-            { curriculum: regex },
             { whoIsThisFor: regex },
             { level: regex },
           ],
@@ -491,6 +494,10 @@ export async function GET(req: NextRequest) {
         blogs: formattedBlogs.length,
         tools: matchingStatic.filter((s) => s.type === "tool").length,
         pages: matchingStatic.filter((s) => s.type === "page").length,
+      },
+    }, {
+      headers: {
+        "Cache-Control": "public, s-maxage=30, stale-while-revalidate=60",
       },
     });
   } catch (error: any) {
