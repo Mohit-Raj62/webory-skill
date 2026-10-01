@@ -1,6 +1,7 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -117,7 +118,7 @@ export function NavbarExpandableSearch() {
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -344,7 +345,7 @@ export function NavbarExpandableSearch() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 6, scale: 0.98 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="absolute top-full mt-2 left-0 w-80 sm:w-96 bg-[#0b0f19]/95 border border-white/10 rounded-2xl shadow-2xl shadow-black/80 overflow-hidden z-[70] backdrop-blur-2xl"
+            className="absolute top-full mt-2 right-0 w-80 sm:w-96 bg-[#0b0f19]/95 border border-white/10 rounded-2xl shadow-2xl shadow-black/80 overflow-hidden z-[70] backdrop-blur-2xl"
           >
             {query && (
               <div className="flex items-center gap-1.5 px-3 py-2 border-b border-white/[0.08] bg-white/[0.02] overflow-x-auto no-scrollbar">
@@ -458,30 +459,39 @@ export function NavbarExpandableSearch() {
 
 export function MobileNavbarSearch() {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const [query, setQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState<CategoryId>("all");
   const [results, setResults] = useState<SearchResultItem[]>([]);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const openSearch = useCallback(() => {
     setIsOpen(true);
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 50);
   }, []);
 
   const closeSearch = useCallback(() => {
     setIsOpen(false);
     setQuery("");
     setResults([]);
+    setActiveCategory("all");
   }, []);
 
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
-      inputRef.current?.focus();
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 80);
+      return () => {
+        clearTimeout(timer);
+      };
     } else {
       document.body.style.overflow = "";
     }
@@ -490,28 +500,100 @@ export function MobileNavbarSearch() {
     };
   }, [isOpen]);
 
-  const fetchResults = useCallback(async (q: string) => {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        closeSearch();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, closeSearch]);
+
+  const fetchResults = useCallback(async (q: string, type: string) => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&limit=10`);
+      const params = new URLSearchParams();
+      if (q) params.set("q", q);
+      if (type && type !== "all") params.set("type", type);
+      params.set("limit", "15");
+
+      const res = await fetch(`/api/search?${params.toString()}`);
       if (res.ok) {
         const data = await res.json();
         setResults(data.results || []);
       }
-    } catch (e) {}
-    setLoading(false);
+    } catch (e) {
+      console.error("Mobile search fetch error:", e);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
     if (!isOpen) return;
     if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
-    searchTimeoutRef.current = setTimeout(() => fetchResults(query), 150);
+    searchTimeoutRef.current = setTimeout(() => {
+      fetchResults(query, activeCategory);
+    }, 150);
     return () => {
       if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
     };
-  }, [query, isOpen, fetchResults]);
+  }, [query, activeCategory, isOpen, fetchResults]);
 
-  const displayedResults = query ? results : QUICK_SUGGESTIONS.slice(0, 4);
+  const displayedResults = query
+    ? results.filter((item) => (activeCategory === "all" ? true : item.type === activeCategory))
+    : QUICK_SUGGESTIONS;
+
+  const getTypeStyle = (type: SearchResultItem["type"]) => {
+    switch (type) {
+      case "course":
+        return {
+          bg: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+          iconBg: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30",
+          label: "Course",
+        };
+      case "internship":
+        return {
+          bg: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+          iconBg: "bg-blue-500/15 text-blue-400 border border-blue-500/30",
+          label: "Internship",
+        };
+      case "tool":
+        return {
+          bg: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+          iconBg: "bg-purple-500/15 text-purple-400 border border-purple-500/30",
+          label: "Tool",
+        };
+      case "hackathon":
+        return {
+          bg: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+          iconBg: "bg-amber-500/15 text-amber-400 border border-amber-500/30",
+          label: "Hackathon",
+        };
+      default:
+        return {
+          bg: "bg-white/10 text-gray-300 border-white/10",
+          iconBg: "bg-white/10 text-gray-300 border border-white/10",
+          label: "Page",
+        };
+    }
+  };
+
+  const highlightMatch = (text: string, q: string) => {
+    if (!q || !text) return text;
+    const regex = new RegExp(`(${q.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")})`, "gi");
+    const parts = text.split(regex);
+    return parts.map((part, i) =>
+      regex.test(part) ? (
+        <span key={i} className="text-blue-400 font-semibold bg-blue-500/20 px-0.5 rounded">
+          {part}
+        </span>
+      ) : (
+        part
+      )
+    );
+  };
 
   return (
     <>
@@ -524,97 +606,157 @@ export function MobileNavbarSearch() {
         <Search size={18} />
       </button>
 
-      <AnimatePresence>
-        {isOpen && (
-          <div
-            className="fixed inset-0 z-[9999] flex flex-col justify-start bg-black/90 backdrop-blur-2xl p-4 pt-12 sm:pt-16"
-            onClick={(e) => {
-              if (e.target === e.currentTarget) closeSearch();
-            }}
-          >
-            <motion.div
-              initial={{ opacity: 0, y: -20, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -15, scale: 0.96 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
-              className="w-full max-w-lg mx-auto bg-[#0b0f19] border border-blue-500/30 rounded-2xl overflow-hidden shadow-2xl shadow-black"
-            >
-              {/* Header / Input */}
-              <div className="flex items-center px-3.5 py-3 border-b border-white/[0.08] gap-3 bg-white/[0.02]">
-                {loading ? (
-                  <Loader2 size={18} className="text-blue-400 animate-spin shrink-0" />
-                ) : (
-                  <Search size={18} className="text-blue-400 shrink-0" />
-                )}
-                <input
-                  ref={inputRef}
-                  type="search"
-                  enterKeyHint="search"
-                  autoFocus
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search courses, internships, tools..."
-                  className="flex-1 bg-transparent border-none outline-none text-white text-sm placeholder:text-gray-500 font-medium"
-                />
-                {query ? (
-                  <button
-                    onClick={() => setQuery("")}
-                    type="button"
-                    className="p-1.5 text-gray-400 hover:text-white rounded-lg bg-white/5 active:scale-90 transition-all"
-                  >
-                    <X size={16} />
-                  </button>
-                ) : null}
-                <button
-                  onClick={closeSearch}
-                  type="button"
-                  className="px-2.5 py-1 text-xs font-medium text-gray-400 hover:text-white rounded-lg bg-white/5 border border-white/10 active:scale-95 transition-all"
-                >
-                  Cancel
-                </button>
-              </div>
-
-              {/* Suggestions / Results */}
-              <div className="max-h-[65vh] overflow-y-auto p-2 space-y-1">
-                {!query && (
-                  <div className="px-3 py-2 flex items-center justify-between">
-                    <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-                      <Sparkles size={13} className="text-blue-400" />
-                      Popular Searches
-                    </span>
+      {mounted &&
+        createPortal(
+          <AnimatePresence>
+            {isOpen && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="fixed inset-0 z-[999999] bg-[#07090e]/98 backdrop-blur-3xl flex flex-col text-white overscroll-none"
+                style={{
+                  paddingTop: "max(env(safe-area-inset-top, 0px), 8px)",
+                  paddingBottom: "max(env(safe-area-inset-bottom, 0px), 8px)",
+                }}
+              >
+                {/* Top Input Bar */}
+                <div className="px-3 py-2.5 flex items-center gap-2 border-b border-white/[0.08] bg-[#0b0f19]/90 shrink-0">
+                  <div className="relative flex-1 flex items-center h-11 bg-white/[0.06] border border-blue-500/40 focus-within:border-blue-500 rounded-xl px-3 transition-colors">
+                    {loading ? (
+                      <Loader2 size={16} className="text-blue-400 animate-spin shrink-0 mr-2" />
+                    ) : (
+                      <Search size={16} className="text-blue-400 shrink-0 mr-2" />
+                    )}
+                    <input
+                      ref={inputRef}
+                      type="search"
+                      enterKeyHint="search"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder="Search courses, internships, tools..."
+                      className="w-full bg-transparent border-none outline-none text-white text-sm placeholder:text-gray-500 font-medium"
+                      autoComplete="off"
+                      autoCorrect="off"
+                      autoCapitalize="off"
+                      spellCheck={false}
+                    />
+                    {query && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setQuery("");
+                          inputRef.current?.focus();
+                        }}
+                        className="p-1 rounded-lg text-gray-400 hover:text-white bg-white/5 active:scale-90 transition-all shrink-0 ml-1"
+                        aria-label="Clear search"
+                      >
+                        <X size={14} />
+                      </button>
+                    )}
                   </div>
-                )}
+                  <button
+                    type="button"
+                    onClick={closeSearch}
+                    className="px-3 py-2 text-xs font-semibold text-gray-300 hover:text-white rounded-xl bg-white/[0.06] border border-white/10 active:scale-95 transition-all shrink-0"
+                  >
+                    Cancel
+                  </button>
+                </div>
 
-                {displayedResults.length > 0 ? (
-                  displayedResults.map((item) => (
-                    <div
-                      key={item.id}
-                      onClick={() => {
-                        closeSearch();
-                        router.push(item.url);
-                      }}
-                      className="flex items-center justify-between p-3 rounded-xl hover:bg-white/[0.06] active:bg-white/[0.08] border border-transparent text-gray-300 hover:text-white cursor-pointer transition-all"
-                    >
-                      <div className="truncate mr-3">
-                        <p className="text-xs sm:text-sm font-medium text-white truncate">{item.title}</p>
-                        <p className="text-[11px] text-gray-400 truncate mt-0.5">{item.description}</p>
-                      </div>
-                      <span className="text-[9px] font-semibold uppercase px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 shrink-0">
-                        {item.badge || item.type}
+                {/* Categories Filter Pills */}
+                <div className="flex items-center gap-1.5 px-3 py-2 border-b border-white/[0.06] bg-black/40 overflow-x-auto no-scrollbar shrink-0">
+                  {CATEGORIES.map((cat) => {
+                    const isActive = activeCategory === cat.id;
+                    return (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() => setActiveCategory(cat.id)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all whitespace-nowrap active:scale-95 ${
+                          isActive
+                            ? "bg-blue-600/30 text-blue-400 border border-blue-500/40 shadow-sm shadow-blue-500/20 font-semibold"
+                            : "text-gray-400 hover:text-gray-200 bg-white/[0.04] border border-white/[0.06]"
+                        }`}
+                      >
+                        {cat.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Results & Suggestions List */}
+                <div className="flex-1 overflow-y-auto p-3 space-y-2 overscroll-contain">
+                  {!query && (
+                    <div className="px-1 py-1 flex items-center justify-between">
+                      <span className="text-[11px] font-semibold tracking-wider text-gray-400 uppercase flex items-center gap-1.5">
+                        <Sparkles size={13} className="text-blue-400" />
+                        Popular Searches
                       </span>
                     </div>
-                  ))
-                ) : !loading ? (
-                  <div className="py-10 px-4 text-center space-y-1">
-                    <p className="text-sm text-gray-300 font-medium">No results found for &quot;{query}&quot;</p>
-                    <p className="text-xs text-gray-500">Try searching Python, Full Stack, or Internships</p>
-                  </div>
-                ) : null}
-              </div>
-            </motion.div>
-          </div>
+                  )}
+
+                  {displayedResults.length > 0 ? (
+                    displayedResults.map((item) => {
+                      const typeStyle = getTypeStyle(item.type);
+                      const IconComponent = item.iconName ? ICON_MAP[item.iconName] || Search : Search;
+                      return (
+                        <div
+                          key={item.id}
+                          onClick={() => {
+                            closeSearch();
+                            router.push(item.url);
+                          }}
+                          className="flex items-center gap-3 p-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.07] active:bg-white/[0.1] border border-white/[0.06] hover:border-blue-500/30 transition-all cursor-pointer"
+                        >
+                          <div className={`w-10 h-10 rounded-xl ${typeStyle.iconBg} flex items-center justify-center shrink-0`}>
+                            <IconComponent size={18} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-semibold text-white truncate">
+                                {highlightMatch(item.title, query)}
+                              </span>
+                              <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-full border ${typeStyle.bg} shrink-0`}>
+                                {item.badge || typeStyle.label}
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-400 truncate mt-0.5">
+                              {highlightMatch(item.description, query)}
+                            </p>
+                          </div>
+                          <ArrowUpRight size={16} className="text-gray-500 shrink-0" />
+                        </div>
+                      );
+                    })
+                  ) : !loading ? (
+                    <div className="py-16 px-4 text-center space-y-2">
+                      <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center mx-auto text-gray-400">
+                        <Search size={22} />
+                      </div>
+                      <p className="text-sm text-gray-200 font-semibold">No results found for &quot;{query}&quot;</p>
+                      <p className="text-xs text-gray-500">Try searching Python, Full Stack, Internships, or AI Tools</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2.5">
+                      {[...Array(4)].map((_, i) => (
+                        <div key={i} className="flex items-center gap-3 p-3 rounded-2xl bg-white/[0.02] border border-white/[0.04] animate-pulse">
+                          <div className="w-10 h-10 rounded-xl bg-white/10 shrink-0" />
+                          <div className="flex-1 space-y-2">
+                            <div className="h-3.5 bg-white/10 rounded w-3/4" />
+                            <div className="h-2.5 bg-white/5 rounded w-1/2" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body
         )}
-      </AnimatePresence>
     </>
   );
 }
