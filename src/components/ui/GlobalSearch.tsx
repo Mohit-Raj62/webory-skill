@@ -465,16 +465,29 @@ export function MobileNavbarSearch() {
   const inputRef = useRef<HTMLInputElement>(null);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  const openSearch = useCallback(() => {
+    setIsOpen(true);
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 50);
+  }, []);
+
+  const closeSearch = useCallback(() => {
+    setIsOpen(false);
+    setQuery("");
+    setResults([]);
+  }, []);
+
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 60);
       document.body.style.overflow = "hidden";
+      inputRef.current?.focus();
     } else {
-      setQuery("");
-      setResults([]);
       document.body.style.overflow = "";
     }
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [isOpen]);
 
   const fetchResults = useCallback(async (q: string) => {
@@ -493,7 +506,9 @@ export function MobileNavbarSearch() {
     if (!isOpen) return;
     if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
     searchTimeoutRef.current = setTimeout(() => fetchResults(query), 150);
-    return () => { if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current); };
+    return () => {
+      if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    };
   }, [query, isOpen, fetchResults]);
 
   const displayedResults = query ? results : QUICK_SUGGESTIONS.slice(0, 4);
@@ -501,63 +516,100 @@ export function MobileNavbarSearch() {
   return (
     <>
       <button
-        onClick={() => setIsOpen(true)}
+        onClick={openSearch}
         aria-label="Search"
-        className="flex items-center justify-center w-8 h-8 rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-300 hover:text-white transition-all active:scale-95"
+        type="button"
+        className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-300 hover:text-white active:scale-95 transition-all cursor-pointer"
       >
-        <Search size={15} />
+        <Search size={18} />
       </button>
 
       <AnimatePresence>
         {isOpen && (
-          <div className="fixed inset-0 z-[100] flex flex-col justify-start p-3 bg-black/80 backdrop-blur-xl">
+          <div
+            className="fixed inset-0 z-[9999] flex flex-col justify-start bg-black/90 backdrop-blur-2xl p-4 pt-12 sm:pt-16"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) closeSearch();
+            }}
+          >
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="w-full bg-[#0b0f19] border border-white/10 rounded-2xl overflow-hidden shadow-2xl mt-12"
+              initial={{ opacity: 0, y: -20, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -15, scale: 0.96 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="w-full max-w-lg mx-auto bg-[#0b0f19] border border-blue-500/30 rounded-2xl overflow-hidden shadow-2xl shadow-black"
             >
-              <div className="flex items-center px-3.5 py-3 border-b border-white/[0.08] gap-2.5">
+              {/* Header / Input */}
+              <div className="flex items-center px-3.5 py-3 border-b border-white/[0.08] gap-3 bg-white/[0.02]">
                 {loading ? (
-                  <Loader2 size={16} className="text-blue-400 animate-spin shrink-0" />
+                  <Loader2 size={18} className="text-blue-400 animate-spin shrink-0" />
                 ) : (
-                  <Search size={16} className="text-blue-400 shrink-0" />
+                  <Search size={18} className="text-blue-400 shrink-0" />
                 )}
                 <input
                   ref={inputRef}
-                  type="text"
+                  type="search"
+                  enterKeyHint="search"
+                  autoFocus
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search courses, internships, tools..."
-                  className="flex-1 bg-transparent border-none outline-none text-white text-sm placeholder:text-gray-500"
+                  className="flex-1 bg-transparent border-none outline-none text-white text-sm placeholder:text-gray-500 font-medium"
                 />
+                {query ? (
+                  <button
+                    onClick={() => setQuery("")}
+                    type="button"
+                    className="p-1.5 text-gray-400 hover:text-white rounded-lg bg-white/5 active:scale-90 transition-all"
+                  >
+                    <X size={16} />
+                  </button>
+                ) : null}
                 <button
-                  onClick={() => setIsOpen(false)}
-                  className="p-1 text-gray-400 hover:text-white rounded"
+                  onClick={closeSearch}
+                  type="button"
+                  className="px-2.5 py-1 text-xs font-medium text-gray-400 hover:text-white rounded-lg bg-white/5 border border-white/10 active:scale-95 transition-all"
                 >
-                  <X size={18} />
+                  Cancel
                 </button>
               </div>
 
-              <div className="max-h-[60vh] overflow-y-auto p-2 space-y-1">
-                {displayedResults.map((item) => (
-                  <div
-                    key={item.id}
-                    onClick={() => {
-                      setIsOpen(false);
-                      router.push(item.url);
-                    }}
-                    className="flex items-center justify-between p-2.5 rounded-xl hover:bg-white/[0.06] border border-transparent text-gray-300 hover:text-white cursor-pointer transition-all"
-                  >
-                    <div className="truncate mr-2">
-                      <p className="text-xs font-medium text-white truncate">{item.title}</p>
-                      <p className="text-[10px] text-gray-400 truncate">{item.description}</p>
-                    </div>
-                    <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full bg-white/10 text-gray-300 border border-white/10 shrink-0">
-                      {item.badge || item.type}
+              {/* Suggestions / Results */}
+              <div className="max-h-[65vh] overflow-y-auto p-2 space-y-1">
+                {!query && (
+                  <div className="px-3 py-2 flex items-center justify-between">
+                    <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                      <Sparkles size={13} className="text-blue-400" />
+                      Popular Searches
                     </span>
                   </div>
-                ))}
+                )}
+
+                {displayedResults.length > 0 ? (
+                  displayedResults.map((item) => (
+                    <div
+                      key={item.id}
+                      onClick={() => {
+                        closeSearch();
+                        router.push(item.url);
+                      }}
+                      className="flex items-center justify-between p-3 rounded-xl hover:bg-white/[0.06] active:bg-white/[0.08] border border-transparent text-gray-300 hover:text-white cursor-pointer transition-all"
+                    >
+                      <div className="truncate mr-3">
+                        <p className="text-xs sm:text-sm font-medium text-white truncate">{item.title}</p>
+                        <p className="text-[11px] text-gray-400 truncate mt-0.5">{item.description}</p>
+                      </div>
+                      <span className="text-[9px] font-semibold uppercase px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 shrink-0">
+                        {item.badge || item.type}
+                      </span>
+                    </div>
+                  ))
+                ) : !loading ? (
+                  <div className="py-10 px-4 text-center space-y-1">
+                    <p className="text-sm text-gray-300 font-medium">No results found for &quot;{query}&quot;</p>
+                    <p className="text-xs text-gray-500">Try searching Python, Full Stack, or Internships</p>
+                  </div>
+                ) : null}
               </div>
             </motion.div>
           </div>
