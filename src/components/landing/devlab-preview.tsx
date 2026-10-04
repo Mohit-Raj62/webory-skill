@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Code2, Terminal, Cpu, Zap, Globe, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -68,7 +68,7 @@ export function DevLabPreview() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, margin: "100px" }}
                             transition={{ delay: 0.1 }}
-                            className="text-4xl md:text-6xl font-extrabold text-white mb-6 leading-tight will-change-transform will-change-opacity"
+                            className="text-2xl sm:text-4xl md:text-6xl font-extrabold text-white mb-4 sm:mb-6 leading-tight will-change-transform will-change-opacity"
                         >
                             Experience the Power of <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-emerald-400">
@@ -81,12 +81,12 @@ export function DevLabPreview() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="text-gray-400 text-lg mb-10 max-w-xl mx-auto lg:mx-0"
+                            className="text-gray-400 text-sm sm:text-lg mb-8 sm:mb-10 max-w-xl mx-auto lg:mx-0"
                         >
                             The ultimate cloud-based coding playground. Build, test, and run your code instantly without the hassle of local environments.
                         </motion.p>
 
-                        <div className="space-y-6 mb-10">
+                        <div className="space-y-4 sm:space-y-6 mb-8 sm:mb-10 text-left">
                             {features.map((feature, index) => (
                                 <motion.div
                                     key={index}
@@ -94,14 +94,14 @@ export function DevLabPreview() {
                                     whileInView={{ opacity: 1, x: 0 }}
                                     viewport={{ once: true, margin: "100px" }}
                                     transition={{ delay: 0.3 + index * 0.1 }}
-                                    className="flex items-start gap-4 will-change-transform will-change-opacity"
+                                    className="flex items-start gap-3.5 sm:gap-4 will-change-transform will-change-opacity"
                                 >
-                                    <div className={`p-3 rounded-xl ${feature.bg} ${feature.color} flex-shrink-0`}>
-                                        <feature.icon size={24} />
+                                    <div className={`p-2.5 sm:p-3 rounded-xl ${feature.bg} ${feature.color} flex-shrink-0`}>
+                                        <feature.icon size={22} className="sm:w-6 sm:h-6" />
                                     </div>
                                     <div>
-                                        <h4 className="text-white font-bold text-lg mb-1">{feature.title}</h4>
-                                        <p className="text-gray-400 text-sm leading-relaxed">{feature.description}</p>
+                                        <h4 className="text-white font-bold text-base sm:text-lg mb-0.5 sm:mb-1">{feature.title}</h4>
+                                        <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">{feature.description}</p>
                                     </div>
                                 </motion.div>
                             ))}
@@ -113,8 +113,8 @@ export function DevLabPreview() {
                             viewport={{ once: true }}
                             transition={{ delay: 0.6 }}
                         >
-                            <Link href={user ? "/playground" : "/login"}>
-                                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-10 py-7 text-lg rounded-2xl shadow-xl shadow-blue-500/20 group">
+                            <Link href={user ? "/playground" : "/login"} className="inline-block w-full sm:w-auto">
+                                <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 sm:px-10 py-5 sm:py-7 text-base sm:text-lg rounded-2xl shadow-xl shadow-blue-500/20 group">
                                     Launch DevLab Now
                                     <Code2 className="ml-2 group-hover:rotate-12 transition-transform" />
                                 </Button>
@@ -144,7 +144,7 @@ export function DevLabPreview() {
                                     <div className="w-12" />
                                 </div>
                                 {/* Window Body */}
-                                <div className="p-8 bg-black/40 font-mono text-sm leading-relaxed overflow-hidden h-[340px]">
+                                <div className="p-4 sm:p-8 bg-black/40 font-mono text-xs sm:text-sm leading-relaxed overflow-x-auto h-[320px] sm:h-[340px]">
                                     <pre className="text-gray-300">
                                         <div className={codeStep > 0 ? "opacity-100" : "opacity-0 transition-opacity"}><span className="text-purple-400">import</span> weboryskills <span className="text-purple-400">as</span> ws</div>
                                         <div className={codeStep > 1 ? "opacity-100 h-4" : "opacity-0 h-4 transition-opacity"}></div>
@@ -187,7 +187,7 @@ export function DevLabPreview() {
                             <motion.div
                                 animate={{ y: [0, -10, 0] }}
                                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                                className="absolute -top-6 -right-6 p-4 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-xl z-20"
+                                className="hidden sm:flex absolute -top-6 -right-6 p-4 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-xl z-20"
                             >
                                 <Cpu size={32} />
                             </motion.div>

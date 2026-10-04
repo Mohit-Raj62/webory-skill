@@ -28,11 +28,11 @@ export function TrustProofSection() {
 
             <div className="container mx-auto px-4 relative z-10">
                 {/* 1. Section Heading */}
-                <div className="text-center mb-20">
-                    <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
+                <div className="text-center mb-12 sm:mb-20">
+                    <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-6">
                         Why Learners Trust <span className="text-blue-400">Webory Skills</span>
                     </h2>
-                    <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+                    <p className="text-sm sm:text-lg text-gray-400 max-w-2xl mx-auto">
                         Built for real skills, real careers, and real outcomes.
                     </p>
                 </div>
@@ -183,29 +183,28 @@ export function TrustProofSection() {
                 </div>
 
                 {/* 5. Association / Proof & 6. Transparency Section */}
-                {/* 5. Association / Proof & 6. Transparency Section */}
-                <div className="max-w-5xl mx-auto text-center bg-gradient-to-b from-white/5 to-black/40 border border-white/10 rounded-3xl p-8 md:p-12 relative overflow-hidden">
+                <div className="max-w-5xl mx-auto text-center bg-gradient-to-b from-white/5 to-black/40 border border-white/10 rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-12 relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-50"></div>
                     
-                    <div className="flex flex-wrap items-center justify-center gap-4 mb-10 text-gray-300 font-medium">
-                        <span className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-sm">
+                    <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mb-6 sm:mb-10 text-gray-300 font-medium">
+                        <span className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-xs sm:text-sm">
                              <Shield size={16} />
                              Industry-Relevant Skills
                         </span>
-                        <span className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm">
+                        <span className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs sm:text-sm">
                              <CheckCircle size={16} />
                              Practical Learning Focus
                         </span>
                     </div>
 
-                    <div className="bg-white/5 rounded-2xl p-8 border border-white/5 mb-10 max-w-3xl mx-auto relative group hover:border-white/10 transition-colors">
-                        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-900 border border-white/10 px-4 py-1 rounded-full text-xs font-bold text-gray-400 uppercase tracking-widest">
+                    <div className="bg-white/5 rounded-2xl p-5 sm:p-8 border border-white/5 mb-8 sm:mb-10 max-w-3xl mx-auto relative group hover:border-white/10 transition-colors">
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-900 border border-white/10 px-3 sm:px-4 py-1 rounded-full text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest">
                             Transparency Note
                         </div>
-                        <p className="text-gray-300 text-base leading-relaxed font-medium">
+                        <p className="text-gray-300 text-sm sm:text-base leading-relaxed font-medium">
                             "We don’t promise instant jobs or overnight success. We focus on building the <span className="text-white font-bold">genuine hard skills</span> that make you employable, confident, and valuable in real-world technical roles."
                         </p>
-                        <p className="mt-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 font-bold text-lg">
+                        <p className="mt-3 sm:mt-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 font-bold text-base sm:text-lg">
                             Your Effort + Our Roadmap = Results.
                         </p>
                     </div>
@@ -213,11 +212,11 @@ export function TrustProofSection() {
                     {/* 7. Trust CTA */}
                      <Button 
                         onClick={() => router.push(user ? '/ai-weboryskills' : '/login')}
-                        className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white px-10 py-8 rounded-2xl text-xl font-bold shadow-[0_0_30px_rgba(37,99,235,0.3)] hover:shadow-[0_0_50px_rgba(37,99,235,0.5)] transition-all hover:scale-105"
+                        className="w-full sm:w-auto bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white px-6 sm:px-10 py-5 sm:py-8 rounded-2xl text-base sm:text-xl font-bold shadow-[0_0_30px_rgba(37,99,235,0.3)] hover:shadow-[0_0_50px_rgba(37,99,235,0.5)] transition-all hover:scale-105"
                     >
                         Get Your AI Roadmap
                     </Button>
-                    <p className="text-gray-500 text-sm mt-4">Free for students • No credit card required</p>
+                    <p className="text-gray-500 text-xs sm:text-sm mt-3 sm:mt-4">Free for students • No credit card required</p>
                 </div>
             </div>
         </section>

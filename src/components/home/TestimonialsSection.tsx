@@ -32,7 +32,7 @@ export function TestimonialsSection() {
                 if (isMounted && data.feedbacks) {
                     setFeedbacks(data.feedbacks);
                 }
-            } catch (error) {
+            } catch {
                 // Silently ignore network errors (e.g. adblockers blocking the request)
             } finally {
                 if (isMounted) setLoading(false);
@@ -87,48 +87,48 @@ export function TestimonialsSection() {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
             />
-            <div className="container mx-auto px-4 mb-12 text-center relative z-10">
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            <div className="container mx-auto px-4 mb-8 sm:mb-12 text-center relative z-10">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2 sm:mb-4">
                     What Our Users Say
                 </h2>
-                <p className="text-gray-400 max-w-2xl mx-auto">
+                <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto">
                     Real feedback from students and interns shaping their future with Webory Skills.
                 </p>
             </div>
 
             <div className="relative w-full overflow-hidden">
-                <div className="flex gap-6 animate-scroll hover:pause px-4 w-max">
+                <div className="flex gap-4 sm:gap-6 animate-scroll hover:pause px-4 w-max">
                     {[...feedbacks, ...feedbacks].map((feedback, index) => (
                         <div
                             key={`${feedback._id}-${index}`}
-                            className="w-[85vw] md:w-[400px] flex-shrink-0 bg-white/5 backdrop-blur-sm border border-white/10 p-6 rounded-2xl hover:bg-white/10 transition-colors"
+                            className="w-[85vw] max-w-[340px] md:max-w-none md:w-[400px] flex-shrink-0 bg-white/5 backdrop-blur-sm border border-white/10 p-4 sm:p-6 rounded-2xl hover:bg-white/10 transition-colors"
                         >
-                            <div className="flex justify-between items-start mb-4">
+                            <div className="flex justify-between items-start mb-3 sm:mb-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
+                                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-base sm:text-lg shrink-0">
                                         {feedback.user?.avatar ? (
                                             <img src={feedback.user.avatar} alt={feedback.user.firstName} className="w-full h-full rounded-full object-cover" />
                                         ) : (
                                             feedback.user?.firstName?.[0] || '?'
                                         )}
                                     </div>
-                                    <div>
-                                        <h4 className="text-white font-semibold">
+                                    <div className="min-w-0">
+                                        <h4 className="text-white font-semibold text-sm sm:text-base truncate">
                                             {feedback.user?.firstName || 'Unknown'} {feedback.user?.lastName || 'User'}
                                         </h4>
-                                        <span className="text-xs text-blue-400 uppercase tracking-wider font-medium">
+                                        <span className="text-[10px] sm:text-xs text-blue-400 uppercase tracking-wider font-medium">
                                             {feedback.category}
                                         </span>
                                     </div>
                                 </div>
-                                <Quote className="text-white/20" size={24} />
+                                <Quote className="text-white/20 shrink-0" size={20} />
                             </div>
 
-                            <div className="mb-3">
-                                <StarRating rating={feedback.rating} readOnly size={16} />
+                            <div className="mb-2 sm:mb-3">
+                                <StarRating rating={feedback.rating} readOnly size={14} />
                             </div>
 
-                            <p className="text-gray-300 text-sm leading-relaxed line-clamp-4">
+                            <p className="text-gray-300 text-xs sm:text-sm leading-relaxed line-clamp-4">
                                 "{feedback.comment}"
                             </p>
                         </div>
@@ -137,8 +137,8 @@ export function TestimonialsSection() {
             </div>
 
             {/* Gradient masks for smooth fade effect */}
-            <div className="absolute top-0 left-0 h-full w-20 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
-            <div className="absolute top-0 right-0 h-full w-20 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+            <div className="absolute top-0 left-0 h-full w-6 sm:w-16 md:w-20 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+            <div className="absolute top-0 right-0 h-full w-6 sm:w-16 md:w-20 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
 
             <style jsx>{`
                 @keyframes scroll {

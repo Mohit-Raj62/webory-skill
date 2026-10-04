@@ -33,7 +33,7 @@ export default function VerificationSearchPage() {
           </h1>
           
           <p className="text-xl text-gray-400 max-w-lg mx-auto">
-            Enter the unique certificate ID to verify the authenticity of a Webory Skills certificate.
+            Enter the unique Certificate ID or Security Key to verify the authenticity of a Webory Skills certificate.
           </p>
 
           <form onSubmit={handleSearch} className="max-w-md mx-auto relative">
@@ -43,7 +43,7 @@ export default function VerificationSearchPage() {
                 type="text"
                 value={certificateId}
                 onChange={(e) => setCertificateId(e.target.value)}
-                placeholder="Enter Certificate ID (e.g., REACT-123...)"
+                placeholder="Enter Certificate ID or Security Key..."
                 className="w-full bg-white/5 border border-white/10 rounded-full py-4 pl-12 pr-32 text-white placeholder:text-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
                 required
               />

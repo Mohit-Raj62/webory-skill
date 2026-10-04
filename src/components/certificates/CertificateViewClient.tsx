@@ -73,6 +73,7 @@ export function CertificateViewClient({ certificate }: { certificate: any }) {
                     startDate={new Date(certificate.issuedAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
                     endDate={new Date(certificate.issuedAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
                     certificateId={certificate.certificateId}
+                    certificateKey={certificate.certificateKey}
                     collaborations={certificate.collaborations}
                     signatures={certificate.signatures}
                 />
@@ -132,6 +133,22 @@ export function CertificateViewClient({ certificate }: { certificate: any }) {
                         <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">Date of Issuance</span>
                         <p className="text-xl font-bold text-white tracking-tight">
                             {new Date(certificate.issuedAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        </p>
+                    </div>
+
+                    {/* Certificate ID */}
+                    <div className="space-y-1">
+                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">Certificate ID</span>
+                        <p className="text-lg font-bold font-mono text-white tracking-tight break-all">
+                            {certificate.certificateId}
+                        </p>
+                    </div>
+
+                    {/* Security Key */}
+                    <div className="space-y-1">
+                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block">Security Key</span>
+                        <p className="text-lg font-bold font-mono text-emerald-400 tracking-tight break-all">
+                            {certificate.certificateKey || "SECURE-VERIFIED"}
                         </p>
                     </div>
 

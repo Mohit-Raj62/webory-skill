@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Brain, CheckCircle, Lightbulb, UserCircle, Rocket, BarChart, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/session-provider";
 
@@ -61,12 +60,12 @@ export function AIRoadmapFlow() {
             </div>
 
             <div className="container mx-auto px-4 relative z-10">
-                <div className="text-center mb-16 max-w-3xl mx-auto">
+                <div className="text-center mb-10 sm:mb-16 max-w-3xl mx-auto">
                     <motion.div 
                         initial={{ opacity: 0, scale: 0.9 }}
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-medium mb-6"
+                        className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs sm:text-sm font-medium mb-4 sm:mb-6"
                     >
                         <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
                         AI Generating Route...
@@ -75,7 +74,7 @@ export function AIRoadmapFlow() {
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="text-3xl md:text-5xl font-bold mb-6"
+                        className="text-2xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-6"
                     >
                         AI-Powered <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400"> Learning Roadmap & Mentorship</span>
                     </motion.h2>
@@ -84,7 +83,7 @@ export function AIRoadmapFlow() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.1 }}
-                        className="text-xl text-gray-300 font-medium"
+                        className="text-sm sm:text-xl text-gray-300 font-medium"
                     >
                         Not Just another course list. A personalized path built around your career goal.
                     </motion.p>
@@ -201,28 +200,28 @@ export function AIRoadmapFlow() {
                         className="relative"
                     >
                         <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl blur-2xl opacity-20 animate-pulse"></div>
-                        <div className="relative text-center lg:text-left bg-black/40 backdrop-blur-xl p-8 sm:p-10 rounded-3xl border border-white/10 overflow-hidden group hover:border-white/20 transition-all">
+                        <div className="relative text-center lg:text-left bg-black/40 backdrop-blur-xl p-5 sm:p-10 rounded-2xl sm:rounded-3xl border border-white/10 overflow-hidden group hover:border-white/20 transition-all">
                              <div className="absolute top-0 right-0 p-12 opacity-20 pointer-events-none">
                                 <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full blur-3xl"></div>
                              </div>
 
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-blue-300 mb-6">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-blue-300 mb-4 sm:mb-6">
                                 <Sparkles size={12} /> AI-Powered Career Engine
                             </div>
 
-                            <h3 className="text-xl sm:text-2xl font-bold text-white mb-6 leading-relaxed">
+                            <h3 className="text-base sm:text-2xl font-bold text-white mb-4 sm:mb-6 leading-relaxed">
                                 Webory Skills uses AI to design a <span className="text-blue-400">personalized learning roadmap</span> for every student, guiding them from skill selection to <span className="text-purple-400">real-world project execution</span>.
                             </h3>
                             
-                            <div className="flex flex-col items-center lg:items-start gap-4 mt-8">
+                            <div className="flex flex-col items-center lg:items-start gap-4 mt-6 sm:mt-8">
                                  <Button 
                                     onClick={() => router.push(user ? '/ai-weboryskills' : '/signup')} 
                                     size="lg" 
-                                    className="w-full sm:w-auto bg-gradient-to-r from-white to-gray-200 text-black hover:bg-white text-lg h-14 px-8 rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] transition-all font-bold"
+                                    className="w-full sm:w-auto bg-gradient-to-r from-white to-gray-200 text-black hover:bg-white text-base sm:text-lg h-12 sm:h-14 px-6 sm:px-8 rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] transition-all font-bold"
                                 >
-                                    Get Your AI Roadmap <ArrowRight className="ml-2 h-5 w-5" />
+                                    Get Your AI Roadmap <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
                                 </Button>
-                                <p className="text-sm text-gray-500 font-medium flex items-center gap-2">
+                                <p className="text-xs sm:text-sm text-gray-500 font-medium flex items-center gap-2">
                                     <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                                     Takes less than 2 minutes
                                 </p>

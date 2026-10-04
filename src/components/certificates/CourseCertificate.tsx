@@ -11,6 +11,7 @@ interface CourseCertificateProps {
   startDate?: string;
   endDate?: string;
   certificateId?: string;
+  certificateKey?: string;
   collaborations?: { name: string, logo?: string }[];
   signatures?: {
     founder?: { name: string, title: string },
@@ -26,6 +27,7 @@ export default function CourseCertificate({
   startDate = "N/A",
   endDate = "N/A",
   certificateId = "",
+  certificateKey = "",
   collaborations,
   signatures
 }: CourseCertificateProps) {
@@ -192,16 +194,16 @@ export default function CourseCertificate({
                 </div>
 
                 {/* Footer / Signatures */}
-                <div className="w-full flex flex-col items-center mt-0.5 mb-12">
+                <div className="w-full flex flex-col items-center mt-0.5 mb-8">
                     {/* Seal with QR Code - Centered Top */}
-                    <div className="flex flex-col items-center justify-center mb-0.5">
-                        <div className="relative w-28 h-28 flex items-center justify-center mb-1">
-                            <div className="absolute inset-0 border-4 border-[#c5a059] border-dashed rounded-full animate-[spin_10s_linear_infinite] opacity-20"></div>
-                            <div className="bg-white p-1 rounded-lg shadow-sm">
+                    <div className="flex flex-col items-center justify-center mb-1">
+                        <div className="relative w-24 h-24 flex items-center justify-center mb-1">
+                            <div className="absolute inset-0 border-4 border-[#c5a059] border-dashed rounded-full animate-[spin_10s_linear_infinite] opacity-25"></div>
+                            <div className="bg-white p-1 rounded-lg shadow-sm border border-[#c5a059]/30">
                             {certificateId ? (
                                 <QRCodeSVG 
                                     value={`${process.env.NEXT_PUBLIC_APP_URL || 'https://weboryskills.in'}/verify-certificate/${certificateId}`}
-                                    size={100}
+                                    size={84}
                                     level="H"
                                 />
                             ) : (
@@ -214,6 +216,14 @@ export default function CourseCertificate({
                         <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">
                             {certificateId ? "Scan to Verify" : "Generating ID..."}
                         </p>
+
+                        {/* Security Key - QR ke paas */}
+                        {certificateKey && (
+                            <p className="text-[9px] font-mono text-gray-600 font-semibold tracking-wider mt-0.5">
+                                Security Key: <span className="text-gray-900 font-bold">{certificateKey}</span>
+                            </p>
+                        )}
+
                         <p className="text-[8px] text-[#2e7d32] font-bold uppercase tracking-widest mt-0.5">Govt. Recognized</p>
                     </div>
 
@@ -283,9 +293,9 @@ export default function CourseCertificate({
                 </div>
 
                 {/* Certificate ID - Top Left */}
-                <div className="absolute top-10 left-10 z-20">
-                    <p className="text-sm font-mono tracking-wider text-[#a5c098] font-bold">
-                        ID: {certificateId}
+                <div className="absolute top-12 left-24 z-20 text-left">
+                    <p className="text-xs font-mono tracking-wider font-bold text-[#1a237e]">
+                        Certificate ID: <span className="text-gray-900 font-extrabold">{certificateId}</span>
                     </p>
                 </div>
             </div>

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Trophy, Award, Zap } from "lucide-react";
-import { motion } from "framer-motion";
 
 interface Learner {
     _id: string;
@@ -100,9 +99,9 @@ export function LeaderboardSection({ initialLearners }: { initialLearners?: Lear
                 </div>
             </div>
 
-            {/* Gradient masks */}
-            <div className="absolute top-0 left-0 h-full w-24 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
-            <div className="absolute top-0 right-0 h-full w-24 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+            {/* Seamless edge gradient masks */}
+            <div className="absolute top-0 left-0 h-full w-8 sm:w-20 md:w-28 bg-gradient-to-r from-[#030616] via-[#030616]/80 to-transparent z-10 pointer-events-none" />
+            <div className="absolute top-0 right-0 h-full w-8 sm:w-20 md:w-28 bg-gradient-to-l from-[#030616] via-[#030616]/80 to-transparent z-10 pointer-events-none" />
 
             <style jsx>{`
                 @keyframes scroll-fast {

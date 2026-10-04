@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, HelpCircle, MessageSquare, Sparkles } from "lucide-react";
+import { ChevronDown, MessageSquare, Sparkles } from "lucide-react";
 
 const WordReveal = ({ text }: { text: string }) => {
     const words = text.split(" ");
@@ -77,15 +77,15 @@ export function FAQ() {
                         <Sparkles size={16} className="animate-pulse" />
                         Got Questions?
                     </motion.div>
-                    <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
+                    <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-4 sm:mb-6 tracking-tight">
                         Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 animate-gradient-x">Questions</span>
                     </h2>
-                    <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+                    <p className="text-gray-400 text-sm sm:text-lg max-w-2xl mx-auto">
                         Everything you need to know about the WeborySkills platform and how we accelerate your career.
                     </p>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3.5 sm:space-y-4">
                     {faqs.map((faq, index) => (
                         <motion.div
                             key={index}
@@ -93,28 +93,29 @@ export function FAQ() {
                             whileInView={{ opacity: 1, y: 0 }} 
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.1 }}
-                            className={`relative border ${activeIndex === index ? 'border-blue-500/50 bg-gradient-to-br from-blue-900/10 to-purple-900/10 shadow-[0_0_40px_rgba(59,130,246,0.15)] scale-[1.02]' : 'border-white/5 bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/20 hover:shadow-xl'} rounded-2xl overflow-hidden backdrop-blur-md transition-all duration-500 group`}
+                            className={`relative border ${activeIndex === index ? 'border-blue-500/50 bg-gradient-to-br from-blue-900/10 to-purple-900/10 shadow-[0_0_40px_rgba(59,130,246,0.15)] scale-[1.01]' : 'border-white/5 bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/20 hover:shadow-xl'} rounded-2xl overflow-hidden backdrop-blur-md transition-all duration-300 group`}
                         >
                             {/* Hover Sweep Effect */}
                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] pointer-events-none" />
                             
                             <button
                                 onClick={() => setActiveIndex(activeIndex === index ? null : index)}
-                                className="w-full flex items-center justify-between p-6 text-left focus:outline-none relative z-10"
+                                className="w-full flex items-center justify-between p-4 sm:p-6 text-left focus:outline-none relative z-10 gap-3"
                             >
-                                <div className="flex items-center gap-4">
-                                    <div className={`p-2.5 rounded-xl transition-colors duration-500 ${activeIndex === index ? 'bg-blue-500/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.3)]' : 'bg-white/5 text-gray-500 group-hover:text-gray-300'}`}>
-                                        <MessageSquare size={20} className={activeIndex === index ? 'animate-pulse' : ''} />
+                                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                                    <div className={`p-2 sm:p-2.5 rounded-xl shrink-0 transition-colors duration-500 ${activeIndex === index ? 'bg-blue-500/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.3)]' : 'bg-white/5 text-gray-500 group-hover:text-gray-300'}`}>
+                                        <MessageSquare size={18} className={activeIndex === index ? 'animate-pulse' : ''} />
                                     </div>
-                                    <span className={`text-lg font-medium transition-colors duration-300 ${activeIndex === index ? 'text-white' : 'text-gray-300 group-hover:text-white'}`}>
+                                    <span className={`text-sm sm:text-lg font-medium transition-colors duration-300 ${activeIndex === index ? 'text-white' : 'text-gray-300 group-hover:text-white'}`}>
                                         {faq.question}
                                     </span>
                                 </div>
                                 <motion.div
                                     animate={{ rotate: activeIndex === index ? 180 : 0 }}
                                     transition={{ duration: 0.3 }}
+                                    className="shrink-0"
                                 >
-                                    <ChevronDown className={`w-6 h-6 ${activeIndex === index ? 'text-blue-400' : 'text-gray-500'}`} />
+                                    <ChevronDown className={`w-5 h-5 sm:w-6 sm:h-6 ${activeIndex === index ? 'text-blue-400' : 'text-gray-500'}`} />
                                 </motion.div>
                             </button>
 
@@ -126,7 +127,7 @@ export function FAQ() {
                                         exit={{ height: 0, opacity: 0 }}
                                         transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] }}
                                     >
-                                        <div className="px-6 pb-6 pt-2 pl-20 text-gray-400 leading-relaxed text-base">
+                                        <div className="px-4 pb-4 sm:px-6 sm:pb-6 pt-1 sm:pl-16 text-gray-400 leading-relaxed text-xs sm:text-base">
                                             <WordReveal text={faq.answer} />
                                         </div>
                                     </motion.div>

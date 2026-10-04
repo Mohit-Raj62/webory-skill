@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, User, Code2, Sparkles, MessageSquare, GraduationCap, Briefcase, BrainCircuit, Bot, FileText, Terminal, Layers, Orbit, Trophy, Monitor, Info, BookOpen, Mail } from "lucide-react";
+import { Menu, X, User, Code2, Sparkles, MessageSquare, GraduationCap, Briefcase, BrainCircuit, Bot, Orbit, ArrowRight, Trophy } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/components/auth/session-provider";
 import dynamic from "next/dynamic";
@@ -23,9 +23,9 @@ const NavLink = ({ href, children, onClick, badge, icon: Icon }: {
     <Link
         href={href}
         onClick={onClick}
-        className="group relative lg:text-xs xl:text-sm text-gray-300 hover:text-white transition-all duration-300 flex items-center gap-1 xl:gap-1.5 py-1.5 px-1 xl:px-2"
+        className="group relative text-xs xl:text-sm text-gray-300 hover:text-white transition-all duration-300 flex items-center gap-1 xl:gap-1.5 py-1.5 px-1 xl:px-2 whitespace-nowrap"
     >
-        {Icon && <Icon size={14} className="opacity-60 group-hover:opacity-100 transition-opacity" />}
+        {Icon && <Icon size={13} className="opacity-60 group-hover:opacity-100 transition-opacity shrink-0" />}
         <span>{children}</span>
         {badge && (
             <span className="relative flex items-center gap-1">
@@ -51,25 +51,25 @@ const MobileNavLink = ({ href, children, onClick, badge, icon: Icon, index }: {
     index: number;
 }) => (
     <motion.div
-        initial={{ opacity: 0, x: -20 }}
+        initial={{ opacity: 0, x: -16 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: index * 0.05, duration: 0.3 }}
+        transition={{ delay: index * 0.04, duration: 0.25 }}
     >
         <Link
             href={href}
             onClick={onClick}
-            className="flex items-center justify-between py-3 px-4 rounded-xl text-gray-300 hover:text-white hover:bg-white/5 transition-all duration-200 group"
+            className="flex items-center justify-between py-2.5 px-3.5 rounded-xl text-gray-300 hover:text-white hover:bg-white/5 active:bg-white/10 active:scale-[0.98] transition-all duration-200 group border border-transparent hover:border-white/5"
         >
             <div className="flex items-center gap-3">
                 {Icon && (
-                    <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-blue-500/30 group-hover:bg-blue-500/10 transition-all">
+                    <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-blue-500/30 group-hover:bg-blue-500/10 group-active:border-blue-500/50 transition-all shrink-0">
                         <Icon size={15} className="text-gray-400 group-hover:text-blue-400 transition-colors" />
                     </div>
                 )}
                 <span className="text-sm font-medium">{children}</span>
             </div>
             {badge && (
-                <span className="text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-2 py-1 rounded-full">
+                <span className="text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full shrink-0">
                     {badge}
                 </span>
             )}
@@ -162,52 +162,72 @@ export function Navbar() {
                     </div>
 
                     {/* Desktop Menu */}
-                    <div className="hidden lg:flex items-center gap-0.5 xl:gap-2 ml-auto">
+                    <div className="hidden min-[990px]:flex items-center gap-0.5 xl:gap-2 ml-auto">
                         {/* Search Icon Button beside Courses */}
                         <NavbarExpandableSearch />
 
                         <NavLink href="/courses" icon={GraduationCap} badge="Free">Courses</NavLink>
                         <NavLink href="/internships" icon={Briefcase}>Internships</NavLink>
 
+                        {/* Animated AI Copilot Showcase (Visible to all users) */}
+                        <Link href={user ? "/ai-weboryskills" : "/signup"}>
+                            <motion.div 
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.96 }}
+                                className="relative flex items-center gap-1.5 px-2 xl:px-3 py-1 rounded-full bg-gradient-to-r from-purple-500/15 via-blue-500/15 to-emerald-500/15 border border-purple-500/35 hover:border-purple-400/70 shadow-sm hover:shadow-purple-500/25 transition-all duration-300 overflow-hidden cursor-pointer"
+                            >
+                                <span className="relative flex h-2 w-2 shrink-0">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75" />
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500" />
+                                </span>
+                                <Sparkles size={12} className="text-amber-300 animate-pulse shrink-0" />
+                                <span className="text-xs xl:text-sm font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-200 via-pink-200 to-amber-200 whitespace-nowrap">
+                                    AI Copilot
+                                </span>
+                                <span className="hidden xl:inline-block text-[9px] font-black uppercase tracking-wider px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                    NEW
+                                </span>
+                            </motion.div>
+                        </Link>
+
                         {user && <NavLink href="/playground" icon={Code2}>DevLab</NavLink>}
-                        {user && <NavLink href="/ai-weboryskills" icon={Bot}>Weboryskills AI</NavLink>}
                         {user && <NavLink href="/ai-prep" icon={BrainCircuit}>AI Nexus</NavLink>}
 
                         {user && (
                             <button
                                 onClick={() => setIsFeedbackOpen(true)}
-                                className="group relative lg:text-xs xl:text-sm text-gray-300 hover:text-white transition-all duration-300 flex items-center gap-1 xl:gap-1.5 py-1.5 px-1 xl:px-2"
+                                className="group relative text-xs xl:text-sm text-gray-300 hover:text-white transition-all duration-300 flex items-center gap-1 xl:gap-1.5 py-1.5 px-1 xl:px-2 whitespace-nowrap"
                             >
-                                <MessageSquare size={14} className="opacity-60 group-hover:opacity-100 transition-opacity" />
+                                <MessageSquare size={13} className="opacity-60 group-hover:opacity-100 transition-opacity shrink-0" />
                                 <span>Feedback</span>
                                 <span className="absolute -bottom-0.5 left-0 w-0 h-[2px] bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-300 group-hover:w-full" />
                             </button>
                         )}
                         
-                        {/* PWA Get App for Desktop */}
-                        <div className="mx-1">
+                        {/* PWA Get App for Desktop - visible on spacious screens */}
+                        <div className="hidden min-[1120px]:block mx-1">
                             <InstallPWA variant="navbar" />
                         </div>
 
-                        <div className="w-px h-6 bg-white/10 mx-2" />
+                        <div className="w-px h-5 bg-white/10 mx-1.5 xl:mx-2" />
 
                         {user ? (
                             <Link href={user.role === 'admin' ? "/admin" : "/profile"}>
                                 <motion.div
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
-                                    className="flex items-center gap-2 px-2 xl:px-3 py-1.5 rounded-xl bg-white/[0.06] border border-white/[0.08] hover:border-blue-500/30 hover:bg-white/[0.08] transition-all duration-300 cursor-pointer"
+                                    className="flex items-center gap-1.5 xl:gap-2 px-2 xl:px-3 py-1.5 rounded-xl bg-white/[0.06] border border-white/[0.08] hover:border-blue-500/30 hover:bg-white/[0.08] transition-all duration-300 cursor-pointer"
                                 >
-                                    <div className="w-6 h-6 xl:w-7 xl:h-7 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-[10px] xl:text-xs font-bold text-white shadow-inner">
+                                    <div className="w-6 h-6 xl:w-7 xl:h-7 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-[10px] xl:text-xs font-bold text-white shadow-inner shrink-0">
                                         {user?.firstName?.[0] || 'U'}
                                     </div>
-                                    <span className="text-xs xl:text-sm font-medium text-gray-200">{user?.firstName || 'User'}</span>
+                                    <span className="text-xs xl:text-sm font-medium text-gray-200 truncate max-w-[90px] xl:max-w-none">{user?.firstName || 'User'}</span>
                                 </motion.div>
                             </Link>
                         ) : (
-                            <div className="flex items-center space-x-2">
+                            <div className="flex items-center space-x-1.5 xl:space-x-2">
                                 <Link href="/login">
-                                    <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/[0.06] rounded-xl transition-all duration-300">
+                                    <Button variant="ghost" size="sm" className="h-8 px-2.5 text-xs xl:text-sm text-gray-300 hover:text-white hover:bg-white/[0.06] rounded-xl transition-all duration-300">
                                         Log In
                                     </Button>
                                 </Link>
@@ -216,10 +236,17 @@ export function Navbar() {
                                         <Button
                                             variant="default"
                                             size="sm"
-                                            className="relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 border-0 rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-all duration-300 font-semibold"
+                                            className="h-8 px-3 text-xs xl:text-sm relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 border-0 rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-all duration-300 font-semibold overflow-hidden"
                                         >
-                                            <Sparkles size={14} className="mr-1" />
-                                            Get Started
+                                            <motion.div
+                                                className="absolute top-0 bottom-0 w-8 bg-gradient-to-r from-transparent via-white/35 to-transparent skew-x-12 z-0 pointer-events-none"
+                                                animate={{ left: ["-60%", "160%"] }}
+                                                transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut", repeatDelay: 1.5 }}
+                                            />
+                                            <span className="relative z-10 flex items-center whitespace-nowrap">
+                                                <Sparkles size={13} className="mr-1 shrink-0" />
+                                                Get Started
+                                            </span>
                                         </Button>
                                     </motion.div>
                                 </Link>
@@ -229,7 +256,7 @@ export function Navbar() {
 
                     {/* Mobile Quick Actions (Feedback & Profile) - Only in Standalone/App */}
                     {isStandalone && (
-                        <div className="lg:hidden flex items-center gap-1.5">
+                        <div className="min-[990px]:hidden flex items-center gap-1.5">
                             <MobileNavbarSearch />
                             <button
                                 onClick={() => setIsFeedbackOpen(true)}
@@ -256,7 +283,7 @@ export function Navbar() {
 
                     {/* Mobile Menu Button - Shown only in Browser/Non-Standalone */}
                     {!isStandalone && (
-                        <div className="lg:hidden flex items-center gap-1.5">
+                        <div className="min-[990px]:hidden flex items-center gap-1.5">
                             <MobileNavbarSearch />
                             <motion.button
                                 whileTap={{ scale: 0.9 }}
@@ -287,59 +314,95 @@ export function Navbar() {
                             animate={{ opacity: 1, height: "auto" }}
                             exit={{ opacity: 0, height: 0 }}
                             transition={{ duration: 0.3, ease: "easeInOut" }}
+                            className="min-[990px]:hidden max-h-[calc(100vh-4rem)] sm:max-h-[calc(100vh-4.5rem)] overflow-y-auto overscroll-contain scrollbar-hide"
                         >
-                            <div className="bg-black/90 backdrop-blur-2xl border-t border-white/[0.06] px-4 py-6 space-y-4">
+                            <div className="bg-[#050814]/95 backdrop-blur-2xl border-t border-white/[0.08] px-3.5 sm:px-5 py-3.5 sm:py-5 space-y-2 sm:space-y-3 shadow-2xl pb-6">
                                 {/* Centered Explore Link - Only in App Mode */}
                                 {isStandalone && (
-                                    <div className="flex justify-center pb-2">
+                                    <div className="flex justify-center pb-0.5">
                                         <Link 
                                             href="/explore" 
                                             onClick={() => setIsOpen(false)}
-                                            className="w-full flex items-center justify-center gap-3 py-4 px-6 rounded-2xl bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 text-white shadow-lg shadow-blue-500/10 active:scale-[0.98] transition-all"
+                                            className="w-full flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 text-white shadow-lg shadow-blue-500/10 active:scale-[0.98] transition-all"
                                         >
-                                            <Orbit size={20} className="text-blue-400 group-hover:animate-spin" />
-                                            <span className="text-sm font-black uppercase tracking-[0.2em] italic">Explore <span className="text-blue-400 font-black">Everything</span></span>
+                                            <Orbit size={16} className="text-blue-400 group-hover:animate-spin" />
+                                            <span className="text-xs font-black uppercase tracking-[0.18em] italic">Explore <span className="text-blue-400 font-black">Everything</span></span>
                                         </Link>
                                     </div>
                                 )}
-                                <MobileNavLink href="/courses" icon={GraduationCap} badge="FREE" onClick={() => setIsOpen(false)} index={0}>
-                                    Courses
-                                </MobileNavLink>
-                                <MobileNavLink href="/internships" icon={Briefcase} onClick={() => setIsOpen(false)} index={1}>
-                                    Internships
-                                </MobileNavLink>
 
-                                {user && (
-                                    <>
-                                        <MobileNavLink href="/playground" icon={Code2} onClick={() => setIsOpen(false)} index={2}>
-                                            DevLab
-                                        </MobileNavLink>
-                                        <MobileNavLink href="/ai-weboryskills" icon={Bot} onClick={() => setIsOpen(false)} index={3}>
-                                            Weboryskills AI
-                                        </MobileNavLink>
-                                        <MobileNavLink href="/ai-prep" icon={BrainCircuit} badge="PRO" onClick={() => setIsOpen(false)} index={4}>
-                                            AI Nexus
-                                        </MobileNavLink>
-                                    </>
-                                )}
-
-                                {user && (
-                                    <motion.div
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: 0.25, duration: 0.3 }}
-                                    >
-                                        <button
-                                            onClick={() => { setIsFeedbackOpen(true); setIsOpen(false); }}
-                                            className="w-full flex items-center gap-3 py-3 px-4 rounded-xl text-gray-300 hover:text-white hover:bg-white/5 transition-all duration-200 group"
-                                        >
-                                            <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-blue-500/30 group-hover:bg-blue-500/10 transition-all">
-                                                <MessageSquare size={15} className="text-gray-400 group-hover:text-blue-400 transition-colors" />
+                                {/* Animated AI Copilot Feature Card for Mobile */}
+                                <Link 
+                                    href={user ? "/ai-weboryskills" : "/signup"} 
+                                    onClick={() => setIsOpen(false)}
+                                    className="flex items-center justify-between p-2.5 sm:p-3 rounded-2xl bg-gradient-to-r from-purple-500/20 via-blue-500/15 to-emerald-500/20 border border-purple-500/35 text-white shadow-md active:scale-[0.98] transition-all"
+                                >
+                                    <div className="flex items-center gap-2.5">
+                                        <div className="relative w-8 h-8 rounded-xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center shrink-0">
+                                            <Sparkles size={16} className="text-amber-300 animate-pulse" />
+                                            <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75" />
+                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500" />
+                                            </span>
+                                        </div>
+                                        <div className="text-left">
+                                            <div className="flex items-center gap-1.5">
+                                                <span className="text-xs font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-200 via-pink-200 to-amber-200">
+                                                    AI Copilot
+                                                </span>
+                                                <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.2 rounded-full bg-emerald-500/25 text-emerald-300 border border-emerald-500/30">
+                                                    NEW
+                                                </span>
                                             </div>
-                                            <span className="text-sm font-medium">Feedback</span>
-                                        </button>
-                                    </motion.div>
-                                )}
+                                            <p className="text-[10px] text-gray-400 leading-tight">Interactive AI Roadmap & 24/7 Mentor</p>
+                                        </div>
+                                    </div>
+                                    <ArrowRight size={14} className="text-purple-300 shrink-0" />
+                                </Link>
+
+                                <div className="space-y-1">
+                                    <MobileNavLink href="/courses" icon={GraduationCap} badge="FREE" onClick={() => setIsOpen(false)} index={0}>
+                                        Courses
+                                    </MobileNavLink>
+                                    <MobileNavLink href="/internships" icon={Briefcase} onClick={() => setIsOpen(false)} index={1}>
+                                        Internships
+                                    </MobileNavLink>
+                                    <MobileNavLink href="/hackathons" icon={Trophy} badge="NEW" onClick={() => setIsOpen(false)} index={2}>
+                                        Hackathons
+                                    </MobileNavLink>
+
+                                    {user && (
+                                        <>
+                                            <MobileNavLink href="/playground" icon={Code2} onClick={() => setIsOpen(false)} index={3}>
+                                                DevLab
+                                            </MobileNavLink>
+                                            <MobileNavLink href="/ai-weboryskills" icon={Bot} onClick={() => setIsOpen(false)} index={4}>
+                                                Weboryskills AI
+                                            </MobileNavLink>
+                                            <MobileNavLink href="/ai-prep" icon={BrainCircuit} badge="PRO" onClick={() => setIsOpen(false)} index={5}>
+                                                AI Nexus
+                                            </MobileNavLink>
+                                        </>
+                                    )}
+
+                                    {user && (
+                                        <motion.div
+                                            initial={{ opacity: 0, x: -16 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: 0.25, duration: 0.25 }}
+                                        >
+                                            <button
+                                                onClick={() => { setIsFeedbackOpen(true); setIsOpen(false); }}
+                                                className="w-full flex items-center gap-3 py-2.5 px-3.5 rounded-xl text-gray-300 hover:text-white hover:bg-white/5 active:bg-white/10 active:scale-[0.98] transition-all duration-200 group border border-transparent hover:border-white/5"
+                                            >
+                                                <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-blue-500/30 group-hover:bg-blue-500/10 transition-all shrink-0">
+                                                    <MessageSquare size={15} className="text-gray-400 group-hover:text-blue-400 transition-colors" />
+                                                </div>
+                                                <span className="text-sm font-medium">Feedback</span>
+                                            </button>
+                                        </motion.div>
+                                    )}
+                                </div>
 
                                  {/* PWA Install for Mobile Menu */}
                                 <div onClick={() => setIsOpen(false)}>
@@ -353,30 +416,30 @@ export function Navbar() {
                                 <motion.div
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.35, duration: 0.3 }}
-                                    className="space-y-2"
+                                    transition={{ delay: 0.3, duration: 0.25 }}
+                                    className="space-y-2 pt-0.5"
                                 >
                                     {user ? (
                                         <Link href={user.role === 'admin' ? "/admin" : "/profile"} onClick={() => setIsOpen(false)}>
-                                            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:border-blue-500/30 transition-all">
-                                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-sm font-bold text-white shadow-lg">
+                                            <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:border-blue-500/30 transition-all">
+                                                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-sm font-bold text-white shadow-lg shrink-0">
                                                     {user.firstName[0]}
                                                 </div>
-                                                <div>
-                                                    <p className="text-sm font-semibold text-white">{user.firstName}</p>
-                                                    <p className="text-xs text-gray-500">{user.role === 'admin' ? 'Admin Panel' : 'View Profile'}</p>
+                                                <div className="min-w-0">
+                                                    <p className="text-sm font-semibold text-white truncate">{user.firstName}</p>
+                                                    <p className="text-[11px] text-gray-500">{user.role === 'admin' ? 'Admin Panel' : 'View Profile'}</p>
                                                 </div>
                                             </div>
                                         </Link>
                                     ) : (
                                         <div className="flex gap-2">
                                             <Link href="/login" onClick={() => setIsOpen(false)} className="flex-1">
-                                                <Button variant="ghost" className="w-full text-gray-300 hover:text-white hover:bg-white/[0.06] rounded-xl border border-white/[0.08]">
+                                                <Button variant="ghost" className="w-full text-gray-300 hover:text-white hover:bg-white/[0.06] rounded-xl border border-white/[0.08] text-xs h-10">
                                                     Log In
                                                 </Button>
                                             </Link>
                                             <Link href="/signup" onClick={() => setIsOpen(false)} className="flex-1">
-                                                <Button variant="default" className="w-full bg-gradient-to-r from-blue-600 to-purple-600 border-0 rounded-xl shadow-lg shadow-blue-500/20 font-semibold">
+                                                <Button variant="default" className="w-full bg-gradient-to-r from-blue-600 to-purple-600 border-0 rounded-xl shadow-lg shadow-blue-500/20 font-semibold text-xs h-10">
                                                     <Sparkles size={14} className="mr-1" />
                                                     Get Started
                                                 </Button>

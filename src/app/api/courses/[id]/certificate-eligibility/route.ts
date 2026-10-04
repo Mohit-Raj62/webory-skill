@@ -115,9 +115,8 @@ export async function GET(
     if (isEligible && enrollment) {
       let needsSave = false;
 
-      // Generate Certificate ID and Key if missing
+      // Generate Certificate ID if missing
       if (!enrollment.certificateId) {
-        // Generate Certificate ID based on Course Title
         const courseTitleSlug = course.title
           .split(" ")
           .map((word: string) => word[0])
@@ -128,14 +127,19 @@ export async function GET(
         const certId = `${courseTitleSlug}-${userId
           .substring(0, 6)
           .toUpperCase()}-${Date.now().toString().substring(8)}`;
-        // Generate a random 16-character alphanumeric key
-        const certKey =
-          Math.random().toString(36).substring(2, 10).toUpperCase() +
-          Math.random().toString(36).substring(2, 10).toUpperCase();
 
         enrollment.certificateId = certId;
-        enrollment.certificateKey = certKey;
-        enrollment.completedAt = new Date(); // Set completion date
+        if (!enrollment.completedAt) {
+          enrollment.completedAt = new Date();
+        }
+        needsSave = true;
+      }
+
+      // Generate Certificate Key if missing
+      if (!enrollment.certificateKey) {
+        enrollment.certificateKey =
+          Math.random().toString(36).substring(2, 10).toUpperCase() +
+          Math.random().toString(36).substring(2, 10).toUpperCase();
         needsSave = true;
       }
 

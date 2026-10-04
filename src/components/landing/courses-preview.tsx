@@ -6,15 +6,6 @@ import { motion } from "framer-motion";
 import { ArrowRight, Code2, Database, Globe, Palette, BookOpen, Users, Zap } from "lucide-react";
 import { Hover3DTilt } from "@/components/ui/hover-3d-tilt";
 
-interface PopularCourse {
-    _id: string;
-    title: string;
-    level: string;
-    studentsCount: string;
-    color: string;
-    icon?: string;
-}
-
 interface CoursesPreviewProps {
     popularCourses?: any[];
 }
@@ -74,10 +65,10 @@ export function CoursesPreview({ popularCourses = [] }: CoursesPreviewProps) {
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-widest mb-4">
                             <Zap size={12} className="fill-current" /> Featured Paths
                         </div>
-                        <h2 className="text-3xl md:text-5xl font-black mb-4 tracking-tighter text-white">
+                        <h2 className="text-2xl sm:text-3xl md:text-5xl font-black mb-3 sm:mb-4 tracking-tighter text-white">
                             Popular <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Skill Paths</span>
                         </h2>
-                        <p className="text-lg text-slate-400 leading-relaxed font-light">
+                        <p className="text-sm sm:text-lg text-slate-400 leading-relaxed font-light">
                             Master in-demand skills with our expert-led, project-based curriculum designed for outcomes.
                         </p>
                     </div>

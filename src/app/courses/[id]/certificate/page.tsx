@@ -15,6 +15,7 @@ export default function CertificatePage() {
     const [course, setCourse] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [certificateId, setCertificateId] = useState("");
+    const [certificateKey, setCertificateKey] = useState("");
 
     useEffect(() => {
         const fetchData = async () => {
@@ -42,6 +43,7 @@ export default function CertificatePage() {
                     const data = await resCert.json();
                     setCertificateData(data);
                     setCertificateId(data.certificateId || "");
+                    setCertificateKey(data.certificateKey || "");
                 }
             } catch (error) {
                 console.error("Failed to fetch certificate data", error);
@@ -128,6 +130,7 @@ export default function CertificatePage() {
                 startDate={formattedStartDate}
                 endDate={formattedEndDate}
                 certificateId={certificateId}
+                certificateKey={certificateKey}
                 collaborations={collabs}
                 signatures={course?.signatures}
             />

@@ -31,8 +31,23 @@ export async function GET(
       );
     }
 
+    const cleanId = decodeURIComponent(id).trim();
+    // Escape regex characters safely
+    const escapedId = cleanId.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
+    const idRegex = new RegExp(`^${escapedId}$`, "i");
+
+    // Helper to generate a 16-character secure key if missing
+    const generateKey = () => 
+      Math.random().toString(36).substring(2, 10).toUpperCase() +
+      Math.random().toString(36).substring(2, 10).toUpperCase();
+
     // 1. Search in Enrollments (Course Certificates)
-    const enrollment = await Enrollment.findOne({ certificateId: id })
+    const enrollment = await Enrollment.findOne({
+      $or: [
+        { certificateId: idRegex },
+        { certificateKey: idRegex },
+      ],
+    })
       .populate("student", "firstName lastName email")
       .populate("course", "title");
 
@@ -49,13 +64,19 @@ export async function GET(
         );
       }
 
+      // Ensure certificateKey exists in DB
+      if (!enrollment.certificateKey) {
+        enrollment.certificateKey = generateKey();
+        await enrollment.save();
+      }
+
       return NextResponse.json({
         valid: true,
         type: "course",
         data: {
           studentName: `${enrollment.student.firstName} ${enrollment.student.lastName}`,
           title: enrollment.course.title,
-          date: enrollment.updatedAt,
+          date: enrollment.completedAt || enrollment.updatedAt,
           score: enrollment.progress,
           certificateId: enrollment.certificateId,
           certificateKey: enrollment.certificateKey,
@@ -64,7 +85,12 @@ export async function GET(
     }
 
     // 2. Search in Applications (Internship Certificates)
-    const application = await Application.findOne({ certificateId: id })
+    const application = await Application.findOne({
+      $or: [
+        { certificateId: idRegex },
+        { certificateKey: idRegex },
+      ],
+    })
       .populate("student", "firstName lastName email")
       .populate("internship", "title company");
 
@@ -81,6 +107,12 @@ export async function GET(
         );
       }
 
+      // Ensure certificateKey exists in DB
+      if (!application.certificateKey) {
+        application.certificateKey = generateKey();
+        await application.save();
+      }
+
       return NextResponse.json({
         valid: true,
         type: "internship",
@@ -88,17 +120,28 @@ export async function GET(
           studentName: `${application.student.firstName} ${application.student.lastName}`,
           title: application.internship.title,
           company: application.internship.company,
-          date: application.completedAt,
+          date: application.completedAt || application.updatedAt,
           certificateId: application.certificateId,
           certificateKey: application.certificateKey,
         },
       });
     }
 
-    // 3. Search in Custom Certificates
-    const customCert = await CustomCertificate.findOne({ certificateId: id });
+    // 3. Search in Custom Certificates (Hackathons & Achievements)
+    const customCert = await CustomCertificate.findOne({
+      $or: [
+        { certificateId: idRegex },
+        { certificateKey: idRegex },
+      ],
+    });
 
     if (customCert) {
+      // Ensure certificateKey exists in DB
+      if (!customCert.certificateKey) {
+        customCert.certificateKey = generateKey();
+        await customCert.save();
+      }
+
       return NextResponse.json({
         valid: true,
         type: customCert.hackathonTitle ? "hackathon" : "custom",
@@ -118,8 +161,8 @@ export async function GET(
     }
 
     // 4. Search in RewardRequests (Ambassador Certificates)
-    if (mongoose.Types.ObjectId.isValid(id)) {
-      const rewardRequest = await RewardRequest.findById(id)
+    if (mongoose.Types.ObjectId.isValid(cleanId)) {
+      const rewardRequest = await RewardRequest.findById(cleanId)
         .populate({
           path: "ambassadorId",
           populate: { path: "userId", select: "firstName lastName" }

@@ -280,7 +280,7 @@ export default function AdminVerifyCertificatePage() {
                     </div>
                     <div>
                       <p className="text-sm text-gray-500 font-medium">
-                        {result.type === 'course' ? 'Course' : 'Internship'}
+                        {result.type === 'course' ? 'Course' : result.type === 'internship' ? 'Internship' : result.type === 'hackathon' ? 'Hackathon' : 'Program'}
                       </p>
                       <p className="text-lg font-semibold text-gray-900">{result.data.title}</p>
                     </div>

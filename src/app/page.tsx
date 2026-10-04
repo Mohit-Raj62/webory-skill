@@ -1,4 +1,3 @@
-import Link from "next/link"; // Not needed but avoiding removing unused imports if any
 import { Navbar } from "@/components/ui/navbar";
 import { Hero } from "@/components/landing/hero";
 import { FreeExperienceHighlight } from "@/components/landing/free-experience";
@@ -19,6 +18,8 @@ const DevLabPreview = dynamic(() => import('@/components/landing/devlab-preview'
 const AINexusShowcase = dynamic(() => import('@/components/landing/ai-nexus-showcase').then(mod => mod.AINexusShowcase));
 const HackathonPreview = dynamic(() => import('@/components/landing/hackathon-preview').then(mod => mod.HackathonPreview));
 const LeaderboardSection = dynamic(() => import('@/components/home/LeaderboardSection').then(mod => mod.LeaderboardSection));
+const LiveStudentActivity = dynamic(() => import('@/components/ui/LiveStudentActivity').then(mod => mod.LiveStudentActivity));
+const TechCareerCalculator = dynamic(() => import('@/components/landing/career-calculator').then(mod => mod.TechCareerCalculator));
 
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
@@ -73,6 +74,12 @@ export default async function Home() {
             <ScrollReveal style="fade-up">
                 <Suspense fallback={<div className="h-40 bg-white/5 animate-pulse" />}>
                     <FreeExperienceHighlight />
+                </Suspense>
+            </ScrollReveal>
+
+            <ScrollReveal style="fade-up">
+                <Suspense fallback={<SectionSkeleton height="h-[600px]" />}>
+                    <TechCareerCalculator />
                 </Suspense>
             </ScrollReveal>
 
@@ -160,6 +167,7 @@ export default async function Home() {
                 </Suspense>
             </ScrollReveal>
 
+            <LiveStudentActivity />
             <Footer />
         </main>
     );

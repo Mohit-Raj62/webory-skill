@@ -151,6 +151,7 @@ export default function CertificatePage() {
                 startDate={formattedStartDate}
                 endDate={formattedEndDate}
                 certificateId={application.certificateId}
+                certificateKey={application.certificateKey}
                 collaborations={collabs}
                 signatures={application.internship?.signatures}
             />

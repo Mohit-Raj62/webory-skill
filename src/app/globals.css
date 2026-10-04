@@ -36,6 +36,14 @@
 @layer base {
   * {
     @apply border-border;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  *::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+    background: transparent;
   }
   html {
     overscroll-behavior-y: none;
@@ -63,17 +71,42 @@
     @apply bg-white/[0.02] backdrop-blur-3xl border border-white/[0.05];
   }
 
-  /* Scrollbar Hide Utility */
-  .scrollbar-hide::-webkit-scrollbar {
+  /* Global Scrollbar Hiding for clean app-like aesthetic */
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
     display: none;
+    width: 0;
+    height: 0;
+    background: transparent;
   }
-  .scrollbar-hide {
+  html,
+  body {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
 
-  /* Custom Scrollbar for Roadmap */
+  /* Universal Scrollbar Hide Utility */
+  .scrollbar-hide::-webkit-scrollbar,
+  .scrollbar-none::-webkit-scrollbar,
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+    background: transparent;
+  }
+  .scrollbar-hide,
+  .scrollbar-none,
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Custom Scrollbar for Roadmap when explicitly enabled */
+  .roadmap-scrollbar {
+    scrollbar-width: thin;
+  }
   .roadmap-scrollbar::-webkit-scrollbar {
+    display: block;
     width: 6px;
   }
   .roadmap-scrollbar::-webkit-scrollbar-track {
