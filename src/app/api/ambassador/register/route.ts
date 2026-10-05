@@ -55,8 +55,8 @@ export async function POST(request: NextRequest) {
     const newAmbassador = new Ambassador({
       userId,
       category,
-      studyLevel,
-      courseType,
+      studyLevel: category === "student" ? (studyLevel || "") : "",
+      courseType: category === "student" ? (courseType || "") : "",
       college,
       collegeState,
       collegeCity,

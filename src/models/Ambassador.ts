@@ -43,11 +43,13 @@ const ambassadorSchema = new mongoose.Schema({
   },
   studyLevel: {
     type: String,
-    enum: ["university", "college"],
+    enum: ["university", "college", ""],
+    default: "",
   },
   courseType: {
     type: String,
-    enum: ["medical", "engineering", "other"],
+    enum: ["medical", "engineering", "other", ""],
+    default: "",
   },
   collegeState: {
     type: String,

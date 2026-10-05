@@ -480,8 +480,12 @@ export default function AmbassadorRegisterPage() {
     if (!formData.graduationYear) return toast.error("Please select " + (formData.category === "student" ? "graduation year" : "experience level"));
     
     // 2. Student Specific Validation
-    if (formData.category === "student" && !formData.collegeIdCardUrl) {
-      return toast.error("Please upload your College ID Card for verification");
+    if (formData.category === "student") {
+      if (!formData.studyLevel) return toast.error("Please select your study level");
+      if (!formData.courseType) return toast.error("Please select your field of study");
+      if (!formData.collegeIdCardUrl) {
+        return toast.error("Please upload your College ID Card for verification");
+      }
     }
 
     // 3. Contact Validation
@@ -493,10 +497,16 @@ export default function AmbassadorRegisterPage() {
 
     setLoading(true);
     try {
+      const payload = {
+        ...formData,
+        studyLevel: formData.category === "student" ? formData.studyLevel : "",
+        courseType: formData.category === "student" ? formData.courseType : "",
+      };
+
       const res = await fetch("/api/ambassador/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();

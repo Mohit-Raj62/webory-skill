@@ -19,8 +19,8 @@ interface AmbassadorApp {
   };
   college: string;
   category: "student" | "business-owner" | "working-professional";
-  studyLevel: "university" | "college";
-  courseType: "medical" | "engineering" | "other";
+  studyLevel?: "university" | "college" | "";
+  courseType?: "medical" | "engineering" | "other" | "";
   collegeState: string;
   collegeCity: string;
   courseName: string;
@@ -163,12 +163,16 @@ export default function AdminAmbassadorsPage() {
                                         <div className="px-2 py-1 rounded-lg bg-orange-500/10 border border-orange-500/20 text-[10px] font-black uppercase text-orange-400 tracking-wider">
                                             {app.category}
                                         </div>
-                                        <div className="px-2 py-1 rounded-lg bg-blue-500/10 border border-blue-500/20 text-[10px] font-black uppercase text-blue-400 tracking-wider">
-                                            {app.studyLevel}
-                                        </div>
-                                        <div className="px-2 py-1 rounded-lg bg-purple-500/10 border border-purple-500/20 text-[10px] font-black uppercase text-purple-400 tracking-wider">
-                                            {app.courseType}
-                                        </div>
+                                        {app.studyLevel && (
+                                            <div className="px-2 py-1 rounded-lg bg-blue-500/10 border border-blue-500/20 text-[10px] font-black uppercase text-blue-400 tracking-wider">
+                                                {app.studyLevel}
+                                            </div>
+                                        )}
+                                        {app.courseType && (
+                                            <div className="px-2 py-1 rounded-lg bg-purple-500/10 border border-purple-500/20 text-[10px] font-black uppercase text-purple-400 tracking-wider">
+                                                {app.courseType}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
