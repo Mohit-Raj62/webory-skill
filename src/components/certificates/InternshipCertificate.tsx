@@ -45,7 +45,7 @@ export default function InternshipCertificate({
   
   return (
     <div 
-        className="relative mx-auto overflow-hidden shadow-2xl print:shadow-none print:overflow-visible"
+        className="certificate-wrapper relative mx-auto overflow-hidden shadow-2xl print:shadow-none print:!overflow-visible print:!w-[1122px] print:!h-[794px] print:!max-w-none"
         ref={wrapperRef}
         style={{
             width: isMobile ? window.innerWidth - 32 : '297mm',

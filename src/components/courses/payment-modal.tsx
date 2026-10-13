@@ -20,6 +20,7 @@ interface PaymentModalProps {
     userEmail: string;
     mobileNumber?: string;
     resourceType?: "course" | "internship";
+    selectedTier?: string;
 }
 
 export function PaymentModal({
@@ -322,7 +323,7 @@ export function PaymentModal({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 sm:p-6">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 sm:p-6">
             <div className="glass-card w-full max-w-md p-0 rounded-3xl relative border border-white/10 shadow-2xl shadow-purple-500/20 max-h-[90vh] overflow-y-auto bg-[#0a0a0a]">
                 {/* Header with Gradient */}
                 <div className="relative p-6 pb-8 bg-gradient-to-br from-blue-900/50 via-purple-900/50 to-black/50 overflow-hidden">

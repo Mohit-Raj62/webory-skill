@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Award, Printer } from "lucide-react";
+import { ArrowLeft, Award, Printer, Download } from "lucide-react";
 import InternshipCertificate from "@/components/certificates/InternshipCertificate";
+import { downloadCertificateAsPDF } from "@/lib/certificate-download";
 
 interface Application {
     _id: string;
@@ -39,6 +40,7 @@ export default function CertificatePage() {
     const [application, setApplication] = useState<Application | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [downloadingPdf, setDownloadingPdf] = useState(false);
 
     useEffect(() => {
         const fetchApplication = async () => {
@@ -73,6 +75,16 @@ export default function CertificatePage() {
 
     const handlePrint = () => {
         window.print();
+    };
+
+    const handleDownloadPDF = async () => {
+        if (!application) return;
+        setDownloadingPdf(true);
+        await downloadCertificateAsPDF(
+            "certificate-container",
+            `Webory_Internship_${application.certificateId || "Certificate"}`
+        );
+        setDownloadingPdf(false);
     };
 
     if (loading) {
@@ -137,8 +149,15 @@ export default function CertificatePage() {
                 <Button variant="ghost" onClick={() => router.back()} className="text-gray-400 hover:text-white">
                     <ArrowLeft className="mr-2 h-4 w-4" /> Back
                 </Button>
-                <div className="flex gap-4">
-                    <Button onClick={handlePrint} variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-800">
+                <div className="flex flex-wrap gap-3">
+                    <Button 
+                        onClick={handleDownloadPDF} 
+                        disabled={downloadingPdf}
+                        className="bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase tracking-wider text-xs px-5 h-10 shadow-lg shadow-emerald-500/20"
+                    >
+                        <Download className="mr-2 h-4 w-4" /> {downloadingPdf ? "Generating PDF..." : "Download PDF"}
+                    </Button>
+                    <Button onClick={handlePrint} variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-800 text-xs px-4 h-10">
                         <Printer className="mr-2 h-4 w-4" /> Print
                     </Button>
                 </div>
@@ -172,24 +191,24 @@ export default function CertificatePage() {
                     }
                     html, body {
                         width: 100%;
-                        height: 100vh;
+                        height: 100%;
                         margin: 0 !important;
                         padding: 0 !important;
-                        overflow: hidden !important;
+                        overflow: visible !important;
                     }
-                    @media print {
-                        body {
-                            display: flex !important;
-                            align-items: center !important;
-                            justify-content: center !important;
-                        }
+                    .certificate-wrapper {
+                        width: 1122px !important;
+                        height: 794px !important;
+                        max-width: none !important;
+                        overflow: visible !important;
+                        margin: 0 auto !important;
                     }
                     #certificate-container {
                         visibility: visible;
                         position: relative !important;
                         left: auto !important;
                         top: auto !important;
-                        margin: 0 !important;
+                        margin: 0 auto !important;
                         padding: 0 !important;
                         z-index: 9999;
                         overflow: hidden;
@@ -198,22 +217,23 @@ export default function CertificatePage() {
                         border: none;
                         width: 1122px !important;
                         height: 794px !important;
-                        transform-origin: center center !important;
+                        transform-origin: top center !important;
                     }
                     @media print and (orientation: portrait) {
                         @page {
                             size: portrait;
                             margin: 0; 
                         }
+                        .certificate-wrapper {
+                            width: 100% !important;
+                            height: auto !important;
+                        }
                         #certificate-container {
-                            position: relative !important;
-                            top: 0 !important;
+                            transform: scale(0.68) !important;
+                            transform-origin: top center !important;
                             left: 0 !important;
-                            transform: scale(0.8) !important;
-                            transform-origin: top left !important;
-                            left: 50% !important;
-                            margin-left: -449px !important; 
-                            margin-top: 20px;
+                            right: 0 !important;
+                            margin: 30px auto 0 auto !important;
                         }
                     }
                     @media print and (orientation: landscape) {
@@ -223,12 +243,13 @@ export default function CertificatePage() {
                          }
                         #certificate-container {
                             transform: scale(0.98) !important;
-                             transform-origin: top left !important;
-                             left: 0 !important;
-                             margin-left: 0 !important;
+                            transform-origin: top center !important;
+                            left: 0 !important;
+                            right: 0 !important;
+                            margin: 0 auto !important;
                         }
                     }
-                     #certificate-container * {
+                    #certificate-container * {
                         visibility: visible;
                     }
                     svg text {

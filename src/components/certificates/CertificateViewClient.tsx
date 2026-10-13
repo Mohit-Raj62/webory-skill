@@ -1,17 +1,29 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Download, Share2, Globe } from "lucide-react";
+import { Download, Share2, Globe, Printer } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import HackathonCertificate from "@/components/HackathonCertificate";
+import { downloadCertificateAsPDF } from "@/lib/certificate-download";
+import { useState } from "react";
 
 export function CertificateViewClient({ certificate }: { certificate: any }) {
     const router = useRouter();
+    const [downloadingPdf, setDownloadingPdf] = useState(false);
 
     const handlePrint = () => {
         window.print();
+    };
+
+    const handleDownload = async () => {
+        setDownloadingPdf(true);
+        await downloadCertificateAsPDF(
+            "certificate-container",
+            `Webory_Certificate_${certificate.certificateId || "Verified"}`
+        );
+        setDownloadingPdf(false);
     };
 
     const handleShare = () => {
@@ -38,10 +50,18 @@ export function CertificateViewClient({ certificate }: { certificate: any }) {
 
                 <div className="flex flex-wrap gap-3 justify-center">
                     <Button 
-                        onClick={handlePrint}
-                        className="h-12 px-6 rounded-xl bg-white text-black font-black uppercase tracking-widest text-[10px] flex items-center gap-2 hover:bg-gray-200"
+                        onClick={handleDownload}
+                        disabled={downloadingPdf}
+                        className="h-12 px-6 rounded-xl bg-emerald-500 text-black font-black uppercase tracking-widest text-[10px] flex items-center gap-2 hover:bg-emerald-400 shadow-lg shadow-emerald-500/20"
                     >
-                        <Download size={14} /> Download PDF
+                        <Download size={14} /> {downloadingPdf ? "Generating PDF..." : "Download PDF"}
+                    </Button>
+                    <Button 
+                        onClick={handlePrint}
+                        variant="outline"
+                        className="h-12 px-5 rounded-xl border-white/10 text-white font-black uppercase tracking-widest text-[10px] flex items-center gap-2 hover:bg-white/5"
+                    >
+                        <Printer size={14} /> Print
                     </Button>
                     <Button 
                         onClick={handleShare}
@@ -216,7 +236,7 @@ export function CertificateViewClient({ certificate }: { certificate: any }) {
                         visibility: visible !important;
                     }
                     /* Ensure parents are not display:none but content is hidden */
-                    main, .container, .motion-wrapper {
+                    main, .container, .motion-wrapper, .certificate-wrapper {
                         display: block !important;
                         visibility: hidden !important;
                         height: auto !important;

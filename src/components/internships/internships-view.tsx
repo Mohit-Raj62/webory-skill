@@ -288,16 +288,19 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                     setSelectedInternship(null);
                     router.push("/profile?tab=internships");
                 } else {
+                    toast.success("Application saved! Opening payment checkout...");
                     setShowPayment(true);
                 }
                 setFile(null);
             } else {
                 toast.error(data.error || "Failed to submit application");
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Submission error:", error);
-            toast.error("An error occurred");
+            toast.error(error?.message || "An error occurred");
+        } finally {
             setUploading(false);
+            setSubmitting(false);
         }
     };
 
@@ -729,7 +732,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
             </div>
 
             <AnimatePresence>
-                {selectedInternship && (
+                {selectedInternship && !showPayment && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -1167,7 +1170,11 @@ export function InternshipsView({ internships, user, userApplications }: Interns
             {selectedInternship && user && (
                 <PaymentModal
                     isOpen={showPayment}
-                    onClose={() => setShowPayment(false)}
+                    onClose={() => {
+                        setShowPayment(false);
+                        setSelectedInternship(null);
+                        toast.info("Application saved! You can complete payment anytime from your Profile.");
+                    }}
                     courseTitle={`Internship: ${internships.find(i => i._id === selectedInternship)?.title}`}
                     price={(internships.find(i => i._id === selectedInternship)?.hasTiers) ? (internships.find(i => i._id === selectedInternship)?.tiers?.find((t: any) => t.name === selectedTier)?.price || 0) : (internships.find(i => i._id === selectedInternship)?.price || 0)}
                     originalPrice={(internships.find(i => i._id === selectedInternship)?.hasTiers) ? (internships.find(i => i._id === selectedInternship)?.tiers?.find((t: any) => t.name === selectedTier)?.originalPrice || 0) : (internships.find(i => i._id === selectedInternship)?.originalPrice || 0)}
