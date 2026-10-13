@@ -1,12 +1,29 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
-export function Typewriter({ words, textClassName = "" }: { words: string[], textClassName?: string }) {
+interface TypewriterProps {
+    words: string[];
+    textClassName?: string;
+    cursorClassName?: string;
+}
+
+export function Typewriter({ 
+    words, 
+    textClassName = "bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-300",
+    cursorClassName = "bg-purple-400"
+}: TypewriterProps) {
     const [index, setIndex] = useState(0);
-    const [subIndex, setSubIndex] = useState(0);
+    // Initialize with full first word so on Mac/Safari or initial load it is NEVER blank
+    const [subIndex, setSubIndex] = useState(() => (words && words.length > 0 ? words[0].length : 0));
     const [blink, setBlink] = useState(true);
     const [reverse, setReverse] = useState(false);
+
+    // Stable words ref to prevent re-render timer cancellations
+    const wordsRef = useRef(words);
+    useEffect(() => {
+        wordsRef.current = words;
+    }, [words]);
 
     // Blinking cursor effect
     useEffect(() => {
@@ -18,61 +35,59 @@ export function Typewriter({ words, textClassName = "" }: { words: string[], tex
 
     // Typing logic
     useEffect(() => {
-        if (words.length === 0) return;
+        const currentWords = wordsRef.current;
+        if (!currentWords || currentWords.length === 0) return;
         
-        const currentWord = words[index];
+        const currentWord = currentWords[index] || "";
 
-        if (subIndex === currentWord.length && !reverse) {
-            // Reached end of word, wait longer before deleting so users can read
-            const timeout = setTimeout(() => setReverse(true), 4000); // Wait 4 seconds
+        if (subIndex >= currentWord.length && !reverse) {
+            // Reached end of word, pause to let user read
+            const timeout = setTimeout(() => setReverse(true), 3500);
             return () => clearTimeout(timeout);
         }
 
-        if (subIndex === 0 && reverse) {
-            // Finished deleting, wait a bit before starting the next word
+        if (subIndex <= 0 && reverse) {
+            // Finished deleting, wait a moment then move to next word
             const timeout = setTimeout(() => {
                 setReverse(false);
-                setIndex((prev) => (prev + 1) % words.length);
-            }, 1000); // 1 second pause before typing next word
+                setIndex((prev) => (prev + 1) % currentWords.length);
+            }, 600);
             return () => clearTimeout(timeout);
         }
 
-        // Calculate a human-like delay
-        let delay = 0;
-        
-        if (reverse) {
-            // When humans delete, they hold backspace (fast & steady)
-            delay = 40; 
-        } else {
-            // Base typing speed - SLOWED DOWN
-            delay = 120 + Math.random() * 100; // Between 120ms and 220ms per letter
-            
-            // 15% chance to have a micro-pause (thinking / finger slip)
-            if (Math.random() < 0.15) {
-                delay += 250 + Math.random() * 200; // Pause for extra 250-450ms
-            }
-            
-            // Slower on capital letters or hyphens (shift key / reaching)
-            const nextChar = currentWord[subIndex];
-            if (nextChar && (nextChar === nextChar.toUpperCase() || nextChar === '-')) {
-                delay += 150;
-            }
-        }
+        // Delay: faster backspacing, natural forward typing
+        const delay = reverse ? 35 : (80 + Math.random() * 60);
 
         const timeout = setTimeout(() => {
             setSubIndex((prev) => prev + (reverse ? -1 : 1));
         }, delay);
 
         return () => clearTimeout(timeout);
-    }, [subIndex, index, reverse, words]);
+    }, [subIndex, index, reverse, words.length]);
+
+    if (!words || words.length === 0) return null;
+
+    const currentWord = words[index] || words[0] || "";
+    const displayText = currentWord.substring(0, subIndex);
 
     return (
-        <span className="inline-flex items-center min-w-[20px]">
-            <span className={textClassName}>{words[index].substring(0, subIndex)}</span>
+        <span className="inline-flex items-center min-w-[20px] align-baseline">
             <span 
-                className={`inline-block w-[3px] md:w-[4px] h-[0.9em] bg-purple-400 ml-[4px] align-middle ${blink ? 'opacity-100' : 'opacity-0'} transition-opacity duration-75`}
+                className={`inline text-transparent bg-clip-text font-black tracking-tight ${textClassName}`}
+                style={{
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    color: "#34d399",
+                    display: "inline",
+                }}
+            >
+                {displayText}
+            </span>
+            <span 
+                className={`inline-block w-[3px] md:w-[4px] h-[0.85em] ${cursorClassName} ml-1.5 align-baseline ${blink ? 'opacity-100' : 'opacity-0'} transition-opacity duration-75`}
                 style={{ transform: 'translateY(-2px)' }}
-            ></span>
+                aria-hidden="true"
+            />
         </span>
     );
 }

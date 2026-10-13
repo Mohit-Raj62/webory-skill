@@ -33,6 +33,20 @@ const ParticleNetwork = dynamic(() => import("@/components/ui/particle-network")
     loading: () => <div className="absolute inset-0 bg-black/20" /> 
 });
 
+const MOBILE_TYPEWRITER_WORDS = [
+    "Tech Careers",
+    "Software Engineers",
+    "Future Developers",
+    "High-Paying Roles"
+];
+
+const DESKTOP_TYPEWRITER_WORDS = [
+    "High-Growth Tech Careers",
+    "Future-Proof Engineers",
+    "Industry-Ready Developers",
+    "High-Impact Tech Roles"
+];
+
 interface HeroProps {
     initialUserCount?: number;
     initialInternshipCount?: number;
@@ -463,22 +477,18 @@ export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initi
                             </span>
                             <span className="block sm:mt-2 text-slate-300 sm:text-white font-extrabold sm:font-black">
                                 <span className="text-gray-300 font-bold text-base min-[360px]:text-lg sm:text-5xl lg:text-6xl sm:font-black sm:text-white">for </span>
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-300">
+                                <span className="inline">
                                     <span className="sm:hidden">
-                                        <Typewriter words={[
-                                            "Tech Careers",
-                                            "Software Engineers",
-                                            "Future Developers",
-                                            "High-Paying Roles"
-                                        ]} />
+                                        <Typewriter 
+                                            words={MOBILE_TYPEWRITER_WORDS}
+                                            textClassName="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-300"
+                                        />
                                     </span>
                                     <span className="hidden sm:inline">
-                                        <Typewriter words={[
-                                            "High-Growth Tech Careers",
-                                            "Future-Proof Engineers",
-                                            "Industry-Ready Developers",
-                                            "High-Impact Tech Roles"
-                                        ]} />
+                                        <Typewriter 
+                                            words={DESKTOP_TYPEWRITER_WORDS}
+                                            textClassName="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-300"
+                                        />
                                     </span>
                                 </span>
                             </span>
