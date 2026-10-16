@@ -570,7 +570,10 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                                         </div>
                                                         
                                                         {(() => {
-                                                            const isFull = job.totalSeats - job.filledSeats <= 0;
+                                                            const totalSeats = typeof job.totalSeats === 'number' ? job.totalSeats : 50;
+                                                            const filledSeats = typeof job.filledSeats === 'number' ? job.filledSeats : 0;
+                                                            const remainingSeats = Math.max(0, totalSeats - filledSeats);
+                                                            const isFull = remainingSeats <= 0;
                                                             const app = userApplications.find(a => a.internshipId === job._id);
                                                             const hasApplied = !!app;
                                                             
@@ -647,29 +650,37 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                                             );
                                                         })()}
 
-                                                        <div className="mt-8 flex flex-col gap-4">
-                                                            <div className="flex items-center justify-between text-[11px] font-black uppercase tracking-wider">
-                                                                <span className="text-slate-500">Deadline</span>
-                                                                <span className="text-white">{job.deadline || "Soon"}</span>
-                                                            </div>
-                                                            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                                                                <div className={`h-full ${job.totalSeats - job.filledSeats > 0 ? 'bg-emerald-500' : 'bg-red-500'} transition-all`} style={{ width: `${Math.min(100, (job.filledSeats / job.totalSeats) * 100)}%` }} />
-                                                            </div>
-                                                            <div className={`flex items-center justify-center gap-2 py-2 px-4 rounded-xl border ${
-                                                                job.totalSeats - job.filledSeats > 0 
-                                                                    ? 'bg-emerald-500/10 border-emerald-500/20' 
-                                                                    : 'bg-red-500/10 border-red-500/20'
-                                                            }`}>
-                                                                <div className={`w-1.5 h-1.5 rounded-full ${job.totalSeats - job.filledSeats > 0 ? 'bg-emerald-500 animate-ping' : 'bg-red-500'}`} />
-                                                                <span className={`text-[11px] font-black uppercase tracking-widest ${
-                                                                    job.totalSeats - job.filledSeats > 0 ? 'text-emerald-400' : 'text-red-400'
-                                                                }`}>
-                                                                    {job.totalSeats - job.filledSeats > 0 
-                                                                        ? `Only ${job.totalSeats - job.filledSeats} seats left!` 
-                                                                        : "Registration Closed - Batch Full"}
-                                                                </span>
-                                                            </div>
-                                                        </div>
+                                                        {(() => {
+                                                            const totalSeats = typeof job.totalSeats === 'number' ? job.totalSeats : 50;
+                                                            const filledSeats = typeof job.filledSeats === 'number' ? job.filledSeats : 0;
+                                                            const remainingSeats = Math.max(0, totalSeats - filledSeats);
+
+                                                            return (
+                                                                <div className="mt-8 flex flex-col gap-4">
+                                                                    <div className="flex items-center justify-between text-[11px] font-black uppercase tracking-wider">
+                                                                        <span className="text-slate-500">Deadline</span>
+                                                                        <span className="text-white">{job.deadline || "Soon"}</span>
+                                                                    </div>
+                                                                    <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                                                        <div className={`h-full ${remainingSeats > 0 ? 'bg-emerald-500' : 'bg-red-500'} transition-all`} style={{ width: `${Math.min(100, (filledSeats / Math.max(1, totalSeats)) * 100)}%` }} />
+                                                                    </div>
+                                                                    <div className={`flex items-center justify-center gap-2 py-2 px-4 rounded-xl border ${
+                                                                        remainingSeats > 0 
+                                                                            ? 'bg-emerald-500/10 border-emerald-500/20' 
+                                                                            : 'bg-red-500/10 border-red-500/20'
+                                                                    }`}>
+                                                                        <div className={`w-1.5 h-1.5 rounded-full ${remainingSeats > 0 ? 'bg-emerald-500 animate-ping' : 'bg-red-500'}`} />
+                                                                        <span className={`text-[11px] font-black uppercase tracking-widest ${
+                                                                            remainingSeats > 0 ? 'text-emerald-400' : 'text-red-400'
+                                                                        }`}>
+                                                                            {remainingSeats > 0 
+                                                                                ? `Only ${remainingSeats} seats left!` 
+                                                                                : "Registration Closed - Batch Full"}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })()}
                                                     </div>
                                                 </div>
                                             </div>

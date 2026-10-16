@@ -4,6 +4,7 @@ import dbConnect from "@/lib/db";
 import Internship from "@/models/Internship";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
+import { revalidateTag, revalidatePath } from "next/cache";
 
 // PUT - Update internship
 export async function PUT(
@@ -32,6 +33,10 @@ export async function PUT(
     const isObjectId = mongoose.Types.ObjectId.isValid(id);
     const query = isObjectId ? { _id: id } : { slug: id };
     const internship = await Internship.findOneAndUpdate(query, data, { new: true });
+
+    revalidateTag('internships');
+    revalidatePath('/internships');
+    revalidatePath('/');
 
     return NextResponse.json({ internship });
   } catch (error) {

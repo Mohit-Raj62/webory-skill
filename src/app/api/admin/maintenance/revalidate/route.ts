@@ -17,9 +17,11 @@ export async function POST(req: Request) {
     // Revalidate critical paths
     revalidatePath("/", "layout"); // Clears everything from root layout down
     revalidatePath("/courses");
+    revalidatePath("/internships");
 
-    // If using tags
-    // revalidateTag('courses');
+    // Revalidate tags
+    revalidateTag('internships');
+    revalidateTag('courses');
 
     const { logActivity } = await import("@/lib/logger");
     await logActivity(

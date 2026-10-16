@@ -169,11 +169,12 @@ export default function InternshipsAdminPage() {
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Type</th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Stipend</th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Price</th>
+                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Seats Status</th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredInternships.map((internship) => (
+                            {filteredInternships.map((internship: any) => (
                                 <tr key={internship._id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                                     <td className="px-6 py-4 text-white font-medium">{internship.title}</td>
                                     <td className="px-6 py-4 text-gray-300">{internship.company}</td>
@@ -188,6 +189,24 @@ export default function InternshipsAdminPage() {
                                     </td>
                                     <td className="px-6 py-4 text-gray-300">{internship.stipend}</td>
                                     <td className="px-6 py-4 text-white font-semibold">₹{internship.price}</td>
+                                    <td className="px-6 py-4">
+                                        {(() => {
+                                            const total = internship.totalSeats ?? 50;
+                                            const filled = internship.filledSeats ?? 0;
+                                            const rem = Math.max(0, total - filled);
+                                            const isFull = rem <= 0;
+                                            return (
+                                                <div className="flex flex-col gap-1">
+                                                    <span className="text-xs text-white font-medium">{filled} / {total} filled</span>
+                                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold w-fit ${
+                                                        isFull ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                                                    }`}>
+                                                        {isFull ? 'Batch Full' : `${rem} left`}
+                                                    </span>
+                                                </div>
+                                            );
+                                        })()}
+                                    </td>
                                     <td className="px-6 py-4">
                                         <div className="flex gap-2">
                                             <button

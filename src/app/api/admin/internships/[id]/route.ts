@@ -27,7 +27,9 @@ export async function GET(
       return NextResponse.json({ error: "Internship not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ internship });
+    const applicationsCount = await Application.countDocuments({ internship: internship._id });
+
+    return NextResponse.json({ internship, applicationsCount });
   } catch (error) {
     console.error("Get internship error:", error);
     return NextResponse.json(

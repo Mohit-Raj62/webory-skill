@@ -246,13 +246,79 @@ export default function NewInternshipPage() {
                                 <label className="text-sm font-medium text-gray-300 block mb-2">Application Deadline *</label>
                                 <input type="text" className="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-white focus:border-blue-500 outline-none" value={formData.deadline} onChange={(e) => setFormData({ ...formData, deadline: e.target.value })} />
                             </div>
-                            <div>
-                                <label className="text-sm font-medium text-gray-300 block mb-2">Total Seats</label>
-                                <input type="number" className="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-white focus:border-blue-500 outline-none" value={formData.totalSeats} onChange={(e) => setFormData({ ...formData, totalSeats: Number(e.target.value) })} />
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium text-gray-300 block mb-2">Initial Filled Seats</label>
-                                <input type="number" className="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-white focus:border-blue-500 outline-none" value={formData.filledSeats} onChange={(e) => setFormData({ ...formData, filledSeats: Number(e.target.value) })} />
+                            <div className="md:col-span-2 bg-white/[0.02] border border-white/10 rounded-2xl p-5 my-2">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-white/5">
+                                    <div>
+                                        <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                                            <span>Seats & Registration Status</span>
+                                            {Math.max(0, (formData.totalSeats || 0) - (formData.filledSeats || 0)) > 0 ? (
+                                                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                                                    Registration OPEN ({Math.max(0, (formData.totalSeats || 0) - (formData.filledSeats || 0))} seats available)
+                                                </span>
+                                            ) : (
+                                                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">
+                                                    Registration CLOSED - BATCH FULL (0 seats left)
+                                                </span>
+                                            )}
+                                        </h4>
+                                        <p className="text-xs text-gray-400 mt-1">
+                                            Available Seats = <strong>Total Seats - Filled Seats</strong>. Website par tabhi registration khuli rahegi jab Total Seats &gt; Filled Seats honge.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="text-sm font-medium text-gray-300 block mb-1">
+                                            Total Seats (Kul Capacity) *
+                                        </label>
+                                        <p className="text-[11px] text-gray-400 mb-2">Total kitne seats allow karni hai (e.g. 50 ya 100)</p>
+                                        <input 
+                                            type="number" 
+                                            min="1"
+                                            className="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-white focus:border-blue-500 outline-none" 
+                                            value={formData.totalSeats} 
+                                            onChange={(e) => setFormData({ ...formData, totalSeats: Number(e.target.value) })} 
+                                        />
+                                    </div>
+                                    <div>
+                                        <div className="flex items-center justify-between mb-1">
+                                            <label className="text-sm font-medium text-gray-300">
+                                                Filled Seats (Pehle se Bhari hui Seats)
+                                            </label>
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, filledSeats: 0 })}
+                                                className="text-[10px] text-emerald-400 hover:text-emerald-300 underline"
+                                            >
+                                                Set to 0 (All Open)
+                                            </button>
+                                        </div>
+                                        <p className="text-[11px] text-gray-400 mb-2">
+                                            Occupied seats count. Naye internship ke liye ise <strong>0</strong> rakhein taaki sabhi seats open rahein.
+                                        </p>
+                                        <input 
+                                            type="number" 
+                                            min="0"
+                                            className="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-white focus:border-blue-500 outline-none" 
+                                            value={formData.filledSeats} 
+                                            onChange={(e) => setFormData({ ...formData, filledSeats: Number(e.target.value) })} 
+                                        />
+                                    </div>
+                                </div>
+
+                                {(formData.totalSeats || 0) - (formData.filledSeats || 0) <= 0 && (
+                                    <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-300 text-xs flex items-start gap-2">
+                                        <span className="text-base leading-none">⚠️</span>
+                                        <div>
+                                            <strong className="text-red-200">Warning: Registration FULL / CLOSED dikhayega!</strong>
+                                            <p className="mt-0.5 text-red-300/80">
+                                                Kyunki <strong>Total Seats ({formData.totalSeats})</strong> aur <strong>Filled Seats ({formData.filledSeats})</strong> barabar ya zyada hain (Remaining Seats = 0).
+                                                Registrations chalu karne ke liye <strong>Filled Seats ko kam karein (ya 'Set to 0' dabayein)</strong> ya <strong>Total Seats badhayein</strong>.
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                             <div className="md:col-span-2">
                                 <label className="text-sm font-medium text-gray-300 block mb-2">Tagline</label>

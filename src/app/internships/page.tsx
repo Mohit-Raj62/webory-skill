@@ -51,7 +51,7 @@ const getCachedInternshipsData = unstable_cache(
         }
     },
     ['internships-list'],
-    { revalidate: 300, tags: ['internships'] }
+    { revalidate: 15, tags: ['internships'] }
 );
 
 const getCachedUserApplications = unstable_cache(
