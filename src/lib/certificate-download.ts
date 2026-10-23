@@ -61,17 +61,13 @@ export async function downloadCertificateAsPDF(
                     clonedContainer.style.padding = "0";
                 }
 
-                // Inject style to:
-                // 1. Disable running animations (e.g. rotating seals) so captured at 0deg
-                // 2. Override border-double -> border-solid (html2canvas renders double borders inconsistently)
+                // Inject style to disable running animations (e.g. rotating seals)
+                // so they are captured at their exact stationary 0deg orientation
                 const style = clonedDoc.createElement("style");
                 style.textContent = `
                     *, *::before, *::after {
                         animation: none !important;
                         transition: none !important;
-                    }
-                    .border-double {
-                        border-style: solid !important;
                     }
                 `;
                 clonedDoc.head.appendChild(style);

@@ -62,18 +62,18 @@ export default function HackathonCertificate({
             }}
             className="bg-white text-black relative print:transform-none print:w-full print:h-full"
         >
-            {/* Outer Border - using explicit nested divs instead of border-double for html2canvas compatibility */}
-            <div className="absolute inset-0 p-[8px]">
-                {/* Outer thick border */}
-                <div className="w-full h-full border-[4px] border-solid border-[#1a237e] relative">
-                    {/* White gap to simulate double border */}
-                    <div className="absolute inset-0 border-[4px] border-solid border-white">
-                        {/* Inner thick border */}
-                        <div className="absolute inset-0 border-[4px] border-solid border-[#1a237e] relative">
-                            {/* Inner Ornamental Gold Border */}
-                            <div className="absolute inset-[4px] border border-solid border-[#c5a059]"></div>
-                        </div>
-                    </div>
+            {/* Outer Border */}
+            <div className="absolute inset-0 p-[12px]">
+                <div className="w-full h-full border-[12px] border-double border-[#1a237e] relative">
+                    {/* Inner Ornamental Border */}
+                    <div className="absolute inset-1 border border-[#c5a059]"></div>
+                    <div className="absolute inset-3 border-2 border-[#1a237e]"></div>
+
+                    {/* Corner Ornaments */}
+                    <div className="absolute top-0 left-0 w-24 h-24 border-t-[12px] border-l-[12px] border-[#c5a059] rounded-tl-sm"></div>
+                    <div className="absolute top-0 right-0 w-24 h-24 border-t-[12px] border-r-[12px] border-[#c5a059] rounded-tr-sm"></div>
+                    <div className="absolute bottom-0 left-0 w-24 h-24 border-b-[12px] border-l-[12px] border-[#c5a059] rounded-bl-sm"></div>
+                    <div className="absolute bottom-0 right-0 w-24 h-24 border-b-[12px] border-r-[12px] border-[#c5a059] rounded-br-sm"></div>
                 </div>
             </div>
 
@@ -230,7 +230,7 @@ export default function HackathonCertificate({
                     </div>
 
                     {/* Signatures Row */}
-                    <div className="w-full flex justify-between items-start px-12">
+                    <div className="w-full flex justify-between items-start px-12 relative z-20">
                         {/* Signature 1 (Left) - Founder */}
                         <div className="text-center w-64 flex flex-col items-center">
                             <div className="h-12 flex items-end justify-center mb-1">
@@ -270,6 +270,28 @@ export default function HackathonCertificate({
                             <div className="min-h-[36px] flex flex-col justify-start">
                                 <p className="text-xs text-gray-600 font-bold uppercase tracking-widest leading-normal">{signatures?.director?.title || "Director of Education, Weboryskills"}</p>
                                 <p className="text-[10px] text-[#1a237e] font-bold leading-normal">{signatures?.director?.credential || "Alumnus, IIT Mandi"}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* OFFICIAL SEAL - Positioned cleanly on bottom right */}
+                <div className="absolute bottom-28 right-14 opacity-90 print:block z-10 pointer-events-none">
+                    <div className="w-28 h-28 rounded-full border-4 border-[#c5a059] flex items-center justify-center p-1 shadow-lg bg-[#fffbe6]">
+                        <div className="w-full h-full rounded-full border-2 border-[#c5a059] border-dashed flex items-center justify-center relative">
+                            <div className="absolute inset-0 rounded-full flex items-center justify-center">
+                                <svg viewBox="0 0 100 100" className="w-full h-full">
+                                    <path id="curve" d="M 20,50 A 30,30 0 1,1 80,50 A 30,30 0 1,1 20,50" fill="none" />
+                                    <text width="100" className="text-[11px] font-bold uppercase tracking-widest fill-[#b8860b]">
+                                        <textPath xlinkHref="#curve" startOffset="50%" textAnchor="middle">
+                                            Webory Official Seal
+                                        </textPath>
+                                    </text>
+                                </svg>
+                            </div>
+                            <div className="flex flex-col items-center">
+                                <Award size={28} className="text-[#c5a059]" />
+                                <span className="text-[9px] font-bold text-[#b8860b] uppercase mt-0.5">Verified</span>
                             </div>
                         </div>
                     </div>
