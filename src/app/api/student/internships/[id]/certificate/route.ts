@@ -81,7 +81,7 @@ export async function GET(
     }
 
     const populatedApplication = await Application.findById(application._id)
-      .populate({ path: "internship", model: Internship, select: "title company location stipend type collaboration collaborations signatures" })
+      .populate({ path: "internship", model: Internship, select: "title company location stipend type duration collaboration collaborations signatures" })
       .populate({ path: "student", model: User, select: "firstName lastName email" })
       .lean();
 

@@ -62,18 +62,24 @@ export default function InternshipCertificate({
             }}
             className="bg-white text-black relative print:transform-none print:w-full print:h-full"
         >
-            {/* Outer Border */}
-            <div className="absolute inset-0 p-[12px]">
-                <div className="w-full h-full border-[12px] border-double border-[#1a237e] relative">
-                    {/* Inner Ornamental Border */}
-                    <div className="absolute inset-1 border border-[#c5a059]"></div>
-                    <div className="absolute inset-3 border-2 border-[#1a237e]"></div>
+            {/* Outer Border - using explicit nested divs instead of border-double for html2canvas compatibility */}
+            <div className="absolute inset-0 p-[8px]">
+                {/* Outer thick border */}
+                <div className="w-full h-full border-[4px] border-solid border-[#1a237e] relative">
+                    {/* White gap to simulate double border */}
+                    <div className="absolute inset-0 border-[4px] border-solid border-white">
+                        {/* Inner thick border */}
+                        <div className="absolute inset-0 border-[4px] border-solid border-[#1a237e] relative">
+                            {/* Inner Ornamental Border */}
+                            <div className="absolute inset-1 border border-[#c5a059]"></div>
 
-                    {/* Corner Ornaments */}
-                    <div className="absolute top-0 left-0 w-24 h-24 border-t-[12px] border-l-[12px] border-[#c5a059] rounded-tl-sm"></div>
-                    <div className="absolute top-0 right-0 w-24 h-24 border-t-[12px] border-r-[12px] border-[#c5a059] rounded-tr-sm"></div>
-                    <div className="absolute bottom-0 left-0 w-24 h-24 border-b-[12px] border-l-[12px] border-[#c5a059] rounded-bl-sm"></div>
-                    <div className="absolute bottom-0 right-0 w-24 h-24 border-b-[12px] border-r-[12px] border-[#c5a059] rounded-br-sm"></div>
+                            {/* Corner Ornaments */}
+                            <div className="absolute top-0 left-0 w-24 h-24 border-t-[12px] border-l-[12px] border-[#c5a059] rounded-tl-sm"></div>
+                            <div className="absolute top-0 right-0 w-24 h-24 border-t-[12px] border-r-[12px] border-[#c5a059] rounded-tr-sm"></div>
+                            <div className="absolute bottom-0 left-0 w-24 h-24 border-b-[12px] border-l-[12px] border-[#c5a059] rounded-bl-sm"></div>
+                            <div className="absolute bottom-0 right-0 w-24 h-24 border-b-[12px] border-r-[12px] border-[#c5a059] rounded-br-sm"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

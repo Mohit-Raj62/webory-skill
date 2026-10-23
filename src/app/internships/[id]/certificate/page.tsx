@@ -16,11 +16,12 @@ interface Application {
     internship: {
         title: string;
         company: string;
+        duration?: string;
     };
     status: string;
     startDate: string;
     appliedAt: string;
-    duration: string;
+
     completedAt: string;
     certificateId: string;
     certificateKey?: string;
@@ -166,7 +167,7 @@ export default function CertificatePage() {
             <InternshipCertificate 
                 studentName={`${application.student?.firstName || 'Student'} ${application.student?.lastName || 'Name'}`}
                 internshipRole={application.internship?.title || 'Internship Position'}
-                duration={application.duration || '3 months'}
+                duration={application.internship?.duration || '3 months'}
                 startDate={formattedStartDate}
                 endDate={formattedEndDate}
                 certificateId={application.certificateId}
