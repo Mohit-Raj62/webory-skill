@@ -22,6 +22,11 @@ export async function downloadCertificateAsPDF(
     const originalParentOverflow = parent?.style.overflow || "";
 
     try {
+        // Wait for all fonts (Playfair Display, signature fonts, etc.) to load completely
+        if (typeof document !== "undefined" && document.fonts) {
+            await document.fonts.ready;
+        }
+
         // Temporarily expand to full unscaled A4 dimensions so mobile viewport doesn't clip
         container.style.transform = "none";
         if (parent) {
@@ -30,11 +35,11 @@ export async function downloadCertificateAsPDF(
             parent.style.overflow = "visible";
         }
 
-        // Wait a frame for browser layout recalculation
-        await new Promise((resolve) => setTimeout(resolve, 60));
+        // Wait for browser layout recalculation and font rendering
+        await new Promise((resolve) => setTimeout(resolve, 150));
 
         const canvas = await html2canvas(container, {
-            scale: 2, // 2x retina clarity
+            scale: 2, // 2x crisp retina clarity
             useCORS: true,
             allowTaint: true,
             backgroundColor: "#ffffff",
@@ -42,9 +47,42 @@ export async function downloadCertificateAsPDF(
             height: 794,
             scrollX: 0,
             scrollY: 0,
-            windowWidth: 1200,
-            windowHeight: 900,
+            windowWidth: 1122,
+            windowHeight: 794,
             logging: false,
+            onclone: (clonedDoc) => {
+                // Ensure cloned certificate container is at standard desktop resolution
+                const clonedContainer = clonedDoc.getElementById(elementId);
+                if (clonedContainer) {
+                    clonedContainer.style.transform = "none";
+                    clonedContainer.style.width = "1122px";
+                    clonedContainer.style.height = "794px";
+                    clonedContainer.style.margin = "0";
+                    clonedContainer.style.padding = "0";
+                }
+
+                // Inject style to disable running animations (e.g. rotating seals)
+                // so they are captured at their exact stationary 0deg orientation
+                const style = clonedDoc.createElement("style");
+                style.textContent = `
+                    *, *::before, *::after {
+                        animation: none !important;
+                        transition: none !important;
+                    }
+                `;
+                clonedDoc.head.appendChild(style);
+
+                // Transfer loaded fonts into cloned document
+                if (document.fonts && clonedDoc.fonts) {
+                    document.fonts.forEach((font) => {
+                        try {
+                            clonedDoc.fonts.add(font);
+                        } catch (e) {
+                            // ignore font copy errors
+                        }
+                    });
+                }
+            },
         });
 
         const imgData = canvas.toDataURL("image/jpeg", 0.98);
@@ -54,7 +92,7 @@ export async function downloadCertificateAsPDF(
             format: "a4",
         });
 
-        pdf.addImage(imgData, "JPEG", 0, 0, 297, 210);
+        pdf.addImage(imgData, "JPEG", 0, 0, 297, 210, undefined, "FAST");
         pdf.save(`${fileName.replace(/[^a-zA-Z0-9_-]/g, "_")}.pdf`);
 
         toast.success("Certificate downloaded successfully! 🎓", { id: toastId });

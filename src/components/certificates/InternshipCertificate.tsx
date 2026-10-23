@@ -83,14 +83,14 @@ export default function InternshipCertificate({
             </div>
 
             {/* Content */}
-            <div className="relative z-10 h-full flex flex-col items-center justify-between pt-16 pb-10 px-24">
+            <div className="relative z-10 h-full flex flex-col items-center justify-between pt-12 pb-6 px-20">
                 
                 {/* Header */}
                 <div className="text-center w-full">
                     <div className="flex items-center justify-center gap-6 mb-2">
                         <Award className="text-[#c5a059]" size={42} />
                         <div className="text-left">
-                            <h2 className="text-3xl font-bold text-[#1a237e] tracking-wide uppercase font-serif">
+                            <h2 className="text-3xl font-bold text-[#1a237e] tracking-wide uppercase font-serif leading-none">
                                 WEBORY <span className="relative inline-block ml-2">
                                     <span className="absolute -top-1.5 left-[30%] -translate-x-1/2 flex gap-1">
                                         <span className="w-1.5 h-1.5 rounded-full bg-[#FF9933]"></span>
@@ -100,30 +100,30 @@ export default function InternshipCertificate({
                                     SKILLS
                                 </span>
                             </h2>
-                            <p className="text-sm text-[#c5a059] tracking-[0.2em] uppercase">Excellence in Education</p>
+                            <p className="text-sm text-[#c5a059] tracking-[0.2em] uppercase mt-1">Excellence in Education</p>
                         </div>
                         
                         {/* MSME Details */}
-                        <div className="flex flex-col items-start border-l border-gray-200 pl-4 py-1">
-                            <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wide">Govt. Recognized Startup</p>
-                            <p className="text-[8px] text-[#c5a056] font-bold font-mono tracking-wider">MSME: UDYAM-BR-26-0208472</p>
+                        <div className="flex flex-col items-start border-l border-gray-200 pl-4 py-1 ml-2">
+                            <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wide leading-tight">Govt. Recognized Startup</p>
+                            <p className="text-[8px] text-[#c5a056] font-bold font-mono tracking-wider mt-0.5">MSME: UDYAM-BR-26-0208472</p>
                         </div>
                     </div>
 
                     {/* Collaborations Section */}
                     {collabs.length > 0 && (
-                        <div className="flex flex-wrap items-center justify-center gap-4 mb-4 px-12">
+                        <div className="flex items-center justify-center mb-2 px-12">
                             <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent flex-1 max-w-[100px]"></div>
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center mx-3">
                                 <p className="text-[9px] text-gray-400 font-black uppercase tracking-[0.2em]">In Association With</p>
-                                <div className="h-4 w-px bg-[#c5a059]/40 mt-0.5"></div>
+                                <div className="h-4 w-px bg-[#c5a059]/40 ml-3"></div>
                             </div>
-                            <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+                            <div className="flex flex-wrap items-center justify-center">
                                 {collabs.map((collab: any, index: number) => (
-                                    <div key={index} className="flex items-center">
-                                        {index > 0 && <span className="text-[#c5a059]/40 font-light mx-2 text-[10px]">|</span>}
-                                        <div className="flex items-center gap-1.5 group">
-                                            {collab.logo && <img src={collab.logo} alt={collab.name} className="h-5 object-contain grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all" />}
+                                    <div key={index} className="flex items-center mx-2">
+                                        {index > 0 && <span className="text-[#c5a059]/40 font-light mr-2 text-[10px]">|</span>}
+                                        <div className="flex items-center">
+                                            {collab.logo && <img src={collab.logo} alt={collab.name} className="h-5 object-contain grayscale opacity-80 mr-1.5" />}
                                             <p className="text-[10px] text-[#1a237e] font-black font-serif tracking-widest uppercase">{collab.name}</p>
                                         </div>
                                     </div>
@@ -133,77 +133,79 @@ export default function InternshipCertificate({
                         </div>
                     )}
 
-                    <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-[#1a237e] to-transparent mb-2 opacity-30"></div>
+                    <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-[#1a237e] to-transparent mb-2.5 opacity-30"></div>
 
-                    <h1 className="text-5xl font-serif font-bold text-[#1a237e] mb-1 tracking-tight certificate-title">
+                    <h1 className="text-5xl font-serif font-bold text-[#1a237e] mb-1.5 tracking-tight leading-tight certificate-title">
                         Certificate of Completion
                     </h1>
-                    <p className="text-lg text-gray-500 italic font-serif">This is to certify that</p>
+                    <p className="text-lg text-gray-500 italic font-serif leading-normal">This is to certify that</p>
                 </div>
 
                 {/* Recipient */}
-                <div className="text-center w-full my-2">
-                    <h2 className="text-5xl font-serif font-bold text-[#1a237e] mb-2 px-8 py-2 inline-block border-b-2 border-[#c5a059] min-w-[400px] capitalize">
+                <div className="text-center w-full my-1.5">
+                    <h2 className="text-5xl font-serif font-bold text-[#1a237e] px-8 py-1.5 inline-block border-b-2 border-[#c5a059] min-w-[400px] capitalize leading-snug">
                         {studentName}
                     </h2>
                 </div>
 
                 {/* Course Details */}
-                <div className="text-center w-full space-y-1">
-                    <p className="text-lg text-gray-600 font-serif">has successfully completed the internship program as a</p>
-                    <h3 className="text-4xl font-bold text-black font-serif tracking-wide mb-2">
+                <div className="text-center w-full">
+                    <p className="text-lg text-gray-600 font-serif mb-1 leading-normal">
+                        has successfully completed the internship program as a
+                    </p>
+                    <h3 className="text-4xl font-bold text-black font-serif tracking-wide mb-3 leading-tight">
                         {internshipRole}
                     </h3>
 
-                    <div className="flex justify-center gap-12 mb-2 border-y border-gray-200 py-1.5 mx-10">
+                    <div className="flex justify-center items-center mb-2.5 border-y border-gray-200 py-2 mx-10">
                         {/* Duration */}
-                        <div className="flex flex-col items-center px-2">
-                            <div className="flex items-center gap-1.5 text-gray-500 mb-1">
-                                <Clock size={14} />
+                        <div className="flex flex-col items-center px-8">
+                            <div className="flex items-center text-gray-500 mb-1">
+                                <Clock size={14} className="mr-1.5" />
                                 <span className="text-[10px] uppercase tracking-widest font-semibold">Duration</span>
                             </div>
-                            <span className="font-sans text-base font-bold text-[#1a237e] tracking-wide">{duration}</span>
+                            <span className="font-sans text-base font-bold text-[#1a237e] tracking-wide leading-tight">{duration}</span>
                         </div>
 
                         {/* Joining Date */}
-                        <div className="flex flex-col items-center px-2 border-l border-gray-200 pl-12">
-                            <div className="flex items-center gap-1.5 text-gray-500 mb-1">
-                                <CalendarDays size={14} />
+                        <div className="flex flex-col items-center px-8 border-l border-gray-200">
+                            <div className="flex items-center text-gray-500 mb-1">
+                                <CalendarDays size={14} className="mr-1.5" />
                                 <span className="text-[10px] uppercase tracking-widest font-semibold">Enrolled</span>
                             </div>
-                            <span className="font-sans text-base font-bold text-[#1a237e] tracking-wide">
+                            <span className="font-sans text-base font-bold text-[#1a237e] tracking-wide leading-tight">
                                 {startDate}
                             </span>
                         </div>
 
                         {/* Date Issued */}
-                        <div className="flex flex-col items-center px-2 border-l border-gray-200 pl-12">
-                            <div className="flex items-center gap-1.5 text-gray-500 mb-1">
-                                <Award size={14} />
+                        <div className="flex flex-col items-center px-8 border-l border-gray-200">
+                            <div className="flex items-center text-gray-500 mb-1">
+                                <Award size={14} className="mr-1.5" />
                                 <span className="text-[10px] uppercase tracking-widest font-semibold">Completed</span>
                             </div>
-                            <span className="font-sans text-base font-bold text-[#1a237e] tracking-wide">
+                            <span className="font-sans text-base font-bold text-[#1a237e] tracking-wide leading-tight">
                                 {endDate}
                             </span>
                         </div>
                     </div>
                    
-                    <p className="text-lg text-gray-600 font-serif max-w-2xl mx-auto">
+                    <p className="text-lg text-gray-600 font-serif max-w-2xl mx-auto leading-normal">
                         demonstrating proficiency and dedication to excellence.
                     </p>
                 </div>
 
                 {/* Footer / Signatures */}
-                <div className="w-full flex flex-col items-center mt-1 mb-8">
+                <div className="w-full relative mt-1 mb-2">
                     {/* Seal with QR Code - Centered Top */}
-                    <div className="flex flex-col items-center justify-center mb-1">
-                        <div className="relative w-24 h-24 flex items-center justify-center mb-1">
-                            <div className="absolute inset-0 border-4 border-[#c5a059] border-dashed rounded-full animate-[spin_10s_linear_infinite] opacity-25"></div>
+                    <div className="flex flex-col items-center justify-center mb-3">
+                        <div className="relative w-20 h-20 flex items-center justify-center mb-1">
+                            <div className="absolute inset-0 border-4 border-[#c5a059] border-dashed rounded-full opacity-25"></div>
                             <div className="bg-white p-1 rounded-lg shadow-sm border border-[#c5a059]/30">
                             {certificateId ? (
                                 <QRCodeSVG 
                                     value={`${process.env.NEXT_PUBLIC_APP_URL || 'https://weboryskills.in'}/verify-certificate/${certificateId}`}
-                                    size={84}
+                                    size={72}
                                     level="H"
                                 />
                             ) : (
@@ -213,94 +215,92 @@ export default function InternshipCertificate({
                             )}
                             </div>
                         </div>
-                        <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">
+                        <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold leading-normal">
                             {certificateId ? "Scan to Verify" : "Generating ID..."}
                         </p>
 
                         {/* Security Key - QR ke paas */}
                         {certificateKey && (
-                            <p className="text-[9px] font-mono text-gray-600 font-semibold tracking-wider mt-0.5">
+                            <p className="text-[9px] font-mono text-gray-600 font-semibold tracking-wider mt-0.5 leading-normal">
                                 Security Key: <span className="text-gray-900 font-bold">{certificateKey}</span>
                             </p>
                         )}
 
-                        <p className="text-[8px] text-[#2e7d32] font-bold uppercase tracking-widest mt-0.5">Govt. Recognized</p>
+                        <p className="text-[8px] text-[#2e7d32] font-bold uppercase tracking-widest mt-0.5 leading-normal">Govt. Recognized</p>
                     </div>
 
-                    {/* Signatures Grid */}
-                    <div className={`w-full grid ${signatures?.partner?.name?.trim() ? 'grid-cols-3' : 'grid-cols-2'} gap-8 items-end px-12`}>
+                    {/* Signatures Row */}
+                    <div className="w-full flex justify-between items-end px-12">
                         {/* Signature 1 (Left) - Founder */}
-                        <div className="text-center">
+                        <div className="text-center w-64">
                             <div className="h-12 flex items-end justify-center mb-1">
-                                <span className="font-signature text-4xl text-[#1a237e] whitespace-nowrap px-2">
+                                <span className="font-signature text-4xl text-[#1a237e] whitespace-nowrap px-2 leading-none">
                                     {signatures?.founder?.name || "Mohit Sinha"}
                                 </span>
                             </div>
                             <div className="border-b border-gray-400 w-full mb-1"></div>
-                            <p className="text-xs text-gray-600 font-bold uppercase tracking-widest">{signatures?.founder?.title || "Founder & CEO"}</p>
-                        </div>
-
-                        {/* Signature 2 */}
-                        <div className="text-center">
-                            <div className="h-12 flex items-end justify-center mb-1">
-                                <span className="font-signature text-4xl text-[#1a237e] whitespace-nowrap px-2">
-                                    {signatures?.director?.name || "Vijay Kumar"}
-                                </span>
-                            </div>
-                            <div className="border-b border-gray-400 w-full mb-1"></div>
-                            <div className="space-y-0.5">
-                                <p className="text-xs text-gray-600 font-bold uppercase tracking-widest">{signatures?.director?.title || "Director of Education, Webory"}</p>
-                                <p className="text-[10px] text-[#1a237e] font-bold">{signatures?.director?.credential || "Alumnus, IIT Mandi"}</p>
-                            </div>
+                            <p className="text-xs text-gray-600 font-bold uppercase tracking-widest leading-normal">{signatures?.founder?.title || "Founder & CEO, Weboryskill"}</p>
                         </div>
 
                         {/* Signature 3 (Partner) - Only if collaboration */}
                         {signatures?.partner?.name?.trim() && (
-                            <div className="text-center">
+                            <div className="text-center w-64">
                                 <div className="h-12 flex items-end justify-center mb-1">
-                                    <span className="font-signature text-4xl text-[#c5a059] whitespace-nowrap px-2">
+                                    <span className="font-signature text-4xl text-[#c5a059] whitespace-nowrap px-2 leading-none">
                                         {signatures.partner.name}
                                     </span>
                                 </div>
                                 <div className="border-b border-gray-400 w-full mb-1"></div>
-                                <p className="text-xs text-gray-600 font-bold uppercase tracking-widest">{signatures.partner.title || "Authorized Signatory"}</p>
+                                <p className="text-xs text-gray-600 font-bold uppercase tracking-widest leading-normal">{signatures.partner.title || "Authorized Signatory"}</p>
                             </div>
                         )}
 
+                        {/* Signature 2 (Right) */}
+                        <div className="text-center w-64">
+                            <div className="h-12 flex items-end justify-center mb-1">
+                                <span className="font-signature text-4xl text-[#1a237e] whitespace-nowrap px-2 leading-none">
+                                    {signatures?.director?.name || "Vijay Kumar"}
+                                </span>
+                            </div>
+                            <div className="border-b border-gray-400 w-full mb-1"></div>
+                            <div>
+                                <p className="text-xs text-gray-600 font-bold uppercase tracking-widest leading-normal">{signatures?.director?.title || "Director of Education, Weboryskills"}</p>
+                                <p className="text-[10px] text-[#1a237e] font-bold leading-normal">{signatures?.director?.credential || "Alumnus, IIT Mandi"}</p>
+                            </div>
+                        </div>
                     </div>
+                </div>
 
-                    {/* OFFICIAL SEAL */}
-                    <div className="absolute bottom-64 right-16 opacity-90 print:block z-10">
-                        <div className="w-32 h-32 rounded-full border-4 border-[#c5a059] flex items-center justify-center p-1 shadow-lg bg-[#fffbe6]">
-                            <div className="w-full h-full rounded-full border-2 border-[#c5a059] border-dashed flex items-center justify-center relative">
-                                <div className="absolute inset-0 rounded-full flex items-center justify-center">
-                                    <svg viewBox="0 0 100 100" className="w-full h-full animate-spin-slow-static">
-                                        <path id="curve" d="M 20,50 A 30,30 0 1,1 80,50 A 30,30 0 1,1 20,50" fill="none" />
-                                        <text width="100" className="text-[11px] font-bold uppercase tracking-widest fill-[#b8860b]">
-                                            <textPath xlinkHref="#curve" startOffset="50%" textAnchor="middle">
-                                                Webory Official Seal
-                                            </textPath>
-                                        </text>
-                                    </svg>
-                                </div>
-                                <div className="flex flex-col items-center">
-                                    <Award size={32} className="text-[#c5a059]" />
-                                    <span className="text-[10px] font-bold text-[#b8860b] uppercase mt-1">Verified</span>
-                                </div>
+                {/* OFFICIAL SEAL - Positioned cleanly on bottom right */}
+                <div className="absolute bottom-28 right-14 opacity-90 print:block z-10 pointer-events-none">
+                    <div className="w-28 h-28 rounded-full border-4 border-[#c5a059] flex items-center justify-center p-1 shadow-lg bg-[#fffbe6]">
+                        <div className="w-full h-full rounded-full border-2 border-[#c5a059] border-dashed flex items-center justify-center relative">
+                            <div className="absolute inset-0 rounded-full flex items-center justify-center">
+                                <svg viewBox="0 0 100 100" className="w-full h-full">
+                                    <path id="curve" d="M 20,50 A 30,30 0 1,1 80,50 A 30,30 0 1,1 20,50" fill="none" />
+                                    <text width="100" className="text-[11px] font-bold uppercase tracking-widest fill-[#b8860b]">
+                                        <textPath xlinkHref="#curve" startOffset="50%" textAnchor="middle">
+                                            Webory Official Seal
+                                        </textPath>
+                                    </text>
+                                </svg>
+                            </div>
+                            <div className="flex flex-col items-center">
+                                <Award size={28} className="text-[#c5a059]" />
+                                <span className="text-[9px] font-bold text-[#b8860b] uppercase mt-0.5">Verified</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Certificate ID - Top Left */}
-                <div className="absolute top-12 left-24 z-20 text-left">
+                <div className="absolute top-10 left-20 z-20 text-left">
                     <p className="text-xs font-mono tracking-wider font-bold text-[#1a237e]">
                         Certificate ID: <span className="text-gray-900 font-extrabold">{certificateId}</span>
                     </p>
                 </div>
             </div>
             <style jsx global>{`
-                @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Mr+De+Haviland&display=swap');
                 .font-serif {
                     font-family: 'Playfair Display', serif;
                 }
