@@ -233,12 +233,11 @@ export default function CourseCertificate({
                     <div className="w-full flex justify-between items-start px-12 relative z-20">
                         {/* Signature 1 (Left) - Founder */}
                         <div className="text-center w-64 flex flex-col items-center">
-                            <div className="h-12 flex items-end justify-center mb-1">
+                            <div className="h-14 flex items-center justify-center mb-1">
                                 <span className="font-signature text-4xl text-[#1a237e] whitespace-nowrap px-2 leading-none">
                                     {signatures?.founder?.name || "Mohit Sinha"}
                                 </span>
                             </div>
-                            <div className="border-b border-gray-400 w-full mb-1.5"></div>
                             <div className="min-h-[36px] flex flex-col justify-start">
                                 <p className="text-xs text-gray-600 font-bold uppercase tracking-widest leading-normal">{signatures?.founder?.title || "Founder & CEO, Weboryskill"}</p>
                             </div>
@@ -247,12 +246,11 @@ export default function CourseCertificate({
                         {/* Signature 3 (Partner) - Only if collaboration */}
                         {signatures?.partner?.name?.trim() && (
                             <div className="text-center w-64 flex flex-col items-center">
-                                <div className="h-12 flex items-end justify-center mb-1">
+                                <div className="h-14 flex items-center justify-center mb-1">
                                     <span className="font-signature text-4xl text-[#c5a059] whitespace-nowrap px-2 leading-none">
                                         {signatures.partner.name}
                                     </span>
                                 </div>
-                                <div className="border-b border-gray-400 w-full mb-1.5"></div>
                                 <div className="min-h-[36px] flex flex-col justify-start">
                                     <p className="text-xs text-gray-600 font-bold uppercase tracking-widest leading-normal">{signatures.partner.title || "Authorized Signatory"}</p>
                                 </div>
@@ -261,12 +259,11 @@ export default function CourseCertificate({
 
                         {/* Signature 2 (Right) */}
                         <div className="text-center w-64 flex flex-col items-center">
-                            <div className="h-12 flex items-end justify-center mb-1">
+                            <div className="h-14 flex items-center justify-center mb-1">
                                 <span className="font-signature text-4xl text-[#1a237e] whitespace-nowrap px-2 leading-none">
                                     {signatures?.director?.name || "Vijay Kumar"}
                                 </span>
                             </div>
-                            <div className="border-b border-gray-400 w-full mb-1.5"></div>
                             <div className="min-h-[36px] flex flex-col justify-start">
                                 <p className="text-xs text-gray-600 font-bold uppercase tracking-widest leading-normal">{signatures?.director?.title || "Director of Education, Weboryskills"}</p>
                                 <p className="text-[10px] text-[#1a237e] font-bold leading-normal">{signatures?.director?.credential || "Alumnus, IIT Mandi"}</p>
