@@ -171,8 +171,16 @@ async function getGroqCompletion(
   systemPrompt: string,
   conversationHistory: any[],
 ) {
-  const models = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"];
+  const models = [
+    process.env.GROQ_MODEL,
+    "openai/gpt-oss-120b",
+    "openai/gpt-oss-20b",
+    "llama-3.3-70b-versatile",
+    "llama-3.1-8b-instant",
+    "qwen/qwen3.8-27b",
+  ].filter(Boolean) as string[];
 
+  let lastError: any = null;
   for (const model of models) {
     try {
       const messages = [
@@ -193,23 +201,9 @@ async function getGroqCompletion(
       );
     } catch (error: any) {
       console.warn(`Model ${model} failed:`, error.message);
-
-      // Retry with next model on rate limit or service issues
-      if (
-        (error.status === 429 ||
-          error.status === 503 ||
-          error.code === "rate_limit_exceeded") &&
-        model !== models[models.length - 1]
-      ) {
-        continue;
-      }
-
-      // If it's the last model, throw the error
-      if (model === models[models.length - 1]) {
-        throw error;
-      }
+      lastError = error;
     }
   }
 
-  throw new Error("All models failed");
+  throw lastError || new Error("All models failed");
 }

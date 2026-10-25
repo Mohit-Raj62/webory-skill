@@ -139,14 +139,14 @@ export function Navbar() {
                         <div className="flex items-center space-x-3 xl:space-x-4">
                         {/* Logo */}
                         <Link href="/" className="flex items-center space-x-2.5 group shrink-0">
-                            <motion.div
+                            {/* <motion.div
                                 whileHover={{ scale: 1.05, rotate: -3 }}
                                 whileTap={{ scale: 0.95 }}
                                 className="relative w-9 h-9 bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25 group-hover:shadow-blue-500/40 transition-shadow duration-300"
                             >
                                 <span className="font-black text-lg text-white">W</span>
                                 <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/20 to-transparent" />
-                            </motion.div>
+                            </motion.div> */}
                             <span className="text-base sm:text-lg xl:text-xl font-bold tracking-tight">
                                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400">WEBORY </span>
                                 <span className="relative">
@@ -185,7 +185,7 @@ export function Navbar() {
                                     AI Copilot
                                 </span>
                                 <span className="hidden xl:inline-block text-[9px] font-black uppercase tracking-wider px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                                    NEW
+                                    New
                                 </span>
                             </motion.div>
                         </Link>
@@ -194,14 +194,17 @@ export function Navbar() {
                         {user && <NavLink href="/ai-prep" icon={BrainCircuit}>AI Nexus</NavLink>}
 
                         {user && (
-                            <button
-                                onClick={() => setIsFeedbackOpen(true)}
-                                className="group relative text-xs xl:text-sm text-gray-300 hover:text-white transition-all duration-300 flex items-center gap-1 xl:gap-1.5 py-1.5 px-1 xl:px-2 whitespace-nowrap"
-                            >
-                                <MessageSquare size={13} className="opacity-60 group-hover:opacity-100 transition-opacity shrink-0" />
-                                <span>Feedback</span>
-                                <span className="absolute -bottom-0.5 left-0 w-0 h-[2px] bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-300 group-hover:w-full" />
-                            </button>
+                           
+                            
+<button
+  onClick={() => setIsFeedbackOpen(true)}
+  className="text-xs text-blue-300 hover:text-white bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/25 hover:border-blue-400/40 transition-all duration-200 flex items-center gap-1.5 py-1.5 px-2 rounded-md whitespace-nowrap"
+>
+  <MessageSquare size={12} className="shrink-0" />
+  <span>FB</span>
+</button>
+
+
                         )}
                         
                         {/* PWA Get App for Desktop - visible on spacious screens */}

@@ -46,9 +46,24 @@ export async function POST(req: Request) {
 
     const getCompletion = async (messages: any[], useFastModel = false) => {
       const models = useFastModel
-        ? ["llama-3.1-8b-instant", "llama-3.3-70b-versatile"]
-        : ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"];
+        ? [
+            process.env.GROQ_FAST_MODEL,
+            "openai/gpt-oss-20b",
+            "openai/gpt-oss-120b",
+            "llama-3.1-8b-instant",
+            "llama-3.3-70b-versatile",
+            "qwen/qwen3.8-27b",
+          ].filter(Boolean) as string[]
+        : [
+            process.env.GROQ_MODEL,
+            "openai/gpt-oss-120b",
+            "openai/gpt-oss-20b",
+            "llama-3.3-70b-versatile",
+            "llama-3.1-8b-instant",
+            "qwen/qwen3.8-27b",
+          ].filter(Boolean) as string[];
 
+      let lastError: any = null;
       for (const model of models) {
         try {
           const completion = await groq.chat.completions.create({
@@ -61,19 +76,10 @@ export async function POST(req: Request) {
           return completion;
         } catch (error: any) {
           console.warn(`Model ${model} failed:`, error.message);
-          // Retry only on Rate Limit (429) or Service Unavailable (503)
-          if (
-            (error.status === 429 ||
-              error.status === 503 ||
-              error.code === "rate_limit_exceeded") &&
-            model !== models[models.length - 1]
-          ) {
-            continue;
-          }
-          throw error;
+          lastError = error;
         }
       }
-      throw new Error("All models failed");
+      throw lastError || new Error("All models failed");
     };
 
     // --- ACTION: START ---
