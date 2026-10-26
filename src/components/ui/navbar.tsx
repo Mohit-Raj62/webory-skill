@@ -166,7 +166,7 @@ export function Navbar() {
                         {/* Search Icon Button beside Courses */}
                         <NavbarExpandableSearch />
 
-                        <NavLink href="/courses" icon={GraduationCap} badge="Free">Courses</NavLink>
+                        <NavLink href="/courses" icon={GraduationCap}>Courses</NavLink>
                         <NavLink href="/internships" icon={Briefcase}>Internships</NavLink>
 
                         {/* Animated AI Copilot Showcase (Visible to all users) */}
@@ -180,40 +180,33 @@ export function Navbar() {
                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75" />
                                     <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500" />
                                 </span>
-                                <Sparkles size={12} className="text-amber-300 animate-pulse shrink-0" />
+                                {/* <Sparkles size={12} className="text-amber-300 animate-pulse shrink-0" /> */}
                                 <span className="text-xs xl:text-sm font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-200 via-pink-200 to-amber-200 whitespace-nowrap">
                                     AI Copilot
                                 </span>
-                                <span className="hidden xl:inline-block text-[9px] font-black uppercase tracking-wider px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                {/* <span className="hidden xl:inline-block text-[9px] font-black uppercase tracking-wider px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                                     New
-                                </span>
+                                </span> */}
                             </motion.div>
                         </Link>
 
                         {user && <NavLink href="/playground" icon={Code2}>DevLab</NavLink>}
                         {user && <NavLink href="/ai-prep" icon={BrainCircuit}>AI Nexus</NavLink>}
 
-                        {user && (
-                           
-                            
-<button
-  onClick={() => setIsFeedbackOpen(true)}
-  className="text-xs text-blue-300 hover:text-white bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/25 hover:border-blue-400/40 transition-all duration-200 flex items-center gap-1.5 py-1.5 px-2 rounded-md whitespace-nowrap"
->
-  <MessageSquare size={12} className="shrink-0" />
-  <span>FB</span>
-</button>
-
-
+                        {user && (                          
+                            <button
+                                onClick={() => setIsFeedbackOpen(true)}
+                                className="text-xs text-blue-300 hover:text-white bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/25 hover:border-blue-400/40 transition-all duration-200 flex items-center gap-1.5 py-1.5 px-2 rounded-md whitespace-nowrap"
+                            >
+                                <MessageSquare size={12} className="shrink-0" />
+                                <span>FB</span>
+                            </button>
                         )}
-                        
                         {/* PWA Get App for Desktop - visible on spacious screens */}
                         <div className="hidden min-[1120px]:block mx-1">
                             <InstallPWA variant="navbar" />
                         </div>
-
                         <div className="w-px h-5 bg-white/10 mx-1.5 xl:mx-2" />
-
                         {user ? (
                             <Link href={user.role === 'admin' ? "/admin" : "/profile"}>
                                 <motion.div
