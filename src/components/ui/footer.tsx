@@ -31,11 +31,11 @@ export function Footer({ className }: { className?: string }) {
                     {/* Brand Section */}
                     <div className="col-span-1 md:col-span-2 lg:col-span-3 space-y-6 flex flex-col items-center md:items-start text-center md:text-left">
                         <Link href="/" className="inline-flex items-center space-x-3 group">
-                            <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
+                            {/* <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-lg   shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
                                 <span className="font-black text-xl text-white">W</span>
                                 <div className="absolute -inset-0.5 bg-gradient-to-br from-blue-400 to-purple-400 rounded-xl opacity-30 blur-sm group-hover:opacity-50 transition-opacity"></div>
-                            </div>
-                            <span className="text-2xl font-bold tracking-tight text-white">
+                            </div> */}
+                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-blue-300 to-purple-400 font-bold text-2xl tracking-tight">
                                 WEBORY <span className="relative inline-block">
                                     <span className="absolute -top-1.5 left-[30%] -translate-x-1/2 flex gap-1">
                                         <span className="w-1.5 h-1.5 rounded-full bg-[#FF9933]"></span>
@@ -46,9 +46,28 @@ export function Footer({ className }: { className?: string }) {
                                 </span>
                             </span>
                         </Link>
-                        <p className="text-gray-400 text-sm leading-relaxed max-w-sm sm:max-w-xs md:max-w-sm">
-                            Empowering the next generation of developers with AI-driven learning, real-world projects, and expert mentorship. Build your future with Webory.
-                        </p>
+                       <div className="max-w-sm space-y-3">
+  <p className="text-gray-400 text-sm leading-7 tracking-wide">
+    Learn smarter with{" "}
+    <span className="text-white font-semibold">Webory Skills</span>.
+    Explore industry-ready courses, build real-world projects,
+    master in-demand tech skills, and unlock internship
+    opportunities to shape your future in technology.
+  </p>
+
+  <div className="flex flex-wrap gap-2 pt-1">
+    {["AI-Powered Learning", "Real-World Projects", "Career Growth"].map(
+      (item) => (
+        <span
+          key={item}
+          className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[10px] font-medium text-gray-400 transition-colors hover:border-blue-500/30 hover:text-blue-400"
+        >
+          {item}
+        </span>
+      )
+    )}
+  </div>
+</div>
                         
 
                     </div>
