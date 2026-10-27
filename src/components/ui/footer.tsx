@@ -85,6 +85,7 @@ export function Footer({ className }: { className?: string }) {
                                     </h4>
                                     <ul className="space-y-3 text-[13px] sm:text-sm text-gray-400">
                                         <li><Link href="/courses" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">All Courses</Link></li>
+                                        <li><Link href="/career-roadmap" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">Career Roadmap <span className="text-[9px] px-1 py-0.5 bg-blue-500/20 text-blue-400 rounded border border-blue-500/20 font-bold">New</span></Link></li>
                                         <li><Link href="/internships" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">Internships <span className="text-[9px] px-1 py-0.5 bg-green-500/20 text-green-400 rounded border border-green-500/20">New</span></Link></li>
                                         <li><Link href="/hackathons" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">Hackathons <span className="text-[9px] px-1 py-0.5 bg-orange-500/20 text-orange-400 rounded border border-orange-500/20">New</span></Link></li>
                                         <li><Link href="/mentorship" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-flex items-center gap-1">Mentorship <span className="text-[9px] px-1 py-0.5 bg-blue-500/20 text-blue-400 rounded border border-blue-500/20 italic">Pro</span></Link></li>
@@ -121,6 +122,7 @@ export function Footer({ className }: { className?: string }) {
                                         <li><Link href="/careers" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">Careers</Link></li>
                                         <li><Link href="/blog" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">Blog</Link></li>
                                         <li><Link href="/contact" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">Contact</Link></li>
+                                        <li><Link href="/faq" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">FAQs</Link></li>
                                         <li><Link href="/ambassador" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent font-medium">Ambassador</Link></li>
                                     </ul>
                                 </div>
@@ -163,6 +165,7 @@ export function Footer({ className }: { className?: string }) {
                             © {new Date().getFullYear()} Webory Technologies. Made with <span className="text-red-500 animate-pulse">❤</span> in India.
                         </p>
                         <div className="flex flex-wrap justify-center gap-3 order-1 md:order-2">
+                            <LegalLink href="/faq" label="FAQ" />
                             <LegalLink href="/privacy" label="Privacy" />
                             <LegalLink href="/terms" label="Terms" />
                             <LegalLink href="/refund-policy" label="Refunds" />

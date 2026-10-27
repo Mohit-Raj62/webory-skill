@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { MessageCircle, X, Send, Loader2, Minimize2, Bot, Terminal, Sparkles } from "lucide-react";
+import Image from "next/image";
+import { MessageCircle, X, Send, Loader2, Minimize2, Bot, Terminal } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 
@@ -146,18 +147,55 @@ export default function SupportChatbot() {
       {/* Floating Chat Button */}
       <AnimatePresence>
         {!isOpen && (
-          <motion.button
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setIsOpen(true)}
-            className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] right-4 md:bottom-6 md:right-6 z-[999] flex h-12 w-12 md:h-14 md:w-14 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg hover:shadow-blue-500/30 transition-all duration-300 hover:scale-110 print:hidden"
-            aria-label="Open support chat"
+          <motion.div
+            initial={{ scale: 0, opacity: 0, y: 15 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0, opacity: 0, y: 15 }}
+            transition={{ type: "spring", stiffness: 350, damping: 25 }}
+            className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] right-4 md:bottom-6 md:right-6 z-[999] flex items-center print:hidden group select-none"
           >
-            <Sparkles className="h-6 w-6 md:h-7 md:w-7" />
-          </motion.button>
+            {/* Desktop Clean Pill */}
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+              onClick={() => setIsOpen(true)}
+              className="hidden md:flex items-center gap-2 mr-3 px-3.5 py-1.5 rounded-full bg-slate-900/90 hover:bg-slate-800 text-slate-200 text-xs font-medium border border-slate-700/80 shadow-md backdrop-blur-md cursor-pointer transition-colors duration-200"
+            >
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              <span>Chat with Nexus</span>
+            </motion.div>
+
+            {/* Clean Professional Action Button */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsOpen(true)}
+              className="relative flex h-13 w-13 md:h-14 md:w-14 items-center justify-center rounded-full bg-slate-900 hover:bg-slate-800 text-white border border-slate-700/80 shadow-lg shadow-black/25 hover:shadow-xl transition-all duration-200 cursor-pointer"
+              aria-label="Open support chat"
+            >
+              {/* Clean Minimalist Chat Bubble Icon */}
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-6 h-6 text-white transition-transform duration-200 group-hover:scale-105"
+              >
+                <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" fill="currentColor" fillOpacity="0.15" />
+                <circle cx="8" cy="12" r="1" fill="currentColor" stroke="none" />
+                <circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" />
+                <circle cx="16" cy="12" r="1" fill="currentColor" stroke="none" />
+              </svg>
+
+              {/* Status Indicator */}
+              <span className="absolute top-0 right-0 flex h-3 w-3">
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 border-2 border-slate-900" />
+              </span>
+            </motion.button>
+          </motion.div>
         )}
       </AnimatePresence>
 
@@ -169,25 +207,32 @@ export default function SupportChatbot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 100, scale: 0.8 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed z-[999] flex flex-col overflow-hidden bg-white dark:bg-gray-900 shadow-2xl border border-gray-200 dark:border-gray-700 bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] left-4 right-4 h-[65vh] max-h-[500px] md:max-h-[80vh] rounded-2xl md:left-auto md:right-6 md:bottom-6 md:w-[380px] md:h-[600px] print:hidden"
+            className="fixed z-[999] flex flex-col overflow-hidden bg-white dark:bg-gray-900 shadow-2xl border border-gray-200 dark:border-gray-800 bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] left-4 right-4 h-[65vh] max-h-[500px] md:max-h-[80vh] rounded-2xl md:left-auto md:right-6 md:bottom-6 md:w-[380px] md:h-[600px] print:hidden"
           >
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md">
+            {/* Header - Professional Neutral Dark */}
+            <div className="flex items-center justify-between p-4 bg-slate-900 text-white border-b border-slate-800 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center ring-2 ring-white/30 shadow-inner">
-                  <Sparkles className="h-5 w-5 text-white" />
+                <div className="relative h-10 w-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center overflow-hidden p-0.5 shrink-0">
+                  <Image
+                    src="/webory-logo.png"
+                    alt="Webory Logo"
+                    width={40}
+                    height={40}
+                    className="h-full w-full object-contain rounded-full"
+                    priority
+                  />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-base">Webory Nexus</h3>
-                  <p className="text-xs text-white/90 flex items-center gap-1">
-                    <span className="h-2 w-2 bg-green-400 rounded-full animate-pulse"></span>
-                    Online • 24/7 AI Support
+                  <h3 className="font-semibold text-base text-white">Webory Nexus</h3>
+                  <p className="text-xs text-slate-400 flex items-center gap-1.5">
+                    <span className="h-2 w-2 bg-emerald-400 rounded-full"></span>
+                    Online • Support
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="hover:bg-white/20 p-2 rounded-lg transition-colors"
+                className="hover:bg-slate-800 text-slate-300 hover:text-white p-2 rounded-lg transition-colors"
                 aria-label="Close chat"
               >
                 <X className="h-5 w-5" />
@@ -197,9 +242,20 @@ export default function SupportChatbot() {
             {/* Messages Area */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-800">
               {messages.length === 0 && (
-                <div className="text-center text-gray-500 dark:text-gray-400 mt-8">
-                  <MessageCircle className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                  <p className="text-sm">
+                <div className="text-center text-gray-500 dark:text-gray-400 mt-6">
+                  <div className="relative h-14 w-14 mx-auto mb-3 rounded-full overflow-hidden ring-4 ring-blue-500/20 shadow-lg bg-gray-900/80 p-1">
+                    <Image
+                      src="/webory-logo.png"
+                      alt="Webory Nexus"
+                      width={56}
+                      height={56}
+                      className="h-full w-full object-contain"
+                    />
+                  </div>
+                  <h4 className="font-semibold text-gray-800 dark:text-gray-100 text-base">
+                    Webory Nexus AI Support
+                  </h4>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                     Hi! How can I help you today? 😊
                   </p>
                   <div className="mt-4 space-y-2">
@@ -232,8 +288,19 @@ export default function SupportChatbot() {
               {messages.map((msg, idx) => (
                 <div
                   key={idx}
-                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                  className={`flex items-end gap-2 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
+                  {msg.role === "assistant" && (
+                    <div className="h-7 w-7 rounded-full overflow-hidden shrink-0 border border-blue-400/30 bg-gray-900 shadow-sm mb-1 p-0.5">
+                      <Image
+                        src="/webory-logo.png"
+                        alt="Webory Nexus"
+                        width={28}
+                        height={28}
+                        className="h-full w-full object-contain"
+                      />
+                    </div>
+                  )}
                   <div
                     className={`max-w-[80%] rounded-2xl px-4 py-3 shadow-sm ${
                       msg.role === "user"
@@ -259,7 +326,16 @@ export default function SupportChatbot() {
               ))}
 
               {isLoading && (
-                <div className="flex justify-start">
+                <div className="flex items-end gap-2 justify-start">
+                  <div className="h-7 w-7 rounded-full overflow-hidden shrink-0 border border-blue-400/30 bg-gray-900 shadow-sm mb-1 p-0.5">
+                    <Image
+                      src="/webory-logo.png"
+                      alt="Webory Nexus"
+                      width={28}
+                      height={28}
+                      className="h-full w-full object-contain"
+                    />
+                  </div>
                   <div className="bg-white dark:bg-gray-700 rounded-2xl px-4 py-3 shadow-sm">
                     <div className="flex items-center gap-2">
                       <Loader2 className="h-4 w-4 animate-spin text-blue-600" />

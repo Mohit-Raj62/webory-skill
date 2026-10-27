@@ -1,25 +1,19 @@
 import { Navbar } from "@/components/ui/navbar";
 import { Hero } from "@/components/landing/hero";
-import { FreeExperienceHighlight } from "@/components/landing/free-experience";
 import dynamic from 'next/dynamic';
 
-const Features = dynamic(() => import('@/components/landing/features').then(mod => mod.Features));
+const WhyWeboryAndTrust = dynamic(() => import('@/components/landing/why-webory-trust').then(mod => mod.WhyWeboryAndTrust));
 const EnrolledCourses = dynamic(() => import('@/components/landing/enrolled-courses').then(mod => mod.EnrolledCourses));
 const AppliedInternships = dynamic(() => import('@/components/landing/applied-internships').then(mod => mod.AppliedInternships));
 const CoursesPreview = dynamic(() => import('@/components/landing/courses-preview').then(mod => mod.CoursesPreview));
-const Internships = dynamic(() => import('@/components/landing/internships').then(mod => mod.Internships));
-const TrustProofSection = dynamic(() => import('@/components/landing/trust-proof').then(mod => mod.TrustProofSection));
 const VideoTestimonialsSection = dynamic(() => import('@/components/landing/video-testimonials').then(mod => mod.VideoTestimonialsSection));
 const TestimonialsSection = dynamic(() => import('@/components/home/TestimonialsSection').then(mod => mod.TestimonialsSection));
-const FAQ = dynamic(() => import('@/components/landing/faq').then(mod => mod.FAQ));
 const Footer = dynamic(() => import('@/components/ui/footer').then(mod => mod.Footer));
-const AIRoadmapFlow = dynamic(() => import('@/components/landing/ai-roadmap-flow').then(mod => mod.AIRoadmapFlow));
 const DevLabPreview = dynamic(() => import('@/components/landing/devlab-preview').then(mod => mod.DevLabPreview));
 const AINexusShowcase = dynamic(() => import('@/components/landing/ai-nexus-showcase').then(mod => mod.AINexusShowcase));
 const HackathonPreview = dynamic(() => import('@/components/landing/hackathon-preview').then(mod => mod.HackathonPreview));
 const LeaderboardSection = dynamic(() => import('@/components/home/LeaderboardSection').then(mod => mod.LeaderboardSection));
 const LiveStudentActivity = dynamic(() => import('@/components/ui/LiveStudentActivity').then(mod => mod.LiveStudentActivity));
-const TechCareerCalculator = dynamic(() => import('@/components/landing/career-calculator').then(mod => mod.TechCareerCalculator));
 
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
@@ -34,8 +28,7 @@ import { Suspense } from "react";
 import { 
     SectionSkeleton, 
     FeatureSkeleton, 
-    CoursesPreviewSkeleton, 
-    TrustProofSkeleton 
+    CoursesPreviewSkeleton 
 } from "@/components/landing/LandingSkeletons";
 
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
@@ -46,14 +39,19 @@ export default async function Home() {
     let courseCount = 0;
     let popularCourses: any[] = [];
     let leaderboardData: any[] = [];
+    let dynamicCourses: any[] = [];
+    let dynamicInternships: any[] = [];
+
     try {
         await dbConnect();
-        const [users, internships, courses, popular, topLearners] = await Promise.all([
+        const [users, internships, courses, popular, topLearners, latestCourses, latestInternships] = await Promise.all([
             User.countDocuments(),
             Internship.countDocuments({ isActive: { $ne: false } }),
             Course.countDocuments({ isAvailable: true }),
             Course.find({ isPopular: true, isAvailable: true }).select('title level studentsCount color icon').limit(4).lean(),
             User.find({ role: "student", xp: { $gt: 0 } }).sort({ xp: -1 }).limit(50).select("firstName lastName avatar xp").lean(),
+            Course.find({ isAvailable: true }).select('title slug').sort({ createdAt: -1 }).limit(4).lean(),
+            Internship.find({ isActive: { $ne: false } }).select('title slug').sort({ createdAt: -1 }).limit(4).lean(),
         ]);
         
         userCount = users;
@@ -61,6 +59,8 @@ export default async function Home() {
         courseCount = courses;
         popularCourses = JSON.parse(JSON.stringify(popular));
         leaderboardData = JSON.parse(JSON.stringify(topLearners));
+        dynamicCourses = JSON.parse(JSON.stringify(latestCourses || []));
+        dynamicInternships = JSON.parse(JSON.stringify(latestInternships || []));
 
     } catch (error) {
         console.error("Failed to fetch counts for landing page", error);
@@ -69,19 +69,14 @@ export default async function Home() {
     return (
         <main className="min-h-screen overflow-x-hidden">
             <Navbar />
-            <Hero initialUserCount={userCount} initialInternshipCount={internshipCount} initialCourseCount={courseCount} />
+            <Hero 
+                initialUserCount={userCount} 
+                initialInternshipCount={internshipCount} 
+                initialCourseCount={courseCount}
+                courses={dynamicCourses}
+                internships={dynamicInternships}
+            />
             
-            <ScrollReveal style="fade-up">
-                <Suspense fallback={<div className="h-40 bg-white/5 animate-pulse" />}>
-                    <FreeExperienceHighlight />
-                </Suspense>
-            </ScrollReveal>
-
-            <ScrollReveal style="fade-up">
-                <Suspense fallback={<SectionSkeleton height="h-[600px]" />}>
-                    <TechCareerCalculator />
-                </Suspense>
-            </ScrollReveal>
 
             <ScrollReveal style="3d-tilt">
                 <Suspense fallback={<div className="container mx-auto px-4 py-12"><div className="h-64 bg-white/5 rounded-3xl animate-pulse" /></div>}>
@@ -95,15 +90,9 @@ export default async function Home() {
                 </Suspense>
             </ScrollReveal>
 
-            <ScrollReveal style="scale-up">
+            <ScrollReveal style="fade-up">
                 <Suspense fallback={<FeatureSkeleton />}>
-                    <Features />
-                </Suspense>
-            </ScrollReveal>
-
-            <ScrollReveal style="3d-flip">
-                <Suspense fallback={<SectionSkeleton height="h-[500px]" />}>
-                    <AIRoadmapFlow />
+                    <WhyWeboryAndTrust />
                 </Suspense>
             </ScrollReveal>
 
@@ -137,23 +126,7 @@ export default async function Home() {
                 </Suspense>
             </ScrollReveal>
 
-            <ScrollReveal style="3d-flip">
-                <Suspense fallback={<CoursesPreviewSkeleton />}>
-                    <CoursesPreview popularCourses={popularCourses} />
-                </Suspense>
-            </ScrollReveal>
 
-            <ScrollReveal style="scale-up">
-                <Suspense fallback={<SectionSkeleton height="h-[900px]" />}>
-                    <Internships />
-                </Suspense>
-            </ScrollReveal>
-
-            <ScrollReveal style="3d-tilt">
-                <Suspense fallback={<TrustProofSkeleton />}>
-                    <TrustProofSection />
-                </Suspense>
-            </ScrollReveal>
 
             <ScrollReveal style="fade-up">
                 <Suspense fallback={<SectionSkeleton height="h-[400px]" />}>
@@ -161,11 +134,6 @@ export default async function Home() {
                 </Suspense>
             </ScrollReveal>
 
-            <ScrollReveal style="scale-up">
-                <Suspense fallback={<SectionSkeleton height="h-[600px]" />}>
-                    <FAQ />
-                </Suspense>
-            </ScrollReveal>
 
             <LiveStudentActivity />
             <Footer />

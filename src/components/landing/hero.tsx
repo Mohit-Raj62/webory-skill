@@ -1,340 +1,132 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { motion, animate, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { animate } from "framer-motion";
 import { 
-    ArrowRight, 
     Code, 
     Rocket, 
     Users, 
     BookOpen, 
     ShieldCheck, 
     GraduationCap, 
-    CheckCircle2, 
     Star, 
-    Zap, 
-    Sparkles, 
-    Play,
-    Check,
-    Lock,
-    Code2,
-    Bot,
+    Sparkles,
     Briefcase,
-    Database
+    Brain,
+    Laptop,
+    Terminal,
+    Cpu,
+    ArrowRight,
+    Zap,
+    CheckCircle2
 } from "lucide-react";
 import { useAuth } from "@/components/auth/session-provider";
-import dynamic from "next/dynamic";
-import { Typewriter } from "@/components/ui/typewriter";
-
-const ParticleNetwork = dynamic(() => import("@/components/ui/particle-network").then(mod => mod.ParticleNetwork), { 
-    ssr: false,
-    loading: () => <div className="absolute inset-0 bg-black/20" /> 
-});
-
-const MOBILE_TYPEWRITER_WORDS = [
-    "Tech Careers",
-    "Software Engineers",
-    "Future Developers",
-    "High-Paying Roles"
-];
-
-const DESKTOP_TYPEWRITER_WORDS = [
-    "High-Growth Tech Careers",
-    "Future-Proof Engineers",
-    "Industry-Ready Developers",
-    "High-Impact Tech Roles"
-];
 
 interface HeroProps {
     initialUserCount?: number;
     initialInternshipCount?: number;
     initialCourseCount?: number;
+    courses?: Array<{ title: string; slug?: string }>;
+    internships?: Array<{ title: string; slug?: string }>;
 }
 
-/* ---------- Interactive Career Track Preview (PW Skills / Scaler High-End Style) ---------- */
-interface RoadmapTrack {
-    id: string;
-    label: string;
-    title: string;
-    duration: string;
-    avgSalary: string;
-    projectsCount: string;
-    progress: number;
-    icon: any;
-    accentColor: string;
-    techStack: string[];
-    steps: {
-        title: string;
-        note: string;
-        state: "done" | "now" | "locked";
-    }[];
-}
-
-const ROADMAP_TRACKS: RoadmapTrack[] = [
-    {
-        id: "fullstack",
-        label: "Full-Stack AI",
-        title: "Full-Stack GenAI Developer",
-        duration: "14 Weeks",
-        avgSalary: "₹8.5 - 18 LPA",
-        projectsCount: "4 Production Apps",
-        progress: 65,
-        icon: Code2,
-        accentColor: "#3B82F6",
-        techStack: ["Next.js 15", "React 19", "TypeScript", "Node.js", "PostgreSQL", "LangChain"],
-        steps: [
-            { title: "HTML5, Tailwind & Modern JavaScript ES6+", note: "Module 1 • Free Preview Unlocked", state: "done" },
-            { title: "React 19, TypeScript & Next.js App Router", note: "Interactive Code Labs & UI Patterns", state: "done" },
-            { title: "Build AI SaaS Platform & RAG System", note: "Active Live Sprint • Hands-on Project", state: "now" },
-            { title: "Node.js, Express & Scalable PostgreSQL", note: "Cloud APIs & Auth Architecture", state: "locked" },
-            { title: "Verified Credential & 1:1 IIT Mentorship", note: "Official LOR & Placement Review", state: "locked" },
-        ],
-    },
-    {
-        id: "genai",
-        label: "GenAI & LLMs",
-        title: "Generative AI Engineer",
-        duration: "12 Weeks",
-        avgSalary: "₹10 - 24 LPA",
-        projectsCount: "3 AI Multi-Agents",
-        progress: 45,
-        icon: Bot,
-        accentColor: "#8B5CF6",
-        techStack: ["Python", "LangChain", "OpenAI / LLaMA", "ChromaDB", "PyTorch", "RAG"],
-        steps: [
-            { title: "Python for AI, Linear Algebra & REST APIs", note: "Module 1 • Free Preview Unlocked", state: "done" },
-            { title: "LangChain, Vector DBs & RAG Workflows", note: "Hands-on Code Labs with OpenAI", state: "done" },
-            { title: "Build Autonomous Multi-Agent Workflows", note: "Active Live Sprint • Real Data System", state: "now" },
-            { title: "Fine-Tuning Open Source LLMs (LoRA)", note: "GPU Training Labs on Cloud", state: "locked" },
-            { title: "Deploy Production AI Systems & APIs", note: "Capstone Portfolio & Certification", state: "locked" },
-        ],
-    },
-    {
-        id: "datascience",
-        label: "Data & ML",
-        title: "Data Science & Machine Learning",
-        duration: "12 Weeks",
-        avgSalary: "₹7.5 - 16 LPA",
-        projectsCount: "5 Predictive Models",
-        progress: 55,
-        icon: Database,
-        accentColor: "#F59E0B",
-        techStack: ["Python", "Pandas", "Scikit-Learn", "SQL", "Tableau", "Neural Networks"],
-        steps: [
-            { title: "Python for Data Analysis & Advanced SQL", note: "Module 1 • Free Preview Unlocked", state: "done" },
-            { title: "Data Wrangling with Pandas & NumPy", note: "Real Financial & User Datasets", state: "done" },
-            { title: "Supervised & Unsupervised Machine Learning", note: "Active Live Sprint • Customer Churn Model", state: "now" },
-            { title: "Deep Learning with TensorFlow & Keras", note: "Computer Vision & NLP Pipelines", state: "locked" },
-            { title: "Data Analytics Portfolio & IIT Credential", note: "Industry Presentation & Case Study", state: "locked" },
-        ],
-    },
-    {
-        id: "python",
-        label: "Python Core",
-        title: "Python Backend & Automation",
-        duration: "8 Weeks",
-        avgSalary: "₹6.5 - 14 LPA",
-        projectsCount: "4 Real World Scripts",
-        progress: 75,
-        icon: Zap,
-        accentColor: "#06B6D4",
-        techStack: ["Python 3.12", "FastAPI", "OOPs", "Web Scraping", "Docker", "PostgreSQL"],
-        steps: [
-            { title: "Python Syntax, Data Structures & Logic", note: "Module 1 • Free Preview Unlocked", state: "done" },
-            { title: "OOPs, Decorators & System Design Patterns", note: "20+ Hands-on Coding Challenges", state: "done" },
-            { title: "FastAPI REST API & Automated Scraper Bot", note: "Active Live Sprint • Real Data Bot", state: "now" },
-            { title: "Database Integration with SQLAlchemy", note: "Secure Auth & Dockerized Deployment", state: "locked" },
-            { title: "Verified Python Developer Certificate", note: "Instant QR Credential", state: "locked" },
-        ],
-    },
-    {
-        id: "internship",
-        label: "Live Internship",
-        title: "Production Industry Internship",
-        duration: "8 Weeks",
-        avgSalary: "Stipend + LOR",
-        projectsCount: "Live Client Project",
-        progress: 50,
-        icon: Briefcase,
-        accentColor: "#10B981",
-        techStack: ["Live Repo", "Git PR Reviews", "Agile Sprints", "CI/CD", "Client Brief", "Verified LOR"],
-        steps: [
-            { title: "Client Architecture Brief & Team Onboarding", note: "Week 1 • Environment Setup", state: "done" },
-            { title: "Frontend UI/UX & Responsive Core Features", note: "Weekly Code Reviews by Tech Lead", state: "done" },
-            { title: "Backend API Integration & Security Audits", note: "Active • Live Sprint Testing", state: "now" },
-            { title: "CI/CD Pipeline & Production Launch", note: "Live Cloud Deployment", state: "locked" },
-            { title: "Experience Certificate & Letter of Recommendation", note: "Verified Company LOR signed by Director", state: "locked" },
-        ],
-    },
+// Fallback items if DB has fewer than 4 items
+const DEFAULT_COURSES = [
+    { title: "Data Science & Analytics", slug: "data-science" },
+    { title: "Full-Stack Web Systems", slug: "full-stack-web-systems" },
+    { title: "DSA & Core Algorithms", slug: "dsa-core-algorithms" },
+    { title: "AI/ML Engineering", slug: "ai-ml-engineering" }
 ];
 
-function InteractiveRoadmapCard() {
-    const [activeTrackIndex, setActiveTrackIndex] = useState(0);
-    const activeTrack = ROADMAP_TRACKS[activeTrackIndex];
+const DEFAULT_INTERNSHIPS = [
+    { title: "Software Development", slug: "software-development" },
+    { title: "AI & Data Engineer Intern", slug: "ai-data-engineer-intern" },
+    { title: "Frontend & UI Systems", slug: "frontend-ui-systems" },
+    { title: "Backend Cloud Systems", slug: "backend-cloud-systems" }
+];
 
-    return (
-        <div className="relative rounded-2xl sm:rounded-3xl border border-white/[0.12] bg-[#111633]/90 p-3.5 sm:p-6 shadow-2xl shadow-black/50 backdrop-blur-2xl overflow-hidden">
-            {/* Ambient Background Glow */}
-            <div
-                className="absolute -top-24 -right-24 w-60 h-60 rounded-full blur-[90px] opacity-20 pointer-events-none transition-colors duration-500"
-                style={{ backgroundColor: activeTrack.accentColor }}
-            />
+// Unified, Normal & Professional Badges Preset for Courses (Left Wing)
+const COURSE_BADGE_PRESETS = [
+    { 
+        glow: "border-white/10 bg-[#0B0F28]/90 hover:border-blue-500/40 hover:bg-[#0E1436]/95 shadow-lg shadow-black/40 text-white", 
+        badgeBg: "bg-blue-500/10 text-blue-300 border-blue-500/20",
+        accent: "text-blue-400",
+        angle: -5,
+        offset: "ml-0",
+        icon: Brain,
+        tag: "Course Track"
+    },
+    { 
+        glow: "border-white/10 bg-[#0B0F28]/90 hover:border-blue-500/40 hover:bg-[#0E1436]/95 shadow-lg shadow-black/40 text-white", 
+        badgeBg: "bg-blue-500/10 text-blue-300 border-blue-500/20",
+        accent: "text-blue-400",
+        angle: -2,
+        offset: "ml-6 xl:ml-10",
+        icon: Sparkles,
+        tag: "High Demand"
+    },
+    { 
+        glow: "border-white/10 bg-[#0B0F28]/90 hover:border-blue-500/40 hover:bg-[#0E1436]/95 shadow-lg shadow-black/40 text-white", 
+        badgeBg: "bg-blue-500/10 text-blue-300 border-blue-500/20",
+        accent: "text-blue-400",
+        angle: -6,
+        offset: "ml-2 xl:ml-4",
+        icon: Laptop,
+        tag: "DevLab Ready"
+    },
+    { 
+        glow: "border-white/10 bg-[#0B0F28]/90 hover:border-blue-500/40 hover:bg-[#0E1436]/95 shadow-lg shadow-black/40 text-white", 
+        badgeBg: "bg-blue-500/10 text-blue-300 border-blue-500/20",
+        accent: "text-blue-400",
+        angle: -3,
+        offset: "ml-8 xl:ml-12",
+        icon: Code,
+        tag: "Production Code"
+    }
+];
 
-            {/* Track Selector Tabs (5 Tracks) - Scrollbar 100% Hidden */}
-            <div 
-                className="flex items-center gap-1.5 p-1 rounded-2xl bg-[#090C1F]/90 border border-white/[0.06] mb-3 sm:mb-4 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            >
-                {ROADMAP_TRACKS.map((t, idx) => {
-                    const isActive = idx === activeTrackIndex;
-                    const Icon = t.icon;
-                    return (
-                        <button
-                            key={t.id}
-                            type="button"
-                            onClick={() => setActiveTrackIndex(idx)}
-                            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold whitespace-nowrap shrink-0 transition-all duration-200 cursor-pointer ${
-                                isActive
-                                    ? "bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 text-white shadow-md shadow-blue-500/25 border border-white/20 scale-[1.02]"
-                                    : "text-gray-400 hover:text-gray-200 hover:bg-white/[0.04]"
-                            }`}
-                        >
-                            <Icon size={13} className={isActive ? "text-emerald-400" : "opacity-70"} />
-                            <span>{t.label}</span>
-                        </button>
-                    );
-                })}
-            </div>
+// Unified, Normal & Professional Badges Preset for Internships (Right Wing)
+const INTERNSHIP_BADGE_PRESETS = [
+    { 
+        glow: "border-white/10 bg-[#09141F]/90 hover:border-emerald-500/40 hover:bg-[#0C1B2A]/95 shadow-lg shadow-black/40 text-white", 
+        badgeBg: "bg-emerald-500/10 text-emerald-300 border-emerald-500/20",
+        accent: "text-emerald-400",
+        angle: 5,
+        offset: "mr-0",
+        icon: Terminal,
+        tag: "Active Batch"
+    },
+    { 
+        glow: "border-white/10 bg-[#09141F]/90 hover:border-emerald-500/40 hover:bg-[#0C1B2A]/95 shadow-lg shadow-black/40 text-white", 
+        badgeBg: "bg-emerald-500/10 text-emerald-300 border-emerald-500/20",
+        accent: "text-emerald-400",
+        angle: 2,
+        offset: "mr-6 xl:mr-10",
+        icon: Briefcase,
+        tag: "QR Verified"
+    },
+    { 
+        glow: "border-white/10 bg-[#09141F]/90 hover:border-emerald-500/40 hover:bg-[#0C1B2A]/95 shadow-lg shadow-black/40 text-white", 
+        badgeBg: "bg-emerald-500/10 text-emerald-300 border-emerald-500/20",
+        accent: "text-emerald-400",
+        angle: 6,
+        offset: "mr-2 xl:mr-4",
+        icon: Cpu,
+        tag: "Mentored"
+    },
+    { 
+        glow: "border-white/10 bg-[#09141F]/90 hover:border-emerald-500/40 hover:bg-[#0C1B2A]/95 shadow-lg shadow-black/40 text-white", 
+        badgeBg: "bg-emerald-500/10 text-emerald-300 border-emerald-500/20",
+        accent: "text-emerald-400",
+        angle: 3,
+        offset: "mr-8 xl:mr-12",
+        icon: Rocket,
+        tag: "Industrial LOR"
+    }
+];
 
-            {/* Track Header & Outcome Tags */}
-            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2.5 sm:gap-3 mb-3 sm:mb-4">
-                <div>
-                    <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                            Interactive Career Roadmap
-                        </span>
-                        <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                        </span>
-                    </div>
-                    <h3 className="text-base sm:text-xl font-bold text-[#EEF0FF] tracking-tight">
-                        {activeTrack.title}
-                    </h3>
-                </div>
-
-                <div className="flex items-center gap-2 shrink-0">
-                    <span className="rounded-full bg-white/[0.06] border border-white/10 px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-[11px] font-semibold text-gray-300">
-                        {activeTrack.duration}
-                    </span>
-                    <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-[11px] font-bold text-emerald-400 shadow-sm">
-                        {activeTrack.avgSalary}
-                    </span>
-                </div>
-            </div>
-
-            {/* Tech Stack Pills */}
-            <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 mb-3 sm:mb-4">
-                <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider mr-1">Tools:</span>
-                {activeTrack.techStack.map((tech) => (
-                    <span 
-                        key={tech}
-                        className="px-2 py-0.5 rounded-lg bg-[#090C1F] border border-white/[0.08] text-[10px] font-medium text-gray-300 shadow-sm"
-                    >
-                        {tech}
-                    </span>
-                ))}
-            </div>
-
-            {/* Sprint Progress Bar */}
-            <div className="mb-4 p-2.5 rounded-xl bg-[#090C1F]/70 border border-white/[0.04]">
-                <div className="flex items-center justify-between text-[11px] font-medium text-gray-400 mb-1.5">
-                    <span>Curriculum Sprint Progress</span>
-                    <span className="text-white font-bold">{activeTrack.progress}% Completed</span>
-                </div>
-                <div className="w-full h-2 rounded-full bg-[#1A1F45] overflow-hidden">
-                    <div 
-                        className="h-full rounded-full bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-400 transition-all duration-500"
-                        style={{ width: `${activeTrack.progress}%` }}
-                    />
-                </div>
-            </div>
-
-            {/* Steps List */}
-            <div className="relative space-y-2.5">
-                {/* Subtle soft dashed guide (replaces harsh line) */}
-                <div className="absolute left-[13px] top-3 bottom-3 border-l border-dashed border-white/[0.12]" aria-hidden />
-
-                {activeTrack.steps.map((s) => (
-                    <div
-                        key={s.title}
-                        className="relative flex items-start gap-3 group cursor-default"
-                    >
-                        <span
-                            className={
-                                "relative z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs transition-transform duration-200 " +
-                                (s.state === "done"
-                                    ? "border-blue-400 bg-blue-500 text-white shadow-sm shadow-blue-500/30"
-                                    : s.state === "now"
-                                    ? "border-emerald-400 bg-[#090C1F] text-emerald-400 shadow-md ring-4 ring-emerald-500/10"
-                                    : "border-white/10 bg-[#090C1F] text-gray-500")
-                            }
-                        >
-                            {s.state === "done" && <Check className="h-3.5 w-3.5 stroke-[3]" />}
-                            {s.state === "now" && (
-                                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                            )}
-                            {s.state === "locked" && <Lock className="h-3 w-3" />}
-                        </span>
-                        <div className="pt-0.5 flex-1 min-w-0">
-                            <p
-                                className={
-                                    "text-xs sm:text-sm font-semibold tracking-tight leading-snug line-clamp-2 sm:line-clamp-none " +
-                                    (s.state === "locked" ? "text-gray-400" : "text-[#EEF0FF]")
-                                }
-                            >
-                                {s.title}
-                            </p>
-                            <p
-                                className={
-                                    "text-[11px] mt-0.5 " +
-                                    (s.state === "now"
-                                        ? "text-emerald-400 font-medium"
-                                        : "text-gray-500")
-                                }
-                            >
-                                {s.note}
-                            </p>
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            {/* Bottom Card Action */}
-            <div className="mt-5 pt-3.5 border-t border-white/[0.08] flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
-                <Link
-                    href="/courses"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-300 hover:text-white transition-colors"
-                >
-                    <Play size={12} className="text-emerald-400 fill-emerald-400" />
-                    <span>Watch Module 1 Free</span>
-                </Link>
-
-                <Link
-                    href="/ai-weboryskills"
-                    className="inline-flex items-center gap-1 text-xs font-bold text-emerald-400 hover:text-emerald-300 transition-colors"
-                >
-                    <Sparkles size={12} className="text-amber-400" />
-                    <span>Customize Path <ArrowRight size={13} /></span>
-                </Link>
-            </div>
-        </div>
-    );
-}
-
-// Executive-Grade Live Metric Card (PW Skills / Scaler / Stripe High-Impact Design)
+// Executive-Grade Metric Badge Component
 interface MetricBadgeProps {
     icon: any;
     label: string;
@@ -375,16 +167,11 @@ function MetricBadge({
 
     return (
         <div className={`relative group rounded-2xl border border-white/[0.08] ${borderColor} bg-gradient-to-b from-[#141A3D]/95 via-[#0F1433]/90 to-[#0A0E26]/90 p-2.5 sm:p-4 backdrop-blur-xl shadow-lg shadow-black/40 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-default min-h-[105px] sm:min-h-[125px]`}>
-            {/* Top Specular Edge Shine */}
             <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/25 to-transparent" />
-            
-            {/* Dynamic ambient hover glow */}
             <div 
                 className="absolute -top-10 -right-10 w-24 h-24 rounded-full blur-2xl opacity-0 group-hover:opacity-40 transition-opacity duration-500 pointer-events-none"
                 style={{ backgroundColor: glowColor }}
             />
-
-            {/* Top row: Icon + Tag */}
             <div className="flex items-center justify-between gap-1 mb-2 sm:mb-2.5">
                 <div className={`w-7 h-7 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center ${gradientClass} text-white shadow-md shadow-black/30 group-hover:scale-105 transition-transform duration-300 shrink-0`}>
                     <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
@@ -395,8 +182,6 @@ function MetricBadge({
                     </span>
                 )}
             </div>
-
-            {/* Value & Label */}
             <div>
                 <h4 className="text-lg sm:text-2xl lg:text-3xl font-extrabold text-[#EEF0FF] tabular-nums tracking-tight drop-shadow-sm">
                     {displayValue}
@@ -412,269 +197,406 @@ function MetricBadge({
     );
 }
 
-export function Hero({ initialUserCount = 10, initialInternshipCount = 12, initialCourseCount = 5 }: HeroProps) {
+export function Hero({ 
+    initialUserCount = 10, 
+    initialInternshipCount = 12, 
+    initialCourseCount = 5,
+    courses = [],
+    internships = []
+}: HeroProps) {
     const { user } = useAuth();
-    const isLoggedIn = !!user;
+    const [isHovered, setIsHovered] = useState(false);
+
     const activeStudents = initialUserCount > 0 ? `${initialUserCount}+` : "10+";
     const launchedInternships = initialInternshipCount > 0 ? `${initialInternshipCount}+` : "12+";
     const availableCourses = initialCourseCount > 0 ? `${initialCourseCount}+` : "5+";
 
+    // Guarantee 4 dynamic slots on each wing
+    const displayCourses = Array.from({ length: 4 }).map((_, i) => courses[i] || DEFAULT_COURSES[i]);
+    const displayInternships = Array.from({ length: 4 }).map((_, i) => internships[i] || DEFAULT_INTERNSHIPS[i]);
+
     return (
-        <section className="relative pt-20 pb-8 sm:pt-28 sm:pb-16 md:pt-32 md:pb-20 overflow-hidden bg-[#0A0D1F]">
-            {/* Ambient Background Lighting */}
-            <div className="absolute top-0 left-1/4 -translate-x-1/2 w-[600px] h-[450px] bg-gradient-to-b from-blue-600/12 via-indigo-600/8 to-transparent rounded-full blur-[140px] pointer-events-none" />
-            <div className="absolute top-1/3 right-0 w-[500px] h-[400px] bg-gradient-to-b from-purple-600/10 via-emerald-600/5 to-transparent rounded-full blur-[140px] pointer-events-none" />
-            
-            {/* Interactive Particle Network */}
-            <ParticleNetwork />
+        <section className="relative pt-20 pb-8 sm:pt-28 sm:pb-16 md:pt-32 md:pb-20 overflow-hidden bg-[#04060e]">
+            {/* Ambient Multi-Layer Aura Lighting */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-gradient-to-b from-blue-600/18 via-indigo-600/10 to-transparent rounded-full blur-[160px] pointer-events-none" />
+            <div className="absolute top-1/4 left-4 w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[150px] pointer-events-none" />
+            <div className="absolute top-1/4 right-4 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[150px] pointer-events-none" />
 
-            {/* Subtle Grid Pattern */}
-            <div 
-                className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:24px_24px]" 
-                aria-hidden 
-            />
+            {/* Softened High-Tech Lined Blueprint Grid with Atmospheric Blur */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:46px_46px] [mask-image:radial-gradient(ellipse_80%_65%_at_50%_35%,#000_70%,transparent_100%)] pointer-events-none backdrop-blur-[1px]" />
 
-            <div className="container mx-auto px-4 relative z-10">
-                {/* 2-COLUMN PROFESSIONAL LAYOUT (PW Skills / Scaler / Modern EdTech Style) */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-                    
-                    {/* LEFT COLUMN: Pitch, Badges, Typography & CTAs (7 cols) */}
-                    <div className="lg:col-span-7 text-left space-y-4 sm:space-y-6">
+            <div className="container mx-auto px-4 sm:px-6 relative z-10 max-w-7xl">
+                <div className="flex flex-col items-center space-y-6 sm:space-y-8">
                         
-                        {/* Credibility & Trust Badges */}
-                        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                            {/* Mobile Sleek Combined Pill */}
-                            <div className="sm:hidden inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[11px] font-semibold text-emerald-300">
-                                <span className="relative flex h-1.5 w-1.5">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
-                                </span>
-                                <span>Govt. Registered</span>
-                                <span className="text-white/30">•</span>
-                                <span className="text-purple-300">IIT Mandi Mentored</span>
-                            </div>
+                    {/* Top Webory Credibility Pill */}
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-xs text-gray-300 shadow-sm backdrop-blur-md">
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                        </span>
+                        <span className="font-semibold text-emerald-400">Govt. Registered Startup</span>
+                        <span className="text-gray-500">•</span>
+                        <span className="text-gray-300">Mentored by IIT Mandi Faculty</span>
+                    </div>
 
-                            {/* Desktop & Tablet Badges */}
-                            <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[11px] sm:text-xs font-semibold shadow-sm">
-                                <span className="relative flex h-2 w-2">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                                </span>
-                                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                                <span>Govt. Registered Startup • UDYAM-BR-26-0208472</span>
-                            </div>
-
-                            <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-[11px] sm:text-xs font-semibold shadow-sm">
-                                <GraduationCap className="w-3.5 h-3.5 text-purple-400 shrink-0" />
-                                <span>Mentored by IIT Mandi Faculty</span>
-                            </div>
+                    {/* SPACIOUS INTERACTIVE SHOWCASE STAGE (Responsive & Overflow-Safe) */}
+                    <div 
+                        onMouseEnter={() => setIsHovered(true)}
+                        onMouseLeave={() => setIsHovered(false)}
+                        onClick={() => setIsHovered(prev => !prev)}
+                        className="relative w-full py-4 sm:py-10 lg:py-16 min-h-0 lg:min-h-[460px] flex items-center justify-center cursor-default group"
+                    >
+                        
+                        {/* LEFT FLANK: Webory Holographic Course Badges (Spread Out & Tilted) */}
+                        <div className={`hidden lg:flex absolute -left-4 xl:-left-12 2xl:-left-20 top-1/2 -translate-y-1/2 flex-col items-start gap-6 xl:gap-7 z-20 w-[260px] xl:w-[290px] transition-all duration-300 ${isHovered ? 'pointer-events-auto' : 'pointer-events-none'}`}>
+                            {displayCourses.map((course, idx) => {
+                                const preset = COURSE_BADGE_PRESETS[idx % COURSE_BADGE_PRESETS.length];
+                                const Icon = preset.icon;
+                                return (
+                                    <motion.div
+                                        key={`course-${course.slug || idx}-${course.title}`}
+                                        initial={false}
+                                        animate={{
+                                            opacity: isHovered ? 1 : 0,
+                                            x: isHovered ? 0 : 50,
+                                            rotate: isHovered ? preset.angle : 0,
+                                            scale: isHovered ? 1 : 0.85
+                                        }}
+                                        whileHover={{
+                                            scale: 1.05,
+                                            rotate: preset.angle - 2,
+                                            transition: { duration: 0.15 }
+                                        }}
+                                        transition={{
+                                            type: "spring",
+                                            stiffness: 260,
+                                            damping: 20,
+                                            delay: isHovered ? idx * 0.05 : 0
+                                        }}
+                                        className={`${preset.offset}`}
+                                    >
+                                        <Link 
+                                            href="/courses"
+                                            className={`group/badge flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-semibold backdrop-blur-xl border ${preset.glow} transition-all duration-300 hover:border-blue-400/60 block`}
+                                        >
+                                            <div className="w-6 h-6 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                                                <Icon size={13} className={preset.accent} />
+                                            </div>
+                                            <div className="text-left">
+                                                <span className="text-white text-xs font-bold block truncate max-w-[170px] xl:max-w-[200px] group-hover/badge:text-cyan-300 transition-colors">
+                                                    {course.title}
+                                                </span>
+                                                <span className={`text-[9px] font-mono px-1.5 py-0.2 rounded border inline-block ${preset.badgeBg}`}>
+                                                    {preset.tag}
+                                                </span>
+                                            </div>
+                                        </Link>
+                                    </motion.div>
+                                );
+                            })}
                         </div>
 
-                        {/* Main Headline */}
-                        <h1 className="text-[23px] min-[360px]:text-[26px] min-[400px]:text-[28px] sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.2] sm:leading-[1.15] text-white">
-                            <span className="block sm:inline">
-                                AI-Powered Skill Platform{" "}
-                            </span>
-                            <span className="block sm:mt-2 text-slate-300 sm:text-white font-extrabold sm:font-black">
-                                <span className="text-gray-300 font-bold text-base min-[360px]:text-lg sm:text-5xl lg:text-6xl sm:font-black sm:text-white">for </span>
-                                <span className="inline">
-                                    <span className="sm:hidden">
-                                        <Typewriter 
-                                            words={MOBILE_TYPEWRITER_WORDS}
-                                            textClassName="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-300"
-                                        />
-                                    </span>
-                                    <span className="hidden sm:inline">
-                                        <Typewriter 
-                                            words={DESKTOP_TYPEWRITER_WORDS}
-                                            textClassName="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-300"
-                                        />
-                                    </span>
+                        {/* CENTER STAGE: Beautifully Crafted Headline & Call-to-Action */}
+                        <div className="relative z-10 px-4 max-w-xl text-center space-y-4 sm:space-y-5">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold shadow-sm">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                <span>Next-Gen Career Launchpad</span>
+                            </div>
+
+                            <h1 className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-white tracking-tight leading-[1.12] drop-shadow-sm">
+                                Master In-Demand Skills. <br />
+                                <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_35px_rgba(52,211,153,0.3)]">
+                                    Build Real-World Careers.
                                 </span>
-                            </span>
-                        </h1>
+                            </h1>
 
+                            <p className="text-sm sm:text-base md:text-lg text-gray-300 font-normal max-w-lg mx-auto leading-relaxed pt-0.5">
+                                Accelerate your engineering journey with <span className="text-white font-medium">adaptive AI roadmaps</span>, live <span className="text-white font-medium">48-hour competitive hackathons</span>, and <span className="text-white font-medium">verified industrial internships</span>.
+                            </p>
 
-                        {/* Quick Trust Feature Pills */}
-                        <div className="flex flex-wrap items-center gap-2 pt-0.5">
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-[11px] sm:text-xs font-semibold text-emerald-300 shadow-sm">
-                                <Zap className="w-3 h-3 text-amber-400 shrink-0 fill-amber-400/40" />
-                                Watch Module 1 Free
-                            </span>
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/25 text-[11px] sm:text-xs font-semibold text-blue-300 shadow-sm">
-                                <Code className="w-3 h-3 text-cyan-400 shrink-0" />
-                                Production Projects
-                            </span>
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-purple-500/10 border border-purple-500/25 text-[11px] sm:text-xs font-semibold text-purple-300 shadow-sm">
-                                <GraduationCap className="w-3 h-3 text-purple-400 shrink-0" />
-                                1:1 IIT Mentorship
-                            </span>
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3.5 pt-1.5">
-                            {!isLoggedIn ? (
-                                <Link href="/signup" className="group w-full sm:w-auto block">
-                                    <Button 
-                                        size="lg" 
-                                        className="w-full sm:w-auto h-11 sm:h-13 px-6 sm:px-8 text-sm sm:text-base font-bold rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-500 text-white shadow-xl shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                                <Link href="/career-roadmap" className="w-full sm:w-auto inline-block">
+                                    <button 
+                                        type="button"
+                                        className="w-full sm:w-auto h-12 px-7 text-sm sm:text-base font-bold text-white rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-600 hover:from-emerald-400 hover:to-cyan-500 shadow-xl shadow-emerald-500/25 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 group/btn"
                                     >
-                                        Get Your AI Roadmap
-                                        <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                                    </Button>
+                                        <span>Get Started Free</span>
+                                        <ArrowRight size={15} className="group-hover/btn:translate-x-1 transition-transform" />
+                                    </button>
                                 </Link>
-                            ) : (
-                                <Link href="/ai-weboryskills" className="group w-full sm:w-auto block">
-                                    <Button 
-                                        size="lg" 
-                                        className="w-full sm:w-auto h-11 sm:h-13 px-6 sm:px-8 text-sm sm:text-base font-bold rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-500 text-white shadow-xl shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+
+                                <Link href="/courses" className="w-full sm:w-auto inline-block">
+                                    <button 
+                                        type="button"
+                                        className="w-full sm:w-auto h-12 px-5 text-sm font-semibold text-gray-300 hover:text-white rounded-xl border border-white/10 hover:border-white/20 bg-white/[0.02] hover:bg-white/[0.06] transition-all"
                                     >
-                                        Get Your AI Roadmap
-                                        <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                                    </Button>
+                                        Explore Catalog
+                                    </button>
                                 </Link>
-                            )}
-                            <Link href="/courses" className="w-full sm:w-auto block">
-                                <Button 
-                                    size="lg" 
-                                    variant="outline" 
-                                    className="w-full sm:w-auto h-11 sm:h-13 px-6 sm:px-7 text-sm sm:text-base font-semibold rounded-xl border-white/20 bg-[#121633]/80 hover:bg-[#1A2048] hover:border-white/30 text-white transition-all backdrop-blur-md"
+                            </div>
+
+                            {/* Mobile Interactive Touch Hint Pill */}
+                            <div className="lg:hidden pt-2 flex items-center justify-center">
+                                <button 
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setIsHovered(prev => !prev);
+                                    }}
+                                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-semibold transition-all duration-300 shadow-lg ${
+                                        isHovered 
+                                            ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 shadow-emerald-500/10' 
+                                            : 'bg-white/[0.06] border-white/15 text-gray-200 active:scale-95'
+                                    }`}
                                 >
-                                    <Play size={14} className="mr-2 fill-current text-blue-400" />
-                                    Explore Courses
-                                </Button>
-                            </Link>
+                                    <span className={`w-2 h-2 rounded-full ${isHovered ? 'bg-emerald-400' : 'bg-gray-400'} animate-pulse`} />
+                                    <span>{isHovered ? "Hide Live Programs ✕" : "Touch to preview Live Courses & Internships ✨"}</span>
+                                </button>
+                            </div>
+
+                            {/* Mobile Fanned-Out Programs Showcase (Appears on Touch) */}
+                            <AnimatePresence>
+                                {isHovered && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0, y: -8 }}
+                                        animate={{ opacity: 1, height: "auto", y: 0 }}
+                                        exit={{ opacity: 0, height: 0, y: -8 }}
+                                        transition={{ duration: 0.35, ease: "easeOut" }}
+                                        className="lg:hidden w-full pt-4 space-y-3 overflow-hidden text-left"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        <div className="flex items-center justify-between px-1">
+                                            <span className="text-[11px] font-bold text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                                                Live Tracks
+                                            </span>
+                                            <span className="text-[10px] text-emerald-400 font-medium">
+                                                Tap to explore
+                                            </span>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-2.5">
+                                            {/* 4 Courses Column */}
+                                            <div className="flex flex-col gap-2.5">
+                                                {displayCourses.map((course, idx) => {
+                                                    const preset = COURSE_BADGE_PRESETS[idx % COURSE_BADGE_PRESETS.length];
+                                                    const Icon = preset.icon;
+                                                    return (
+                                                        <Link
+                                                            key={`mob-course-${course.slug || idx}-${course.title}`}
+                                                            href="/courses"
+                                                            className={`flex flex-col p-2.5 rounded-xl backdrop-blur-xl border ${preset.glow} transition-all duration-200 active:scale-95 block`}
+                                                            style={{ transform: `rotate(${preset.angle * 0.4}deg)` }}
+                                                        >
+                                                            <div className="flex items-center justify-between gap-1 mb-1">
+                                                                <div className="w-5 h-5 rounded-md bg-white/5 flex items-center justify-center shrink-0">
+                                                                    <Icon size={11} className={preset.accent} />
+                                                                </div>
+                                                                <span className={`text-[8px] font-mono px-1 py-0.2 rounded border ${preset.badgeBg}`}>
+                                                                    {preset.tag}
+                                                                </span>
+                                                            </div>
+                                                            <span className="text-white text-[11px] font-bold line-clamp-2 leading-tight">
+                                                                {course.title}
+                                                            </span>
+                                                        </Link>
+                                                    );
+                                                })}
+                                            </div>
+
+                                            {/* 4 Internships Column */}
+                                            <div className="flex flex-col gap-2.5">
+                                                {displayInternships.map((internship, idx) => {
+                                                    const preset = INTERNSHIP_BADGE_PRESETS[idx % INTERNSHIP_BADGE_PRESETS.length];
+                                                    const Icon = preset.icon;
+                                                    return (
+                                                        <Link
+                                                            key={`mob-intern-${internship.slug || idx}-${internship.title}`}
+                                                            href="/internships"
+                                                            className={`flex flex-col p-2.5 rounded-xl backdrop-blur-xl border ${preset.glow} transition-all duration-200 active:scale-95 block`}
+                                                            style={{ transform: `rotate(${preset.angle * 0.4}deg)` }}
+                                                        >
+                                                            <div className="flex items-center justify-between gap-1 mb-1">
+                                                                <div className="w-5 h-5 rounded-md bg-white/5 flex items-center justify-center shrink-0">
+                                                                    <Icon size={11} className={preset.accent} />
+                                                                </div>
+                                                                <span className={`text-[8px] font-mono px-1 py-0.2 rounded border ${preset.badgeBg}`}>
+                                                                    {preset.tag}
+                                                                </span>
+                                                            </div>
+                                                            <span className="text-white text-[11px] font-bold line-clamp-2 leading-tight">
+                                                                {internship.title}
+                                                            </span>
+                                                        </Link>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
 
-                        {/* Micro Guarantees */}
-                        <div className="flex flex-wrap items-center justify-between sm:justify-start gap-x-4 gap-y-1 text-[11px] sm:text-xs text-gray-400 pt-0.5">
-                            <span className="flex items-center gap-1.5">
-                                <CheckCircle2 size={13} className="text-emerald-400 shrink-0" />
-                                No Credit Card Required
-                            </span>
-                            <span className="flex items-center gap-1.5">
-                                <CheckCircle2 size={13} className="text-emerald-400 shrink-0" />
-                                Verified QR Certificate
-                            </span>
-                            <span className="flex items-center gap-1.5">
-                                <CheckCircle2 size={13} className="text-emerald-400 shrink-0" />
-                                Instant Access
-                            </span>
+                        {/* RIGHT FLANK: Webory Holographic Internship Badges (Spread Out & Tilted) */}
+                        <div className={`hidden lg:flex absolute -right-4 xl:-right-12 2xl:-right-20 top-1/2 -translate-y-1/2 flex-col items-end gap-6 xl:gap-7 z-20 w-[260px] xl:w-[290px] transition-all duration-300 ${isHovered ? 'pointer-events-auto' : 'pointer-events-none'}`}>
+                            {displayInternships.map((internship, idx) => {
+                                const preset = INTERNSHIP_BADGE_PRESETS[idx % INTERNSHIP_BADGE_PRESETS.length];
+                                const Icon = preset.icon;
+                                return (
+                                    <motion.div
+                                        key={`internship-${internship.slug || idx}-${internship.title}`}
+                                        initial={false}
+                                        animate={{
+                                            opacity: isHovered ? 1 : 0,
+                                            x: isHovered ? 0 : -50,
+                                            rotate: isHovered ? preset.angle : 0,
+                                            scale: isHovered ? 1 : 0.85
+                                        }}
+                                        whileHover={{
+                                            scale: 1.05,
+                                            rotate: preset.angle + 2,
+                                            transition: { duration: 0.15 }
+                                        }}
+                                        transition={{
+                                            type: "spring",
+                                            stiffness: 260,
+                                            damping: 20,
+                                            delay: isHovered ? idx * 0.05 : 0
+                                        }}
+                                        className={`${preset.offset}`}
+                                    >
+                                        <Link 
+                                            href="/internships"
+                                            className={`group/badge flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-semibold backdrop-blur-xl border ${preset.glow} transition-all duration-300 hover:border-emerald-400/60 block`}
+                                        >
+                                            <div className="text-right">
+                                                <span className="text-white text-xs font-bold block truncate max-w-[170px] xl:max-w-[200px] group-hover/badge:text-emerald-300 transition-colors">
+                                                    {internship.title}
+                                                </span>
+                                                <span className={`text-[9px] font-mono px-1.5 py-0.2 rounded border inline-block ${preset.badgeBg}`}>
+                                                    {preset.tag}
+                                                </span>
+                                            </div>
+                                            <div className="w-6 h-6 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                                                <Icon size={13} className={preset.accent} />
+                                            </div>
+                                        </Link>
+                                    </motion.div>
+                                );
+                            })}
                         </div>
 
-                        {/* Mobile Compact 1-Row Stats Strip (Airy & Lightweight on Phones) */}
-                        <div className="sm:hidden grid grid-cols-4 divide-x divide-white/10 bg-white/[0.03] border border-white/10 rounded-xl py-2.5 px-1 text-center shadow-sm my-2">
-                            <div>
-                                <div className="text-sm font-extrabold text-white">{activeStudents}</div>
-                                <div className="text-[9px] text-gray-400 leading-tight">Students</div>
-                            </div>
-                            <div>
-                                <div className="text-sm font-extrabold text-white">{availableCourses}</div>
-                                <div className="text-[9px] text-gray-400 leading-tight">Courses</div>
-                            </div>
-                            <div>
-                                <div className="text-sm font-extrabold text-white">50+</div>
-                                <div className="text-[9px] text-gray-400 leading-tight">Projects</div>
-                            </div>
-                            <div>
-                                <div className="text-sm font-extrabold text-emerald-400">4.9★</div>
-                                <div className="text-[9px] text-gray-400 leading-tight">Rating</div>
-                            </div>
-                        </div>
+                    </div>
 
-                        {/* Desktop & Tablet 4 Live Metric Badges */}
-                        <div className="hidden sm:block pt-2">
-                            <div className="flex items-center gap-2 mb-2.5 px-1">
+
+                    {/* Mobile Compact 1-Row Stats Strip */}
+                    <div className="sm:hidden grid grid-cols-4 divide-x divide-white/10 bg-white/[0.03] border border-white/10 rounded-xl py-2.5 px-1 text-center shadow-sm my-2 w-full">
+                        <div>
+                            <div className="text-sm font-extrabold text-white">{activeStudents}</div>
+                            <div className="text-[9px] text-gray-400 leading-tight">Students</div>
+                        </div>
+                        <div>
+                            <div className="text-sm font-extrabold text-white">{availableCourses}</div>
+                            <div className="text-[9px] text-gray-400 leading-tight">Courses</div>
+                        </div>
+                        <div>
+                            <div className="text-sm font-extrabold text-white">50+</div>
+                            <div className="text-[9px] text-gray-400 leading-tight">Projects</div>
+                        </div>
+                        <div>
+                            <div className="text-sm font-extrabold text-emerald-400">4.9★</div>
+                            <div className="text-[9px] text-gray-400 leading-tight">Rating</div>
+                        </div>
+                    </div>
+
+                    {/* Desktop & Tablet 4 Live Metric Badges */}
+                    <div className="hidden sm:block pt-4 w-full max-w-4xl">
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-3 px-1">
+                            <div className="flex items-center gap-2">
                                 <span className="relative flex h-2 w-2">
                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                                     <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
                                 </span>
                                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
-                                    Live Student Impact & Platform Outcomes
+                                    Live Student Impact & Outcomes
                                 </span>
                             </div>
 
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
-                                <MetricBadge 
-                                    icon={Users}
-                                    label="Active Students"
-                                    sublabel="Enrolled & learning"
-                                    value={activeStudents}
-                                    gradientClass="bg-gradient-to-br from-blue-500 to-indigo-600"
-                                    glowColor="#3B82F6"
-                                    borderColor="hover:border-blue-500/50"
-                                    tag="Learners"
-                                />
-                                <MetricBadge 
-                                    icon={BookOpen}
-                                    label="Certified Courses"
-                                    sublabel="Industry-standard"
-                                    value={availableCourses}
-                                    gradientClass="bg-gradient-to-br from-purple-500 to-pink-600"
-                                    glowColor="#8B5CF6"
-                                    borderColor="hover:border-purple-500/50"
-                                    tag="Curated"
-                                />
-                                <MetricBadge 
-                                    icon={Code}
-                                    label="Practical Projects"
-                                    sublabel="Production code"
-                                    value="50+"
-                                    gradientClass="bg-gradient-to-br from-amber-500 to-orange-600"
-                                    glowColor="#F59E0B"
-                                    borderColor="hover:border-amber-500/50"
-                                    tag="Hands-on"
-                                />
-                                <MetricBadge 
-                                    icon={Rocket}
-                                    label="Careers Accelerated"
-                                    sublabel="Internships & LOR"
-                                    value={launchedInternships}
-                                    gradientClass="bg-gradient-to-br from-emerald-500 to-teal-600"
-                                    glowColor="#10B981"
-                                    borderColor="hover:border-emerald-500/50"
-                                    tag="Outcomes"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Social Proof Strip */}
-                        <div className="hidden sm:flex pt-4 border-t border-white/[0.08] items-center gap-3.5">
-                            <div className="flex -space-x-2.5 overflow-hidden">
-                                {[
-                                    "from-blue-500 to-indigo-600",
-                                    "from-purple-500 to-pink-500",
-                                    "from-amber-400 to-orange-500",
-                                    "from-emerald-400 to-teal-600",
-                                    "from-rose-500 to-red-600",
-                                ].map((gradient, i) => (
-                                    <div
-                                        key={i}
-                                        className={`inline-block h-8 w-8 rounded-full ring-2 ring-[#0A0D1F] bg-gradient-to-br ${gradient} flex items-center justify-center text-[11px] font-bold text-white shadow-md`}
-                                    >
-                                        {["M", "R", "A", "S", "P"][i]}
-                                    </div>
-                                ))}
-                            </div>
-                            <div>
-                                <div className="flex items-center gap-1 text-amber-400">
-                                    {[...Array(5)].map((_, i) => (
-                                        <Star key={i} size={12} className="fill-amber-400 text-amber-400" />
+                            {/* Social Proof Pill */}
+                            <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 shadow-sm backdrop-blur-sm">
+                                <div className="flex -space-x-2 overflow-hidden">
+                                    {[
+                                        "from-blue-500 to-indigo-600",
+                                        "from-purple-500 to-pink-500",
+                                        "from-amber-400 to-orange-500",
+                                        "from-emerald-400 to-teal-600",
+                                        "from-rose-500 to-red-600",
+                                    ].map((gradient, i) => (
+                                        <div
+                                            key={i}
+                                            className={`inline-block h-5 w-5 rounded-full ring-1.5 ring-[#0A0D1F] bg-gradient-to-br ${gradient} flex items-center justify-center text-[8px] font-bold text-white shadow-sm`}
+                                        >
+                                            {["M", "R", "A", "S", "P"][i]}
+                                        </div>
                                     ))}
-                                    <span className="ml-1 text-xs font-bold text-white">4.9 / 5</span>
                                 </div>
-                                <p className="text-xs text-gray-400">
-                                    Trusted by learners across <span className="text-gray-200 font-semibold">IITs, NITs & Top Colleges</span>
-                                </p>
+                                <div className="flex items-center gap-1.5 text-xs">
+                                    <div className="flex items-center text-amber-400">
+                                        {[...Array(5)].map((_, i) => (
+                                            <Star key={i} size={11} className="fill-amber-400 text-amber-400" />
+                                        ))}
+                                        <span className="ml-1 text-[11px] font-bold text-white">4.9 / 5</span>
+                                    </div>
+                                    <span className="text-gray-500">•</span>
+                                    <span className="text-[11px] text-gray-400">
+                                        Trusted across <span className="text-gray-200 font-semibold">IITs & NITs</span>
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
-                    </div>
-
-                    {/* RIGHT COLUMN: Interactive Product Experience (Desktop & Tablet only to avoid mobile duplication) */}
-                    <div className="hidden lg:block lg:col-span-5">
-                        {/* Live Career Roadmap Card */}
-                        <InteractiveRoadmapCard />
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 text-left">
+                            <MetricBadge 
+                                icon={Users}
+                                label="Active Students"
+                                sublabel="Enrolled & learning"
+                                value={activeStudents}
+                                gradientClass="bg-gradient-to-br from-blue-500 to-indigo-600"
+                                glowColor="#3B82F6"
+                                borderColor="hover:border-blue-500/50"
+                                tag="Learners"
+                            />
+                            <MetricBadge 
+                                icon={BookOpen}
+                                label="Certified Courses"
+                                sublabel="Industry-standard"
+                                value={availableCourses}
+                                gradientClass="bg-gradient-to-br from-purple-500 to-pink-600"
+                                glowColor="#8B5CF6"
+                                borderColor="hover:border-purple-500/50"
+                                tag="Curated"
+                            />
+                            <MetricBadge 
+                                icon={Code}
+                                label="Practical Projects"
+                                sublabel="Production code"
+                                value="50+"
+                                gradientClass="bg-gradient-to-br from-amber-500 to-orange-600"
+                                glowColor="#F59E0B"
+                                borderColor="hover:border-amber-500/50"
+                                tag="Hands-on"
+                            />
+                            <MetricBadge 
+                                icon={Rocket}
+                                label="Careers Accelerated"
+                                sublabel="Internships & LOR"
+                                value={launchedInternships}
+                                gradientClass="bg-gradient-to-br from-emerald-500 to-teal-600"
+                                glowColor="#10B981"
+                                borderColor="hover:border-emerald-500/50"
+                                tag="Outcomes"
+                            />
+                        </div>
                     </div>
 
                 </div>

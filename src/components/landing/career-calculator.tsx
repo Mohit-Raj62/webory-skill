@@ -1862,7 +1862,8 @@ export function TechCareerCalculator() {
 
     const displayedPhases = useMemo(() => {
         if (activePhaseIndex === "all") return activeTrack.syllabus;
-        return [activeTrack.syllabus[activePhaseIndex]] || activeTrack.syllabus;
+        const phase = activeTrack.syllabus[activePhaseIndex];
+        return phase ? [phase] : activeTrack.syllabus;
     }, [activeTrack, activePhaseIndex]);
 
     return (
@@ -1879,9 +1880,9 @@ export function TechCareerCalculator() {
                         initial={{ opacity: 0, y: 15 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="inline-flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[11px] sm:text-sm font-semibold mb-3 sm:mb-4 shadow-[0_0_20px_rgba(59,130,246,0.15)]"
+                        className="inline-flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-300 text-xs sm:text-sm font-medium mb-3 sm:mb-4 shadow-sm"
                     >
-                        <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+                        <Sparkles className="w-3.5 h-3.5 text-blue-400" />
                         <span>Interactive Career & Detailed Syllabus Intelligence</span>
                     </motion.div>
 
@@ -1890,12 +1891,9 @@ export function TechCareerCalculator() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.1 }}
-                        className="text-2xl sm:text-4xl md:text-5xl font-black text-white tracking-tight leading-[1.18]"
+                        className="text-2xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-[1.18]"
                     >
-                        Know Your Tech Worth &{" "}
-                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-cyan-400 to-indigo-400">
-                            Explore Detailed Syllabus
-                        </span>
+                        Know Your Tech Worth & Explore Detailed Syllabus
                     </motion.h2>
 
                     <motion.p
@@ -2152,29 +2150,29 @@ export function TechCareerCalculator() {
                                             setActivePhaseIndex("all");
                                             setIsSyllabusOpen(true);
                                         }}
-                                        className="w-full flex items-center justify-center gap-2 py-3 px-3.5 sm:py-3.5 sm:px-4 rounded-xl bg-gradient-to-r from-cyan-500/20 via-blue-500/25 to-indigo-500/20 hover:from-cyan-500/35 hover:to-indigo-500/35 text-cyan-200 hover:text-white font-bold text-xs sm:text-sm border border-cyan-400/40 shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/25 active:scale-[0.98] transition-all group"
+                                        className="w-full flex items-center justify-center gap-2 h-11 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs sm:text-sm transition-colors shadow-sm"
                                     >
-                                        <BookOpen className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform shrink-0" />
+                                        <BookOpen className="w-4 h-4 text-white shrink-0" />
                                         <span className="truncate">View Detailed Syllabus</span>
-                                        <span className="hidden min-[380px]:inline-block ml-auto text-[10px] uppercase px-2 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 shrink-0">
+                                        <span className="hidden min-[380px]:inline-block ml-auto text-[10px] font-mono px-2 py-0.5 rounded bg-blue-700/60 text-blue-100 shrink-0">
                                             {activeTrack.timelineWeeks} Wk
                                         </span>
                                     </button>
 
                                     <Link
                                         href="/courses"
-                                        className="w-full flex items-center justify-center gap-2 py-2.5 px-3.5 sm:py-3 sm:px-4 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-600/30 hover:shadow-cyan-500/40 active:scale-[0.98] transition-all group"
+                                        className="w-full flex items-center justify-center gap-2 h-11 px-4 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-medium text-xs sm:text-sm border border-slate-700 transition-colors"
                                     >
-                                        <GraduationCap className="w-4 h-4 shrink-0" />
+                                        <GraduationCap className="w-4 h-4 text-slate-400 shrink-0" />
                                         <span className="truncate">Explore All Courses</span>
-                                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform ml-auto shrink-0" />
+                                        <ArrowRight className="w-4 h-4 text-slate-400 ml-auto shrink-0" />
                                     </Link>
 
                                     <Link
                                         href="/internships"
-                                        className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white font-medium text-[11px] sm:text-xs border border-white/10 transition-colors"
+                                        className="w-full flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-transparent hover:bg-slate-800/60 text-slate-400 hover:text-slate-200 font-normal text-xs border border-slate-800 transition-colors"
                                     >
-                                        <Briefcase className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                                        <Briefcase className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                                         <span className="truncate">View Verified Internships</span>
                                     </Link>
                                 </div>
@@ -2494,14 +2492,14 @@ export function TechCareerCalculator() {
                                 <div className="flex items-center gap-2 w-full sm:w-auto">
                                     <button
                                         onClick={() => setIsSyllabusOpen(false)}
-                                        className="w-1/3 sm:w-auto px-3.5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold transition-colors"
+                                        className="w-1/3 sm:w-auto px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium transition-colors"
                                     >
                                         Close
                                     </button>
                                     <Link
                                         href="/courses"
                                         onClick={() => setIsSyllabusOpen(false)}
-                                        className="w-2/3 sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-xs font-bold shadow-lg shadow-blue-600/30 hover:shadow-cyan-500/40 transition-all truncate"
+                                        className="w-2/3 sm:w-auto flex items-center justify-center gap-1.5 px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium shadow-sm transition-colors"
                                     >
                                         <span>Start Learning</span>
                                         <ExternalLink className="w-3.5 h-3.5 shrink-0" />

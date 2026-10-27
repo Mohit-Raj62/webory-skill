@@ -1,10 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Brain, CheckCircle, Lightbulb, UserCircle, Rocket, BarChart, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/components/auth/session-provider";
+import { ArrowRight, Brain, Lightbulb, UserCircle, Rocket, BarChart, Sparkles } from "lucide-react";
 
 const steps = [
     {
@@ -40,16 +37,7 @@ const steps = [
     },
 ];
 
-const differentiators = [
-    "No random course suggestions",
-    "Roadmap adapts as student progresses",
-    "Focus on outcomes, not hours watched",
-    "Works like a career guide, not a chatbot",
-];
-
 export function AIRoadmapFlow() {
-    const router = useRouter();
-    const { user } = useAuth();
 
     return (
         <section className="py-20 relative overflow-hidden">
@@ -163,71 +151,6 @@ export function AIRoadmapFlow() {
                             );
                         })}
                     </div>
-                </div>
-
-                {/* Differentiators & CTA */}
-                {/* Differentiators & CTA */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center max-w-7xl mx-auto">
-                    <motion.div
-                        initial={{ opacity: 0, x: -30 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        className="space-y-8"
-                    >
-                        <div className="relative">
-                            <div className="absolute -left-6 -top-6 w-20 h-20 bg-blue-500/20 rounded-full blur-2xl"></div>
-                            <h3 className="text-3xl md:text-4xl font-bold text-white relative z-10">
-                                What Makes This <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">AI Different?</span>
-                            </h3>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            {differentiators.map((item, index) => (
-                                <div key={index} className="flex flex-col gap-3 bg-white/5 p-5 rounded-2xl border border-white/5 hover:border-blue-500/30 hover:bg-white/10 transition-all group">
-                                    <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
-                                        <CheckCircle size={20} />
-                                    </div>
-                                    <span className="text-gray-200 text-sm font-semibold leading-relaxed">{item}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </motion.div>
-
-                    <motion.div
-                        initial={{ opacity: 0, x: 30 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        className="relative"
-                    >
-                        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl blur-2xl opacity-20 animate-pulse"></div>
-                        <div className="relative text-center lg:text-left bg-black/40 backdrop-blur-xl p-5 sm:p-10 rounded-2xl sm:rounded-3xl border border-white/10 overflow-hidden group hover:border-white/20 transition-all">
-                             <div className="absolute top-0 right-0 p-12 opacity-20 pointer-events-none">
-                                <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full blur-3xl"></div>
-                             </div>
-
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-blue-300 mb-4 sm:mb-6">
-                                <Sparkles size={12} /> AI-Powered Career Engine
-                            </div>
-
-                            <h3 className="text-base sm:text-2xl font-bold text-white mb-4 sm:mb-6 leading-relaxed">
-                                Webory Skills uses AI to design a <span className="text-blue-400">personalized learning roadmap</span> for every student, guiding them from skill selection to <span className="text-purple-400">real-world project execution</span>.
-                            </h3>
-                            
-                            <div className="flex flex-col items-center lg:items-start gap-4 mt-6 sm:mt-8">
-                                 <Button 
-                                    onClick={() => router.push(user ? '/ai-weboryskills' : '/signup')} 
-                                    size="lg" 
-                                    className="w-full sm:w-auto bg-gradient-to-r from-white to-gray-200 text-black hover:bg-white text-base sm:text-lg h-12 sm:h-14 px-6 sm:px-8 rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] transition-all font-bold"
-                                >
-                                    Get Your AI Roadmap <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
-                                </Button>
-                                <p className="text-xs sm:text-sm text-gray-500 font-medium flex items-center gap-2">
-                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                                    Takes less than 2 minutes
-                                </p>
-                            </div>
-                        </div>
-                    </motion.div>
                 </div>
             </div>
         </section>
