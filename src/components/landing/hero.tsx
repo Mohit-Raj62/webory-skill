@@ -51,7 +51,8 @@ const DEFAULT_INTERNSHIPS = [
 const COURSE_BADGE_PRESETS = [
     { 
         glow: "border-blue-500/25 bg-[#0A102A]/90 hover:border-blue-400/70 hover:bg-[#0E173C]/95 shadow-lg shadow-black/50 text-white", 
-        badgeBg: "bg-blue-500/15 text-blue-300 border-blue-500/30",
+        badgeBg: "bg-blue-500/15 text-blue-300",
+        dot: "bg-blue-400",
         accent: "text-blue-400",
         angle: -4,
         offset: "ml-0",
@@ -60,7 +61,8 @@ const COURSE_BADGE_PRESETS = [
     },
     { 
         glow: "border-indigo-500/25 bg-[#0A102A]/90 hover:border-indigo-400/70 hover:bg-[#0E173C]/95 shadow-lg shadow-black/50 text-white", 
-        badgeBg: "bg-indigo-500/15 text-indigo-300 border-indigo-500/30",
+        badgeBg: "bg-indigo-500/15 text-indigo-300",
+        dot: "bg-indigo-400",
         accent: "text-indigo-400",
         angle: -2,
         offset: "ml-3 xl:ml-5",
@@ -69,7 +71,8 @@ const COURSE_BADGE_PRESETS = [
     },
     { 
         glow: "border-blue-500/25 bg-[#0A102A]/90 hover:border-blue-400/70 hover:bg-[#0E173C]/95 shadow-lg shadow-black/50 text-white", 
-        badgeBg: "bg-blue-500/15 text-blue-300 border-blue-500/30",
+        badgeBg: "bg-sky-500/15 text-sky-300",
+        dot: "bg-sky-400",
         accent: "text-blue-400",
         angle: -4,
         offset: "ml-1 xl:ml-2",
@@ -78,7 +81,8 @@ const COURSE_BADGE_PRESETS = [
     },
     { 
         glow: "border-purple-500/25 bg-[#0A102A]/90 hover:border-purple-400/70 hover:bg-[#0E173C]/95 shadow-lg shadow-black/50 text-white", 
-        badgeBg: "bg-purple-500/15 text-purple-300 border-purple-500/30",
+        badgeBg: "bg-purple-500/15 text-purple-300",
+        dot: "bg-purple-400",
         accent: "text-purple-400",
         angle: -2,
         offset: "ml-4 xl:ml-6",
@@ -91,7 +95,8 @@ const COURSE_BADGE_PRESETS = [
 const INTERNSHIP_BADGE_PRESETS = [
     { 
         glow: "border-emerald-500/25 bg-[#06181E]/90 hover:border-emerald-400/70 hover:bg-[#09222B]/95 shadow-lg shadow-black/50 text-white", 
-        badgeBg: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+        badgeBg: "bg-emerald-500/15 text-emerald-300",
+        dot: "bg-emerald-400",
         accent: "text-emerald-400",
         angle: 4,
         offset: "mr-0",
@@ -100,7 +105,8 @@ const INTERNSHIP_BADGE_PRESETS = [
     },
     { 
         glow: "border-teal-500/25 bg-[#06181E]/90 hover:border-teal-400/70 hover:bg-[#09222B]/95 shadow-lg shadow-black/50 text-white", 
-        badgeBg: "bg-teal-500/15 text-teal-300 border-teal-500/30",
+        badgeBg: "bg-teal-500/15 text-teal-300",
+        dot: "bg-teal-400",
         accent: "text-teal-400",
         angle: 2,
         offset: "mr-3 xl:mr-5",
@@ -109,7 +115,8 @@ const INTERNSHIP_BADGE_PRESETS = [
     },
     { 
         glow: "border-emerald-500/25 bg-[#06181E]/90 hover:border-emerald-400/70 hover:bg-[#09222B]/95 shadow-lg shadow-black/50 text-white", 
-        badgeBg: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+        badgeBg: "bg-emerald-500/15 text-emerald-300",
+        dot: "bg-emerald-400",
         accent: "text-emerald-400",
         angle: 4,
         offset: "mr-1 xl:mr-2",
@@ -118,7 +125,8 @@ const INTERNSHIP_BADGE_PRESETS = [
     },
     { 
         glow: "border-cyan-500/25 bg-[#06181E]/90 hover:border-cyan-400/70 hover:bg-[#09222B]/95 shadow-lg shadow-black/50 text-white", 
-        badgeBg: "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
+        badgeBg: "bg-cyan-500/15 text-cyan-300",
+        dot: "bg-cyan-400",
         accent: "text-cyan-400",
         angle: 2,
         offset: "mr-4 xl:mr-6",
@@ -215,7 +223,7 @@ export function Hero({
     const displayInternships = Array.from({ length: 4 }).map((_, i) => internships[i] || DEFAULT_INTERNSHIPS[i]);
 
     return (
-        <section className="relative pt-20 pb-8 sm:pt-28 sm:pb-16 md:pt-32 md:pb-20 overflow-hidden bg-[#06080d]">
+        <section className="relative pt-20 pb-8 sm:pt-28 sm:pb-16 md:pt-32 md:pb-20 overflow-hidden bg-[#000]">
             {/* React Bits: Left Side Rays (Soft & Subtle) */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-40">
                 <SideRays
@@ -256,15 +264,17 @@ export function Hero({
             <div className="container mx-auto px-4 sm:px-6 relative z-10 max-w-7xl">
                 <div className="flex flex-col items-center space-y-6 sm:space-y-8">
                         
-                    {/* Top Webory Credibility Pill */}
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-xs text-gray-300 shadow-sm backdrop-blur-md">
-                        <span className="relative flex h-2 w-2">
+                    {/* Top Webory Credibility Pill (Mobile-Optimized & Responsive) */}
+                    <div className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-[11px] sm:text-xs text-gray-300 shadow-sm backdrop-blur-md max-w-[94vw] mx-auto text-center">
+                        <span className="relative flex h-2 w-2 shrink-0">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
                         </span>
-                        <span className="font-semibold text-emerald-400">Govt. Registered Startup</span>
-                        <span className="text-gray-500">•</span>
-                        <span className="text-gray-300">Mentored by IIT Mandi Faculty</span>
+                        <span className="font-semibold text-emerald-400 whitespace-nowrap">Govt. Registered Startup</span>
+                        <span className="text-gray-500 shrink-0">•</span>
+                        <span className="text-gray-300 whitespace-nowrap">
+                            <span className="hidden sm:inline">Mentored by </span>IIT Mandi Faculty
+                        </span>
                     </div>
 
                     {/* SPACIOUS INTERACTIVE SHOWCASE STAGE (Responsive & Overflow-Safe) */}
@@ -276,7 +286,7 @@ export function Hero({
                     >
                         
                         {/* LEFT FLANK: Webory Holographic Course Badges (Close to Center Headline) */}
-                        <div className={`hidden lg:flex absolute right-1/2 mr-[280px] lg:mr-[290px] xl:mr-[315px] 2xl:mr-[335px] top-1/2 -translate-y-1/2 flex-col items-start gap-3.5 xl:gap-4.5 z-20 w-[245px] xl:w-[275px] transition-all duration-300 ${isHovered ? 'pointer-events-auto' : 'pointer-events-none'}`}>
+                        <div className={`hidden lg:flex absolute right-1/2 mr-[280px] lg:mr-[290px] xl:mr-[315px] 2xl:mr-[335px] top-1/2 -translate-y-1/2 flex-col items-start gap-3.5 xl:gap-4.5 z-20 w-[265px] xl:w-[295px] transition-all duration-300 ${isHovered ? 'pointer-events-auto' : 'pointer-events-none'}`}>
                             {displayCourses.map((course, idx) => {
                                 const preset = COURSE_BADGE_PRESETS[idx % COURSE_BADGE_PRESETS.length];
                                 const Icon = preset.icon;
@@ -311,10 +321,11 @@ export function Hero({
                                                 <Icon size={14} className={preset.accent} />
                                             </div>
                                             <div className="text-left">
-                                                <span className="text-white text-xs xl:text-[13px] font-bold block truncate max-w-[170px] xl:max-w-[195px] group-hover/badge:text-cyan-300 transition-colors leading-snug">
+                                                <span className="text-white text-xs xl:text-[13px] font-bold block truncate max-w-[210px] xl:max-w-[240px] group-hover/badge:text-cyan-300 transition-colors leading-snug">
                                                     {course.title}
                                                 </span>
-                                                <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded border inline-block ${preset.badgeBg}`}>
+                                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium tracking-wide mt-1 ${preset.badgeBg}`}>
+                                                    <span className={`w-1.5 h-1.5 rounded-full ${preset.dot} shrink-0`} />
                                                     {preset.tag}
                                                 </span>
                                             </div>
@@ -324,41 +335,43 @@ export function Hero({
                             })}
                         </div>
 
-                        {/* CENTER STAGE: Beautifully Crafted Headline & Call-to-Action */}
+                        {/* CENTER STAGE: Clean, Human-Crafted Minimalist Headline & Call-to-Action */}
                         <div className="relative z-10 px-4 max-w-xl text-center space-y-3.5 sm:space-y-4">
-                            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-semibold shadow-sm">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                                <span>Next-Gen Career Launchpad</span>
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-gray-300 text-xs font-medium">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                                <span>Curated Engineering Tracks</span>
                             </div>
 
-                            <h1 className="text-2xl sm:text-4xl lg:text-5xl xl:text-[54px] font-extrabold text-white tracking-tight leading-[1.16] drop-shadow-sm">
+                            <h1 className="text-2xl sm:text-4xl lg:text-5xl xl:text-[52px] font-bold text-white tracking-tight leading-[1.15]">
                                 Master In-Demand Skills. <br />
-                                <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(52,211,153,0.25)]">
-                                    Build Real-World Careers.
-                                </span>
+                                <span className="text-gray-400 font-medium">Build Real-World Careers.</span>
                             </h1>
 
                             <p className="text-xs sm:text-sm md:text-[15px] text-gray-300 font-normal max-w-md mx-auto leading-relaxed pt-0.5">
                                 Accelerate your engineering journey with <span className="text-white font-medium">adaptive AI roadmaps</span>, live <span className="text-white font-medium">48-hour competitive hackathons</span>, and <span className="text-white font-medium">verified industrial internships</span>.
                             </p>
 
-                            <div className="pt-1.5 flex flex-col sm:flex-row items-center justify-center gap-2.5">
-                                <Link href="/career-roadmap" className="w-full sm:w-auto inline-block">
+                            {/* Call-to-Action Buttons (Simple & Clean) */}
+                            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-md mx-auto">
+                                <Link 
+                                    href={user ? "/dashboard" : "/signup"} 
+                                    className="w-full sm:w-auto inline-block"
+                                >
                                     <button 
                                         type="button"
-                                        className="w-full sm:w-auto h-11 px-6 text-xs sm:text-sm font-bold text-white rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-600 hover:from-emerald-400 hover:to-cyan-500 shadow-xl shadow-emerald-500/25 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 group/btn"
+                                        className="w-full sm:w-auto h-11 px-6 text-sm font-semibold text-gray-950 bg-white hover:bg-gray-100 rounded-lg shadow-sm transition-colors active:scale-[0.98] flex items-center justify-center gap-2 group/btn"
                                     >
-                                        <span>Get Started Free</span>
-                                        <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+                                        <span>{user ? "Dashboard" : "Sign Up"}</span>
+                                        <ArrowRight size={15} className="group-hover/btn:translate-x-0.5 transition-transform text-gray-800" />
                                     </button>
                                 </Link>
 
                                 <Link href="/courses" className="w-full sm:w-auto inline-block">
                                     <button 
                                         type="button"
-                                        className="w-full sm:w-auto h-11 px-5 text-xs sm:text-sm font-semibold text-gray-300 hover:text-white rounded-xl border border-white/10 hover:border-white/20 bg-white/[0.02] hover:bg-white/[0.06] transition-all"
+                                        className="w-full sm:w-auto h-11 px-5 text-sm font-medium text-gray-300 hover:text-white rounded-lg border border-white/10 hover:border-white/20 bg-white/[0.03] hover:bg-white/[0.06] transition-colors active:scale-[0.98] flex items-center justify-center gap-2"
                                     >
-                                        Explore Catalog
+                                        <span>Explore Catalog</span>
                                     </button>
                                 </Link>
                             </div>
@@ -420,7 +433,8 @@ export function Hero({
                                                                 <div className="w-5 h-5 rounded-md bg-white/5 flex items-center justify-center shrink-0">
                                                                     <Icon size={11} className={preset.accent} />
                                                                 </div>
-                                                                <span className={`text-[8px] font-mono px-1 py-0.2 rounded border ${preset.badgeBg}`}>
+                                                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8.5px] font-medium tracking-wide ${preset.badgeBg}`}>
+                                                                    <span className={`w-1.5 h-1.5 rounded-full ${preset.dot} shrink-0`} />
                                                                     {preset.tag}
                                                                 </span>
                                                             </div>
@@ -448,7 +462,8 @@ export function Hero({
                                                                 <div className="w-5 h-5 rounded-md bg-white/5 flex items-center justify-center shrink-0">
                                                                     <Icon size={11} className={preset.accent} />
                                                                 </div>
-                                                                <span className={`text-[8px] font-mono px-1 py-0.2 rounded border ${preset.badgeBg}`}>
+                                                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8.5px] font-medium tracking-wide ${preset.badgeBg}`}>
+                                                                    <span className={`w-1.5 h-1.5 rounded-full ${preset.dot} shrink-0`} />
                                                                     {preset.tag}
                                                                 </span>
                                                             </div>
@@ -466,7 +481,7 @@ export function Hero({
                         </div>
 
                         {/* RIGHT FLANK: Webory Holographic Internship Badges (Close to Center Headline) */}
-                        <div className={`hidden lg:flex absolute left-1/2 ml-[280px] lg:ml-[290px] xl:ml-[315px] 2xl:ml-[335px] top-1/2 -translate-y-1/2 flex-col items-end gap-3.5 xl:gap-4.5 z-20 w-[245px] xl:w-[275px] transition-all duration-300 ${isHovered ? 'pointer-events-auto' : 'pointer-events-none'}`}>
+                        <div className={`hidden lg:flex absolute left-1/2 ml-[280px] lg:ml-[290px] xl:ml-[315px] 2xl:ml-[335px] top-1/2 -translate-y-1/2 flex-col items-end gap-3.5 xl:gap-4.5 z-20 w-[265px] xl:w-[295px] transition-all duration-300 ${isHovered ? 'pointer-events-auto' : 'pointer-events-none'}`}>
                             {displayInternships.map((internship, idx) => {
                                 const preset = INTERNSHIP_BADGE_PRESETS[idx % INTERNSHIP_BADGE_PRESETS.length];
                                 const Icon = preset.icon;
@@ -498,11 +513,12 @@ export function Hero({
                                             className={`group/badge flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs sm:text-[13px] font-semibold backdrop-blur-xl border ${preset.glow} transition-all duration-300 hover:border-emerald-400 block shadow-md`}
                                         >
                                             <div className="text-right">
-                                                <span className="text-white text-xs xl:text-[13px] font-bold block truncate max-w-[170px] xl:max-w-[195px] group-hover/badge:text-emerald-300 transition-colors leading-snug">
+                                                <span className="text-white text-xs xl:text-[13px] font-bold block truncate max-w-[210px] xl:max-w-[240px] group-hover/badge:text-emerald-300 transition-colors leading-snug">
                                                     {internship.title}
                                                 </span>
-                                                <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded border inline-block ${preset.badgeBg}`}>
+                                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium tracking-wide mt-1 ${preset.badgeBg}`}>
                                                     {preset.tag}
+                                                    <span className={`w-1.5 h-1.5 rounded-full ${preset.dot} shrink-0`} />
                                                 </span>
                                             </div>
                                             <div className="w-6 h-6 rounded-md bg-white/5 flex items-center justify-center shrink-0">
@@ -517,8 +533,64 @@ export function Hero({
                     </div>
 
 
+                    {/* High-Converting Executive Social Proof & Rating Badge */}
+                    <div className="pt-6 pb-2 w-full max-w-xl mx-auto flex justify-center">
+                        <div className="inline-flex flex-wrap sm:flex-nowrap items-center justify-center gap-2.5 sm:gap-4 px-4 sm:px-5 py-2 sm:py-2.5 rounded-2xl sm:rounded-full bg-gradient-to-r from-white/[0.08] via-white/[0.04] to-white/[0.08] border border-white/15 backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.45)] hover:border-amber-400/40 hover:shadow-[0_10px_30px_rgba(245,158,11,0.15)] transition-all duration-300 group">
+                            {/* Overlapping Student Avatars */}
+                            <div className="flex -space-x-2.5 overflow-hidden items-center">
+                                {[
+                                    { bg: "from-blue-500 to-indigo-600", initial: "A" },
+                                    { bg: "from-purple-500 to-pink-500", initial: "R" },
+                                    { bg: "from-amber-400 to-orange-500", initial: "S" },
+                                    { bg: "from-emerald-400 to-teal-600", initial: "P" },
+                                    { bg: "from-rose-500 to-red-600", initial: "V" },
+                                ].map((avatar, i) => (
+                                    <div
+                                        key={i}
+                                        className={`inline-flex h-7 w-7 sm:h-8 sm:w-8 rounded-full ring-2 ring-[#06080d] bg-gradient-to-br ${avatar.bg} items-center justify-center text-[10px] sm:text-xs font-bold text-white shadow-md transform transition-transform group-hover:scale-105`}
+                                    >
+                                        {avatar.initial}
+                                    </div>
+                                ))}
+                                <div className="inline-flex h-7 w-7 sm:h-8 sm:w-8 rounded-full ring-2 ring-[#06080d] bg-emerald-500/20 border border-emerald-400/40 backdrop-blur-md items-center justify-center text-[9px] sm:text-[10px] font-bold text-emerald-300 shadow-md">
+                                    +2.4k
+                                </div>
+                            </div>
+
+                            {/* Glowing Stars & 4.9 Score */}
+                            <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-0.5 text-amber-400">
+                                    {[...Array(5)].map((_, i) => (
+                                        <Star 
+                                            key={i} 
+                                            className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" 
+                                        />
+                                    ))}
+                                </div>
+                                <div className="flex items-baseline gap-1">
+                                    <span className="text-sm sm:text-base font-black text-white tracking-tight">4.9</span>
+                                    <span className="text-[10px] sm:text-xs font-semibold text-gray-400">/ 5.0</span>
+                                </div>
+                            </div>
+
+                            {/* Divider on Desktop */}
+                            <div className="hidden sm:block h-4 w-[1px] bg-white/20" />
+
+                            {/* Trust Text */}
+                            <div className="text-[11px] sm:text-xs text-gray-300 flex items-center gap-1.5 font-medium">
+                                <span className="relative flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                                </span>
+                                <span>
+                                    Trusted across <span className="text-white font-bold underline decoration-amber-400/60 decoration-2 underline-offset-2">IITs & NITs</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Mobile Compact Stats Strip */}
-                    <div className="sm:hidden grid grid-cols-2 gap-2.5 my-2 w-full max-w-xs mx-auto text-center">
+                    <div className="sm:hidden grid grid-cols-2 gap-2.5 my-3 w-full max-w-xs mx-auto text-center">
                         <div className="bg-white/[0.03] border border-white/10 rounded-xl py-2.5 px-3 shadow-sm">
                             <div className="text-sm font-extrabold text-white">{activeStudents}</div>
                             <div className="text-[9px] text-gray-400 leading-tight">Active Students</div>
@@ -530,49 +602,11 @@ export function Hero({
                     </div>
 
                     {/* Desktop & Tablet Live Metrics with Space */}
-                    <div className="hidden sm:block pt-4 w-full max-w-xl mx-auto">
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-3 px-1">
-                            <div className="flex items-center gap-2">
-                                <span className="relative flex h-2 w-2">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                                </span>
-                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
-                                    Live Student Impact & Outcomes
-                                </span>
-                            </div>
-
-                            {/* Social Proof Pill */}
-                            <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 shadow-sm backdrop-blur-sm">
-                                <div className="flex -space-x-2 overflow-hidden">
-                                    {[
-                                        "from-blue-500 to-indigo-600",
-                                        "from-purple-500 to-pink-500",
-                                        "from-amber-400 to-orange-500",
-                                        "from-emerald-400 to-teal-600",
-                                        "from-rose-500 to-red-600",
-                                    ].map((gradient, i) => (
-                                        <div
-                                            key={i}
-                                            className={`inline-block h-5 w-5 rounded-full ring-1.5 ring-[#0A0D1F] bg-gradient-to-br ${gradient} flex items-center justify-center text-[8px] font-bold text-white shadow-sm`}
-                                        >
-                                            {["M", "R", "A", "S", "P"][i]}
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className="flex items-center gap-1.5 text-xs">
-                                    <div className="flex items-center text-amber-400">
-                                        {[...Array(5)].map((_, i) => (
-                                            <Star key={i} size={11} className="fill-amber-400 text-amber-400" />
-                                        ))}
-                                        <span className="ml-1 text-[11px] font-bold text-white">4.9 / 5</span>
-                                    </div>
-                                    <span className="text-gray-500">•</span>
-                                    <span className="text-[11px] text-gray-400">
-                                        Trusted across <span className="text-gray-200 font-semibold">IITs & NITs</span>
-                                    </span>
-                                </div>
-                            </div>
+                    <div className="hidden sm:block pt-2 w-full max-w-xl mx-auto">
+                        <div className="flex items-center justify-center gap-2 mb-3">
+                            <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400">
+                                Live Student Impact & Outcomes
+                            </span>
                         </div>
 
                         {/* Both Metric Cards with Clean Space Between Them */}
