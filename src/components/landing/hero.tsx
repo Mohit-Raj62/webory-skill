@@ -354,7 +354,7 @@ export function Hero({
                             {/* Call-to-Action Buttons (Simple & Clean) */}
                             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-md mx-auto">
                                 <Link 
-                                    href={user ? "/dashboard" : "/signup"} 
+                                    href={user ? (user.role === 'admin' ? "/admin" : user.role === 'teacher' ? "/teacher" : "/profile") : "/signup"} 
                                     className="w-full sm:w-auto inline-block"
                                 >
                                     <button 
