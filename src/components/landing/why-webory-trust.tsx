@@ -177,27 +177,27 @@ export function WhyWeboryAndTrust() {
     const currentGroup = WHY_WEBORY_GROUPS.find((g) => g.id === activeTab) || WHY_WEBORY_GROUPS[0];
 
     return (
-        <section id="why-webory-and-trust" className="py-20 sm:py-28 relative overflow-hidden bg-[#04060e]">
+        <section id="why-webory-and-trust" className="py-12 sm:py-16 md:py-20 relative overflow-hidden bg-[#04060e]">
             {/* Ambient Multi-Layer Lighting */}
-            <div className="absolute top-1/4 left-1/4 w-[600px] h-[400px] bg-blue-600/10 rounded-full blur-[160px] pointer-events-none -z-10" />
-            <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[400px] bg-emerald-600/10 rounded-full blur-[160px] pointer-events-none -z-10" />
+            <div className="absolute top-1/4 left-1/4 w-[500px] h-[350px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none -z-10" />
+            <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[350px] bg-emerald-600/10 rounded-full blur-[140px] pointer-events-none -z-10" />
             
             {/* Softened High-Tech Lined Blueprint Grid with Atmospheric Blur */}
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:46px_46px] [mask-image:radial-gradient(ellipse_80%_65%_at_50%_40%,#000_70%,transparent_100%)] pointer-events-none backdrop-blur-[1px]" />
 
-            <div className="container mx-auto px-4 sm:px-6 relative z-10 max-w-7xl">
+            <div className="container mx-auto px-4 sm:px-6 relative z-10 max-w-5xl xl:max-w-6xl">
                 {/* Unified Header */}
-                <div className="text-center mb-12 sm:mb-16 space-y-3 sm:space-y-4">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-300 text-xs sm:text-sm font-semibold shadow-sm">
+                <div className="text-center mb-8 sm:mb-10 space-y-2.5">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-300 text-xs font-semibold shadow-sm">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                         <span>Platform Excellence & Verified Credibility</span>
                     </div>
 
-                    <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
+                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight">
                         Why <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-cyan-400 bg-clip-text text-transparent">Webory Skills</span> & Why Learners <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-300 bg-clip-text text-transparent">Trust Us</span>
                     </h2>
 
-                    <p className="text-sm sm:text-base text-gray-300 max-w-2xl mx-auto leading-relaxed">
+                    <p className="text-xs sm:text-sm text-gray-300 max-w-xl mx-auto leading-relaxed">
                         A complete ecosystem designed to bridge the gap between learning and earning, backed by industry mentorship and transparent career outcomes.
                     </p>
                 </div>
@@ -205,28 +205,28 @@ export function WhyWeboryAndTrust() {
                 {/* ========================================================= */}
                 {/* ROW 1: WHY WEBORY SKILLS & WHY LEARNERS TRUST US (2 COLS) */}
                 {/* ========================================================= */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-8 items-stretch mb-20 sm:mb-28">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-6 items-stretch mb-14 sm:mb-16">
                     
                     {/* COLUMN 1: WHY WEBORY SKILLS? */}
-                    <div className="flex flex-col justify-between rounded-3xl p-6 sm:p-8 bg-[#0B0F28]/85 border border-white/10 hover:border-blue-500/30 shadow-2xl shadow-black/50 backdrop-blur-2xl relative overflow-hidden group/left transition-all duration-300">
-                        <div className="absolute -top-24 -left-24 w-64 h-64 rounded-full bg-blue-500/15 blur-3xl pointer-events-none" />
+                    <div className="flex flex-col justify-between rounded-2xl p-5 sm:p-6 bg-[#0B0F28]/85 border border-white/10 hover:border-blue-500/30 shadow-2xl shadow-black/50 backdrop-blur-2xl relative overflow-hidden group/left transition-all duration-300">
+                        <div className="absolute -top-24 -left-24 w-60 h-60 rounded-full bg-blue-500/15 blur-3xl pointer-events-none" />
                         <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-blue-400/30 to-transparent" />
 
                         <div className="relative z-10">
                             {/* Card Header & Tab Switcher */}
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-5 border-b border-white/[0.08]">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-white/[0.08]">
                                 <div>
-                                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[11px] font-bold uppercase tracking-wider mb-2">
-                                        <BookOpen size={12} />
+                                    <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">
+                                        <BookOpen size={11} />
                                         <span>Core Platform Value</span>
                                     </div>
-                                    <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                                    <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight">
                                         Why Webory Skills?
                                     </h3>
                                 </div>
 
                                 {/* Tab Toggle */}
-                                <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.04] border border-white/10 self-start sm:self-auto backdrop-blur-md">
+                                <div className="flex items-center gap-1 p-0.5 rounded-lg bg-white/[0.04] border border-white/10 self-start sm:self-auto backdrop-blur-md">
                                     {WHY_WEBORY_GROUPS.map((g) => {
                                         const isActive = g.id === activeTab;
                                         return (
@@ -237,9 +237,9 @@ export function WhyWeboryAndTrust() {
                                                     setActiveTab(g.id);
                                                     setActiveItemIndex(0);
                                                 }}
-                                                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer ${
+                                                className={`px-3 py-1 rounded-md text-xs font-semibold transition-all duration-200 cursor-pointer ${
                                                     isActive 
-                                                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/25 border border-white/20"
+                                                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm shadow-blue-500/25 border border-white/20"
                                                         : "text-gray-400 hover:text-white"
                                                 }`}
                                             >
@@ -251,15 +251,15 @@ export function WhyWeboryAndTrust() {
                             </div>
 
                             {/* Features List */}
-                            <div className="space-y-2.5 mb-6">
+                            <div className="space-y-2 mb-4">
                                 <AnimatePresence mode="wait">
                                     <motion.div 
                                         key={activeTab}
-                                        initial={{ opacity: 0, y: 10 }}
+                                        initial={{ opacity: 0, y: 8 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        transition={{ duration: 0.2 }}
-                                        className="space-y-2.5"
+                                        exit={{ opacity: 0, y: -8 }}
+                                        transition={{ duration: 0.18 }}
+                                        className="space-y-2"
                                     >
                                         {currentGroup.items.map((item, idx) => {
                                             const Icon = item.icon;
@@ -269,18 +269,18 @@ export function WhyWeboryAndTrust() {
                                                 <div
                                                     key={item.title}
                                                     onMouseEnter={() => setActiveItemIndex(idx)}
-                                                    className={`p-3.5 sm:p-4 rounded-2xl flex items-start gap-3.5 transition-all duration-200 cursor-pointer border ${
+                                                    className={`p-2.5 sm:p-3 rounded-xl flex items-start gap-3 transition-all duration-200 cursor-pointer border ${
                                                         isActive
-                                                            ? "bg-white/[0.06] border-blue-500/40 shadow-lg shadow-blue-500/10 translate-x-1"
+                                                            ? "bg-white/[0.06] border-blue-500/40 shadow-md shadow-blue-500/10 translate-x-1"
                                                             : "bg-white/[0.02] border-white/5 hover:bg-white/[0.04] hover:border-white/10"
                                                     }`}
                                                 >
-                                                    <div className={`p-2.5 rounded-xl shrink-0 ${item.bg} ${item.color} border ${item.border} shadow-sm`}>
-                                                        <Icon size={18} className={isActive ? "scale-110 transition-transform" : ""} />
+                                                    <div className={`p-2 rounded-lg shrink-0 ${item.bg} ${item.color} border ${item.border} shadow-sm`}>
+                                                        <Icon size={16} className={isActive ? "scale-105 transition-transform" : ""} />
                                                     </div>
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex items-center justify-between gap-2">
-                                                            <h4 className={`text-sm sm:text-base font-bold tracking-tight transition-colors ${
+                                                            <h4 className={`text-xs sm:text-[13px] font-bold tracking-tight transition-colors ${
                                                                 isActive ? "text-white" : "text-gray-200"
                                                             }`}>
                                                                 {item.title}
@@ -289,7 +289,7 @@ export function WhyWeboryAndTrust() {
                                                                 <span className="h-1.5 w-1.5 rounded-full bg-blue-400 shrink-0 animate-pulse" />
                                                             )}
                                                         </div>
-                                                        <p className="text-xs text-gray-300 mt-1 leading-relaxed">
+                                                        <p className="text-[11px] text-gray-300 mt-0.5 leading-snug">
                                                             {item.description}
                                                         </p>
                                                     </div>
@@ -302,73 +302,73 @@ export function WhyWeboryAndTrust() {
                         </div>
 
                         {/* Bottom Feature Pill Footer */}
-                        <div className="pt-4 border-t border-white/[0.08] flex items-center justify-between text-xs text-gray-400 relative z-10">
-                            <span className="flex items-center gap-1.5 text-gray-300 font-medium">
-                                <CheckCircle size={14} className="text-emerald-400 shrink-0" />
+                        <div className="pt-3 border-t border-white/[0.08] flex items-center justify-between text-xs text-gray-400 relative z-10">
+                            <span className="flex items-center gap-1.5 text-gray-300 font-medium text-[11px]">
+                                <CheckCircle size={13} className="text-emerald-400 shrink-0" />
                                 100% Industry Aligned & Job-Ready
                             </span>
                             <Link 
                                 href="/courses" 
-                                className="inline-flex items-center gap-1 text-blue-400 hover:text-cyan-300 font-semibold transition-colors"
+                                className="inline-flex items-center gap-1 text-blue-400 hover:text-cyan-300 font-semibold text-xs transition-colors"
                             >
-                                Explore Courses <ArrowRight size={13} />
+                                Explore Courses <ArrowRight size={12} />
                             </Link>
                         </div>
                     </div>
 
 
                     {/* COLUMN 2: WHY LEARNERS TRUST WEBORY SKILLS */}
-                    <div className="flex flex-col justify-between rounded-3xl p-6 sm:p-8 bg-[#09141F]/85 border border-white/10 hover:border-emerald-500/30 shadow-2xl shadow-black/50 backdrop-blur-2xl relative overflow-hidden group/right transition-all duration-300">
-                        <div className="absolute -top-24 -right-24 w-64 h-64 rounded-full bg-emerald-500/15 blur-3xl pointer-events-none" />
+                    <div className="flex flex-col justify-between rounded-2xl p-5 sm:p-6 bg-[#09141F]/85 border border-white/10 hover:border-emerald-500/30 shadow-2xl shadow-black/50 backdrop-blur-2xl relative overflow-hidden group/right transition-all duration-300">
+                        <div className="absolute -top-24 -right-24 w-60 h-60 rounded-full bg-emerald-500/15 blur-3xl pointer-events-none" />
                         <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/30 to-transparent" />
 
-                        <div className="space-y-5 relative z-10">
+                        <div className="space-y-3.5 relative z-10">
                             {/* Card Header */}
-                            <div className="flex items-center justify-between gap-4 pb-5 border-b border-white/[0.08]">
+                            <div className="flex items-center justify-between gap-3 pb-3 border-b border-white/[0.08]">
                                 <div>
-                                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-bold uppercase tracking-wider mb-2">
-                                        <Shield size={12} />
+                                    <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">
+                                        <Shield size={11} />
                                         <span>Verified Trust & Proof</span>
                                     </div>
-                                    <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                                    <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight">
                                         Why Learners Trust Webory
                                     </h3>
                                 </div>
 
-                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold shadow-sm">
+                                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold shadow-sm">
                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                                     <span>UDYAM Registered</span>
                                 </div>
                             </div>
 
                             {/* Dual Mentorship Pillars */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-blue-500/30 hover:bg-white/[0.05] transition-all">
-                                    <div className="flex items-center gap-2.5 mb-2">
-                                        <div className="h-8 w-8 rounded-xl bg-blue-500/15 text-blue-400 border border-blue-500/30 flex items-center justify-center shrink-0">
-                                            <Users size={16} />
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                <div className="p-2.5 sm:p-3 rounded-xl bg-white/[0.03] border border-white/10 hover:border-blue-500/30 hover:bg-white/[0.05] transition-all">
+                                    <div className="flex items-center gap-2 mb-1.5">
+                                        <div className="h-7 w-7 rounded-lg bg-blue-500/15 text-blue-400 border border-blue-500/30 flex items-center justify-center shrink-0">
+                                            <Users size={14} />
                                         </div>
                                         <div>
-                                            <h5 className="text-xs font-bold text-white leading-tight">Tech Leads & Devs</h5>
-                                            <span className="text-[10px] text-blue-400 font-mono font-semibold uppercase tracking-wider">Practitioners</span>
+                                            <h5 className="text-[11px] font-bold text-white leading-tight">Tech Leads & Devs</h5>
+                                            <span className="text-[9px] text-blue-400 font-mono font-semibold uppercase tracking-wider">Practitioners</span>
                                         </div>
                                     </div>
-                                    <p className="text-[11px] text-gray-300 leading-relaxed">
+                                    <p className="text-[10.5px] text-gray-300 leading-snug">
                                         "We teach how to thrive in real software jobs with code reviews & system design."
                                     </p>
                                 </div>
 
-                                <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-purple-500/30 hover:bg-white/[0.05] transition-all">
-                                    <div className="flex items-center gap-2.5 mb-2">
-                                        <div className="h-8 w-8 rounded-xl bg-purple-500/15 text-purple-400 border border-purple-500/30 flex items-center justify-center shrink-0">
-                                            <Brain size={16} />
+                                <div className="p-2.5 sm:p-3 rounded-xl bg-white/[0.03] border border-white/10 hover:border-purple-500/30 hover:bg-white/[0.05] transition-all">
+                                    <div className="flex items-center gap-2 mb-1.5">
+                                        <div className="h-7 w-7 rounded-lg bg-purple-500/15 text-purple-400 border border-purple-500/30 flex items-center justify-center shrink-0">
+                                            <Brain size={14} />
                                         </div>
                                         <div>
-                                            <h5 className="text-xs font-bold text-white leading-tight">IIT Mandi Mentored</h5>
-                                            <span className="text-[10px] text-purple-400 font-mono font-semibold uppercase tracking-wider">Faculty Aligned</span>
+                                            <h5 className="text-[11px] font-bold text-white leading-tight">IIT Mandi Mentored</h5>
+                                            <span className="text-[9px] text-purple-400 font-mono font-semibold uppercase tracking-wider">Faculty Aligned</span>
                                         </div>
                                     </div>
-                                    <p className="text-[11px] text-gray-300 leading-relaxed">
+                                    <p className="text-[10.5px] text-gray-300 leading-snug">
                                         Curriculum architecture aligned with real tech hiring demands.
                                     </p>
                                 </div>
@@ -376,7 +376,7 @@ export function WhyWeboryAndTrust() {
 
                             {/* Three Pillars of Learning Approach */}
                             <div>
-                                <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                                     Our Approach: Designed for Employability
                                 </div>
@@ -391,15 +391,15 @@ export function WhyWeboryAndTrust() {
                                                 key={item.title}
                                                 type="button"
                                                 onClick={() => setActiveApproachIndex(idx)}
-                                                className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                                                className={`p-2 sm:p-2.5 rounded-lg border text-left transition-all cursor-pointer ${
                                                     isActive 
-                                                        ? "bg-white/[0.08] border-emerald-500/40 shadow-md shadow-emerald-500/10 scale-[1.02]"
+                                                        ? "bg-white/[0.08] border-emerald-500/40 shadow-sm shadow-emerald-500/10 scale-[1.02]"
                                                         : "bg-white/[0.02] border-white/5 hover:bg-white/[0.04]"
                                                 }`}
                                             >
-                                                <Icon size={16} className={`${item.color} mb-1.5`} />
-                                                <h6 className="text-xs font-bold text-white truncate">{item.title}</h6>
-                                                <p className="text-[10px] text-gray-400 line-clamp-2 mt-0.5 leading-tight">
+                                                <Icon size={14} className={`${item.color} mb-1`} />
+                                                <h6 className="text-[11px] font-bold text-white truncate">{item.title}</h6>
+                                                <p className="text-[9.5px] text-gray-400 line-clamp-1 mt-0.5 leading-tight">
                                                     {item.desc}
                                                 </p>
                                             </button>
@@ -409,45 +409,45 @@ export function WhyWeboryAndTrust() {
                             </div>
 
                             {/* Verified Student Voice */}
-                            <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/10 relative">
-                                <Quote className="absolute right-3 top-3 text-white/5 w-8 h-8 pointer-events-none" />
-                                <div className="flex items-center gap-2 mb-2">
-                                    <div className="h-6 w-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-[10px] flex items-center justify-center border border-blue-500/30">
+                            <div className="p-2.5 sm:p-3 rounded-xl bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/10 relative">
+                                <Quote className="absolute right-2.5 top-2.5 text-white/5 w-6 h-6 pointer-events-none" />
+                                <div className="flex items-center gap-2 mb-1.5">
+                                    <div className="h-5 w-5 rounded-full bg-blue-500/20 text-blue-400 font-bold text-[9px] flex items-center justify-center border border-blue-500/30">
                                         B
                                     </div>
                                     <div>
-                                        <p className="text-xs font-bold text-white leading-none">Beta Learner</p>
-                                        <p className="text-[10px] text-blue-400 font-mono">Web Development Track</p>
+                                        <p className="text-[11px] font-bold text-white leading-none">Beta Learner</p>
+                                        <p className="text-[9px] text-blue-400 font-mono">Web Development Track</p>
                                     </div>
                                 </div>
-                                <p className="text-xs text-gray-300 italic leading-relaxed">
+                                <p className="text-[11px] text-gray-300 italic leading-relaxed">
                                     "The roadmap made learning structured and practical. I always knew what to build next, not just watching random tutorials."
                                 </p>
                             </div>
 
                             {/* Transparency Guarantee Box */}
-                            <div className="p-3.5 rounded-2xl bg-emerald-500/[0.05] border border-emerald-500/20 text-center relative">
-                                <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-[#07111b] border border-emerald-500/30 text-[9px] font-bold text-emerald-400 uppercase tracking-widest">
+                            <div className="p-2.5 rounded-xl bg-emerald-500/[0.05] border border-emerald-500/20 text-center relative">
+                                <span className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.2 rounded-full bg-[#07111b] border border-emerald-500/30 text-[8.5px] font-bold text-emerald-400 uppercase tracking-widest">
                                     Transparency Pledge
                                 </span>
-                                <p className="text-xs text-gray-200 leading-relaxed mt-0.5">
+                                <p className="text-[10.5px] text-gray-200 leading-snug mt-0.5">
                                     "We don't promise overnight shortcuts. We build genuine hard skills that make you employable."
                                 </p>
                             </div>
                         </div>
 
                         {/* Bottom Action CTA */}
-                        <div className="pt-4 border-t border-white/[0.08] flex items-center justify-between gap-3 flex-wrap sm:flex-nowrap relative z-10 mt-6">
+                        <div className="pt-3 border-t border-white/[0.08] flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap relative z-10 mt-4">
                             <span className="text-[11px] text-gray-400 flex items-center gap-1.5">
-                                <CheckCircle size={13} className="text-emerald-400" />
+                                <CheckCircle size={12} className="text-emerald-400" />
                                 UDYAM & MSME Recognized
                             </span>
                             <Link href="/about" className="w-full sm:w-auto">
                                 <Button 
                                     size="sm" 
-                                    className="w-full sm:w-auto h-9 px-4 text-xs font-bold rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white shadow-md shadow-emerald-500/20 transition-all hover:scale-[1.02]"
+                                    className="w-full sm:w-auto h-8 px-3.5 text-xs font-bold rounded-lg bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white shadow-md shadow-emerald-500/20 transition-all hover:scale-[1.02]"
                                 >
-                                    About Webory <ArrowRight size={13} className="ml-1.5" />
+                                    About Webory <ArrowRight size={12} className="ml-1" />
                                 </Button>
                             </Link>
                         </div>
@@ -458,52 +458,40 @@ export function WhyWeboryAndTrust() {
 
                 {/* ========================================================= */}
                 {/* ROW 2: AI-POWERED LEARNING ROADMAP & MENTORSHIP           */}
-                {/* (ORIGINAL 5-STEP DESIGN PRESERVED WITH ZERO CHANGES)      */}
                 {/* ========================================================= */}
-                <div className="pt-6 border-t border-white/[0.08]">
-                    <div className="text-center mb-10 sm:mb-16 max-w-3xl mx-auto">
+                <div className="pt-8 border-t border-white/[0.08]">
+                    <div className="text-center mb-6 sm:mb-8 max-w-2xl mx-auto">
                         <motion.div 
                             initial={{ opacity: 0, scale: 0.9 }}
                             whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true }}
-                            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs sm:text-sm font-medium mb-4 sm:mb-6"
+                            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold mb-2 sm:mb-3 shadow-sm"
                         >
-                            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
                             AI Generating Route...
                         </motion.div>
                         <motion.h2 
-                            initial={{ opacity: 0, y: 20 }}
+                            initial={{ opacity: 0, y: 15 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            className="text-2xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-6 text-white"
+                            className="text-2xl sm:text-3xl font-extrabold mb-1.5 text-white tracking-tight"
                         >
-                            AI-Powered <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400"> Learning Roadmap & Mentorship</span>
+                            AI-Powered <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-300 to-emerald-400"> Learning Roadmap & Mentorship</span>
                         </motion.h2>
                         <motion.p 
-                            initial={{ opacity: 0, y: 20 }}
+                            initial={{ opacity: 0, y: 15 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.1 }}
-                            className="text-sm sm:text-xl text-gray-300 font-medium"
+                            className="text-xs sm:text-sm text-gray-300 max-w-lg mx-auto leading-relaxed"
                         >
-                            Not Just another course list. A personalized path built around your career goal.
+                            Not just another course list. A personalized path built around your career goal.
                         </motion.p>
                     </div>
 
                     {/* Steps Flow */}
                     <div className="relative">
-                        {/* Connecting Line (Desktop) */}
-                        <div className="hidden lg:block absolute top-14 left-[10%] right-[10%] h-0.5 bg-white/5 z-0 overflow-hidden rounded-full">
-                            <motion.div 
-                                className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 via-purple-500 to-emerald-500 shadow-[0_0_15px_rgba(59,130,246,0.8)]"
-                                initial={{ width: "0%" }}
-                                whileInView={{ width: "100%" }}
-                                viewport={{ once: true, margin: "100px" }}
-                                transition={{ duration: 4, ease: "linear" }}
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 xl:gap-4">
                             {roadmapSteps.map((step, index) => {
                                 // Dynamic gradients based on index
                                 const gradients = [
@@ -518,44 +506,43 @@ export function WhyWeboryAndTrust() {
                                 return (
                                     <motion.div
                                         key={index}
-                                        initial={{ opacity: 0, y: 30, filter: "grayscale(100%)" }}
-                                        whileInView={{ opacity: 1, y: 0, filter: "grayscale(0%)" }}
-                                        viewport={{ once: true, margin: "100px" }}
-                                        transition={{ delay: index * 0.8, duration: 0.5 }}
-                                        className="relative z-10 group will-change-transform will-change-opacity"
+                                        initial={{ opacity: 0, y: 15 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true, margin: "80px" }}
+                                        transition={{ delay: index * 0.08, duration: 0.35 }}
+                                        className="relative z-10 group"
                                     >
-                                        <div className="glass-card p-6 rounded-3xl border border-white/5 h-full bg-gradient-to-b from-white/5 to-black/40 hover:bg-white/10 transition-all duration-300 hover:-translate-y-2 hover:border-white/20 hover:shadow-[0_0_30px_rgba(59,130,246,0.1)] relative overflow-hidden">
+                                        <div className="p-4 rounded-2xl border border-white/[0.08] h-full bg-gradient-to-b from-[#0b102b]/85 via-[#080d22]/90 to-[#050818]/95 hover:border-white/20 transition-all duration-300 shadow-lg shadow-black/40 relative overflow-hidden flex flex-col justify-between">
                                             
-                                            {/* Giant Watermark Number */}
-                                            <div className="absolute -right-4 -top-8 text-[120px] font-bold text-white/[0.03] select-none pointer-events-none leading-none z-0">
-                                                {index + 1}
+                                            <div className="flex items-center justify-between mb-3">
+                                                <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br ${currentGradient} flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform duration-200`}>
+                                                    <step.icon size={17} />
+                                                </div>
+                                                <span className="text-[10px] font-mono font-bold text-gray-500 tracking-wider">
+                                                    0{index + 1}
+                                                </span>
                                             </div>
 
-                                            {/* Flow Arrow (except last item) */}
-                                            {index < roadmapSteps.length - 1 && (
-                                                <div className="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 z-20 text-white/20">
-                                                    <ArrowRight size={16} />
-                                                </div>
-                                            )}
-
-                                            <div className={`relative z-10 w-14 h-14 rounded-2xl bg-gradient-to-br ${currentGradient} flex items-center justify-center text-white mb-5 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                                                <step.icon size={26} />
+                                            <div>
+                                                <h3 className="text-xs sm:text-[13px] font-bold text-white mb-1 leading-snug">
+                                                    {step.title.split(":")[1] || step.title}
+                                                </h3>
+                                                <p className="text-[11px] text-gray-400 mb-3 leading-relaxed min-h-[34px]">
+                                                    {step.description}
+                                                </p>
+                                                
+                                                {step.highlight && (
+                                                    <div className="mb-2.5 px-2 py-0.5 bg-amber-500/10 border border-amber-500/20 rounded-md text-[10px] text-amber-300 font-semibold flex items-center gap-1.5">
+                                                        <Sparkles size={10} className="shrink-0" /> {step.highlight}
+                                                    </div>
+                                                )}
                                             </div>
-                                            
-                                            <h3 className="relative z-10 text-lg font-bold text-white mb-3 leading-tight">{step.title.split(":")[1] || step.title}</h3>
-                                            <p className="relative z-10 text-sm text-gray-400 mb-5 leading-relaxed min-h-[60px]">{step.description}</p>
-                                            
-                                            {step.highlight && (
-                                                <div className="relative z-10 mb-4 px-3 py-1.5 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-xs text-yellow-300 font-semibold flex items-center gap-2">
-                                                    <Sparkles size={12} /> {step.highlight}
-                                                </div>
-                                            )}
 
-                                            <div className="relative z-10 space-y-2 pt-4 border-t border-white/5">
+                                            <div className="space-y-1.5 pt-2.5 border-t border-white/5">
                                                 {step.details.map((detail, idx) => (
-                                                    <div key={idx} className="flex items-center text-xs text-gray-400 group-hover:text-gray-300 transition-colors">
-                                                        <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${currentGradient} mr-2`} />
-                                                        {detail}
+                                                    <div key={idx} className="flex items-center text-[10px] text-gray-400 group-hover:text-gray-300 transition-colors">
+                                                        <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${currentGradient} mr-1.5 shrink-0`} />
+                                                        <span className="truncate">{detail}</span>
                                                     </div>
                                                 ))}
                                             </div>

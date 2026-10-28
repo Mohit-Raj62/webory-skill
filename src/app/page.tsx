@@ -78,7 +78,7 @@ export default async function Home() {
             />
             
 
-            <ScrollReveal style="3d-tilt">
+            <ScrollReveal style="fade-up">
                 <Suspense fallback={<div className="container mx-auto px-4 py-12"><div className="h-64 bg-white/5 rounded-3xl animate-pulse" /></div>}>
                     <LeaderboardSection initialLearners={leaderboardData} />
                 </Suspense>
@@ -96,7 +96,7 @@ export default async function Home() {
                 </Suspense>
             </ScrollReveal>
 
-            <ScrollReveal style="3d-tilt">
+            <ScrollReveal style="fade-up">
                 <Suspense fallback={<SectionSkeleton height="h-[600px]" />}>
                     <DevLabPreview />
                 </Suspense>
@@ -108,7 +108,7 @@ export default async function Home() {
                 </Suspense>
             </ScrollReveal>
 
-            <ScrollReveal style="scale-up">
+            <ScrollReveal style="fade-up">
                 <Suspense fallback={<SectionSkeleton height="h-[500px]" />}>
                     <HackathonPreview />
                 </Suspense>

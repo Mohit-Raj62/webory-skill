@@ -82,16 +82,16 @@ export function TestimonialsSection() {
     };
 
     return (
-        <section className="py-20 relative overflow-hidden">
+        <section className="py-10 sm:py-14 relative overflow-hidden">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
             />
-            <div className="container mx-auto px-4 mb-8 sm:mb-12 text-center relative z-10">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2 sm:mb-4">
+            <div className="container mx-auto px-4 mb-6 sm:mb-8 text-center relative z-10 max-w-5xl">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-2">
                     What Our Users Say
                 </h2>
-                <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto">
+                <p className="text-gray-400 text-xs sm:text-sm max-w-xl mx-auto">
                     Real feedback from students and interns shaping their future with Webory Skills.
                 </p>
             </div>

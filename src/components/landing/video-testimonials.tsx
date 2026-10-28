@@ -120,15 +120,15 @@ function TestimonialCard({ testimonial, isActive, setActive }: { testimonial: Vi
                 <>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none z-10" />
                     
-                    <div className="absolute inset-0 flex items-center justify-center opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all z-20">
-                        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-blue-600/90 backdrop-blur flex items-center justify-center shadow-[0_0_30px_rgba(37,99,235,0.6)]">
-                            <Play className="w-5 h-5 md:w-6 md:h-6 text-white ml-1" fill="currentColor" />
+                    <div className="absolute inset-0 flex items-center justify-center opacity-85 group-hover:opacity-100 group-hover:scale-105 transition-all z-20">
+                        <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-blue-600/90 backdrop-blur flex items-center justify-center shadow-[0_0_20px_rgba(37,99,235,0.6)]">
+                            <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white ml-0.5" fill="currentColor" />
                         </div>
                     </div>
 
-                    <div className="absolute bottom-0 left-0 w-full p-3 md:p-5 text-left z-20 pointer-events-none">
-                        <h3 className="text-sm md:text-lg font-bold text-white leading-tight truncate">{testimonial.studentName}</h3>
-                        <p className="text-emerald-400 text-xs md:text-sm font-medium mt-1 truncate">{testimonial.roleOrCourse}</p>
+                    <div className="absolute bottom-0 left-0 w-full p-2.5 sm:p-3 text-left z-20 pointer-events-none">
+                        <h3 className="text-xs sm:text-sm font-bold text-white leading-tight truncate">{testimonial.studentName}</h3>
+                        <p className="text-emerald-400 text-[10px] sm:text-xs font-medium mt-0.5 truncate">{testimonial.roleOrCourse}</p>
                     </div>
                 </>
             )}
@@ -162,35 +162,35 @@ export function VideoTestimonialsSection() {
     if (!loading && testimonials.length === 0) return null;
 
     return (
-        <section className="py-24 relative overflow-hidden bg-black">
+        <section className="py-12 sm:py-16 md:py-20 relative overflow-hidden bg-[#020308]">
             {/* Background Effects */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-96 bg-blue-600/20 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl h-64 bg-blue-600/15 blur-[100px] rounded-full pointer-events-none" />
 
-            <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
-                <div className="text-center mb-16">
+            <div className="max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+                <div className="text-center mb-8 sm:mb-10">
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 15 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="inline-block py-1 px-3 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-widest mb-4"
+                        className="inline-block py-0.5 px-2.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-bold uppercase tracking-wider mb-2"
                     >
                         Success Stories
                     </motion.div>
                     <motion.h2 
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 15 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.1 }}
-                        className="text-4xl md:text-5xl font-extrabold text-white mb-6"
+                        className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white mb-2"
                     >
                         Hear From Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Achievers</span>
                     </motion.h2>
                     <motion.p 
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 15 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.2 }}
-                        className="text-gray-400 text-lg max-w-2xl mx-auto"
+                        className="text-xs sm:text-sm text-gray-400 max-w-lg mx-auto leading-relaxed"
                     >
                         Real stories from students who transformed their careers through our hands-on AI-powered platform.
                     </motion.p>
@@ -199,21 +199,21 @@ export function VideoTestimonialsSection() {
                 {/* Video Carousel Grid */}
                 <div 
                     ref={carouselRef}
-                    className="flex overflow-x-auto gap-4 md:gap-6 pb-8 px-4 md:px-8 snap-x snap-mandatory scrollbar-hide"
+                    className="flex overflow-x-auto gap-3 sm:gap-4 pb-6 px-2 sm:px-4 snap-x snap-mandatory scrollbar-hide justify-center"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                     {loading ? (
                         [...Array(6)].map((_, idx) => (
-                            <div key={idx} className="snap-center shrink-0 w-[140px] h-[250px] md:w-[160px] md:h-[285px] relative rounded-3xl overflow-hidden bg-white/5 border border-white/10 animate-pulse" />
+                            <div key={idx} className="snap-center shrink-0 w-[120px] h-[210px] sm:w-[140px] sm:h-[245px] relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 animate-pulse" />
                         ))
                     ) : testimonials.map((testimonial, idx) => (
                         <motion.div
                             key={testimonial._id}
-                            initial={{ opacity: 0, y: 30 }}
+                            initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, margin: "-50px" }}
-                            transition={{ delay: idx * 0.05 }}
-                            className={`snap-center shrink-0 w-[140px] h-[250px] md:w-[160px] md:h-[285px] relative group rounded-3xl overflow-hidden bg-black border border-white/10 transition-all shadow-2xl ${activeVideo === testimonial._id ? 'w-[280px] md:w-[320px] ring-2 ring-blue-500' : 'hover:border-blue-500/50'}`}
+                            viewport={{ once: true, margin: "-40px" }}
+                            transition={{ delay: idx * 0.04 }}
+                            className={`snap-center shrink-0 w-[120px] h-[210px] sm:w-[140px] sm:h-[245px] relative group rounded-2xl overflow-hidden bg-black border border-white/10 transition-all shadow-xl ${activeVideo === testimonial._id ? 'w-[240px] sm:w-[280px] ring-2 ring-blue-500' : 'hover:border-blue-500/50'}`}
                         >
                             <TestimonialCard 
                                 testimonial={testimonial} 
