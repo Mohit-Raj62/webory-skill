@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/session-provider";
 import { 
-    User, Mail, Award, Briefcase, LogOut, ExternalLink, Trophy, 
-    Calendar, Video, FileText, Clock, Upload, ChevronRight, Zap, Sparkles, Download, PlayCircle, Lock, CreditCard
+    Mail, Award, Briefcase, LogOut, ExternalLink, Trophy, 
+    Calendar, Video, FileText, Clock, Upload, ChevronRight, Zap, Sparkles, Download, PlayCircle, Lock, CreditCard,
+    BookOpen, Building2
 } from "lucide-react";
 import dynamic from 'next/dynamic';
 import { Badge } from "@/components/ui/badge";
@@ -30,9 +31,9 @@ export function ProfileClientContent({
     initialHackathons: any[] 
 }) {
     const [user, setUser] = useState(initialUser);
-    const [enrollments, setEnrollments] = useState(initialEnrollments);
+    const [enrollments] = useState(initialEnrollments);
     const [applications, setApplications] = useState(initialApplications);
-    const [hackathons, setHackathons] = useState(initialHackathons);
+    const [hackathons] = useState(initialHackathons);
     const [activeTab, setActiveTab] = useState<'courses' | 'internships' | 'grades' | 'hackathons' | 'privacy'>('courses');
     const [uploadingAppId, setUploadingAppId] = useState<string | null>(null);
     const [showPhoneModal, setShowPhoneModal] = useState(!initialUser.phone);
@@ -93,10 +94,7 @@ export function ProfileClientContent({
         const item = type === 'course' ? data.course : data.internship;
         const amount = data.amountPaid || (type === 'course' ? item.price : 999);
         const originalPrice = item.originalPrice || item.price || (type === 'internship' ? 2999 : amount);
-        
         const gstPercent = item.gstPercentage || 0;
-        // If amount is inclusive, we need to extract taxable
-        // But for simplicity in the invoice component, we pass the final amount paid
         
         const invoiceData = {
             transactionId: data.transactionId || `TXN${(data._id || data.id || Date.now()).toString().substring(0, 12)}`,
@@ -115,93 +113,173 @@ export function ProfileClientContent({
     };
 
     return (
-        <div className="max-w-6xl mx-auto">
-            {/* Modern Profile Header */}
-            <div className="relative group mb-12">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-transparent blur-3xl -z-10 opacity-50 group-hover:opacity-100 transition-opacity duration-1000" />
-                <div className="glass-card p-5 md:p-10 rounded-[2rem] border border-white/10 bg-slate-900/40 backdrop-blur-2xl flex flex-col md:flex-row items-center gap-10 relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
-                    <div className="relative shrink-0">
-                        <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-2xl animate-pulse" />
-                        <div className="w-24 h-24 md:w-28 md:h-28 rounded-full p-1 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 relative z-10 shadow-2xl">
-                            <div className="w-full h-full rounded-full bg-slate-950 flex items-center justify-center text-3xl md:text-4xl font-black text-white tracking-tighter">
-                                {user?.firstName?.[0] || 'U'}{user?.lastName?.[0] || ''}
+        <div className="max-w-6xl mx-auto space-y-5 sm:space-y-6">
+            {/* ── PROFILE HEADER CARD ── */}
+            <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/15 via-purple-600/10 to-indigo-600/10 blur-2xl -z-10 opacity-70 group-hover:opacity-100 transition-opacity duration-700" />
+                
+                <div className="rounded-2xl border border-white/10 bg-gradient-to-b from-[#0F1426]/90 via-[#0C1020]/80 to-[#0A0D1B]/90 backdrop-blur-2xl p-4 sm:p-6 md:p-7 relative overflow-hidden shadow-2xl">
+                    <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
+                    
+                    <div className="flex flex-col md:flex-row items-center md:items-start gap-4 sm:gap-6">
+                        {/* Avatar */}
+                        <div className="relative shrink-0">
+                            <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-2xl p-1 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 shadow-xl shadow-blue-500/10">
+                                <div className="w-full h-full rounded-[14px] bg-[#0A0D1B] flex items-center justify-center text-xl sm:text-2xl font-black text-white tracking-tight">
+                                    {user?.firstName?.[0] || 'U'}{user?.lastName?.[0] || ''}
+                                </div>
                             </div>
-                        </div>
-                        <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-emerald-500 rounded-full border-4 border-slate-900 flex items-center justify-center z-20 shadow-lg">
-                            <div className="w-2 h-2 rounded-full bg-white animate-ping" />
-                        </div>
-                    </div>
-
-                    <div className="flex-1 text-center md:text-left relative z-10">
-                        <div className="flex flex-col md:flex-row md:items-center gap-3 mb-2 justify-center md:justify-start">
-                            <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">
-                                {user?.firstName || 'User'} {user?.lastName || ''}
-                            </h1>
-                            <span className="hidden md:block text-slate-700 font-light text-xl">|</span>
-                            <span className="inline-flex items-center px-3 py-1 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-widest self-center">
-                                {user.role}
-                            </span>
-                        </div>
-                        <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mb-8">
-                            <p className="text-slate-400 text-base flex items-center gap-2 font-medium opacity-80">
-                                <Mail size={16} className="text-blue-500/70" /> {user.email}
-                            </p>
-                            <div className="flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 px-4 py-1.5 rounded-2xl group/xp hover:bg-orange-500/20 transition-all duration-300">
-                                <Zap size={16} className="text-orange-500 animate-pulse" />
-                                <span className="text-xl font-black text-white tracking-tighter">{user.xp || 0}</span>
-                                <span className="text-[10px] font-black text-orange-500 uppercase tracking-widest">XP Points</span>
+                            <div className="absolute -bottom-1 -right-1 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-[10px] font-semibold backdrop-blur shadow-sm">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                <span>Active</span>
                             </div>
                         </div>
 
-                        <div className="flex flex-wrap gap-3 justify-center md:justify-start">
-                            <button onClick={() => router.push(`/portfolio/${user._id}`)} className="h-11 px-6 rounded-xl bg-white text-black hover:bg-blue-500 hover:text-white font-black uppercase tracking-wider text-[10px] transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-blue-500/20 hover:-translate-y-0.5">
-                                <ExternalLink size={14} /> View Portfolio
-                            </button>
-                            <button onClick={() => router.push('/resume')} className="h-11 px-6 rounded-xl bg-slate-800/50 hover:bg-slate-800 text-white border border-white/5 font-black uppercase tracking-wider text-[10px] transition-all duration-300 flex items-center gap-2">
-                                <Briefcase size={14} /> My Resume
-                            </button>
-                            <button onClick={() => router.push('/profile/edit')} className="h-11 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-wider text-[10px] transition-all duration-300 flex items-center gap-2 shadow-lg shadow-blue-500/20">
-                                <Sparkles size={14} /> Edit Resume Info
-                            </button>
-                            <button onClick={() => router.push('/profile/security')} className="h-11 px-6 rounded-xl bg-slate-800/50 hover:bg-slate-800 text-white border border-white/5 font-black uppercase tracking-wider text-[10px] transition-all duration-300 flex items-center gap-2">
-                                <Lock size={14} /> Security
-                            </button>
-                        </div>
-                    </div>
+                        {/* Name & Identity */}
+                        <div className="flex-1 text-center md:text-left min-w-0 w-full">
+                            {/* Top row inside info: Name & role on left, big Sign Out button on top right */}
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-2">
+                                <div>
+                                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
+                                        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white tracking-tight truncate">
+                                            {user?.firstName || 'User'} {user?.lastName || ''}
+                                        </h1>
+                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 text-[10px] font-bold uppercase tracking-wider">
+                                            {user.role}
+                                        </span>
+                                    </div>
+                                    <p className="text-slate-400 text-xs flex items-center justify-center md:justify-start gap-1.5 font-medium mt-1">
+                                        <Mail size={12} className="text-blue-400 shrink-0" />
+                                        <span className="truncate">{user.email}</span>
+                                    </p>
+                                </div>
 
-                    <div className="md:ml-auto w-full md:w-auto relative z-10">
-                        <button onClick={handleLogout} className="w-full md:w-auto h-11 px-6 rounded-xl bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white border border-red-500/20 font-black uppercase tracking-wider text-[10px] transition-all duration-300 flex items-center justify-center gap-2 group/out">
-                            <LogOut size={14} className="group-hover/out:-translate-x-1 transition-transform" /> Sign Out
-                        </button>
+                                {/* Prominent, larger Sign Out button at the top */}
+                                <button 
+                                    onClick={handleLogout} 
+                                    className="self-center sm:self-start h-10 px-4 rounded-xl bg-red-500/15 hover:bg-red-500 text-red-400 hover:text-white border border-red-500/30 font-bold text-xs sm:text-sm transition-all duration-200 flex items-center gap-2 shadow-lg shadow-red-500/10 hover:shadow-red-500/30 active:scale-95 shrink-0 cursor-pointer"
+                                    title="Sign Out"
+                                >
+                                    <LogOut size={16} />
+                                    <span>Sign Out</span>
+                                </button>
+                            </div>
+
+                            {/* Mini Stat Capsules */}
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 my-3.5">
+                                <div className="p-2 sm:p-2.5 rounded-xl bg-white/[0.03] border border-white/8 hover:bg-white/[0.05] transition-colors">
+                                    <div className="flex items-center gap-1.5 text-slate-400 text-[11px] font-medium">
+                                        <BookOpen size={12} className="text-blue-400 shrink-0" />
+                                        <span>Courses</span>
+                                    </div>
+                                    <div className="text-sm sm:text-base font-bold text-white mt-0.5">{enrollments.length}</div>
+                                </div>
+
+                                <div className="p-2 sm:p-2.5 rounded-xl bg-white/[0.03] border border-white/8 hover:bg-white/[0.05] transition-colors">
+                                    <div className="flex items-center gap-1.5 text-slate-400 text-[11px] font-medium">
+                                        <Briefcase size={12} className="text-purple-400 shrink-0" />
+                                        <span>Internships</span>
+                                    </div>
+                                    <div className="text-sm sm:text-base font-bold text-white mt-0.5">{applications.length}</div>
+                                </div>
+
+                                <div className="p-2 sm:p-2.5 rounded-xl bg-white/[0.03] border border-white/8 hover:bg-white/[0.05] transition-colors">
+                                    <div className="flex items-center gap-1.5 text-slate-400 text-[11px] font-medium">
+                                        <Trophy size={12} className="text-amber-400 shrink-0" />
+                                        <span>Hackathons</span>
+                                    </div>
+                                    <div className="text-sm sm:text-base font-bold text-white mt-0.5">{hackathons.length}</div>
+                                </div>
+
+                                <div className="p-2 sm:p-2.5 rounded-xl bg-orange-500/10 border border-orange-500/20 hover:border-orange-500/30 transition-colors">
+                                    <div className="flex items-center gap-1.5 text-orange-400 text-[11px] font-medium">
+                                        <Zap size={12} className="text-orange-400 shrink-0 animate-pulse" />
+                                        <span>Total XP</span>
+                                    </div>
+                                    <div className="text-sm sm:text-base font-bold text-white mt-0.5">{user.xp || 0}</div>
+                                </div>
+                            </div>
+
+                            {/* Action Buttons: Portfolio, Resume, Edit Info, Security */}
+                            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 justify-center md:justify-start pt-3.5 border-t border-white/5">
+                                <button 
+                                    onClick={() => router.push(`/portfolio/${user._id}`)} 
+                                    className="h-10 px-4 sm:px-5 rounded-xl bg-white text-slate-900 hover:bg-blue-600 hover:text-white font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center gap-2 shadow-md shadow-white/5 hover:shadow-blue-500/25 active:scale-95 cursor-pointer"
+                                >
+                                    <ExternalLink size={15} />
+                                    <span>Portfolio</span>
+                                </button>
+                                <button 
+                                    onClick={() => router.push('/resume')} 
+                                    className="h-10 px-4 sm:px-5 rounded-xl bg-purple-500/15 hover:bg-purple-500 text-purple-300 hover:text-white border border-purple-500/30 font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center gap-2 shadow-md shadow-purple-500/10 hover:shadow-purple-500/25 active:scale-95 cursor-pointer"
+                                >
+                                    <Briefcase size={15} className="text-purple-400" />
+                                    <span>My Resume</span>
+                                </button>
+                                <button 
+                                    onClick={() => router.push('/profile/edit')} 
+                                    className="h-10 px-4 sm:px-5 rounded-xl bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center gap-2 shadow-md shadow-blue-500/10 hover:shadow-blue-500/25 active:scale-95 cursor-pointer"
+                                >
+                                    <Sparkles size={15} className="text-yellow-400" />
+                                    <span>Edit Info</span>
+                                </button>
+                                <button 
+                                    onClick={() => router.push('/profile/security')} 
+                                    className="h-10 px-4 sm:px-5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white border border-white/15 font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center gap-2 shadow-md shadow-black/20 active:scale-95 cursor-pointer"
+                                >
+                                    <Lock size={15} className="text-slate-400" />
+                                    <span>Security</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* Hub Section */}
-            <div className="mb-12">
-                <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-2xl font-black text-white tracking-tight flex items-center gap-3">
-                        <div className="w-1 h-6 bg-blue-500 rounded-full" /> Student Hub
+            {/* ── STUDENT HUB SECTION ── */}
+            <div>
+                <div className="flex items-center justify-between mb-2.5">
+                    <h2 className="text-sm sm:text-base font-bold text-white tracking-tight flex items-center gap-2">
+                        <div className="w-1 h-4 bg-blue-500 rounded-full" /> Student Hub
                     </h2>
-                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
-                        <Clock size={12} /> Live Updates
+                    <div className="flex items-center gap-1 text-[11px] font-medium text-slate-500">
+                        <Clock size={11} /> Live Updates
                     </div>
                 </div>
 
-                <div className="p-1.5 bg-slate-900/50 backdrop-blur-xl border border-white/5 rounded-[1.5rem] flex gap-1 mb-10 overflow-x-auto no-scrollbar">
+                {/* Pill Tabs with Count Badges */}
+                <div className="p-1 bg-[#0C1020]/90 backdrop-blur-xl border border-white/10 rounded-xl flex gap-1 mb-4 overflow-x-auto no-scrollbar shadow-inner">
                     {(['courses', 'internships', 'grades', 'hackathons', 'privacy'] as const).map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`flex-1 min-w-[140px] px-6 py-3.5 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all duration-500 flex items-center justify-center gap-2 ${activeTab === tab ? 'bg-white text-black shadow-xl' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
+                            className={`flex-1 min-w-[90px] sm:min-w-0 px-2.5 py-1.5 rounded-lg font-medium text-xs capitalize transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
+                                activeTab === tab 
+                                    ? 'bg-white text-black shadow-md font-semibold' 
+                                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                            }`}
                         >
-                            {tab === 'courses' && <Award size={14} />}
-                            {tab === 'internships' && <Briefcase size={14} />}
-                            {tab === 'grades' && <Trophy size={14} />}
-                            {tab === 'hackathons' && <Zap size={14} />}
-                            {tab === 'privacy' && <Lock size={14} />}
-                            {tab}
+                            {tab === 'courses' && <BookOpen size={13} className={activeTab === tab ? 'text-blue-600' : 'text-blue-400'} />}
+                            {tab === 'internships' && <Briefcase size={13} className={activeTab === tab ? 'text-purple-600' : 'text-purple-400'} />}
+                            {tab === 'grades' && <Trophy size={13} className={activeTab === tab ? 'text-amber-600' : 'text-amber-400'} />}
+                            {tab === 'hackathons' && <Zap size={13} className={activeTab === tab ? 'text-orange-600' : 'text-orange-400'} />}
+                            {tab === 'privacy' && <Lock size={13} className={activeTab === tab ? 'text-slate-800' : 'text-slate-400'} />}
+                            <span>{tab}</span>
+                            {tab === 'courses' && enrollments.length > 0 && (
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-semibold ${activeTab === tab ? 'bg-black/10 text-black' : 'bg-white/10 text-slate-300'}`}>
+                                    {enrollments.length}
+                                </span>
+                            )}
+                            {tab === 'internships' && applications.length > 0 && (
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-semibold ${activeTab === tab ? 'bg-black/10 text-black' : 'bg-white/10 text-slate-300'}`}>
+                                    {applications.length}
+                                </span>
+                            )}
+                            {tab === 'hackathons' && hackathons.length > 0 && (
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-semibold ${activeTab === tab ? 'bg-black/10 text-black' : 'bg-white/10 text-slate-300'}`}>
+                                    {hackathons.length}
+                                </span>
+                            )}
                         </button>
                     ))}
                 </div>
@@ -210,73 +288,127 @@ export function ProfileClientContent({
                     <div className={activeTab === 'courses' ? 'block' : 'hidden'}><ActivityDashboard category="course" title="Courses" /></div>
                     <div className={activeTab === 'internships' ? 'block' : 'hidden'}><ActivityDashboard category="internship" title="Internships" /></div>
                     <div className={activeTab === 'grades' ? 'block' : 'hidden'}><GradesDashboard /></div>
+                    
+                    {/* Compact Hackathon Cards */}
                     <div className={activeTab === 'hackathons' ? 'block' : 'hidden'}>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                             {hackathons.map((h, i) => (
-                                <div key={i} className={`relative group p-[1px] rounded-[2.5rem] transition-all duration-500 overflow-hidden ${h.status === 'winner' ? 'bg-gradient-to-br from-yellow-500 via-orange-500 to-amber-700 shadow-xl shadow-orange-500/10' : 'bg-white/10 hover:bg-white/20'}`}>
-                                    <div className="bg-[#0A0A15]/90 backdrop-blur-3xl rounded-[2.45rem] p-6 lg:p-8 h-full flex flex-col justify-between relative z-10">
+                                <div key={i} className={`relative group p-[1px] rounded-xl transition-all duration-300 overflow-hidden ${h.status === 'winner' ? 'bg-gradient-to-br from-yellow-500 via-orange-500 to-amber-700 shadow-md shadow-orange-500/10' : 'bg-white/10 hover:bg-white/20'}`}>
+                                    <div className="bg-[#0A0A15]/95 backdrop-blur-2xl rounded-[calc(0.75rem-1px)] p-3 sm:p-3.5 h-full flex flex-col justify-between relative z-10">
                                         <div>
-                                            <div className="flex justify-between items-start mb-6">
-                                                <div className={`p-3 rounded-2xl ${h.status === 'winner' ? 'bg-yellow-500/10 text-yellow-500' : 'bg-blue-500/10 text-blue-500'}`}><Trophy size={20} className={h.status === 'winner' ? 'animate-bounce' : ''} /></div>
-                                                <Badge className={`border-none capitalize font-black text-[9px] tracking-widest ${h.status === 'winner' ? 'bg-yellow-500 text-black' : 'bg-white/10 text-white'}`}>{h.status}</Badge>
+                                            <div className="flex justify-between items-start mb-2">
+                                                <div className={`p-1.5 rounded-lg ${h.status === 'winner' ? 'bg-yellow-500/10 text-yellow-500' : 'bg-blue-500/10 text-blue-500'}`}>
+                                                    <Trophy size={14} className={h.status === 'winner' ? 'animate-bounce' : ''} />
+                                                </div>
+                                                <Badge className={`border-none capitalize font-semibold text-[9px] px-1.5 py-0.2 tracking-wide ${h.status === 'winner' ? 'bg-yellow-500 text-black' : 'bg-white/10 text-white'}`}>{h.status}</Badge>
                                             </div>
-                                            <h3 className="text-white font-black tracking-tight mb-2 text-lg lg:text-xl leading-tight">{h.hackathonId?.title || "Unknown Hackathon"}</h3>
-                                            <div className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Project Title</div>
-                                            <p className="text-gray-300 font-medium text-xs break-all leading-relaxed line-clamp-3">{h.projectName}</p>
+                                            <h3 className="text-white font-bold tracking-tight mb-1 text-xs sm:text-sm leading-tight truncate">{h.hackathonId?.title || "Unknown Hackathon"}</h3>
+                                            <div className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Project</div>
+                                            <p className="text-gray-300 font-medium text-[11px] break-all leading-snug line-clamp-1">{h.projectName}</p>
                                         </div>
-                                        <div className="pt-6 mt-6 border-t border-white/5">
+                                        <div className="pt-2 mt-2 border-t border-white/5">
                                             {h.certificateId ? (
-                                                <button onClick={() => router.push(`/certificates/${h.certificateId.certificateId}`)} className={`w-full h-11 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 ${h.status === 'winner' ? 'bg-yellow-500 text-black shadow-lg shadow-yellow-500/20 hover:bg-yellow-400' : 'bg-white text-black hover:bg-gray-200 shadow-lg shadow-white/5'}`}><Award size={14} /> Get Certificate</button>
-                                            ) : <div className="text-[10px] font-black text-slate-600 uppercase tracking-widest py-2 text-center">Result Pending</div>}
+                                                <button onClick={() => router.push(`/certificates/${h.certificateId.certificateId}`)} className={`w-full h-7 rounded-lg text-[11px] font-semibold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer ${h.status === 'winner' ? 'bg-yellow-500 text-black shadow-md shadow-yellow-500/20 hover:bg-yellow-400' : 'bg-white text-black hover:bg-gray-200'}`}>
+                                                    <Award size={11} /> Certificate
+                                                </button>
+                                            ) : (
+                                                <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider py-0.5 text-center">Result Pending</div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     </div>
+
                     <div className={activeTab === 'privacy' ? 'block' : 'hidden'}>
                         <PrivacyConsentDashboard user={user} />
                     </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Courses */}
+            {/* ── COURSES & INTERNSHIPS GRID ── */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
+                {/* Courses Desk */}
                 <div className="relative group">
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-xl font-black text-white tracking-tight flex items-center gap-2"><Award className="text-blue-500" size={20} /> Enrolled Courses</h2>
-                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{enrollments.length} Active</span>
+                    <div className="flex items-center justify-between mb-2.5">
+                        <h2 className="text-sm sm:text-base font-bold text-white tracking-tight flex items-center gap-2">
+                            <BookOpen className="text-blue-400" size={15} /> Enrolled Courses
+                        </h2>
+                        <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                            {enrollments.length} Active
+                        </span>
                     </div>
+
                     {enrollments.length > 0 ? (
-                        <div className="space-y-4">
+                        <div className="space-y-2.5">
                             {enrollments.map((enrollment, index) => (
-                                <div key={index} className="group/course relative bg-slate-900/40 backdrop-blur-xl p-5 rounded-[1.5rem] border border-white/5 hover:border-blue-500/30 transition-all duration-500 flex flex-col gap-4 overflow-hidden">
-                                     <div className="flex justify-between items-start">
-                                        <div>
-                                            <h3 className="text-white font-black tracking-tight group-hover/course:text-blue-400 transition-colors">{enrollment.course?.title || "Unknown Course"}</h3>
-                                            <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mt-1">{enrollment.course?.level || "Professional"}</p>
+                                <div key={index} className="group/course relative bg-[#0C1020]/80 backdrop-blur-xl p-3 rounded-xl border border-white/8 hover:border-blue-500/40 transition-all duration-300 flex flex-col gap-2.5 shadow-md hover:shadow-blue-500/5">
+                                    <div className="flex items-start gap-2.5">
+                                        {/* Compact Thumbnail */}
+                                        <div className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-lg overflow-hidden bg-slate-900 border border-white/10 shrink-0">
+                                            {enrollment.course?.thumbnail ? (
+                                                <img 
+                                                    src={enrollment.course.thumbnail} 
+                                                    alt={enrollment.course?.title || "Course"} 
+                                                    className="w-full h-full object-cover group-hover/course:scale-105 transition-transform duration-300" 
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-600/30 to-indigo-600/30 text-blue-400">
+                                                    <BookOpen size={16} />
+                                                </div>
+                                            )}
                                         </div>
-                                        <button onClick={() => enrollment.course?._id && router.push(`/courses/${enrollment.course.slug || enrollment.course._id}`)} className="p-2.5 rounded-xl bg-white/5 hover:bg-white hover:text-black transition-all duration-300 text-blue-400"><ChevronRight size={18} /></button>
+
+                                        {/* Course Info */}
+                                        <div className="flex-1 min-w-0 pr-1">
+                                            <h3 className="text-xs sm:text-[13px] font-semibold text-white tracking-tight group-hover/course:text-blue-400 transition-colors truncate">
+                                                {enrollment.course?.title || "Unknown Course"}
+                                            </h3>
+                                            <div className="flex items-center gap-2 mt-0.5">
+                                                <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider px-1.5 py-0.2 rounded bg-white/5 border border-white/5">
+                                                    {enrollment.course?.level || "Beginner"}
+                                                </span>
+                                                <span className="text-[10px] text-slate-400 font-medium">
+                                                    {enrollment.course?.videos?.length || 0} Videos
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <button 
+                                            onClick={() => enrollment.course?._id && router.push(`/courses/${enrollment.course.slug || enrollment.course._id}`)} 
+                                            className="p-1 rounded-lg bg-white/5 hover:bg-blue-600 hover:text-white transition-all text-slate-400 shrink-0 cursor-pointer"
+                                            title="View course"
+                                        >
+                                            <ChevronRight size={14} />
+                                        </button>
                                     </div>
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-tighter">
-                                            <span className="text-slate-500">Curriculum Progress</span>
-                                            <span className="text-blue-400">{Math.min(enrollment.progress || 0, 100)}%</span>
+
+                                    {/* Compact Progress Bar */}
+                                    <div className="space-y-1 bg-white/[0.02] p-1.5 rounded-lg border border-white/5">
+                                        <div className="flex justify-between items-center text-[10px] font-semibold">
+                                            <span className="text-slate-400">Progress</span>
+                                            <span className="text-blue-400 font-bold">{Math.min(enrollment.progress || 0, 100)}%</span>
                                         </div>
-                                        <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                                            <div className="bg-gradient-to-r from-blue-600 to-cyan-400 h-full rounded-full transition-all duration-1000 shadow-[0_0_8px_rgba(37,99,235,0.5)]" style={{ width: `${Math.min(enrollment.progress || 0, 100)}%` }} />
+                                        <div className="w-full bg-slate-800/80 h-1.5 rounded-full overflow-hidden">
+                                            <div 
+                                                className="bg-gradient-to-r from-blue-600 to-cyan-400 h-full rounded-full transition-all duration-700 shadow-[0_0_8px_rgba(37,99,235,0.4)]" 
+                                                style={{ width: `${Math.min(enrollment.progress || 0, 100)}%` }} 
+                                            />
                                         </div>
                                     </div>
-                                    <div className="flex gap-2 w-full mt-2">
+
+                                    {/* Action Buttons */}
+                                    <div className="flex gap-2 w-full pt-0.5">
                                         <button 
                                             onClick={() => handleDownloadInvoice(enrollment, 'course')}
-                                            className="flex-1 h-9 flex items-center justify-center gap-1.5 bg-slate-800/50 hover:bg-slate-800 border border-white/5 text-slate-400 hover:text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all"
+                                            className="flex-1 h-7.5 flex items-center justify-center gap-1.5 bg-white/5 hover:bg-white/10 border border-white/8 text-slate-300 hover:text-white rounded-lg text-[11px] font-medium transition-all cursor-pointer"
                                         >
-                                            <Download size={12} /> Invoice
+                                            <Download size={11} className="text-slate-400" /> Invoice
                                         </button>
                                         <button 
                                             onClick={() => enrollment.course?._id && router.push(`/courses/${enrollment.course.slug || enrollment.course._id}`)}
-                                            className="flex-[1.5] h-9 flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow-lg shadow-blue-500/20"
+                                            className="flex-[1.4] h-7.5 flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[11px] font-semibold transition-all shadow-sm shadow-blue-500/20 active:scale-95 cursor-pointer"
                                         >
                                             Continue Course <ChevronRight size={12} />
                                         </button>
@@ -285,77 +417,133 @@ export function ProfileClientContent({
                             ))}
                         </div>
                     ) : (
-                        <div className="bg-slate-900/20 backdrop-blur-xl border border-white/5 rounded-[2rem] p-12 text-center">
-                            <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-4 text-slate-600"><Award size={32} /></div>
-                            <p className="text-slate-400 font-bold mb-6">No active courses found.</p>
-                            <Button onClick={() => router.push('/courses')} className="bg-white text-black hover:bg-blue-500 hover:text-white rounded-xl font-black uppercase tracking-widest text-[10px] h-10 px-6">Explore Skills</Button>
+                        <div className="bg-[#0C1020]/60 backdrop-blur-xl border border-white/8 rounded-xl p-6 text-center">
+                            <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center mx-auto mb-2.5 text-slate-500">
+                                <BookOpen size={18} />
+                            </div>
+                            <p className="text-slate-400 font-medium text-xs mb-3">No enrolled courses yet.</p>
+                            <Button onClick={() => router.push('/courses')} className="bg-white text-black hover:bg-blue-500 hover:text-white rounded-lg font-semibold text-xs h-7.5 px-3">
+                                Browse Courses
+                            </Button>
                         </div>
                     )}
                 </div>
 
-                {/* Internships */}
+                {/* Internships Desk */}
                 <div className="relative group">
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-xl font-black text-white tracking-tight flex items-center gap-2"><Briefcase className="text-purple-500" size={20} /> Internship Desk</h2>
-                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{applications.length} Decided</span>
+                    <div className="flex items-center justify-between mb-2.5">
+                        <h2 className="text-sm sm:text-base font-bold text-white tracking-tight flex items-center gap-2">
+                            <Briefcase className="text-purple-400" size={15} /> Internship Desk
+                        </h2>
+                        <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                            {applications.length} Applications
+                        </span>
                     </div>
+
                     {applications.length > 0 ? (
-                        <div className="space-y-4">
+                        <div className="space-y-2.5">
                             {applications.map((app, index) => (
-                                <div key={index} className="group/app relative bg-slate-900/40 backdrop-blur-xl p-5 md:p-6 rounded-[1.5rem] border border-white/5 hover:border-purple-500/30 transition-all duration-500">
-                                    <div className="flex justify-between items-start mb-6">
-                                        <div className="flex-1">
-                                            <h3 className="text-white font-black tracking-tight mb-1 group-hover/app:text-purple-400 transition-colors">{app.internship?.title || "Unknown Career"}</h3>
-                                            <div className="flex items-center gap-2">
-                                                <Calendar size={12} className="text-slate-500" />
-                                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">
-                                                    Applied {mounted ? new Date(app.appliedAt).toLocaleDateString() : "Loading..."}
-                                                </p>
+                                <div key={index} className="group/app relative bg-[#0C1020]/80 backdrop-blur-xl p-3 rounded-xl border border-white/8 hover:border-purple-500/40 transition-all duration-300 shadow-md hover:shadow-purple-500/5">
+                                    <div className="flex justify-between items-start gap-2 mb-2">
+                                        <div className="flex-1 min-w-0 pr-1">
+                                            <h3 className="text-xs sm:text-[13px] font-semibold text-white tracking-tight mb-0.5 group-hover/app:text-purple-400 transition-colors truncate">
+                                                {app.internship?.title || "Unknown Career"}
+                                            </h3>
+                                            <div className="flex flex-wrap items-center gap-1.5 text-[10px] text-slate-400 font-medium">
+                                                {app.internship?.company && (
+                                                    <span className="flex items-center gap-1 text-slate-300">
+                                                        <Building2 size={10} className="text-purple-400" />
+                                                        {app.internship.company}
+                                                    </span>
+                                                )}
+                                                {app.internship?.type && (
+                                                    <span className="px-1.5 py-0.2 rounded bg-white/5 border border-white/5 text-[9px] text-slate-400 uppercase">
+                                                        {app.internship.type}
+                                                    </span>
+                                                )}
+                                                <span className="flex items-center gap-1 text-slate-500">
+                                                    <Calendar size={10} />
+                                                    {mounted ? new Date(app.appliedAt).toLocaleDateString() : "Loading..."}
+                                                </span>
                                             </div>
                                         </div>
-                                        {app.status === 'pending' && (app.internship?.price || 0) > 0 && !(app.transactionId && !app.transactionId.startsWith('PENDING_') && (app.amountPaid || 0) > 0) ? (
-                                            <span className="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter bg-orange-500/10 text-orange-500 border border-orange-500/20">PAYMENT PENDING</span>
-                                        ) : app.status === 'pending' && (app.transactionId && !app.transactionId.startsWith('PENDING_') && (app.amountPaid || 0) > 0) ? (
-                                            <span className="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter bg-yellow-500/10 text-yellow-500 border border-yellow-500/20">UNDER REVIEW</span>
-                                        ) : (
-                                            <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter ${app.status === 'pending' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'}`}>{app.status.replace('_', ' ')}</span>
-                                        )}
+
+                                        {/* Status Tag */}
+                                        <div className="shrink-0">
+                                            {app.status === 'pending' && (app.internship?.price || 0) > 0 && !(app.transactionId && !app.transactionId.startsWith('PENDING_') && (app.amountPaid || 0) > 0) ? (
+                                                <span className="px-1.5 py-0.2 rounded text-[9px] font-semibold uppercase tracking-tight bg-orange-500/10 text-orange-400 border border-orange-500/20">
+                                                    PAYMENT PENDING
+                                                </span>
+                                            ) : app.status === 'pending' && (app.transactionId && !app.transactionId.startsWith('PENDING_') && (app.amountPaid || 0) > 0) ? (
+                                                <span className="px-1.5 py-0.2 rounded text-[9px] font-semibold uppercase tracking-tight bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
+                                                    UNDER REVIEW
+                                                </span>
+                                            ) : (
+                                                <span className={`px-1.5 py-0.2 rounded text-[9px] font-semibold uppercase tracking-tight ${app.status === 'pending' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}`}>
+                                                    {app.status.replace('_', ' ')}
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
-                                    <div className="flex flex-wrap gap-2 items-center">
+
+                                    {/* Action Buttons */}
+                                    <div className="flex flex-wrap gap-1.5 items-center pt-2 border-t border-white/5">
                                         {app.status === 'pending' && (app.internship?.price || 0) > 0 && !(app.transactionId && !app.transactionId.startsWith('PENDING_') && (app.amountPaid || 0) > 0) && (
-                                            <button onClick={() => setPaymentModalData(app)} className="h-8 px-4 flex items-center gap-2 bg-orange-500 hover:bg-orange-600 rounded-lg text-[10px] font-black uppercase tracking-widest text-white transition-all shadow-lg shadow-orange-500/20">
-                                                <CreditCard size={12} /> Pay Now
+                                            <button onClick={() => setPaymentModalData(app)} className="h-7 px-2.5 flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 rounded-md text-[10px] font-semibold uppercase tracking-wider text-white transition-all shadow-sm shadow-orange-500/20 cursor-pointer">
+                                                <CreditCard size={10} /> Pay Now
                                             </button>
                                         )}
                                         {app.resume && app.resume !== "Pending Upload" ? (
                                             <>
-                                                <a href={app.resume} target="_blank" rel="noopener noreferrer" className="h-8 px-4 flex items-center gap-2 bg-white/5 hover:bg-white/10 rounded-lg text-[10px] font-black uppercase tracking-widest text-slate-300 transition-all border border-white/5 shadow-sm"><FileText size={12} className="text-blue-400" /> Resume</a>
+                                                <a href={app.resume} target="_blank" rel="noopener noreferrer" className="h-7 px-2 flex items-center gap-1.5 bg-white/5 hover:bg-white/10 rounded-md text-[10px] font-medium text-slate-300 transition-all border border-white/8 shadow-sm">
+                                                    <FileText size={10} className="text-blue-400" /> Resume
+                                                </a>
                                                 <input type="file" id={`resume-reupload-${app._id}`} className="hidden" accept=".pdf,.doc,.docx" onChange={(e) => handleFileUpload(e, app._id)} />
-                                                <label htmlFor={`resume-reupload-${app._id}`} className="h-8 px-4 flex items-center gap-2 bg-orange-500/10 hover:bg-orange-500/20 rounded-lg text-[10px] font-black uppercase tracking-widest text-orange-400 transition-all border border-orange-500/20 cursor-pointer">{uploadingAppId === app._id ? <Clock size={12} className="animate-spin" /> : <Upload size={12} />}{uploadingAppId === app._id ? "Uploading..." : "Re-upload"}</label>
+                                                <label htmlFor={`resume-reupload-${app._id}`} className="h-7 px-2 flex items-center gap-1.5 bg-orange-500/10 hover:bg-orange-500/20 rounded-md text-[10px] font-medium text-orange-400 transition-all border border-orange-500/20 cursor-pointer">
+                                                    {uploadingAppId === app._id ? <Clock size={10} className="animate-spin" /> : <Upload size={10} />}
+                                                    {uploadingAppId === app._id ? "Uploading..." : "Re-upload"}
+                                                </label>
                                             </>
                                         ) : (
                                             <>
                                                 <input type="file" id={`resume-upload-${app._id}`} className="hidden" accept=".pdf,.doc,.docx" onChange={(e) => handleFileUpload(e, app._id)} />
-                                                <label htmlFor={`resume-upload-${app._id}`} className="h-8 px-4 flex items-center gap-2 bg-blue-500/10 hover:bg-blue-500/20 rounded-lg text-[10px] font-black uppercase tracking-widest text-blue-400 transition-all border border-blue-500/20 cursor-pointer">{uploadingAppId === app._id ? <Clock size={12} className="animate-spin" /> : <Upload size={12} />}{uploadingAppId === app._id ? "Uploading..." : "Upload CV"}</label>
+                                                <label htmlFor={`resume-upload-${app._id}`} className="h-7 px-2 flex items-center gap-1.5 bg-blue-500/10 hover:bg-blue-500/20 rounded-md text-[10px] font-medium text-blue-400 transition-all border border-blue-500/20 cursor-pointer">
+                                                    {uploadingAppId === app._id ? <Clock size={10} className="animate-spin" /> : <Upload size={10} />}
+                                                    {uploadingAppId === app._id ? "Uploading..." : "Upload CV"}
+                                                </label>
                                             </>
                                         )}
-                                        {app.status === 'interview_scheduled' && <button onClick={() => window.location.href = `/api/live/join-interview?applicationId=${app._id}`} className="h-8 px-4 bg-emerald-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-emerald-500/20"><Video size={12} /> Join Call</button>}
+                                        {app.status === 'interview_scheduled' && (
+                                            <button onClick={() => window.location.href = `/api/live/join-interview?applicationId=${app._id}`} className="h-7 px-2.5 bg-emerald-500 text-white rounded-md text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1.5 shadow-sm shadow-emerald-500/20 cursor-pointer">
+                                                <Video size={10} /> Join Call
+                                            </button>
+                                        )}
                                         {(app.status !== 'pending' && app.status !== 'rejected') && (
                                             <>
-                                                <button onClick={() => app.internship?._id && router.push(`/internships/${app.internship.slug || app.internship._id}`)} className="h-8 px-4 bg-blue-600 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-blue-600/20"><PlayCircle size={12} /> Content</button>
-                                                <button onClick={() => app.internship?._id && router.push(`/internships/${app.internship.slug || app.internship._id}/tasks`)} className="h-8 px-4 bg-purple-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-purple-500/20"><FileText size={12} /> Tasks</button>
+                                                <button onClick={() => app.internship?._id && router.push(`/internships/${app.internship.slug || app.internship._id}`)} className="h-7 px-2 bg-blue-600 hover:bg-blue-500 text-white rounded-md text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1.5 shadow-sm shadow-blue-600/20 cursor-pointer">
+                                                    <PlayCircle size={10} /> Content
+                                                </button>
+                                                <button onClick={() => app.internship?._id && router.push(`/internships/${app.internship.slug || app.internship._id}/tasks`)} className="h-7 px-2 bg-purple-600 hover:bg-purple-500 text-white rounded-md text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1.5 shadow-sm shadow-purple-500/20 cursor-pointer">
+                                                    <FileText size={10} /> Tasks
+                                                </button>
                                                 {(app.amountPaid > 0) && (
                                                     <button 
                                                         onClick={() => handleDownloadInvoice(app, 'internship')}
-                                                        className="h-8 px-4 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all"
+                                                        className="h-7 px-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 rounded-md text-[10px] font-medium flex items-center gap-1.5 transition-all cursor-pointer"
                                                     >
-                                                        <Download size={12} /> Invoice
+                                                        <Download size={10} /> Invoice
                                                     </button>
                                                 )}
                                                 {(app.status === 'accepted' || app.status === 'completed') && (
-                                                    <button onClick={() => router.push(`/internships/${app.internship?.slug || app.internship?._id}/offer-letter`)} className="h-8 px-4 bg-white/5 hover:bg-white/10 border border-white/5 text-emerald-400 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2">📄 Offer</button>
+                                                    <button onClick={() => router.push(`/internships/${app.internship?.slug || app.internship?._id}/offer-letter`)} className="h-7 px-2 bg-white/5 hover:bg-white/10 border border-white/8 text-emerald-400 rounded-md text-[10px] font-medium flex items-center gap-1.5 cursor-pointer">
+                                                        📄 Offer
+                                                    </button>
                                                 )}
-                                                {app.status === 'completed' && <button onClick={() => router.push(`/internships/${app.internship?.slug || app.internship?._id}/certificate`)} className="h-8 px-4 bg-blue-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-blue-500/20">🎓 Cert</button>}
+                                                {app.status === 'completed' && (
+                                                    <button onClick={() => router.push(`/internships/${app.internship?.slug || app.internship?._id}/certificate`)} className="h-7 px-2 bg-blue-500 text-white rounded-md text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1.5 shadow-sm shadow-blue-500/20 cursor-pointer">
+                                                        🎓 Cert
+                                                    </button>
+                                                )}
                                             </>
                                         )}
                                     </div>
@@ -363,14 +551,19 @@ export function ProfileClientContent({
                             ))}
                         </div>
                     ) : (
-                        <div className="bg-slate-900/20 backdrop-blur-xl border border-white/5 rounded-[2rem] p-12 text-center">
-                            <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-4 text-slate-600"><Briefcase size={32} /></div>
-                            <p className="text-slate-400 font-bold mb-6">No applications yet.</p>
-                            <Button onClick={() => router.push('/internships')} className="bg-white text-black hover:bg-purple-500 hover:text-white rounded-xl font-black uppercase tracking-widest text-[10px] h-10 px-6">Browse Careers</Button>
+                        <div className="bg-[#0C1020]/60 backdrop-blur-xl border border-white/8 rounded-xl p-6 text-center">
+                            <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center mx-auto mb-2.5 text-slate-500">
+                                <Briefcase size={18} />
+                            </div>
+                            <p className="text-slate-400 font-medium text-xs mb-3">No applications yet.</p>
+                            <Button onClick={() => router.push('/internships')} className="bg-white text-black hover:bg-purple-500 hover:text-white rounded-lg font-semibold text-xs h-7.5 px-3">
+                                Browse Internships
+                            </Button>
                         </div>
                     )}
                 </div>
             </div>
+            
             {showPhoneModal && <PhoneCollectionModal isOpen={showPhoneModal} onPhoneUpdated={handlePhoneUpdated} />}
             
             {showInvoice && transactionData && (

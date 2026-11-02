@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath, revalidateTag } from "next/cache";
 import dbConnect from "@/lib/db";
 import Course from "@/models/Course";
 import Enrollment from "@/models/Enrollment";
@@ -96,6 +97,14 @@ export async function DELETE(
       req.headers.get("x-forwarded-for") || "unknown"
     );
 
+    
+    try {
+      revalidatePath("/");
+      revalidatePath("/courses");
+      revalidateTag("courses");
+    } catch (e) {
+      console.warn("Revalidation error:", e);
+    }
     return NextResponse.json({
       message: "Course and associated assets deleted successfully",
     });
@@ -242,6 +251,14 @@ export async function PUT(
       req.headers.get("x-forwarded-for") || "unknown"
     );
 
+    
+    try {
+      revalidatePath("/");
+      revalidatePath("/courses");
+      revalidateTag("courses");
+    } catch (e) {
+      console.warn("Revalidation error:", e);
+    }
     return NextResponse.json({ course });
   } catch (error) {
     console.error("Update course error:", error);

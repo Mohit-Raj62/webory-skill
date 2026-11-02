@@ -116,7 +116,7 @@ export async function POST(req: Request) {
 
     const enrollment = await Enrollment.create({
       student: decoded.userId,
-      course: courseId,
+      course: actualCourseId,
       // In a real app, we would save the transactionId here
     });
 
@@ -125,7 +125,7 @@ export async function POST(req: Request) {
       student: decoded.userId,
       type: "course_enrolled",
       category: "course",
-      relatedId: courseId,
+      relatedId: actualCourseId,
       metadata: {
         courseName: course.title,
       },

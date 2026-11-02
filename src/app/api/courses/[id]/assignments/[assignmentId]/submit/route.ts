@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import AssignmentSubmission from '@/models/AssignmentSubmission';
 import Assignment from '@/models/Assignment';
+import Course from '@/models/Course';
+import mongoose from 'mongoose';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
@@ -22,6 +24,11 @@ export async function POST(
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
     const { id: courseId, assignmentId } = await params;
+    let resolvedCourseId = courseId;
+    if (!mongoose.isValidObjectId(courseId)) {
+      const c = await Course.findOne({ slug: courseId }).select("_id");
+      if (c) resolvedCourseId = c._id.toString();
+    }
     const { submissionText, attachments } = await req.json();
 
     // Check if assignment exists
@@ -48,7 +55,7 @@ export async function POST(
     const submission = await AssignmentSubmission.create({
       assignmentId,
       userId: decoded.userId,
-      courseId,
+      courseId: resolvedCourseId,
       submissionText,
       attachments: attachments || [],
       status,

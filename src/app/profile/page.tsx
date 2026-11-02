@@ -84,7 +84,7 @@ export default async function ProfilePage() {
 
             <Navbar />
 
-            <div className="pt-32 pb-20 container mx-auto px-4">
+            <div className="pt-24 sm:pt-28 pb-16 container mx-auto px-4 max-w-6xl">
                 <ProfileClientContent 
                     initialUser={serializedUser} 
                     initialEnrollments={serializedEnrollments} 

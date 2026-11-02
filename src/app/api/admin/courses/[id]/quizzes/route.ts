@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Quiz from "@/models/Quiz";
+import Course from "@/models/Course";
+import mongoose from "mongoose";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
@@ -13,7 +15,16 @@ export async function GET(
     await dbConnect();
     const { id } = await params;
 
-    const quizzes = await Quiz.find({ courseId: id })
+    let targetId = id;
+    if (!mongoose.isValidObjectId(id)) {
+      const course = await Course.findOne({ slug: id }).select("_id").lean();
+      if (!course) {
+        return NextResponse.json({ quizzes: [] });
+      }
+      targetId = course._id.toString();
+    }
+
+    const quizzes = await Quiz.find({ courseId: targetId })
       .sort({ createdAt: -1 })
       .lean();
 
@@ -51,9 +62,18 @@ export async function POST(
     const { id } = await params;
     const data = await req.json();
 
+    let targetId = id;
+    if (!mongoose.isValidObjectId(id)) {
+      const course = await Course.findOne({ slug: id }).select("_id").lean();
+      if (!course) {
+        return NextResponse.json({ error: "Course not found" }, { status: 404 });
+      }
+      targetId = course._id.toString();
+    }
+
     const quiz = await Quiz.create({
       ...data,
-      courseId: id,
+      courseId: targetId,
     });
 
     return NextResponse.json({ quiz });

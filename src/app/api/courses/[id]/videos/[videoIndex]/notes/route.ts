@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import dbConnect from "@/lib/db";
 import Enrollment from "@/models/Enrollment";
 import Course from "@/models/Course";
+
+async function getCourseObjectId(courseId: string) {
+  if (mongoose.isValidObjectId(courseId)) return courseId;
+  const course = await Course.findOne({ slug: courseId }).select("_id");
+  return course ? course._id.toString() : courseId;
+}
 
 export async function GET(
   req: NextRequest,
@@ -10,7 +17,7 @@ export async function GET(
 ) {
   try {
     const params = await props.params;
-    const courseId = params.id;
+    const courseId = await getCourseObjectId(params.id);
     const videoIndex = parseInt(params.videoIndex);
 
     await dbConnect();
@@ -59,7 +66,7 @@ export async function POST(
 ) {
   try {
     const params = await props.params;
-    const courseId = params.id;
+    const courseId = await getCourseObjectId(params.id);
     const videoIndex = parseInt(params.videoIndex);
     const { content, timestamp } = await req.json();
 
@@ -133,7 +140,7 @@ export async function DELETE(
 ) {
   try {
     const params = await props.params;
-    const courseId = params.id;
+    const courseId = await getCourseObjectId(params.id);
     const videoIndex = parseInt(params.videoIndex);
     const { noteId } = await req.json();
 

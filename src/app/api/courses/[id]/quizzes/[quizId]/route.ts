@@ -3,6 +3,8 @@ import dbConnect from "@/lib/db";
 import Quiz from "@/models/Quiz";
 import QuizAttempt from "@/models/QuizAttempt";
 import Activity from "@/models/Activity";
+import Course from "@/models/Course";
+import mongoose from "mongoose";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
@@ -52,6 +54,11 @@ export async function POST(
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
     const params = await props.params;
     const { id: courseId, quizId } = params;
+    let resolvedCourseId = courseId;
+    if (!mongoose.isValidObjectId(courseId)) {
+      const c = await Course.findOne({ slug: courseId }).select("_id");
+      if (c) resolvedCourseId = c._id.toString();
+    }
     const { answers, timeSpent } = await req.json();
 
     // Fetch quiz with correct answers
@@ -103,7 +110,7 @@ export async function POST(
     const attempt = await QuizAttempt.create({
       userId: decoded.userId,
       quizId,
-      courseId,
+      courseId: resolvedCourseId,
       answers: gradedAnswers,
       totalMarks: totalPossibleMarks,
       obtainedMarks,
@@ -117,7 +124,7 @@ export async function POST(
       student: decoded.userId,
       type: "quiz_attempted",
       category: "course",
-      relatedId: courseId,
+      relatedId: resolvedCourseId,
       metadata: {
         questionsCount: quiz.questions.length,
         courseName: quiz.title,

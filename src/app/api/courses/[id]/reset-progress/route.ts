@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
 import dbConnect from "@/lib/db";
 import Enrollment from "@/models/Enrollment";
 import Course from "@/models/Course";
@@ -27,9 +28,20 @@ export async function POST(
     };
     const userId = decoded.userId;
 
+    let course;
+    if (mongoose.isValidObjectId(courseId)) {
+      course = await Course.findById(courseId);
+    } else {
+      course = await Course.findOne({ slug: courseId });
+    }
+
+    if (!course) {
+      return NextResponse.json({ error: "Course not found" }, { status: 404 });
+    }
+
     const enrollment = await Enrollment.findOne({
       student: userId,
-      course: courseId,
+      course: course._id,
     });
 
     if (!enrollment) {
@@ -37,11 +49,6 @@ export async function POST(
         { error: "Enrollment not found" },
         { status: 404 }
       );
-    }
-
-    const course = await Course.findById(courseId);
-    if (!course) {
-      return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 
     const totalVideos = course.videos?.length || 0;
@@ -52,21 +59,16 @@ export async function POST(
     enrollment.progress = 0;
     await enrollment.save();
 
-    console.log(`✅ Reset progress for user ${userId} in course ${courseId}`);
-    console.log(
-      `   Old watched: ${oldWatchedCount}, Total videos: ${totalVideos}`
-    );
-
     return NextResponse.json({
       success: true,
-      message: "Progress reset successfully",
-      totalVideos: totalVideos,
-      oldWatchedCount: oldWatchedCount,
+      message: `Reset progress. Removed ${oldWatchedCount} watched videos.`,
+      progress: 0,
+      totalVideos,
     });
-  } catch (error: any) {
-    console.error("Error resetting progress:", error);
+  } catch (error) {
+    console.error("Reset progress error:", error);
     return NextResponse.json(
-      { error: "Internal server error", details: error.message },
+      { error: "Failed to reset progress" },
       { status: 500 }
     );
   }

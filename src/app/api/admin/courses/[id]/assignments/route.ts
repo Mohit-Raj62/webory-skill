@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Assignment from "@/models/Assignment";
+import Course from "@/models/Course";
+import mongoose from "mongoose";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
@@ -13,7 +15,16 @@ export async function GET(
     await dbConnect();
     const { id } = await params;
 
-    const assignments = await Assignment.find({ courseId: id, isActive: true })
+    let targetId = id;
+    if (!mongoose.isValidObjectId(id)) {
+      const course = await Course.findOne({ slug: id }).select("_id").lean();
+      if (!course) {
+        return NextResponse.json({ assignments: [] });
+      }
+      targetId = course._id.toString();
+    }
+
+    const assignments = await Assignment.find({ courseId: targetId, isActive: true })
       .sort({ createdAt: -1 })
       .lean();
 
@@ -51,9 +62,18 @@ export async function POST(
     const { id } = await params;
     const data = await req.json();
 
+    let targetId = id;
+    if (!mongoose.isValidObjectId(id)) {
+      const course = await Course.findOne({ slug: id }).select("_id").lean();
+      if (!course) {
+        return NextResponse.json({ error: "Course not found" }, { status: 404 });
+      }
+      targetId = course._id.toString();
+    }
+
     const assignment = await Assignment.create({
       ...data,
-      courseId: id,
+      courseId: targetId,
     });
 
     return NextResponse.json({ assignment });

@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import VideoFeedback from "@/models/VideoFeedback";
+import Course from "@/models/Course";
+import mongoose from "mongoose";
+
+async function getCourseObjectId(courseId: string) {
+  if (mongoose.isValidObjectId(courseId)) return courseId;
+  const course = await Course.findOne({ slug: courseId }).select("_id");
+  return course ? course._id.toString() : courseId;
+}
 import { getDataFromToken } from "@/helpers/getDataFromToken";
 
 export async function GET(
@@ -17,10 +25,11 @@ export async function GET(
     }
 
     const { id, videoIndex } = params;
+    const courseId = await getCourseObjectId(id);
 
     const feedback = await VideoFeedback.findOne({
       user: userId,
-      courseId: id,
+      courseId,
       videoIndex: parseInt(videoIndex),
     });
 
@@ -48,6 +57,7 @@ export async function POST(
     }
 
     const { id, videoIndex } = params;
+    const courseId = await getCourseObjectId(id);
     const reqBody = await request.json();
     const { isLiked, feedback } = reqBody;
 
@@ -65,7 +75,7 @@ export async function POST(
     const updatedFeedback = await VideoFeedback.findOneAndUpdate(
       {
         user: userId,
-        courseId: id,
+        courseId,
         videoIndex: parseInt(videoIndex),
       },
       {

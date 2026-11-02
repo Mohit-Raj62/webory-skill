@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath, revalidateTag } from "next/cache";
 import dbConnect from "@/lib/db";
 import Course from "@/models/Course";
 import { cookies } from "next/headers";
@@ -86,6 +87,14 @@ export async function POST(req: Request) {
       `Created course: ${savedTitle} (${_id})`,
       req.headers.get("x-forwarded-for") || "unknown",
     );
+
+    try {
+      revalidatePath("/");
+      revalidatePath("/courses");
+      revalidateTag("courses");
+    } catch (e) {
+      console.warn("Revalidation error:", e);
+    }
 
     return NextResponse.json({ course }, { status: 201 });
   } catch (error) {

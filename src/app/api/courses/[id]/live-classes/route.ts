@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import LiveClass from "@/models/LiveClass";
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
+import Course from "@/models/Course";
+import mongoose from "mongoose";
 
 export const dynamic = "force-dynamic";
 
@@ -15,13 +15,18 @@ export async function GET(
     await dbConnect();
     const { id } = await params;
 
-    // Optional: Check if user is enrolled (if we want to restrict visibility)
-    // For now, we'll return the classes, and the frontend can handle locking/hiding join links if not enrolled.
-    // Or we can just return them publically as "Upcoming Live Classes" to entice users.
+    let targetId = id;
+    if (!mongoose.isValidObjectId(id)) {
+      const course = await Course.findOne({ slug: id }).select("_id").lean();
+      if (!course) {
+        return NextResponse.json({ liveClasses: [] });
+      }
+      targetId = course._id.toString();
+    }
 
     const liveClasses = await LiveClass.find({
       type: "course",
-      referenceId: id,
+      referenceId: targetId,
     })
       .sort({ date: 1 }) // Ascending order (upcoming first)
       .populate("instructor", "firstName lastName")

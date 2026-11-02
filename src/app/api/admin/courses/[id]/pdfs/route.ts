@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
+import mongoose from "mongoose";
 import Course from "@/models/Course";
 import User from "@/models/User";
 import jwt from "jsonwebtoken";
@@ -36,7 +37,8 @@ export async function GET(
     }
 
     await dbConnect();
-    const course = await Course.findById(id).select("pdfResources");
+    const courseQuery = mongoose.isValidObjectId(id) ? { _id: id } : { slug: id };
+    const course = await Course.findOne(courseQuery).select("pdfResources");
 
     if (!course) {
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
@@ -96,7 +98,8 @@ export async function POST(
     }
 
     await dbConnect();
-    const course = await Course.findById(id);
+    const courseQuery = mongoose.isValidObjectId(id) ? { _id: id } : { slug: id };
+    const course = await Course.findOne(courseQuery);
 
     if (!course) {
       return NextResponse.json({ error: "Course not found" }, { status: 404 });

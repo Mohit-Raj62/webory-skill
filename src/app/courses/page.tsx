@@ -8,7 +8,8 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
 // export const dynamic = "force-dynamic";
-export const revalidate = 300; // Keep revalidate for ISR
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 // Fallback data if API fails or DB is empty
 const fallbackCourses = [
@@ -37,61 +38,57 @@ const fallbackCourses = [
 ];
 
 // Cache the courses data to avoid expensive aggregations on every request
-const getCachedCoursesData = unstable_cache(
-    async () => {
-        try {
-            await dbConnect();
-            
-            // Use optimized aggregation for student count
-            const courses = await Course.aggregate([
-                { $match: { isAvailable: true } },
-                // Only select fields needed for the listing cards
-                { 
-                    $project: { 
-                        title: 1, 
-                        icon: 1, 
-                        level: 1, 
-                        color: 1, 
-                        description: 1, 
-                        price: 1, 
-                        originalPrice: 1,
-                        discountPercentage: 1, 
-                        thumbnail: 1,
-                        slug: 1
-                    } 
+async function getCachedCoursesData() {
+    try {
+        await dbConnect();
+        
+        // Use optimized aggregation for student count (strictly isAvailable: true)
+        const courses = await Course.aggregate([
+            { $match: { isAvailable: true } },
+            // Only select fields needed for the listing cards
+            { 
+                $project: { 
+                    title: 1, 
+                    icon: 1, 
+                    level: 1, 
+                    color: 1, 
+                    description: 1, 
+                    price: 1, 
+                    originalPrice: 1,
+                    discountPercentage: 1, 
+                    thumbnail: 1,
+                    slug: 1
+                } 
+            },
+            {
+                $lookup: {
+                    from: "enrollments",
+                    let: { courseId: "$_id" },
+                    pipeline: [
+                        { $match: { $expr: { $eq: ["$course", "$courseId"] } } },
+                        { $count: "count" }
+                    ],
+                    as: "enrollmentCount",
                 },
-                {
-                    $lookup: {
-                        from: "enrollments",
-                        let: { courseId: "$_id" },
-                        pipeline: [
-                            { $match: { $expr: { $eq: ["$course", "$$courseId"] } } },
-                            { $count: "count" }
-                        ],
-                        as: "enrollmentCount",
-                    },
+            },
+            {
+                $addFields: {
+                    studentsCount: { $ifNull: [{ $arrayElemAt: ["$enrollmentCount.count", 0] }, 0] },
                 },
-                {
-                    $addFields: {
-                        studentsCount: { $ifNull: [{ $arrayElemAt: ["$enrollmentCount.count", 0] }, 0] },
-                    },
+            },
+            {
+                $project: {
+                    enrollmentCount: 0, 
                 },
-                {
-                    $project: {
-                        enrollmentCount: 0, 
-                    },
-                },
-            ]);
+            },
+        ]);
 
-            return JSON.parse(JSON.stringify(courses));
-        } catch (error) {
-            console.error("Failed to fetch courses:", error);
-            return null;
-        }
-    },
-    ['courses-list'],
-    { revalidate: 300, tags: ['courses'] }
-);
+        return JSON.parse(JSON.stringify(courses));
+    } catch (error) {
+        console.error("Failed to fetch courses:", error);
+        return null;
+    }
+}
 
 // Cache user enrollments per user ID
 const getCachedUserEnrollments = unstable_cache(

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
 import dbConnect from "@/lib/db";
 import Enrollment from "@/models/Enrollment";
 import Course from "@/models/Course";
@@ -15,7 +16,12 @@ export async function POST(
     const params = await props.params;
     const { id: courseId } = params;
 
-    const course = await Course.findById(courseId);
+    let course;
+    if (mongoose.isValidObjectId(courseId)) {
+      course = await Course.findById(courseId);
+    } else {
+      course = await Course.findOne({ slug: courseId });
+    }
     if (!course) {
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
@@ -30,7 +36,7 @@ export async function POST(
     }
 
     // Find all enrollments for this course
-    const enrollments = await Enrollment.find({ course: courseId });
+    const enrollments = await Enrollment.find({ course: course._id });
 
     let updatedCount = 0;
 

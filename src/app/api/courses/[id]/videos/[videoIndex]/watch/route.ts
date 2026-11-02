@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
 import dbConnect from "@/lib/db";
 import Enrollment from "@/models/Enrollment";
 import Course from "@/models/Course";
@@ -29,10 +30,22 @@ export async function POST(
 
     const { watchedPercentage = 100, duration = 0 } = await req.json();
 
+    // Get course to know total videos and resolve ObjectId
+    let course;
+    if (mongoose.isValidObjectId(courseId)) {
+      course = await Course.findById(courseId);
+    } else {
+      course = await Course.findOne({ slug: courseId });
+    }
+
+    if (!course) {
+      return NextResponse.json({ error: "Course not found" }, { status: 404 });
+    }
+
     // Find enrollment
     const enrollment = await Enrollment.findOne({
       student: userId,
-      course: courseId,
+      course: course._id,
     });
 
     if (!enrollment) {
@@ -40,12 +53,6 @@ export async function POST(
         { error: "Enrollment not found" },
         { status: 404 },
       );
-    }
-
-    // Get course to know total videos
-    const course = await Course.findById(courseId);
-    if (!course) {
-      return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 
     const videoIdx = parseInt(videoIndex);
@@ -115,7 +122,7 @@ export async function POST(
         student: userId,
         type: "video_watched",
         category: "course",
-        relatedId: courseId,
+        relatedId: course._id,
         metadata: {
           videoMinutes: Math.round(duration / 60) || 0, // Convert seconds to minutes
           courseName: course.title,

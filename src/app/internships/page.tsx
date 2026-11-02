@@ -36,23 +36,19 @@ const fallbackInternships = [
     },
 ];
 
-const getCachedInternshipsData = unstable_cache(
-    async () => {
-        try {
-            await dbConnect();
-            const internships = await Internship.find({ isActive: { $ne: false } })
-                .select("title slug company location type stipend tags price originalPrice gstPercentage requirements responsibilities isFree description duration deadline perks tagline totalSeats filledSeats benefits hasTiers tiers modules")
-                .sort({ createdAt: -1 })
-                .lean();
-            return JSON.parse(JSON.stringify(internships));
-        } catch (error) {
-            console.error("Failed to fetch internships:", error);
-            return null;
-        }
-    },
-    ['internships-list'],
-    { revalidate: 15, tags: ['internships'] }
-);
+async function getCachedInternshipsData() {
+    try {
+        await dbConnect();
+        const internships = await Internship.find({ isActive: { $ne: false } })
+            .select("title slug company location type stipend tags price originalPrice gstPercentage requirements responsibilities isFree description duration deadline perks tagline totalSeats filledSeats benefits hasTiers tiers modules")
+            .sort({ createdAt: -1 })
+            .lean();
+        return JSON.parse(JSON.stringify(internships));
+    } catch (error) {
+        console.error("Failed to fetch internships:", error);
+        return null;
+    }
+}
 
 const getCachedUserApplications = unstable_cache(
     async (userId: string) => {

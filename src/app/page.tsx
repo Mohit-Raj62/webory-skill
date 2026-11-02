@@ -1,28 +1,28 @@
 import { Navbar } from "@/components/ui/navbar";
 import { Hero } from "@/components/landing/hero";
-import dynamic from 'next/dynamic';
+import nextDynamic from 'next/dynamic';
 
-const WhyWeboryAndTrust = dynamic(() => import('@/components/landing/why-webory-trust').then(mod => mod.WhyWeboryAndTrust));
-const EnrolledCourses = dynamic(() => import('@/components/landing/enrolled-courses').then(mod => mod.EnrolledCourses));
-const AppliedInternships = dynamic(() => import('@/components/landing/applied-internships').then(mod => mod.AppliedInternships));
-const CoursesPreview = dynamic(() => import('@/components/landing/courses-preview').then(mod => mod.CoursesPreview));
-const VideoTestimonialsSection = dynamic(() => import('@/components/landing/video-testimonials').then(mod => mod.VideoTestimonialsSection));
-const TestimonialsSection = dynamic(() => import('@/components/home/TestimonialsSection').then(mod => mod.TestimonialsSection));
-const Footer = dynamic(() => import('@/components/ui/footer').then(mod => mod.Footer));
-const DevLabPreview = dynamic(() => import('@/components/landing/devlab-preview').then(mod => mod.DevLabPreview));
-const AINexusShowcase = dynamic(() => import('@/components/landing/ai-nexus-showcase').then(mod => mod.AINexusShowcase));
-const HackathonPreview = dynamic(() => import('@/components/landing/hackathon-preview').then(mod => mod.HackathonPreview));
-const LeaderboardSection = dynamic(() => import('@/components/home/LeaderboardSection').then(mod => mod.LeaderboardSection));
-const LiveStudentActivity = dynamic(() => import('@/components/ui/LiveStudentActivity').then(mod => mod.LiveStudentActivity));
+const WhyWeboryAndTrust = nextDynamic(() => import('@/components/landing/why-webory-trust').then(mod => mod.WhyWeboryAndTrust));
+const EnrolledCourses = nextDynamic(() => import('@/components/landing/enrolled-courses').then(mod => mod.EnrolledCourses));
+const AppliedInternships = nextDynamic(() => import('@/components/landing/applied-internships').then(mod => mod.AppliedInternships));
+const CoursesPreview = nextDynamic(() => import('@/components/landing/courses-preview').then(mod => mod.CoursesPreview));
+const VideoTestimonialsSection = nextDynamic(() => import('@/components/landing/video-testimonials').then(mod => mod.VideoTestimonialsSection));
+const TestimonialsSection = nextDynamic(() => import('@/components/home/TestimonialsSection').then(mod => mod.TestimonialsSection));
+const Footer = nextDynamic(() => import('@/components/ui/footer').then(mod => mod.Footer));
+const DevLabPreview = nextDynamic(() => import('@/components/landing/devlab-preview').then(mod => mod.DevLabPreview));
+const AINexusShowcase = nextDynamic(() => import('@/components/landing/ai-nexus-showcase').then(mod => mod.AINexusShowcase));
+const HackathonPreview = nextDynamic(() => import('@/components/landing/hackathon-preview').then(mod => mod.HackathonPreview));
+const LeaderboardSection = nextDynamic(() => import('@/components/home/LeaderboardSection').then(mod => mod.LeaderboardSection));
+const LiveStudentActivity = nextDynamic(() => import('@/components/ui/LiveStudentActivity').then(mod => mod.LiveStudentActivity));
 
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
 import Internship from "@/models/Internship";
 import Course from "@/models/Course";
 
-// Force dynamic rendering to ensure the user count is up-to-date
-// Alternatively we can use revalidate = 60 (seconds) for performance
-export const revalidate = 60;
+// Force dynamic rendering to ensure availability and counts are immediately up-to-date
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 import { Suspense } from "react";
 import { 

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath, revalidateTag } from "next/cache";
 import dbConnect from "@/lib/db";
 import Internship from "@/models/Internship";
 import { cookies } from "next/headers";
@@ -75,6 +76,14 @@ export async function POST(req: Request) {
 
     const newInternship = await Internship.create(body);
 
+    
+    try {
+      revalidatePath("/");
+      revalidatePath("/internships");
+      revalidateTag("internships");
+    } catch (e) {
+      console.warn("Revalidation error:", e);
+    }
     return NextResponse.json({ internship: newInternship }, { status: 201 });
   } catch (error: any) {
     console.error("Create internship error:", error);

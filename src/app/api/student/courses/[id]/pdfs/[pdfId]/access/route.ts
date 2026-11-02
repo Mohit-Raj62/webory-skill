@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
+import mongoose from "mongoose";
+import Course from "@/models/Course";
 import PDFAccess from "@/models/PDFAccess";
 import User from "@/models/User";
 import jwt from "jsonwebtoken";
@@ -43,7 +45,7 @@ export async function POST(
     // Create access record
     await PDFAccess.create({
       student: user._id,
-      course: id,
+      course: (!mongoose.isValidObjectId(id) ? (await Course.findOne({ slug: id }).select("_id"))?._id || id : id),
       pdfResourceId: pdfId,
       downloaded: downloaded || false,
     });

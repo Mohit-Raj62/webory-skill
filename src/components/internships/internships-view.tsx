@@ -3,7 +3,7 @@
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, IndianRupee, CheckCircle2, X, Search, Filter, Zap, Sparkles, GraduationCap, Globe, ArrowUpRight, ShieldCheck, Calendar, Briefcase, Download, ChevronDown } from "lucide-react";
+import { Clock, IndianRupee, CheckCircle2, X, Search, Zap, Sparkles, GraduationCap, Globe, ArrowUpRight, ShieldCheck, Briefcase, Download, Eye, ExternalLink } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -55,6 +55,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
     const [hasTriggeredLeadPopup, setHasTriggeredLeadPopup] = useState(false);
     const [applyStep, setApplyStep] = useState<number>(1);
     const [selectedTier, setSelectedTier] = useState<string>("Basic");
+    const [detailJob, setDetailJob] = useState<any | null>(null);
     const router = useRouter();
 
     // ... (filteredInternships useMemo remains same) ...
@@ -251,12 +252,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
             }
 
             const internshipDetails = internships.find(i => i._id === selectedInternship);
-            const basePrice = internshipDetails?.isFree 
-                ? 0 
-                : (internshipDetails?.hasTiers 
-                    ? (internshipDetails.tiers?.find((t: any) => t.name === selectedTier)?.price || 0)
-                    : (internshipDetails?.price || 0));
-            const gstAmount = Math.round(basePrice * (internshipDetails?.gstPercentage || 0) / 100);
+
             
             const res = await fetch("/api/internships/apply", {
                 method: "POST",
@@ -341,45 +337,52 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                         viewport={{ once: true }}
                         transition={{ duration: 0.8, ease: "easeOut" }}
                     >
-                         <div className="flex flex-wrap justify-center gap-3 mb-6">
-                            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-950/40 text-emerald-300 text-[9px] font-black uppercase tracking-widest backdrop-blur-md shadow-lg">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                                Hiring Now
+                         <div className="flex flex-wrap justify-center gap-3 mb-4">
+                            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-950/40 text-emerald-300 text-xs font-semibold backdrop-blur-md shadow-sm">
+                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                                Verified Industrial Cohort 2026
                             </span>
                         </div>
 
-                        <h1 className="text-2xl md:text-4xl lg:text-5xl font-black mb-5 tracking-tighter text-white leading-tight">
-                            Project-Based <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Training</span> <span className="text-slate-500 mx-2 font-light">|</span> <span className="text-slate-200 opacity-90">Build Real Experience</span>
+                        <h1 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight text-white leading-tight">
+                            Industrial Internships & <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Real-World Projects</span>
                         </h1>
-                        <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed font-light">
-                            Gain <span className="text-white font-medium italic underline decoration-emerald-500/50">real-world experience</span> by working with 
-                            growing startups and established tech companies.
+                        <p className="text-sm md:text-base text-gray-400 max-w-2xl mx-auto leading-relaxed font-normal">
+                            Gain hands-on production experience, work under IIT Mandi faculty mentorship, and earn verified Letters of Recommendation (LOR) & credentials.
                         </p>
                     </motion.div>
                 </div>
 
                 {/* Search & Filter Bar */}
-                <div className="max-w-4xl mx-auto mb-8 md:mb-12 flex flex-col md:flex-row gap-4 items-center justify-between">
-                    <div className="relative w-full md:max-w-md group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-hover:text-emerald-400 transition-colors" size={18} />
+                <div className="max-w-4xl mx-auto mb-8 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+                    <div className="relative flex-1 max-w-md">
+                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                         <input 
                             type="text" 
-                            placeholder="Search by role or company..." 
+                            placeholder="Search by role, tech stack, or company..." 
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/50 focus:bg-white/[0.08] transition-all backdrop-blur-md"
+                            className="w-full h-11 bg-white/[0.04] border border-white/10 rounded-xl pl-10 pr-9 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-emerald-500/50 focus:bg-white/[0.07] transition-all"
                         />
+                        {searchQuery && (
+                            <button 
+                                onClick={() => setSearchQuery("")}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white p-1"
+                            >
+                                <X size={14} />
+                            </button>
+                        )}
                     </div>
 
-                    <div className="flex items-center gap-2 p-1.5 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-md overflow-x-auto max-w-full">
+                    <div className="flex items-center gap-1.5 p-1 bg-white/[0.03] rounded-xl border border-white/10 overflow-x-auto no-scrollbar">
                         {["All", "Full Time", "Part Time", "Remote", "Hybrid"].map(type => (
                             <button
                                 key={type}
                                 onClick={() => setSelectedType(type)}
-                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all whitespace-nowrap ${
+                                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-all whitespace-nowrap ${
                                     selectedType === type 
-                                    ? "bg-emerald-500 text-black shadow-[0_0_20px_rgba(16,185,129,0.3)]" 
-                                    : "text-slate-400 hover:text-white hover:bg-white/5"
+                                    ? "bg-emerald-500 text-slate-950 shadow-sm" 
+                                    : "text-gray-400 hover:text-white hover:bg-white/5"
                                 }`}
                             >
                                 {type}
@@ -391,331 +394,233 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                 <div className="max-w-5xl mx-auto space-y-6">
                     <AnimatePresence mode="popLayout">
                         {filteredInternships.length > 0 ? (
-                            filteredInternships.map((job, index) => (
-                                <motion.div 
-                                    layout
-                                    initial={{ opacity: 0, y: 40 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true, margin: "-100px" }}
-                                    exit={{ opacity: 0, scale: 0.95 }}
-                                    transition={{ 
-                                        duration: 0.8, 
-                                        ease: [0.16, 1, 0.3, 1] 
-                                    }}
-                                    key={job._id || index} 
-                                    className="group relative bg-[#0a0b10] border border-white/[0.03] rounded-[2rem] p-8 md:p-14 mb-16 transition-all duration-700 hover:shadow-[0_0_120px_-30px_rgba(16,185,129,0.1)]"
-                                >
-                                    {/* Ambient Gradients from Mockup */}
-                                    <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-purple-500/[0.03] via-transparent to-emerald-500/[0.03] pointer-events-none" />
-                                    
-                                    <div className="relative z-10">
-                                        {/* Top Header Section - More compact on mobile */}
-                                        <div className="flex items-center justify-between mb-8 pb-5 border-b border-white/[0.05]">
-                                            <div className="flex items-center gap-2.5">
-                                                <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-br from-emerald-400 to-blue-600 flex items-center justify-center p-1.5 md:p-2 shadow-lg">
-                                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-white"><path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                                </div>
-                                                <span className="text-lg md:text-2xl font-black text-white tracking-tighter uppercase">Webory</span>
-                                            </div>
-                                            <div className="flex items-center gap-1.5 md:gap-2.5 px-3 py-1.5 md:px-4 md:py-2 bg-emerald-500/10 rounded-full border border-emerald-500/20">
-                                                <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-[#10b981] shadow-[0_0_12px_#10b981] animate-pulse" />
-                                                <span className="text-[8px] md:text-[10px] font-black text-[#10b981] uppercase tracking-[0.15em] md:tracking-[0.2em]">Active</span>
-                                            </div>
-                                        </div>
+                            filteredInternships.map((job, index) => {
+                                const totalSeats = typeof job.totalSeats === 'number' ? job.totalSeats : 50;
+                                const filledSeats = typeof job.filledSeats === 'number' ? job.filledSeats : 0;
+                                const remainingSeats = Math.max(0, totalSeats - filledSeats);
+                                const isFull = remainingSeats <= 0;
+                                const app = userApplications.find(a => a.internshipId === job._id);
+                                const hasApplied = !!app;
 
-                                        {/* Main Content Grid */}
-                                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
-                                            {/* Left: Info (8 cols) */}
-                                            <div className="lg:col-span-8 space-y-8 md:space-y-10 text-left">
-                                                <div>
-                                                    <h3 className="text-2xl md:text-4xl font-black text-white mb-6 tracking-tight leading-[1.2] md:leading-[1.1]">
-                                                        {job.title}
-                                                    </h3>
-                                                    <div className="flex flex-wrap gap-3">
-                                                        <div className="flex items-center gap-2 bg-white/[0.03] border border-white/[0.08] px-4 py-2.5 rounded-xl">
-                                                            <Globe size={16} className="text-blue-400" />
-                                                            <span className="text-[11px] md:text-xs font-bold text-slate-300">{job.type} ({job.location})</span>
-                                                        </div>
-                                                        <div className="flex items-center gap-2 bg-white/[0.03] border border-white/[0.08] px-4 py-2.5 rounded-xl">
-                                                            <Clock size={16} className="text-slate-400" />
-                                                            <span className="text-[11px] md:text-xs font-bold text-slate-300">{job.duration || "3-6 Months"}</span>
-                                                        </div>
-                                                        <div className="flex items-center gap-2 bg-white/[0.03] border border-white/[0.08] px-4 py-2.5 rounded-xl">
-                                                            <Briefcase size={16} className="text-emerald-500" />
-                                                            <span className="text-[11px] md:text-xs font-bold text-slate-300">{job.perks && job.perks.length > 0 ? job.perks[0] : "Performance Bonus"}</span>
-                                                        </div>
+                                return (
+                                    <motion.div 
+                                        layout
+                                        initial={{ opacity: 0, y: 25 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true, margin: "-60px" }}
+                                        exit={{ opacity: 0, scale: 0.95 }}
+                                        transition={{ 
+                                            duration: 0.45, 
+                                            ease: [0.16, 1, 0.3, 1] 
+                                        }}
+                                        key={job._id || index} 
+                                        className="group relative bg-[#0a0b12] hover:bg-[#0c0d16] border border-white/[0.08] hover:border-emerald-500/30 rounded-2xl p-5 md:p-6 transition-all duration-300 hover:shadow-[0_12px_50px_-20px_rgba(16,185,129,0.15)] overflow-hidden"
+                                    >
+                                        {/* Ambient Gradients */}
+                                        <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-purple-500/[0.03] via-transparent to-emerald-500/[0.03] pointer-events-none rounded-2xl" />
+                                        
+                                        <div className="relative z-10">
+                                            {/* Top Header Section */}
+                                            <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/[0.06]">
+                                                <div className="flex items-center gap-2.5">
+                                                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-400 to-blue-600 flex items-center justify-center p-1.5 shadow-md">
+                                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-white"><path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                                     </div>
-                                                </div>
-
-                                                {/* Tech Stack Section */}
-                                                <div className="bg-white/[0.02] border border-white/[0.05] p-4 md:p-6 rounded-[2rem] space-y-4">
-                                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                                        <div>
-                                                            <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-0.5">{job.tagline || "Industry Standard"}</p>
-                                                            <p className="text-xs md:text-sm font-bold text-slate-300">Master production-ready technologies</p>
-                                                        </div>
-                                                        <div className="flex flex-wrap gap-2 md:justify-end">
-                                                            {job.tags && job.tags.map((tag: string, i: number) => (
-                                                                <div key={i} className="px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center gap-2 group/tag hover:border-emerald-500/30 transition-colors">
-                                                                    <div className="w-1 h-1 rounded-full bg-emerald-500/50 group-hover/tag:bg-emerald-500 transition-colors" />
-                                                                    <span className="text-[9px] md:text-[10px] font-bold text-slate-300">{tag}</span>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* Dynamic Description Section */}
-                                                <div className="space-y-6">
                                                     <div>
-                                                        <h4 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-                                                            <div className="w-1.5 h-6 bg-emerald-500 rounded-full" />
-                                                            About the Internship
-                                                        </h4>
-                                                        <p className="text-sm md:text-base text-slate-400 leading-relaxed max-w-2xl">
-                                                            {job.description}
-                                                        </p>
+                                                        <span className="text-xs font-bold text-white uppercase tracking-wider block leading-tight">Webory Cohort 2026</span>
+                                                        <span className="text-[10px] text-slate-400 block leading-tight">IIT Mandi Mentored Industrial Fellowship</span>
                                                     </div>
+                                                </div>
 
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                                        {job.requirements && job.requirements.length > 0 && (
-                                                            <div>
-                                                                <h4 className="text-sm font-black text-white/50 uppercase tracking-widest mb-4">Core Requirements</h4>
-                                                                <ul className="space-y-3">
-                                                                    {job.requirements.map((req: string, i: number) => (
-                                                                        <li key={i} className="flex items-start gap-3 text-sm text-slate-400">
-                                                                            <div className="w-1 h-1 rounded-full bg-emerald-500 mt-2 shrink-0" />
-                                                                            {req}
-                                                                        </li>
-                                                                    ))}
-                                                                </ul>
-                                                            </div>
-                                                        )}
-                                                        {job.responsibilities && job.responsibilities.length > 0 && (
-                                                            <div>
-                                                                <h4 className="text-sm font-black text-white/50 uppercase tracking-widest mb-4">Key Responsibilities</h4>
-                                                                <ul className="space-y-3">
-                                                                    {job.responsibilities.map((res: string, i: number) => (
-                                                                        <li key={i} className="flex items-start gap-3 text-sm text-slate-400">
-                                                                            <div className="w-1 h-1 rounded-full bg-blue-500 mt-2 shrink-0" />
-                                                                            {res}
-                                                                        </li>
-                                                                    ))}
-                                                                </ul>
-                                                            </div>
-                                                        )}
+                                                <div className="flex items-center gap-2">
+                                                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-white/[0.05] border border-white/10 text-slate-300">
+                                                        {job.type}
+                                                    </span>
+                                                    <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-500/10 rounded-full border border-emerald-500/20">
+                                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                        <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-wider">Active</span>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            {/* Right: CTA (4 cols) */}
-                                            <div className="lg:col-span-4">
-                                                <div className="lg:sticky lg:top-10 flex flex-col gap-6">
-                                                    <div className="bg-gradient-to-br from-white/[0.05] to-transparent border border-white/[0.1] rounded-[2.5rem] p-8 md:p-10 backdrop-blur-3xl shadow-2xl relative overflow-hidden group/cta">
-                                                        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 blur-[80px] rounded-full" />
+                                            {/* Main Content Grid: 8 Cols Left + 4 Cols Right */}
+                                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-start">
+                                                {/* Left: Info (8 cols) */}
+                                                <div className="lg:col-span-8 space-y-3.5 text-left">
+                                                    <div>
+                                                        <h3 
+                                                            onClick={() => setDetailJob(job)}
+                                                            className="text-lg sm:text-xl md:text-2xl font-bold text-white group-hover:text-emerald-400 transition-colors leading-snug tracking-tight cursor-pointer inline-block"
+                                                        >
+                                                            {job.title}
+                                                        </h3>
+                                                        <div className="flex flex-wrap gap-2 mt-2">
+                                                            <div className="flex items-center gap-1.5 bg-white/[0.03] border border-white/[0.08] px-2.5 py-1 rounded-lg">
+                                                                <Globe size={13} className="text-blue-400" />
+                                                                <span className="text-xs font-medium text-slate-300">{job.type} ({job.location})</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-1.5 bg-white/[0.03] border border-white/[0.08] px-2.5 py-1 rounded-lg">
+                                                                <Clock size={13} className="text-slate-400" />
+                                                                <span className="text-xs font-medium text-slate-300">{job.duration || "3-6 Months"}</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-1.5 bg-white/[0.03] border border-white/[0.08] px-2.5 py-1 rounded-lg">
+                                                                <Briefcase size={13} className="text-emerald-500" />
+                                                                <span className="text-xs font-medium text-slate-300">{job.perks && job.perks.length > 0 ? job.perks[0] : "Performance Bonus"}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Brief Overview */}
+                                                    <p className="text-xs md:text-sm text-slate-300 leading-relaxed font-normal line-clamp-2">
+                                                        {job.tagline || job.description}
+                                                    </p>
+
+                                                    {/* Tech Stack Section */}
+                                                    <div className="bg-white/[0.02] border border-white/[0.05] p-3 rounded-xl space-y-2">
+                                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                                            <div>
+                                                                <p className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">{job.tagline || "Industry Standard"}</p>
+                                                                <p className="text-xs font-medium text-slate-300">Production-Ready Tech Stack</p>
+                                                            </div>
+                                                            <div className="flex flex-wrap gap-1.5 sm:justify-end">
+                                                                {job.tags && job.tags.slice(0, 6).map((tag: string, i: number) => (
+                                                                    <div key={i} className="px-2 py-0.5 rounded-md bg-white/[0.03] border border-white/[0.08] flex items-center gap-1.5 hover:border-emerald-500/30 transition-colors">
+                                                                        <div className="w-1 h-1 rounded-full bg-emerald-500/60" />
+                                                                        <span className="text-[10px] font-medium text-slate-300">{tag}</span>
+                                                                    </div>
+                                                                ))}
+                                                                {job.tags && job.tags.length > 6 && (
+                                                                    <span className="text-[10px] text-slate-500 font-medium px-1 self-center">
+                                                                        +{job.tags.length - 6} more
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* View Details Link */}
+                                                    <div>
+                                                        <button
+                                                            onClick={() => setDetailJob(job)}
+                                                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition-colors group/link cursor-pointer"
+                                                        >
+                                                            <Eye size={13} className="text-emerald-400 group-hover/link:scale-110 transition-transform" />
+                                                            <span>View Complete Internship Details, Requirements & Syllabus</span>
+                                                            <ArrowUpRight size={13} className="group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                {/* Right: CTA / Pricing Widget (4 cols) */}
+                                                <div className="lg:col-span-4 w-full">
+                                                    <div className="bg-gradient-to-br from-white/[0.04] to-transparent border border-white/[0.08] rounded-xl p-4 md:p-5 backdrop-blur-xl shadow-lg relative overflow-hidden group/cta flex flex-col justify-between">
+                                                        <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 blur-[50px] rounded-full pointer-events-none" />
                                                         
-                                                        <div className="mb-8 text-center lg:text-left relative z-10">
-                                                            <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-2">Training Program Fee</p>
-                                                            <div className="flex flex-col items-center lg:items-start gap-2 w-full">
-                                                                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 lg:gap-3 w-full">
-                                                                    <span className="text-4xl md:text-5xl font-black text-white tracking-tighter">₹{job.price || 999}</span>
+                                                        <div className="mb-4 text-center lg:text-left relative z-10">
+                                                            <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-1">Training Program Fee</p>
+                                                            <div className="flex flex-col items-center lg:items-start gap-1.5 w-full">
+                                                                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 w-full">
+                                                                    <span className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">₹{job.price || 999}</span>
                                                                     {(job.originalPrice || 2999) > (job.price || 999) && (
-                                                                        <div className="flex items-center gap-2">
-                                                                            <span className="text-sm md:text-base text-slate-500 line-through shrink-0">₹{job.originalPrice || 2999}</span>
-                                                                            <span className="text-[10px] md:text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 whitespace-nowrap shrink-0">
+                                                                        <div className="flex items-center gap-1.5">
+                                                                            <span className="text-xs text-slate-500 line-through shrink-0">₹{job.originalPrice || 2999}</span>
+                                                                            <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 whitespace-nowrap shrink-0">
                                                                                 {Math.round((((job.originalPrice || 2999) - (job.price || 999)) / (job.originalPrice || 2999)) * 100)}% OFF
                                                                             </span>
                                                                         </div>
                                                                     )}
                                                                 </div>
-                                                                
-                                                                <details className="w-full mt-2 group/breakdown">
-                                                                    <summary className="text-[10px] text-blue-400 font-bold uppercase tracking-widest cursor-pointer list-none flex items-center justify-center lg:justify-start gap-1 hover:text-blue-300 transition-colors">
-                                                                        View Price Breakdown
-                                                                        <ChevronDown size={12} className="group-open/breakdown:rotate-180 transition-transform" />
-                                                                    </summary>
-                                                                    <div className="mt-3 p-3 bg-black/40 rounded-xl border border-white/5 space-y-2 text-xs w-full max-w-sm text-left">
-                                                                        {(job.originalPrice || 2999) > (job.price || 999) && (
-                                                                            <>
-                                                                                <div className="flex justify-between items-center text-gray-400">
-                                                                                    <span>Original Price</span>
-                                                                                    <span className="line-through">₹{job.originalPrice || 2999}</span>
-                                                                                </div>
-                                                                                <div className="flex justify-between items-center text-emerald-400/90">
-                                                                                    <span>Discount</span>
-                                                                                    <span>-₹{(job.originalPrice || 2999) - (job.price || 999)}</span>
-                                                                                </div>
-                                                                            </>
-                                                                        )}
-                                                                        <div className="flex justify-between items-center text-gray-300">
-                                                                            <span>Base Price</span>
-                                                                            <span>₹{job.price || 999}</span>
-                                                                        </div>
-                                                                        {(job.gstPercentage || 0) > 0 && (
-                                                                            <div className="flex justify-between items-center text-gray-400">
-                                                                                <span>GST ({job.gstPercentage}%)</span>
-                                                                                <span>+₹{Math.round((job.price || 999) * (job.gstPercentage / 100))}</span>
-                                                                            </div>
-                                                                        )}
-                                                                        <div className="flex justify-between items-center text-white font-bold pt-2 border-t border-white/10 mt-2">
-                                                                            <span>Total Payable</span>
-                                                                            <span>₹{(job.price || 999) + Math.round((job.price || 999) * ((job.gstPercentage || 0) / 100))}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </details>
                                                             </div>
-                                                            <p className="text-[11px] text-slate-400 mt-4 leading-relaxed font-medium">
-                                                                Includes lifetime certification, premium resources, and direct mentorship.
+                                                            <p className="text-[10px] text-slate-400 mt-2 leading-relaxed font-normal">
+                                                                Verified certificate & IIT Mandi mentor LOR included.
                                                             </p>
                                                         </div>
-                                                        
-                                                        {(() => {
-                                                            const totalSeats = typeof job.totalSeats === 'number' ? job.totalSeats : 50;
-                                                            const filledSeats = typeof job.filledSeats === 'number' ? job.filledSeats : 0;
-                                                            const remainingSeats = Math.max(0, totalSeats - filledSeats);
-                                                            const isFull = remainingSeats <= 0;
-                                                            const app = userApplications.find(a => a.internshipId === job._id);
-                                                            const hasApplied = !!app;
-                                                            
-                                                            if (hasApplied) {
-                                                                return (
-                                                                    <div className="flex flex-col gap-4 w-full">
-                                                                        <div className="w-full py-4 px-5 rounded-2xl bg-[#0a0a0b] border border-emerald-500/20 flex items-center gap-4 relative overflow-hidden group/applied shadow-2xl">
-                                                                            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-transparent opacity-0 group-hover/applied:opacity-100 transition-opacity duration-500" />
-                                                                            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 shrink-0 shadow-inner">
-                                                                                <ShieldCheck size={20} className="animate-in zoom-in duration-700" />
-                                                                            </div>
-                                                                            <div className="relative z-10">
-                                                                                <div className="flex items-center gap-2 mb-0.5">
-                                                                                    <span className="text-[10px] font-black text-white uppercase tracking-[0.1em]">Application Active</span>
-                                                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
-                                                                                </div>
-                                                                                <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
-                                                                                    {app.status === 'accepted' ? 'Enrollment Confirmed' : `Current Status: ${app.status.replace('_', ' ')}`}
-                                                                                </p>
-                                                                            </div>
-                                                                        </div>
-                                                                        
-                                                                        {job.hasTiers && (
-                                                                            <Button
-                                                                                onClick={() => !isFull && handleApplyClick(job._id)}
-                                                                                className="w-full h-12 md:h-14 rounded-xl font-black text-[9px] md:text-[10px] tracking-[0.2em] uppercase flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-blue-600/20 transition-all hover:scale-[1.02] active:scale-[0.98] border-none"
-                                                                            >
-                                                                                <Sparkles size={14} className="text-blue-200" />
-                                                                                Upgrade Tier
-                                                                            </Button>
-                                                                        )}
 
-                                                                        <button 
-                                                                            onClick={() => handleDownloadInvoice(job, app)}
-                                                                            className="w-full h-14 md:h-16 rounded-2xl font-black text-[11px] tracking-[0.2em] uppercase flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-all duration-300 border border-white/5 hover:border-white/20 group/inv"
-                                                                        >
-                                                                            <Download size={16} className="text-emerald-500 group-hover:-translate-y-0.5 transition-transform" />
-                                                                            Download Invoice
-                                                                        </button>
-                                                                    </div>
-                                                                );
-                                                            }
-                                                            
-                                                            // isFull moved to top
-
-                                                            return (
-                                                                <Button
-                                                                    onClick={() => !isFull && handleApplyClick(job._id)}
-                                                                    disabled={isFull}
-                                                                    className={`w-full h-16 md:h-18 rounded-[2rem] font-black text-[10px] md:text-sm tracking-widest uppercase relative overflow-hidden transition-all duration-500 px-2 md:px-4 ${isFull ? 'opacity-40 grayscale cursor-not-allowed bg-slate-800' : 'hover:scale-[1.02] active:scale-[0.98] hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.5)] shadow-xl'}`}
-                                                                    style={{
-                                                                        background: isFull 
-                                                                            ? '#1e293b' 
-                                                                            : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                                                                        color: 'white'
-                                                                    }}
-                                                                >
-                                                                    {!isFull && (
-                                                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-[shimmer_3s_infinite]" />
-                                                                    )}
-                                                                    <div className="relative z-10 flex items-center justify-center gap-2 md:gap-3 w-full">
-                                                                        {isFull ? (
-                                                                            <span className="whitespace-nowrap tracking-wider text-[10px] sm:text-xs md:text-sm">REGISTRATION CLOSED</span>
-                                                                        ) : (
-                                                                            <>
-                                                                                <span className="whitespace-nowrap">ENROLL NOW</span> 
-                                                                                <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors shrink-0">
-                                                                                    <ArrowUpRight size={16} className="md:w-5 md:h-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                                                                                </div>
-                                                                            </>
-                                                                        )}
-                                                                    </div>
-                                                                </Button>
-                                                            );
-                                                        })()}
-
-                                                        {(() => {
-                                                            const totalSeats = typeof job.totalSeats === 'number' ? job.totalSeats : 50;
-                                                            const filledSeats = typeof job.filledSeats === 'number' ? job.filledSeats : 0;
-                                                            const remainingSeats = Math.max(0, totalSeats - filledSeats);
-
-                                                            return (
-                                                                <div className="mt-8 flex flex-col gap-4">
-                                                                    <div className="flex items-center justify-between text-[11px] font-black uppercase tracking-wider">
-                                                                        <span className="text-slate-500">Deadline</span>
-                                                                        <span className="text-white">{job.deadline || "Soon"}</span>
-                                                                    </div>
-                                                                    <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                                                                        <div className={`h-full ${remainingSeats > 0 ? 'bg-emerald-500' : 'bg-red-500'} transition-all`} style={{ width: `${Math.min(100, (filledSeats / Math.max(1, totalSeats)) * 100)}%` }} />
-                                                                    </div>
-                                                                    <div className={`flex items-center justify-center gap-2 py-2 px-4 rounded-xl border ${
-                                                                        remainingSeats > 0 
-                                                                            ? 'bg-emerald-500/10 border-emerald-500/20' 
-                                                                            : 'bg-red-500/10 border-red-500/20'
-                                                                    }`}>
-                                                                        <div className={`w-1.5 h-1.5 rounded-full ${remainingSeats > 0 ? 'bg-emerald-500 animate-ping' : 'bg-red-500'}`} />
-                                                                        <span className={`text-[11px] font-black uppercase tracking-widest ${
-                                                                            remainingSeats > 0 ? 'text-emerald-400' : 'text-red-400'
-                                                                        }`}>
-                                                                            {remainingSeats > 0 
-                                                                                ? `Only ${remainingSeats} seats left!` 
-                                                                                : "Registration Closed - Batch Full"}
-                                                                        </span>
+                                                        {/* Action Buttons */}
+                                                        {hasApplied ? (
+                                                            <div className="flex flex-col gap-2 w-full">
+                                                                <div className="w-full py-2 px-3 rounded-lg bg-[#0a0a0b] border border-emerald-500/20 flex items-center gap-2">
+                                                                    <ShieldCheck size={16} className="text-emerald-400 shrink-0" />
+                                                                    <div className="text-left">
+                                                                        <span className="text-[10px] font-bold text-white uppercase tracking-wider block">Application Active</span>
+                                                                        <p className="text-[9px] text-slate-400">{app.status === 'accepted' ? 'Enrollment Confirmed' : `Status: ${app.status.replace('_', ' ')}`}</p>
                                                                     </div>
                                                                 </div>
-                                                            );
-                                                        })()}
+                                                                <button 
+                                                                    onClick={() => handleDownloadInvoice(job, app)}
+                                                                    className="w-full h-9 rounded-lg font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-all border border-white/10"
+                                                                >
+                                                                    <Download size={13} className="text-emerald-400" />
+                                                                    Download Invoice
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <Button
+                                                                onClick={() => !isFull && handleApplyClick(job._id)}
+                                                                disabled={isFull}
+                                                                className={`w-full h-11 rounded-lg font-bold text-xs tracking-wider uppercase relative overflow-hidden transition-all duration-300 px-3 ${
+                                                                    isFull 
+                                                                        ? 'opacity-40 grayscale cursor-not-allowed bg-slate-800' 
+                                                                        : 'hover:scale-[1.01] active:scale-[0.99] hover:shadow-[0_8px_25px_-5px_rgba(16,185,129,0.4)] shadow-md'
+                                                                }`}
+                                                                style={{
+                                                                    background: isFull 
+                                                                        ? '#1e293b' 
+                                                                        : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                                                                    color: 'white'
+                                                                }}
+                                                            >
+                                                                <div className="relative z-10 flex items-center justify-center gap-2 w-full">
+                                                                    {isFull ? (
+                                                                        <span className="whitespace-nowrap tracking-wider text-xs">REGISTRATION CLOSED</span>
+                                                                    ) : (
+                                                                        <>
+                                                                            <span className="whitespace-nowrap font-bold">ENROLL NOW</span> 
+                                                                            <ArrowUpRight size={15} />
+                                                                        </>
+                                                                    )}
+                                                                </div>
+                                                            </Button>
+                                                        )}
+
+                                                        {/* Deadline & Seats */}
+                                                        <div className="mt-3 flex flex-col gap-1.5">
+                                                            <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider">
+                                                                <span className="text-slate-500">Deadline</span>
+                                                                <span className="text-white">{job.deadline || "Soon"}</span>
+                                                            </div>
+                                                            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                                                <div className={`h-full ${remainingSeats > 0 ? 'bg-emerald-500' : 'bg-red-500'} transition-all`} style={{ width: `${Math.min(100, (filledSeats / Math.max(1, totalSeats)) * 100)}%` }} />
+                                                            </div>
+                                                            <span className={`text-[10px] font-bold uppercase tracking-wider text-center ${
+                                                                remainingSeats > 0 ? 'text-emerald-400' : 'text-red-400'
+                                                            }`}>
+                                                                {remainingSeats > 0 ? `Only ${remainingSeats} seats left!` : "Batch Full"}
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        {/* Bottom Perks Grid */}
-                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12 pt-12 border-t border-white/[0.05]">
-                                            {(job.benefits && job.benefits.length > 0 ? job.benefits : [
-                                                { title: "Certified Experience", description: "Get a verified internship completion certificate and letter of recommendation from Webory.", icon: "ShieldCheck" },
-                                                { title: "Direct Mentorship", description: "Work directly with industry experts who will guide you through complex real-world production cycles.", icon: "Sparkles" },
-                                                { title: "Career Growth", description: "Top performers will receive Pre-Placement Offers (PPOs) and exclusive networking opportunities.", icon: "Briefcase" }
-                                            ]).map((benefit: any, i: number) => {
-                                                const IconComponent = benefit.icon === "ShieldCheck" ? ShieldCheck : 
-                                                                    benefit.icon === "Sparkles" ? Sparkles : 
-                                                                    benefit.icon === "Briefcase" ? Briefcase : Globe;
-                                                return (
-                                                    <div key={i} className={`bg-[#0c0d12] border border-white/[0.03] rounded-3xl p-8 hover:bg-[#0e0f16] transition-all group/benefit ${i === 2 ? 'md:col-span-2 lg:col-span-1' : ''}`}>
-                                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-6 group-hover/benefit:scale-110 transition-transform ${
-                                                            benefit.icon === "ShieldCheck" ? "bg-emerald-500/10" : 
-                                                            benefit.icon === "Sparkles" ? "bg-blue-500/10" : "bg-purple-500/10"
-                                                        }`}>
-                                                            <IconComponent className={
-                                                                benefit.icon === "ShieldCheck" ? "text-emerald-400" : 
-                                                                benefit.icon === "Sparkles" ? "text-blue-400" : "text-purple-400"
-                                                            } size={24} />
-                                                        </div>
-                                                        <h4 className="text-lg font-black text-white mb-4">{benefit.title}</h4>
-                                                        <p className="text-sm text-slate-500 leading-relaxed">{benefit.description}</p>
-                                                    </div>
-                                                );
-                                            })}
+                                            {/* Bottom Features Strip */}
+                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-3.5 mt-4 border-t border-white/[0.06] text-slate-400 text-[11px]">
+                                                <div className="flex items-center gap-2">
+                                                    <ShieldCheck size={14} className="text-emerald-400 shrink-0" />
+                                                    <span>Verified Certificate & Official LOR</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <Sparkles size={14} className="text-blue-400 shrink-0" />
+                                                    <span>Direct Mentorship from IIT Mandi Alumni</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <Briefcase size={14} className="text-purple-400 shrink-0" />
+                                                    <span>Live Production Projects & PPO Access</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </motion.div>
-                            ))
+                                    </motion.div>
+                                );
+                            })
                         ) : (
                             <motion.div 
                                 initial={{ opacity: 0 }}
@@ -741,6 +646,191 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                 </div>
 
             </div>
+
+            {/* Internship Details Modal */}
+            <AnimatePresence>
+                {detailJob && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 sm:p-6"
+                        onClick={() => setDetailJob(null)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                            transition={{ type: "spring", duration: 0.4 }}
+                            className="relative w-full max-w-3xl bg-[#0c0d14] border border-white/10 rounded-2xl shadow-2xl overflow-hidden my-auto max-h-[90vh] flex flex-col text-left"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {/* Modal Header */}
+                            <div className="p-5 md:p-6 border-b border-white/10 flex items-start justify-between gap-4 bg-gradient-to-r from-white/[0.03] to-transparent sticky top-0 z-20 backdrop-blur-lg">
+                                <div>
+                                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                                        <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                            {detailJob.type}
+                                        </span>
+                                        <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                                            {detailJob.location}
+                                        </span>
+                                        <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                                            {detailJob.duration || "3-6 Months"}
+                                        </span>
+                                        <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-white/5 text-slate-300 border border-white/10">
+                                            IIT Mandi Mentored
+                                        </span>
+                                    </div>
+                                    <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight">
+                                        {detailJob.title}
+                                    </h2>
+                                    <p className="text-xs text-slate-400 mt-1">
+                                        Industrial Cohort 2026 • Verified Certificate & Letter of Recommendation
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => setDetailJob(null)}
+                                    className="p-2 rounded-xl text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 transition-colors shrink-0"
+                                >
+                                    <X size={18} />
+                                </button>
+                            </div>
+
+                            {/* Scrollable Content Body */}
+                            <div className="p-5 md:p-6 overflow-y-auto space-y-6">
+                                {/* About Section */}
+                                <div>
+                                    <h3 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
+                                        <div className="w-1.5 h-4 bg-emerald-500 rounded-full" />
+                                        About the Internship
+                                    </h3>
+                                    <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
+                                        {detailJob.description}
+                                    </p>
+                                </div>
+
+                                {/* Tech Stack */}
+                                {detailJob.tags && detailJob.tags.length > 0 && (
+                                    <div>
+                                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+                                            Technologies & Tools Covered
+                                        </h3>
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {detailJob.tags.map((tag: string, i: number) => (
+                                                <span key={i} className="px-2.5 py-1 rounded-md text-xs font-medium bg-white/[0.04] border border-white/[0.08] text-emerald-300">
+                                                    {tag}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Requirements & Responsibilities */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                                    {detailJob.requirements && detailJob.requirements.length > 0 && (
+                                        <div className="bg-white/[0.02] border border-white/[0.05] p-4 rounded-xl">
+                                            <h4 className="text-xs font-bold text-white/90 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                                <CheckCircle2 size={14} className="text-emerald-400" />
+                                                Core Requirements
+                                            </h4>
+                                            <ul className="space-y-2">
+                                                {detailJob.requirements.map((req: string, i: number) => (
+                                                    <li key={i} className="text-xs text-slate-300 flex items-start gap-2 leading-relaxed">
+                                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                                                        <span>{req}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+
+                                    {detailJob.responsibilities && detailJob.responsibilities.length > 0 && (
+                                        <div className="bg-white/[0.02] border border-white/[0.05] p-4 rounded-xl">
+                                            <h4 className="text-xs font-bold text-white/90 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                                <Sparkles size={14} className="text-blue-400" />
+                                                Key Responsibilities
+                                            </h4>
+                                            <ul className="space-y-2">
+                                                {detailJob.responsibilities.map((res: string, i: number) => (
+                                                    <li key={i} className="text-xs text-slate-300 flex items-start gap-2 leading-relaxed">
+                                                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 shrink-0" />
+                                                        <span>{res}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Benefits / What you get */}
+                                <div>
+                                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
+                                        Program Benefits
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                        <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.05]">
+                                            <ShieldCheck size={20} className="text-emerald-400 mb-2" />
+                                            <h5 className="text-xs font-bold text-white mb-1">Certified Experience</h5>
+                                            <p className="text-[11px] text-slate-400 leading-relaxed">Verified certificate and official LOR from Webory.</p>
+                                        </div>
+                                        <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.05]">
+                                            <Sparkles size={20} className="text-blue-400 mb-2" />
+                                            <h5 className="text-xs font-bold text-white mb-1">Direct Mentorship</h5>
+                                            <p className="text-[11px] text-slate-400 leading-relaxed">Mentored by experienced engineers & IIT Mandi faculty.</p>
+                                        </div>
+                                        <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.05]">
+                                            <Briefcase size={20} className="text-purple-400 mb-2" />
+                                            <h5 className="text-xs font-bold text-white mb-1">Career Growth</h5>
+                                            <p className="text-[11px] text-slate-400 leading-relaxed">Top performers get PPOs & recruitment partner referrals.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Modal Sticky Footer */}
+                            <div className="p-4 md:p-5 border-t border-white/10 bg-[#090a10] flex flex-col sm:flex-row items-center justify-between gap-4 sticky bottom-0 z-20">
+                                <div className="flex items-center gap-2.5">
+                                    <span className="text-2xl font-extrabold text-white">₹{detailJob.price || 999}</span>
+                                    {(detailJob.originalPrice || 2999) > (detailJob.price || 999) && (
+                                        <div className="flex items-center gap-1.5">
+                                            <span className="text-xs text-slate-500 line-through">₹{detailJob.originalPrice || 2999}</span>
+                                            <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                                                {Math.round((((detailJob.originalPrice || 2999) - (detailJob.price || 999)) / (detailJob.originalPrice || 2999)) * 100)}% OFF
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => {
+                                            const targetSlug = detailJob.slug || detailJob._id;
+                                            router.push(`/internships/${targetSlug}`);
+                                        }}
+                                        className="h-10 px-4 rounded-xl text-xs font-semibold border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 text-white flex items-center gap-1.5 w-full sm:w-auto justify-center"
+                                    >
+                                        Open Full Page
+                                        <ExternalLink size={13} />
+                                    </Button>
+                                    <Button
+                                        onClick={() => {
+                                            const idToApply = detailJob._id;
+                                            setDetailJob(null);
+                                            handleApplyClick(idToApply);
+                                        }}
+                                        className="h-10 px-5 rounded-xl font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 shadow-md shadow-emerald-500/20 w-full sm:w-auto flex items-center justify-center gap-1.5 border-none"
+                                    >
+                                        Enroll Now
+                                        <ArrowUpRight size={14} />
+                                    </Button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <AnimatePresence>
                 {selectedInternship && !showPayment && (
