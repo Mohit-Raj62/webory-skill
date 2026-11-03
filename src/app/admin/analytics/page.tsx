@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminAnalyticsPage() {
   const user = await getUser();
 
-  if (!user || user.role !== "admin") {
+  if (!user || (user.role !== "admin" && user.role !== "superadmin")) {
     redirect("/login?redirect=/admin/analytics");
   }
 

@@ -25,7 +25,7 @@ const UserSchema = new Schema({
   },
   role: {
     type: String,
-    enum: ["student", "admin", "teacher"],
+    enum: ["student", "admin", "teacher", "superadmin"],
     default: "student",
   },
   bio: {
@@ -223,6 +223,14 @@ const UserSchema = new Schema({
 UserSchema.index({ role: 1 });
 UserSchema.index({ xp: -1 });
 UserSchema.index({ createdAt: -1 });
+
+// Force Schema Recompile to avoid stale enum caches during hot-reloads
+if (models.User) {
+  delete (models as any).User;
+}
+if ((mongoose as any).connection?.models?.User) {
+  delete (mongoose as any).connection.models.User;
+}
 
 const User = models.User || model("User", UserSchema);
 

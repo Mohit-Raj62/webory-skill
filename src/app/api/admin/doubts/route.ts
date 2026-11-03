@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
 
     // Check if user is admin
     const user = await User.findById(decoded.userId);
-    if (!user || user.role !== "admin") {
+    if (!user || user.role !== "admin" && user.role !== "superadmin") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

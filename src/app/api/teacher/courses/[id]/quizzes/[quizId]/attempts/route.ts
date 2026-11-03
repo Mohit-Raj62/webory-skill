@@ -25,7 +25,7 @@ export async function GET(
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
 
     // Allow both teacher and admin to access this
-    if (decoded.role !== "teacher" && decoded.role !== "admin") {
+    if (decoded.role !== "admin" && decoded.role !== "superadmin" && decoded.role !== "teacher") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

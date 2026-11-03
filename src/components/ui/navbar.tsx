@@ -208,7 +208,7 @@ export function Navbar() {
                         </div>
                         <div className="w-px h-5 bg-white/10 mx-1.5 xl:mx-2" />
                         {user ? (
-                            <Link href={user.role === 'admin' ? "/admin" : "/profile"}>
+                            <Link href={(user.role === 'admin' || user.role === 'superadmin') ? "/admin" : "/profile"}>
                                 <motion.div
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
@@ -262,7 +262,7 @@ export function Navbar() {
                             </button>
                             
                             {user ? (
-                                <Link href={user.role === 'admin' ? "/admin" : "/profile"}>
+                                <Link href={(user.role === 'admin' || user.role === 'superadmin') ? "/admin" : "/profile"}>
                                     <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white shadow-lg border border-white/10 active:scale-95 transition-transform">
                                         {user?.firstName?.[0] || 'U'}
                                     </div>
@@ -416,14 +416,14 @@ export function Navbar() {
                                     className="space-y-2 pt-0.5"
                                 >
                                     {user ? (
-                                        <Link href={user.role === 'admin' ? "/admin" : "/profile"} onClick={() => setIsOpen(false)}>
+                                        <Link href={(user.role === 'admin' || user.role === 'superadmin') ? "/admin" : "/profile"} onClick={() => setIsOpen(false)}>
                                             <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:border-blue-500/30 transition-all">
                                                 <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-sm font-bold text-white shadow-lg shrink-0">
                                                     {user.firstName[0]}
                                                 </div>
                                                 <div className="min-w-0">
                                                     <p className="text-sm font-semibold text-white truncate">{user.firstName}</p>
-                                                    <p className="text-[11px] text-gray-500">{user.role === 'admin' ? 'Admin Panel' : 'View Profile'}</p>
+                                                    <p className="text-[11px] text-gray-500">{user.role === 'superadmin' ? '👑 Superadmin' : user.role === 'admin' ? '🛡️ Admin Panel' : 'View Profile'}</p>
                                                 </div>
                                             </div>
                                         </Link>

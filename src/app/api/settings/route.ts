@@ -96,7 +96,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    if (user.role !== "admin") {
+    if (user.role !== "admin" && user.role !== "superadmin") {
       console.warn(`🔒 Forbidden: User ${user.firstName} (Role: ${user.role}) attempted admin action.`);
       return NextResponse.json({ error: "Forbidden: Admin access required" }, { status: 403 });
     }

@@ -11,8 +11,6 @@ import {
     GraduationCap,
     BarChart3,
     MessageCircle,
-    LogOut,
-    X,
     Star,
     Tag,
     Video,
@@ -28,13 +26,22 @@ import {
     Terminal,
     Trophy,
     Film,
+    Crown,
+    History,
+    X,
 } from "lucide-react";
 
-const menuItems = [
+interface MenuItem {
+    name: string;
+    href: string;
+    icon: any;
+    superadminOnly?: boolean;
+}
+
+const menuItems: MenuItem[] = [
     { name: "Back to Website", href: "/", icon: Home },
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Users", href: "/admin/users", icon: Users },
-    { name: "Employee KYC", href: "/admin/employee-verifications", icon: Shield },
     { name: "Courses", href: "/admin/courses", icon: BookOpen },
     { name: "Internships", href: "/admin/internships", icon: Briefcase },
     { name: "Applications", href: "/admin/applications", icon: FileText },
@@ -44,11 +51,8 @@ const menuItems = [
     { name: "Feedback", href: "/admin/feedback", icon: Star },
     { name: "Video Testimonials", href: "/admin/video-testimonials", icon: Film },
     { name: "Promo Codes", href: "/admin/promo-codes", icon: Tag },
-    { name: "Broadcast Emails", href: "/admin/broadcast", icon: MessageCircle },
     { name: "Payments", href: "/admin/payments", icon: CreditCard },
     { name: "Live Classes", href: "/admin/live-classes", icon: Video },
-    { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
-    { name: "Settings", href: "/admin/settings", icon: Settings },
     { name: "Blogs", href: "/admin/blogs", icon: FileText },
     { name: "Careers (Jobs)", href: "/admin/careers/jobs", icon: Briefcase },
     { name: "Job Applications", href: "/admin/careers/applications", icon: FileText },
@@ -58,17 +62,28 @@ const menuItems = [
     { name: "WeboryOS", href: "/admin/simulators", icon: Terminal },
     { name: "Hackathons", href: "/admin/hackathons", icon: Trophy },
     { name: "Campus Ambassadors", href: "/admin/ambassadors", icon: Megaphone },
-    { name: "Maintenance", href: "/admin/maintenance", icon: Database },
-    { name: "Consent Logs", href: "/admin/consent", icon: ShieldCheck },
+    // 👑 Founder & Superadmin Exclusive Controls:
+    { name: "Audit Logs", href: "/admin/audit-logs", icon: History, superadminOnly: true },
+    { name: "Analytics & Revenue", href: "/admin/analytics", icon: BarChart3, superadminOnly: true },
+    { name: "Broadcast Emails", href: "/admin/broadcast", icon: Megaphone, superadminOnly: true },
+    { name: "Employee KYC", href: "/admin/employee-verifications", icon: Shield, superadminOnly: true },
+    { name: "Maintenance", href: "/admin/maintenance", icon: Database, superadminOnly: true },
+    { name: "System Settings", href: "/admin/settings", icon: Settings, superadminOnly: true },
+    { name: "Consent Logs", href: "/admin/consent", icon: ShieldCheck, superadminOnly: true },
 ];
 
 interface AdminSidebarProps {
     isOpen: boolean;
     onClose: () => void;
+    role?: string;
 }
 
-export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
+export function AdminSidebar({ isOpen, onClose, role = "admin" }: AdminSidebarProps) {
     const pathname = usePathname();
+    const isSuperAdmin = role === "superadmin";
+
+    // Filter menu items: Hide sensitive founder items from regular admins
+    const visibleMenuItems = menuItems.filter((item) => !item.superadminOnly || isSuperAdmin);
 
     return (
         <>
@@ -82,14 +97,24 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
 
             {/* Sidebar */}
             <div
-                className={`fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 border-r border-white/10 flex flex-col transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"
-                    }`}
+                className={`fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 border-r border-white/10 flex flex-col transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${
+                    isOpen ? "translate-x-0" : "-translate-x-full"
+                }`}
             >
                 {/* Logo & Close Button */}
                 <div className="p-6 border-b border-white/10 flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-white">Admin Panel</h1>
-                        <p className="text-sm text-gray-400 mt-1">Webory Skills</p>
+                        <div className="flex items-center gap-2">
+                            <h1 className="text-xl font-bold text-white tracking-tight">
+                                {isSuperAdmin ? "Super Admin Panel" : "Admin Panel"}
+                            </h1>
+                            {isSuperAdmin && (
+                                <Crown size={17} className="text-amber-400 shrink-0" />
+                            )}
+                        </div>
+                        <p className="text-xs text-gray-400 mt-1">
+                            {isSuperAdmin ? "Founder Control Center" : "Webory Skills Management"}
+                        </p>
                     </div>
                     <button
                         onClick={onClose}
@@ -100,8 +125,8 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
                 </div>
 
                 {/* Navigation */}
-                <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-                    {menuItems.map((item) => {
+                <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
+                    {visibleMenuItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = pathname === item.href;
 
@@ -109,35 +134,35 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
                             <Link
                                 key={item.href}
                                 href={item.href}
-                                onClick={() => onClose()} // Close sidebar on mobile when link clicked
-                                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${isActive
-                                    ? "bg-blue-600 text-white"
-                                    : "text-gray-400 hover:bg-white/5 hover:text-white"
-                                    }`}
+                                onClick={() => onClose()}
+                                className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all ${
+                                    isActive
+                                        ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
+                                        : "text-gray-400 hover:bg-white/5 hover:text-white"
+                                }`}
                             >
-                                <Icon size={20} />
-                                <span className="font-medium">{item.name}</span>
+                                <Icon size={18} className="shrink-0" />
+                                <span className="font-medium text-sm truncate">{item.name}</span>
+                                {item.superadminOnly && isSuperAdmin && (
+                                    <span className="ml-auto text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0">
+                                        Owner
+                                    </span>
+                                )}
                             </Link>
                         );
                     })}
                 </nav>
 
-
                 {/* Logout */}
                 <div className="p-4 border-t border-white/10">
                     <button
                         onClick={async () => {
-                            try {
-                                await fetch("/api/auth/logout", { method: "POST" });
-                                window.location.href = "/login";
-                            } catch (error) {
-                                console.error("Logout failed", error);
-                            }
+                            await fetch("/api/auth/logout", { method: "POST" });
+                            window.location.href = "/login";
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 transition-all"
+                        className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-xl transition-colors text-sm font-semibold cursor-pointer"
                     >
-                        <LogOut size={20} />
-                        <span className="font-medium">Logout</span>
+                        <span>Logout</span>
                     </button>
                 </div>
             </div>

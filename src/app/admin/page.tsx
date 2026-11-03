@@ -1,10 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ClipboardList, FileText, GraduationCap, Users, BookOpen, Briefcase, Star, Award, Shield, Gift, TrendingUp } from "lucide-react";
+import { ClipboardList, FileText, GraduationCap, Users, BookOpen, Briefcase, Star, Award, Shield, Gift, TrendingUp, Crown } from "lucide-react";
 import Link from "next/link";
 
 export default function AdminDashboard() {
+    const [userRole, setUserRole] = useState<string>("admin");
+
+    useEffect(() => {
+        fetch("/api/auth/me")
+            .then((r) => (r.ok ? r.json() : null))
+            .then((data) => {
+                if (data?.user?.role) setUserRole(data.user.role);
+            })
+            .catch(() => {});
+    }, []);
     const sections = [
         {
             id: "courses",
@@ -76,7 +86,16 @@ export default function AdminDashboard() {
         <div className="p-4 md:p-8">
             {/* Header */}
             <div className="mb-6 md:mb-8">
-                <h1 className="text-2xl md:text-4xl font-bold text-white mb-2">Admin Dashboard</h1>
+                <div className="flex items-center gap-3 mb-2">
+                    <h1 className="text-2xl md:text-4xl font-bold text-white">
+                        {userRole === "superadmin" ? "Super Admin Dashboard" : "Admin Dashboard"}
+                    </h1>
+                    {userRole === "superadmin" && (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black tracking-wider uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                            <Crown size={14} className="text-amber-400" /> Founder
+                        </span>
+                    )}
+                </div>
                 <p className="text-sm md:text-base text-gray-400">Manage your platform from one place</p>
             </div>
 
@@ -244,8 +263,13 @@ function AnalyticsPreview() {
 
     useEffect(() => {
         fetch('/api/admin/overview')
-            .then(res => res.json())
-            .then(data => setStats(data))
+            .then(res => {
+                if (!res.ok) throw new Error("Failed to fetch overview");
+                return res.json();
+            })
+            .then(data => {
+                if (data && !data.error) setStats(data);
+            })
             .catch(err => console.error(err))
             .finally(() => setLoading(false));
     }, []);

@@ -1,5 +1,4 @@
-import { motion } from "framer-motion";
-import { User as UserIcon, Shield, GraduationCap } from "lucide-react";
+import { User as UserIcon, Shield, GraduationCap, Crown } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { getUser } from "@/lib/get-user";
 import { redirect } from "next/navigation";
@@ -12,29 +11,49 @@ export const dynamic = "force-dynamic";
 export default async function UsersPage() {
     const user = await getUser();
 
-    if (!user || user.role !== "admin") {
+    if (!user || (user.role !== "admin" && user.role !== "superadmin")) {
         redirect("/login?redirect=/admin/users");
     }
 
     await dbConnect();
 
     // Fetch initial stats and users on server
-    const [totalUsersCount, studentsCount, teachersCount, adminsCount, initialUsers] = await Promise.all([
+    const [totalUsersCount, studentsCount, teachersCount, rawAdminsCount, rawSuperadminsCount, rawInitialUsers] = await Promise.all([
         User.countDocuments(),
         User.countDocuments({ role: "student" }),
         User.countDocuments({ role: "teacher" }),
         User.countDocuments({ role: "admin" }),
+        User.countDocuments({ role: "superadmin" }),
         User.find()
             .sort({ createdAt: -1 })
             .limit(10)
             .lean(),
     ]);
 
+    let adminsCount = rawAdminsCount;
+    let superadminsCount = rawSuperadminsCount;
+    let initialUsers = rawInitialUsers;
+
+    // Auto-bootstrap: If platform has no superadmin yet and current logged-in user is an admin,
+    // seamlessly upgrade the founder account to Superadmin!
+    if (user.email?.toLowerCase() === "mohitraj7321@gmail.com" || (superadminsCount === 0 && user.role === "admin")) {
+        if (user.role !== "superadmin") {
+            await User.findByIdAndUpdate(user._id, { role: "superadmin" });
+            user.role = "superadmin";
+            superadminsCount = Math.max(1, superadminsCount + 1);
+            adminsCount = Math.max(0, adminsCount - 1);
+        }
+        initialUsers = initialUsers.map((u: any) =>
+            u.email?.toLowerCase() === "mohitraj7321@gmail.com" ? { ...u, role: "superadmin" } : u
+        );
+    }
+
     const stats = {
         totalUsers: totalUsersCount,
         studentsCount,
         teachersCount,
         adminsCount,
+        superadminsCount,
     };
 
     const pagination = {
@@ -50,25 +69,38 @@ export default async function UsersPage() {
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-4xl font-black tracking-tighter text-white">
-                        User Management
-                    </h1>
-                    <p className="text-gray-400 mt-2 text-lg font-medium opacity-80 uppercase tracking-widest text-[10px]">Manage permissions and monitor user growth</p>
+                    <div className="flex items-center gap-3">
+                        <h1 className="text-4xl font-black tracking-tighter text-white">
+                            User Management
+                        </h1>
+                        {user.role === "superadmin" && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black tracking-wider uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm shadow-amber-500/20">
+                                <Crown size={13} className="text-amber-400" /> Superadmin Mode
+                            </span>
+                        )}
+                    </div>
+                    <p className="text-gray-400 mt-2 text-lg font-medium opacity-80 uppercase tracking-widest text-[10px]">
+                        Manage permissions, hierarchy, and monitor platform growth
+                    </p>
                 </div>
             </div>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Stats Grid - 5 Tiers */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                 <StatCard label="Total Users" value={stats.totalUsers} icon={UserIcon} color="text-blue-400" bg="bg-blue-500/10" />
                 <StatCard label="Students" value={stats.studentsCount} icon={GraduationCap} color="text-emerald-400" bg="bg-emerald-500/10" />
                 <StatCard label="Teachers" value={stats.teachersCount} icon={Shield} color="text-purple-400" bg="bg-purple-500/10" />
-                <StatCard label="Admins" value={stats.adminsCount} icon={Shield} color="text-orange-400" bg="bg-orange-500/10" />
+                <StatCard label="Admins" value={stats.adminsCount} icon={Shield} color="text-blue-400" bg="bg-blue-500/10" />
+                <StatCard label="Superadmins" value={stats.superadminsCount} icon={Crown} color="text-amber-400" bg="bg-amber-500/10" />
             </div>
 
             {/* Main Interactive Table */}
             <UserManagementClient 
                 initialUsers={serializedUsers} 
-                initialPagination={pagination} 
+                initialPagination={pagination}
+                currentUserRole={user.email?.toLowerCase() === "mohitraj7321@gmail.com" ? "superadmin" : user.role}
+                currentUserEmail={user.email}
+                currentUserId={user._id.toString()}
             />
         </div>
     );

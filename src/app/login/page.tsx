@@ -85,7 +85,7 @@ function LoginContent() {
 
             await refreshAuth();
 
-            if (data.user.role === "admin") {
+            if (data.user.role === "admin" || data.user.role === "superadmin") {
                 router.push("/admin");
             } else if (data.user.role === "teacher") {
                 router.push("/teacher");
@@ -126,7 +126,7 @@ function LoginContent() {
 
             await refreshAuth();
 
-            if (data.user.role === "admin") {
+            if (data.user.role === "admin" || data.user.role === "superadmin") {
                 router.push("/admin");
             } else if (data.user.role === "teacher") {
                 router.push("/teacher");
@@ -195,7 +195,7 @@ function LoginContent() {
 
             await refreshAuth();
 
-            if (data.user.role === "admin") {
+            if (data.user.role === "admin" || data.user.role === "superadmin") {
                 router.push("/admin");
             } else if (data.user.role === "teacher") {
                 router.push("/teacher");

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trash2, Search, ChevronLeft, ChevronRight, Mail, Phone, Calendar } from "lucide-react";
+import { Trash2, Search, ChevronLeft, ChevronRight, Mail, Phone, Calendar, Crown, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     Table,
@@ -13,7 +13,22 @@ import {
     TableRow,
 } from "@/components/ui/table";
 
-export function UserManagementClient({ initialUsers, initialPagination }: { initialUsers: any[], initialPagination: any }) {
+interface UserManagementClientProps {
+    initialUsers: any[];
+    initialPagination: any;
+    currentUserRole?: string;
+    currentUserEmail?: string;
+    currentUserId?: string;
+}
+
+export function UserManagementClient({ 
+    initialUsers, 
+    initialPagination,
+    currentUserRole = "admin",
+    currentUserEmail,
+    currentUserId,
+}: UserManagementClientProps) {
+    const isSuperAdmin = currentUserRole === "superadmin" || currentUserEmail?.toLowerCase() === "mohitraj7321@gmail.com";
     const [users, setUsers] = useState<any[]>(initialUsers);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState<number>(initialPagination.page);
@@ -61,16 +76,48 @@ export function UserManagementClient({ initialUsers, initialPagination }: { init
     };
 
     const handleDelete = async (userId: string) => {
-        if (!confirm("Are you sure you want to delete this user?")) return;
+        const target = users.find((u) => u._id === userId);
+        if (target?.role === "superadmin") {
+            alert("Superadmin accounts are protected and cannot be deleted.");
+            return;
+        }
+        if (!isSuperAdmin && target?.role === "admin") {
+            alert("Only Superadmin can delete Admin accounts.");
+            return;
+        }
+        if (userId === currentUserId) {
+            alert("You cannot delete your own account.");
+            return;
+        }
+
+        if (!confirm(`Are you sure you want to delete user ${target?.email || userId}?`)) return;
+
         try {
             const res = await fetch(`/api/admin/users/${userId}`, { method: "DELETE" });
-            if (res.ok) fetchUsers();
+            if (res.ok) {
+                fetchUsers();
+            } else {
+                const errData = await res.json();
+                alert(errData.error || "Failed to delete user");
+            }
         } catch (error) {
             console.error("Delete error:", error);
         }
     };
 
     const handleRoleChange = async (userId: string, newRole: string) => {
+        const target = users.find((u) => u._id === userId);
+
+        if (target?.role === "superadmin" && !isSuperAdmin) {
+            alert("Only a Superadmin can modify a Superadmin account.");
+            return;
+        }
+
+        if (!isSuperAdmin && (newRole === "admin" || newRole === "superadmin")) {
+            alert("Only a Superadmin can promote users to Admin or Superadmin.");
+            return;
+        }
+
         try {
             const res = await fetch(`/api/admin/users/${userId}`, {
                 method: "PATCH",
@@ -79,6 +126,9 @@ export function UserManagementClient({ initialUsers, initialPagination }: { init
             });
             if (res.ok) {
                 setUsers(users.map((u) => (u._id === userId ? { ...u, role: newRole } : u)));
+            } else {
+                const errData = await res.json();
+                alert(errData.error || "Failed to update role");
             }
         } catch (error) {
             console.error("Role change error:", error);
@@ -87,9 +137,10 @@ export function UserManagementClient({ initialUsers, initialPagination }: { init
 
     const getRoleBadgeColor = (role: string) => {
         switch (role) {
-            case "admin": return "bg-orange-500/20 text-orange-400 border-orange-500/50";
+            case "superadmin": return "bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-sm shadow-amber-500/20";
+            case "admin": return "bg-blue-500/20 text-blue-400 border-blue-500/50";
             case "teacher": return "bg-purple-500/20 text-purple-400 border-purple-500/50";
-            case "student": return "bg-blue-500/20 text-blue-400 border-blue-500/50";
+            case "student": return "bg-emerald-500/20 text-emerald-400 border-emerald-500/50";
             default: return "bg-gray-500/20 text-gray-400 border-gray-500/50";
         }
     };
@@ -136,7 +187,7 @@ export function UserManagementClient({ initialUsers, initialPagination }: { init
                         <TableRow className="border-white/10">
                             <TableHead className="text-gray-300 px-6 py-4">User Details</TableHead>
                             <TableHead className="text-gray-300 px-6 py-4">Contact Info</TableHead>
-                            <TableHead className="text-gray-300 px-6 py-4">Role</TableHead>
+                            <TableHead className="text-gray-300 px-6 py-4">Hierarchy Role</TableHead>
                             <TableHead className="text-gray-300 px-6 py-4">Joined Date</TableHead>
                             <TableHead className="text-gray-300 px-6 py-4 text-right">Actions</TableHead>
                         </TableRow>
@@ -146,32 +197,77 @@ export function UserManagementClient({ initialUsers, initialPagination }: { init
                             {users.length === 0 && !loading ? (
                                 <TableRow><TableCell colSpan={5} className="h-64 text-center text-gray-400">No users found.</TableCell></TableRow>
                             ) : (
-                                users.map((user, index) => (
+                                users.map((user) => (
                                     <motion.tr key={user._id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="border-b border-white/5 hover:bg-white/5 group">
                                         <TableCell className="px-6 py-4">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold">{user.firstName[0]}</div>
-                                                <div><p className="text-white font-medium">{user.firstName} {user.lastName}</p><p className="text-gray-500 text-xs">ID: {user._id.slice(-6).toUpperCase()}</p></div>
+                                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold ${user.role === 'superadmin' ? 'bg-gradient-to-br from-amber-500 to-orange-600 shadow-md shadow-amber-500/20' : user.role === 'admin' ? 'bg-gradient-to-br from-blue-600 to-indigo-600' : 'bg-gradient-to-br from-slate-700 to-slate-900'}`}>
+                                                    {user.firstName ? user.firstName[0].toUpperCase() : "U"}
+                                                </div>
+                                                <div>
+                                                    <div className="flex items-center gap-2">
+                                                        <p className="text-white font-medium">{user.firstName} {user.lastName}</p>
+                                                        {user.role === "superadmin" && (
+                                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                                                                <Crown size={11} className="text-amber-400" /> Owner
+                                                            </span>
+                                                        )}
+                                                        {user.role === "admin" && (
+                                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-blue-500/20 text-blue-300 border border-blue-500/40">
+                                                                <Shield size={11} className="text-blue-400" /> Admin
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-gray-500 text-xs">ID: {user._id.slice(-6).toUpperCase()}</p>
+                                                </div>
                                             </div>
                                         </TableCell>
                                         <TableCell className="px-6 py-4">
                                             <div className="space-y-1">
-                                                <div className="flex items-center gap-2 text-gray-300"><Mail className="w-4 h-4" /><span className="text-sm">{user.email}</span></div>
-                                                {user.phone && <div className="flex items-center gap-2 text-gray-400"><Phone className="w-4 h-4" /><span className="text-xs">{user.phone}</span></div>}
+                                                <div className="flex items-center gap-2 text-gray-300"><Mail className="w-4 h-4 text-gray-400" /><span className="text-sm">{user.email}</span></div>
+                                                {user.phone && <div className="flex items-center gap-2 text-gray-400"><Phone className="w-4 h-4 text-gray-500" /><span className="text-xs">{user.phone}</span></div>}
                                             </div>
                                         </TableCell>
                                         <TableCell className="px-6 py-4">
-                                            <select value={user.role} onChange={(e) => handleRoleChange(user._id, e.target.value)} className={`px-3 py-1.5 rounded-lg text-sm font-black border bg-black/20 outline-none ${getRoleBadgeColor(user.role)}`}>
-                                                <option value="student">Student</option>
-                                                <option value="teacher">Teacher</option>
-                                                <option value="admin">Admin</option>
-                                            </select>
+                                            {user.role === "superadmin" && !isSuperAdmin ? (
+                                                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/50 shadow-sm shadow-amber-500/20">
+                                                    <Crown size={13} className="text-amber-400" /> Superadmin
+                                                </span>
+                                            ) : (
+                                                <select 
+                                                    value={user.role} 
+                                                    onChange={(e) => handleRoleChange(user._id, e.target.value)} 
+                                                    disabled={user.role === "superadmin" && user._id === currentUserId}
+                                                    className={`px-3 py-1.5 rounded-lg text-xs font-black border bg-black/40 outline-none cursor-pointer transition-all ${getRoleBadgeColor(user.role)} ${user.role === "superadmin" && user._id === currentUserId ? "opacity-80 cursor-not-allowed" : ""}`}
+                                                    title={user.role === "superadmin" && user._id === currentUserId ? "Primary Superadmin (Locked)" : "Change user role"}
+                                                >
+                                                    <option value="student" className="bg-gray-900 text-white font-medium">Student</option>
+                                                    <option value="teacher" className="bg-gray-900 text-white font-medium">Teacher</option>
+                                                    {isSuperAdmin && (
+                                                        <>
+                                                            <option value="admin" className="bg-gray-900 text-blue-300 font-semibold">🛡️ Admin</option>
+                                                            <option value="superadmin" className="bg-gray-900 text-amber-300 font-bold">👑 Superadmin</option>
+                                                        </>
+                                                    )}
+                                                    {!isSuperAdmin && user.role === "admin" && (
+                                                        <option value="admin" className="bg-gray-900 text-blue-300 font-semibold">🛡️ Admin</option>
+                                                    )}
+                                                </select>
+                                            )}
                                         </TableCell>
                                         <TableCell className="px-6 py-4">
-                                            <div className="flex items-center gap-2 text-gray-400"><Calendar className="w-4 h-4" /><span className="text-sm">{new Date(user.createdAt).toLocaleDateString()}</span></div>
+                                            <div className="flex items-center gap-2 text-gray-400"><Calendar className="w-4 h-4 text-gray-500" /><span className="text-sm">{new Date(user.createdAt).toLocaleDateString()}</span></div>
                                         </TableCell>
                                         <TableCell className="px-6 py-4 text-right">
-                                            <Button variant="ghost" size="icon" onClick={() => handleDelete(user._id)} className="text-gray-400 hover:text-red-400"><Trash2 size={18} /></Button>
+                                            {user.role === "superadmin" || (user.role === "admin" && !isSuperAdmin) || user._id === currentUserId ? (
+                                                <span className="text-gray-500 text-xs font-medium px-2 py-1 select-none">
+                                                    Protected
+                                                </span>
+                                            ) : (
+                                                <Button variant="ghost" size="icon" onClick={() => handleDelete(user._id)} className="text-gray-400 hover:text-red-400 cursor-pointer">
+                                                    <Trash2 size={18} />
+                                                </Button>
+                                            )}
                                         </TableCell>
                                     </motion.tr>
                                 ))

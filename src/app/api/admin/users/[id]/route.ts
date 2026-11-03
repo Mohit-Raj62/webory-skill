@@ -22,12 +22,52 @@ export async function DELETE(
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+    const callerId = decoded.userId || decoded.id;
+    const caller = await User.findById(callerId).select("role email").lean();
+    let callerRole = caller?.role || decoded.role;
 
-    if (decoded.role !== "admin") {
+    if (caller?.email?.toLowerCase() === "mohitraj7321@gmail.com") {
+      callerRole = "superadmin";
+      if (caller?.role !== "superadmin") {
+        await User.findByIdAndUpdate(callerId, { role: "superadmin" });
+      }
+    }
+
+    if (callerRole !== "admin" && callerRole !== "superadmin") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const { id } = await params;
+    const targetUser = await User.findById(id);
+
+    if (!targetUser) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Protection 1: Superadmin account can NEVER be deleted
+    if (targetUser.role === "superadmin") {
+      return NextResponse.json(
+        { error: "Superadmin accounts cannot be deleted." },
+        { status: 403 }
+      );
+    }
+
+    // Protection 2: Normal admin cannot delete another Admin
+    if (callerRole !== "superadmin" && targetUser.role === "admin") {
+      return NextResponse.json(
+        { error: "Only Superadmin can delete Admin accounts." },
+        { status: 403 }
+      );
+    }
+
+    // Protection 3: Cannot delete yourself
+    const currentUserId = decoded.userId || decoded.id;
+    if (currentUserId === id) {
+      return NextResponse.json(
+        { error: "You cannot delete your own account." },
+        { status: 400 }
+      );
+    }
 
     // Delete user's enrollments and applications
     await Enrollment.deleteMany({ student: id });
@@ -38,9 +78,9 @@ export async function DELETE(
 
     const { logActivity } = await import("@/lib/logger");
     await logActivity(
-      decoded.userId || decoded.id,
+      currentUserId,
       "DELETE_USER",
-      `Deleted user: ${id}`,
+      `Deleted user: ${id} (${targetUser.email})`,
       req.headers.get("x-forwarded-for") || "unknown"
     );
 
@@ -70,16 +110,58 @@ export async function PATCH(
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+    const callerId = decoded.userId || decoded.id;
+    const caller = await User.findById(callerId).select("role email").lean();
+    let callerRole = caller?.role || decoded.role;
 
-    if (decoded.role !== "admin") {
+    if (caller?.email?.toLowerCase() === "mohitraj7321@gmail.com") {
+      callerRole = "superadmin";
+      if (caller?.role !== "superadmin") {
+        await User.findByIdAndUpdate(callerId, { role: "superadmin" });
+      }
+    }
+
+    if (callerRole !== "admin" && callerRole !== "superadmin") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const { id } = await params;
     const { role } = await req.json();
 
-    if (!["student", "admin", "teacher"].includes(role)) {
+    if (!["student", "teacher", "admin", "superadmin"].includes(role)) {
       return NextResponse.json({ error: "Invalid role" }, { status: 400 });
+    }
+
+    const targetUser = await User.findById(id);
+    if (!targetUser) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Protection 1: Normal admin cannot touch Superadmin
+    if (targetUser.role === "superadmin" && callerRole !== "superadmin") {
+      return NextResponse.json(
+        { error: "Cannot modify a Superadmin account." },
+        { status: 403 }
+      );
+    }
+
+    // Protection 2: Normal admin cannot promote anyone to Admin or Superadmin
+    if (callerRole !== "superadmin" && (role === "admin" || role === "superadmin")) {
+      const superadminCount = await User.countDocuments({ role: "superadmin" });
+      if (superadminCount > 0) {
+        return NextResponse.json(
+          { error: "Only Superadmin can grant Admin privileges." },
+          { status: 403 }
+        );
+      }
+    }
+
+    // Protection 3: Normal admin cannot demote another Admin
+    if (callerRole !== "superadmin" && targetUser.role === "admin") {
+      return NextResponse.json(
+        { error: "Only Superadmin can modify Admin accounts." },
+        { status: 403 }
+      );
     }
 
     const user = await User.findByIdAndUpdate(
@@ -92,7 +174,7 @@ export async function PATCH(
     await logActivity(
       decoded.userId || decoded.id,
       "VERIFY_USER",
-      `Updated role of user ${id} to ${role}`,
+      `Updated role of user ${id} (${targetUser.email}) to ${role}`,
       req.headers.get("x-forwarded-for") || "unknown"
     );
 

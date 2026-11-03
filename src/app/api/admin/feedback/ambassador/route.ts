@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const userId = await getDataFromToken(request);
     const user = await User.findById(userId);
 
-    if (!user || user.role !== 'admin') {
+    if (!user || user.role !== "admin" && user.role !== "superadmin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 

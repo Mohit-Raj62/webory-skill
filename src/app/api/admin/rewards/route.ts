@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     }
 
     const user = await User.findById(userId);
-    if (!user || user.role !== "admin") {
+    if (!user || user.role !== "admin" && user.role !== "superadmin") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -62,7 +62,7 @@ export async function PUT(request: NextRequest) {
     const userId = await getDataFromToken(request);
     const user = await User.findById(userId);
 
-    if (!user || user.role !== "admin") {
+    if (!user || user.role !== "admin" && user.role !== "superadmin") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

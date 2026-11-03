@@ -36,7 +36,7 @@ export function middleware(request: NextRequest) {
   const mainDomain = allowedDomains.find((domain) => hostname.endsWith(domain));
 
   if (mainDomain) {
-    let subdomain = hostname.replace(`.${mainDomain}`, "").replace(mainDomain, "");
+    const subdomain = hostname.replace(`.${mainDomain}`, "").replace(mainDomain, "");
     
     if (subdomain && subdomain !== "www") {
       if (subdomain.includes("-")) {
@@ -92,7 +92,7 @@ export function middleware(request: NextRequest) {
 
   if (isPublicPath && token) {
     const role = getRoleFromToken(token);
-    if (role === "admin") {
+    if (role === "admin" || role === "superadmin") {
       return NextResponse.redirect(new URL("/admin", request.nextUrl));
     } else if (role === "teacher") {
       return NextResponse.redirect(new URL("/teacher", request.nextUrl));
@@ -106,7 +106,7 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/login", request.nextUrl));
     }
     const role = getRoleFromToken(token);
-    if (role !== "admin") {
+    if (role !== "admin" && role !== "superadmin") {
       return NextResponse.redirect(new URL("/", request.nextUrl));
     }
   }

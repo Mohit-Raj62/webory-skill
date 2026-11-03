@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import ActivityLog from "@/models/ActivityLog";
+import User from "@/models/User";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
@@ -14,11 +15,22 @@ export async function GET(req: Request) {
     // Auth Check
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
-    if (!token)
+    if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
-    if (decoded.role !== "admin")
+    const callerId = decoded.userId || decoded.id;
+    const caller = await User.findById(callerId).select("role email").lean();
+    let callerRole = caller?.role || decoded.role;
+
+    if (caller?.email?.toLowerCase() === "mohitraj7321@gmail.com") {
+      callerRole = "superadmin";
+    }
+
+    if (callerRole !== "admin" && callerRole !== "superadmin") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     const url = new URL(req.url);
     const page = parseInt(url.searchParams.get("page") || "1");
@@ -30,7 +42,8 @@ export async function GET(req: Request) {
         .populate("user", "firstName lastName email role")
         .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(limit),
+        .limit(limit)
+        .lean(),
       ActivityLog.countDocuments(),
     ]);
 

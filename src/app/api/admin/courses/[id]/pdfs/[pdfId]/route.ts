@@ -31,7 +31,7 @@ export async function PUT(
   try {
     const { id, pdfId } = await params;
     const user = await getAuthenticatedUser();
-    if (!user || user.role !== "admin") {
+    if (!user || user.role !== "admin" && user.role !== "superadmin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -85,7 +85,7 @@ export async function DELETE(
   try {
     const { id, pdfId } = await params;
     const user = await getAuthenticatedUser();
-    if (!user || user.role !== "admin") {
+    if (!user || user.role !== "admin" && user.role !== "superadmin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

@@ -17,7 +17,7 @@ export async function GET(req: Request) {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
     const adminUser = await User.findById(decoded.userId);
-    if (!adminUser || adminUser.role !== "admin") {
+    if (!adminUser || adminUser.role !== "admin" && adminUser.role !== "superadmin") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

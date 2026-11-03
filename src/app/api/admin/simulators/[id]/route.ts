@@ -13,7 +13,7 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ id:
         }
 
         const user = await User.findById(userId);
-        if (user.role !== "admin") {
+        if (user.role !== "admin" && user.role !== "superadmin") {
             return NextResponse.json({ error: "Forbidden" }, { status: 403 });
         }
 
@@ -44,7 +44,7 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
         }
 
         const user = await User.findById(userId);
-        if (user.role !== "admin") {
+        if (user.role !== "admin" && user.role !== "superadmin") {
             return NextResponse.json({ error: "Forbidden" }, { status: 403 });
         }
 

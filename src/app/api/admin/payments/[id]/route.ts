@@ -31,7 +31,7 @@ export async function PUT(
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
     const adminId = decoded.userId || decoded.id;
 
-    if (decoded.role !== "admin") {
+    if (decoded.role !== "admin" && decoded.role !== "superadmin") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

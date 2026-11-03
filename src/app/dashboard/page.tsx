@@ -8,7 +8,7 @@ export default async function DashboardPage() {
         redirect("/login?redirect=/profile");
     }
 
-    if (user.role === "admin") {
+    if (user.role === "admin" || user.role === "superadmin") {
         redirect("/admin");
     }
 

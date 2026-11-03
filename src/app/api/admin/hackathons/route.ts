@@ -55,7 +55,7 @@ export async function POST(req: Request) {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
-    if (decoded.role !== "admin") {
+    if (decoded.role !== "admin" && decoded.role !== "superadmin") {
       return NextResponse.json({ error: "Forbidden: Admin access required" }, { status: 403 });
     }
 

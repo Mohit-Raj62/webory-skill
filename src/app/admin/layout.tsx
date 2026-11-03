@@ -3,7 +3,7 @@
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Menu } from "lucide-react";
+import { Menu, Crown } from "lucide-react";
 
 export default function AdminLayout({
     children,
@@ -12,6 +12,7 @@ export default function AdminLayout({
 }) {
     const [loading, setLoading] = useState(true);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [userRole, setUserRole] = useState<string>("admin");
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const router = useRouter();
 
@@ -28,11 +29,12 @@ export default function AdminLayout({
                 }
 
                 const data = await res.json();
-                if (data.user.role !== "admin") {
+                if (data.user.role !== "admin" && data.user.role !== "superadmin") {
                     router.push("/");
                     return;
                 }
 
+                setUserRole(data.user.role);
                 setIsAdmin(true);
             } catch (error) {
                 router.push("/login");
@@ -62,6 +64,7 @@ export default function AdminLayout({
                 <AdminSidebar
                     isOpen={isSidebarOpen}
                     onClose={() => setIsSidebarOpen(false)}
+                    role={userRole}
                 />
             )}
 
@@ -69,7 +72,14 @@ export default function AdminLayout({
                 {/* Mobile Header */}
                 {!isLiveRoom && (
                     <div className="md:hidden p-4 border-b border-white/10 flex items-center justify-between bg-gray-900/50 backdrop-blur-sm sticky top-0 z-30">
-                        <h1 className="text-lg font-bold text-white">Admin Panel</h1>
+                        <div className="flex items-center gap-2">
+                            <h1 className="text-lg font-bold text-white">
+                                {userRole === "superadmin" ? "Super Admin Panel" : "Admin Panel"}
+                            </h1>
+                            {userRole === "superadmin" && (
+                                <Crown size={16} className="text-amber-400" />
+                            )}
+                        </div>
                         <button
                             onClick={() => setIsSidebarOpen(true)}
                             className="p-2 text-gray-400 hover:text-white"

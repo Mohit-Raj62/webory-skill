@@ -25,7 +25,7 @@ export async function PUT(
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
 
-    if (decoded.role !== "admin" && decoded.role !== "teacher") {
+    if (decoded.role !== "admin" && decoded.role !== "superadmin" && decoded.role !== "teacher") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

@@ -12,7 +12,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
     if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
-    if (decoded.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (decoded.role !== "admin" && decoded.role !== "superadmin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     const body = await req.json();
     
@@ -44,7 +44,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
 
     if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
-    if (decoded.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (decoded.role !== "admin" && decoded.role !== "superadmin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     const { id } = await Promise.resolve(params);
     const deletedTestimonial = await VideoTestimonial.findByIdAndDelete(id);

@@ -19,7 +19,7 @@ export async function GET(
     }
 
     const admin = await User.findById(userId);
-    if (!admin || admin.role !== "admin") {
+    if (!admin || admin.role !== "admin" && admin.role !== "superadmin") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

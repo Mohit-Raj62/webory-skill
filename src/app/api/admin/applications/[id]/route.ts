@@ -24,7 +24,7 @@ export async function PATCH(
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
 
-    if (decoded.role !== "admin") {
+    if (decoded.role !== "admin" && decoded.role !== "superadmin") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -202,7 +202,7 @@ export async function DELETE(
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
 
-    if (decoded.role !== "admin") {
+    if (decoded.role !== "admin" && decoded.role !== "superadmin") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     // Update user with new session ID
     // Using save() to ensure schema validation and bypass potential findByIdAndUpdate caching issues
     user.currentSessionId = sessionId;
-    await user.save();
+    await user.save({ validateModifiedOnly: true });
 
     console.log(
       `Login: Session ID generated and saved for user ${user._id}: ${sessionId}`,
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
         const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
         user.twoFactorEmailOtp = otp;
         user.twoFactorEmailOtpExpires = otpExpires;
-        await user.save();
+        await user.save({ validateModifiedOnly: true });
 
         const { sendEmail, emailTemplates } = await import("@/lib/mail");
         await sendEmail(

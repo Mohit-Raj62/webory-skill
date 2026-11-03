@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
   try {
     const user = await getUserFromToken(req);
     // Only teachers or admins can moderate
-    if (!user || (user.role !== "teacher" && user.role !== "admin")) {
+    if (!user || (user.role !== "admin" && user.role !== "superadmin" && user.role !== "teacher")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 

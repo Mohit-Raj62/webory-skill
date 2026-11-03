@@ -13,7 +13,7 @@ export async function adminMiddleware(request: NextRequest) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
     
     // Check if user has admin role
-    if (decoded.role !== 'admin') {
+    if (decoded.role !== 'admin' && decoded.role !== 'superadmin') {
       return NextResponse.redirect(new URL('/', request.url));
     }
 

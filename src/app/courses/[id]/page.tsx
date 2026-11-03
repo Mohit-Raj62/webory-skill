@@ -238,12 +238,12 @@ export default function CourseDetailsPage() {
 
     const handleDownloadCurriculumPdf = () => {
         if (!curriculumPdf?.fileUrl) {
-            if (user && (user.role === "admin" || user.role === "teacher")) {
+            if (user && (user.role === "admin" || user.role === "superadmin" || user.role === "teacher")) {
                 toast.info("Curriculum PDF has not been uploaded yet.", {
                     action: {
                         label: "Upload PDF",
                         onClick: () => {
-                            const editPath = user.role === "admin" 
+                            const editPath = (user.role === "admin" || user.role === "superadmin")
                                 ? `/admin/courses/${course?.slug || course?._id || id}/edit` 
                                 : `/teacher/courses/${course?.slug || course?._id || id}/edit`;
                             router.push(editPath);
@@ -447,9 +447,9 @@ export default function CourseDetailsPage() {
                                     )}
                                 </Button>
 
-                                {(user?.role === "admin" || user?.role === "teacher") && (
+                                {(user?.role === "admin" || user?.role === "superadmin" || user?.role === "teacher") && (
                                     <Link
-                                        href={user.role === "admin" ? `/admin/courses/${course.slug || course._id || id}/edit` : `/teacher/courses/${course.slug || course._id || id}/edit`}
+                                        href={(user.role === "admin" || user.role === "superadmin") ? `/admin/courses/${course.slug || course._id || id}/edit` : `/teacher/courses/${course.slug || course._id || id}/edit`}
                                         className="text-xs text-blue-400 hover:text-blue-300 underline underline-offset-4"
                                     >
                                         + Manage / Upload PDF

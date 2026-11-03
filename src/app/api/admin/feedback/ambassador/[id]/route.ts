@@ -15,7 +15,7 @@ export async function PATCH(
     const adminUserId = await getDataFromToken(request);
     const admin = await User.findById(adminUserId);
 
-    if (!admin || admin.role !== 'admin') {
+    if (!admin || admin.role !== "admin" && admin.role !== "superadmin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
@@ -55,7 +55,7 @@ export async function DELETE(
     const adminUserId = await getDataFromToken(request);
     const admin = await User.findById(adminUserId);
 
-    if (!admin || admin.role !== 'admin') {
+    if (!admin || admin.role !== "admin" && admin.role !== "superadmin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 

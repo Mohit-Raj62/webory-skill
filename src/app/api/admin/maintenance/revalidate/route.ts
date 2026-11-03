@@ -11,7 +11,7 @@ export async function POST(req: Request) {
     if (!token)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
-    if (decoded.role !== "admin")
+    if (decoded.role !== "admin" && decoded.role !== "superadmin")
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     // Revalidate critical paths

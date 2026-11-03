@@ -23,7 +23,7 @@ export async function POST() {
 
     // Verify admin role
     const user = await User.findById(decoded.userId);
-    if (!user || user.role !== "admin") {
+    if (!user || user.role !== "admin" && user.role !== "superadmin") {
       return NextResponse.json({ error: "Not authorized" }, { status: 403 });
     }
 

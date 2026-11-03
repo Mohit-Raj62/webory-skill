@@ -11,7 +11,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         const userId = await getDataFromToken(req);
         const user = await User.findById(userId);
 
-        if (!user || user.role !== 'admin') {
+        if (!user || user.role !== "admin" && user.role !== "superadmin") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
         }
 
@@ -45,7 +45,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
         const user = await User.findById(userId);
         console.log("User found:", user ? user.email : "No user", "Role:", user?.role);
 
-        if (!user || user.role !== 'admin') {
+        if (!user || user.role !== "admin" && user.role !== "superadmin") {
             console.log("Unauthorized access attempt");
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
         }
