@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import dbConnect from "@/lib/db";
 import Internship from "@/models/Internship";
+import Application from "@/models/Application";
+import User from "@/models/User";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { revalidateTag, revalidatePath } from "next/cache";
@@ -48,6 +50,7 @@ export async function PUT(
   }
 }
 
+export const dynamic = "force-dynamic";
 
 export async function GET(
   req: Request,
@@ -70,7 +73,8 @@ export async function GET(
         { $inc: { views: 1 } },
         { new: true },
       ).lean();
-    } else {
+    }
+    if (!internship) {
       internship = await Internship.findOneAndUpdate(
         { slug: internshipId },
         { $inc: { views: 1 } },
@@ -83,7 +87,64 @@ export async function GET(
     }
 
     if (!internship.isActive && !includeUnavailable) {
-      return NextResponse.json({ error: "Internship not found" }, { status: 404 });
+      let isAuthorized = false;
+
+      try {
+        const cookieStore = await cookies();
+        const cookieToken = cookieStore.get("token")?.value;
+        const authHeader = req.headers.get("authorization");
+        const bearerToken = authHeader?.startsWith("Bearer ")
+          ? authHeader.substring(7)
+          : null;
+        const token = cookieToken || bearerToken;
+
+        if (token) {
+          const decoded = jwt.verify(
+            token,
+            process.env.JWT_SECRET!,
+          ) as { userId: string };
+
+          if (decoded?.userId) {
+            // Check 1: Has user applied / enrolled in this internship?
+            const application = await Application.findOne({
+              student: decoded.userId,
+              internship: internship._id,
+            })
+              .select("_id")
+              .lean();
+
+            if (application) {
+              isAuthorized = true;
+            } else {
+              // Check 2: Admin, teacher, superadmin, or instructor
+              const user = await User.findById(decoded.userId)
+                .select("role")
+                .lean();
+
+              if (user) {
+                const isAdminOrTeacher = [
+                  "admin",
+                  "superadmin",
+                  "teacher",
+                ].includes(user.role);
+
+                const isInstructor =
+                  internship.instructor?.toString() === decoded.userId;
+
+                if (isAdminOrTeacher || isInstructor) {
+                  isAuthorized = true;
+                }
+              }
+            }
+          }
+        }
+      } catch {
+        // Token invalid or unauthenticated
+      }
+
+      if (!isAuthorized) {
+        return NextResponse.json({ error: "Internship not found" }, { status: 404 });
+      }
     }
 
     // Migration logic
@@ -100,7 +161,7 @@ export async function GET(
           videos: internship.videos,
         },
       ];
-      Internship.findByIdAndUpdate(internshipId, { modules: internship.modules })
+      Internship.findByIdAndUpdate(internship._id, { modules: internship.modules })
         .exec()
         .catch((e) => console.error(e));
     } else if (internship.modules && internship.modules.length > 0) {
@@ -110,7 +171,7 @@ export async function GET(
 
       if (JSON.stringify(internship.videos) !== JSON.stringify(flattenedVideos)) {
         internship.videos = flattenedVideos;
-        Internship.findByIdAndUpdate(internshipId, { videos: flattenedVideos })
+        Internship.findByIdAndUpdate(internship._id, { videos: flattenedVideos })
           .exec()
           .catch((e) => console.error(e));
       }

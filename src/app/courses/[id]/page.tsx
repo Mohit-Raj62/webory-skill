@@ -197,6 +197,10 @@ export default function CourseDetailsPage() {
     }, [user, course]);
 
     const handleBuyClick = () => {
+        if (isEnrolled) {
+            router.push(`/courses/${course?.slug || id}/video/0`);
+            return;
+        }
         if (!user) { router.push(`/login?redirect=/courses/${id}`); return; }
         if (course.isFree) { handlePaymentSuccess("FREE"); return; }
         setShowPayment(true);

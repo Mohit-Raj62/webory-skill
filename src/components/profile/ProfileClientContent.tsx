@@ -118,118 +118,156 @@ export function ProfileClientContent({
             <div className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600/15 via-purple-600/10 to-indigo-600/10 blur-2xl -z-10 opacity-70 group-hover:opacity-100 transition-opacity duration-700" />
                 
-                <div className="rounded-2xl border border-white/10 bg-gradient-to-b from-[#0F1426]/90 via-[#0C1020]/80 to-[#0A0D1B]/90 backdrop-blur-2xl p-4 sm:p-6 md:p-7 relative overflow-hidden shadow-2xl">
+                <div className="rounded-2xl border border-white/10 bg-gradient-to-b from-[#0F1426]/90 via-[#0C1020]/85 to-[#0A0D1B]/95 backdrop-blur-2xl p-3.5 sm:p-6 md:p-7 relative overflow-hidden shadow-2xl">
                     <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
                     
-                    {/* Top Row: Role badge on left, Prominent Sign Out Button on right */}
-                    <div className="flex items-center justify-between gap-3 mb-3.5 sm:mb-4">
-                        <div className="flex items-center gap-2">
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
-                                {user.role}
-                            </span>
-                            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-[10px] font-semibold">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                                <span>Active</span>
-                            </div>
-                        </div>
-
-                        {/* Sign Out Button (at the top on both mobile & desktop) */}
-                        <button 
-                            onClick={handleLogout} 
-                            className="h-9 sm:h-10 px-3.5 sm:px-4 rounded-xl bg-red-500/15 hover:bg-red-500 text-red-400 hover:text-white border border-red-500/30 font-bold text-xs sm:text-sm transition-all duration-200 flex items-center gap-1.5 sm:gap-2 shadow-lg shadow-red-500/10 hover:shadow-red-500/30 active:scale-95 shrink-0 cursor-pointer"
-                            title="Sign Out"
-                        >
-                            <LogOut size={15} />
-                            <span>Sign Out</span>
-                        </button>
-                    </div>
-
-                    {/* User Identity: Avatar + Name + Email */}
-                    <div className="flex items-center gap-3.5 sm:gap-5 mb-4 sm:mb-5">
-                        {/* Avatar */}
-                        <div className="relative shrink-0">
-                            <div className="w-14 h-14 sm:w-18 sm:h-18 md:w-20 md:h-20 rounded-2xl p-1 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 shadow-xl shadow-blue-500/10">
-                                <div className="w-full h-full rounded-[13px] bg-[#0A0D1B] flex items-center justify-center text-lg sm:text-2xl font-black text-white tracking-tight">
-                                    {user?.firstName?.[0] || 'U'}{user?.lastName?.[0] || ''}
+                    {/* TOP HEADER SECTION */}
+                    <div className="mb-4 sm:mb-5 pb-3.5 sm:pb-5 border-b border-white/5">
+                        {/* Mobile Top Header: Role & Status on Left, Sign Out on Right */}
+                        <div className="flex sm:hidden items-center justify-between gap-3 mb-3">
+                            <div className="flex items-center gap-2">
+                                <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-blue-500/15 border border-blue-500/30 text-blue-400 text-[11px] font-bold uppercase tracking-wider">
+                                    {user.role}
+                                </span>
+                                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-semibold">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                    <span>Active</span>
                                 </div>
                             </div>
+
+                            {/* Sign Out Button on Mobile */}
+                            <button 
+                                onClick={handleLogout} 
+                                className="h-9 px-3.5 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-red-600 hover:from-red-500 hover:to-rose-500 text-white font-bold text-xs shadow-md shadow-red-600/30 active:scale-95 transition-all flex items-center gap-1.5 border border-red-400/25 cursor-pointer"
+                                title="Sign Out"
+                            >
+                                <LogOut size={14} className="text-white shrink-0" />
+                                <span>Sign Out</span>
+                            </button>
                         </div>
 
-                        {/* Name & Email */}
-                        <div className="flex-1 min-w-0">
-                            <h1 className="text-lg sm:text-2xl md:text-3xl font-bold text-white tracking-tight truncate">
-                                {user?.firstName || 'User'} {user?.lastName || ''}
-                            </h1>
-                            <p className="text-slate-400 text-xs sm:text-sm flex items-center gap-1.5 font-medium mt-1 truncate">
-                                <Mail size={12} className="text-blue-400 shrink-0" />
-                                <span className="truncate">{user.email}</span>
-                            </p>
+                        {/* Main Identity Row */}
+                        <div className="flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-3.5 sm:gap-4.5 min-w-0 flex-1">
+                                {/* Avatar */}
+                                <div className="relative shrink-0">
+                                    <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-18 md:h-18 rounded-2xl p-1 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 shadow-xl shadow-blue-500/20">
+                                        <div className="w-full h-full rounded-[13px] bg-[#0A0D1B] flex items-center justify-center text-xl sm:text-2xl font-black text-white tracking-tight">
+                                            {user?.firstName?.[0] || 'U'}{user?.lastName?.[0] || ''}
+                                        </div>
+                                    </div>
+                                    <div className="hidden sm:flex absolute -bottom-1 -right-1 items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-[9px] font-bold backdrop-blur shadow-sm">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                        <span>Active</span>
+                                    </div>
+                                </div>
+
+                                {/* Name & Details */}
+                                <div className="min-w-0 flex-1">
+                                    <div className="flex flex-wrap items-center gap-2">
+                                        <h1 className="text-lg sm:text-2xl md:text-3xl font-black text-white tracking-tight truncate">
+                                            {user?.firstName || 'User'} {user?.lastName || ''}
+                                        </h1>
+                                        <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-md bg-blue-500/15 border border-blue-500/30 text-blue-400 text-[10px] font-bold uppercase tracking-wider">
+                                            {user.role}
+                                        </span>
+                                    </div>
+                                    <p className="text-slate-400 text-xs sm:text-sm flex items-center gap-1.5 font-medium mt-1 truncate">
+                                        <Mail size={13} className="text-blue-400 shrink-0" />
+                                        <span className="truncate">{user.email}</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Desktop Sign Out Button */}
+                            <div className="hidden sm:block shrink-0">
+                                <button 
+                                    onClick={handleLogout} 
+                                    className="h-10 px-4.5 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-red-600 hover:from-red-500 hover:to-rose-500 text-white font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-red-600/30 hover:shadow-red-500/50 active:scale-95 cursor-pointer border border-red-400/25"
+                                    title="Sign Out"
+                                >
+                                    <LogOut size={16} className="text-white shrink-0" />
+                                    <span>Sign Out</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Mini Stat Capsules */}
+                    {/* MINI STAT CAPSULES */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 mb-3.5 sm:mb-5">
-                        <div className="p-2 sm:p-2.5 rounded-xl bg-white/[0.03] border border-white/8 hover:bg-white/[0.05] transition-colors">
-                            <div className="flex items-center gap-1.5 text-slate-400 text-[11px] font-medium">
-                                <BookOpen size={12} className="text-blue-400 shrink-0" />
-                                <span>Courses</span>
+                        {/* Courses */}
+                        <div className="p-2.5 sm:p-3 rounded-xl bg-white/[0.03] border border-white/8 hover:border-blue-500/30 transition-all">
+                            <div className="flex items-center justify-between mb-1">
+                                <span className="text-slate-400 text-[11px] font-medium">Courses</span>
+                                <div className="w-5.5 h-5.5 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
+                                    <BookOpen size={12} />
+                                </div>
                             </div>
-                            <div className="text-sm sm:text-base font-bold text-white mt-0.5">{enrollments.length}</div>
+                            <div className="text-base sm:text-xl font-bold text-white tracking-tight">{enrollments.length}</div>
                         </div>
 
-                        <div className="p-2 sm:p-2.5 rounded-xl bg-white/[0.03] border border-white/8 hover:bg-white/[0.05] transition-colors">
-                            <div className="flex items-center gap-1.5 text-slate-400 text-[11px] font-medium">
-                                <Briefcase size={12} className="text-purple-400 shrink-0" />
-                                <span>Internships</span>
+                        {/* Internships */}
+                        <div className="p-2.5 sm:p-3 rounded-xl bg-white/[0.03] border border-white/8 hover:border-purple-500/30 transition-all">
+                            <div className="flex items-center justify-between mb-1">
+                                <span className="text-slate-400 text-[11px] font-medium">Internships</span>
+                                <div className="w-5.5 h-5.5 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400">
+                                    <Briefcase size={12} />
+                                </div>
                             </div>
-                            <div className="text-sm sm:text-base font-bold text-white mt-0.5">{applications.length}</div>
+                            <div className="text-base sm:text-xl font-bold text-white tracking-tight">{applications.length}</div>
                         </div>
 
-                        <div className="p-2 sm:p-2.5 rounded-xl bg-white/[0.03] border border-white/8 hover:bg-white/[0.05] transition-colors">
-                            <div className="flex items-center gap-1.5 text-slate-400 text-[11px] font-medium">
-                                <Trophy size={12} className="text-amber-400 shrink-0" />
-                                <span>Hackathons</span>
+                        {/* Hackathons */}
+                        <div className="p-2.5 sm:p-3 rounded-xl bg-white/[0.03] border border-white/8 hover:border-amber-500/30 transition-all">
+                            <div className="flex items-center justify-between mb-1">
+                                <span className="text-slate-400 text-[11px] font-medium">Hackathons</span>
+                                <div className="w-5.5 h-5.5 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400">
+                                    <Trophy size={12} />
+                                </div>
                             </div>
-                            <div className="text-sm sm:text-base font-bold text-white mt-0.5">{hackathons.length}</div>
+                            <div className="text-base sm:text-xl font-bold text-white tracking-tight">{hackathons.length}</div>
                         </div>
 
-                        <div className="p-2 sm:p-2.5 rounded-xl bg-orange-500/10 border border-orange-500/20 hover:border-orange-500/30 transition-colors">
-                            <div className="flex items-center gap-1.5 text-orange-400 text-[11px] font-medium">
-                                <Zap size={12} className="text-orange-400 shrink-0 animate-pulse" />
-                                <span>Total XP</span>
+                        {/* Total XP */}
+                        <div className="p-2.5 sm:p-3 rounded-xl bg-orange-500/10 border border-orange-500/20 hover:border-orange-500/40 transition-all">
+                            <div className="flex items-center justify-between mb-1">
+                                <span className="text-orange-400 text-[11px] font-medium">Total XP</span>
+                                <div className="w-5.5 h-5.5 rounded-lg bg-orange-500/20 flex items-center justify-center text-orange-400">
+                                    <Zap size={12} className="animate-pulse" />
+                                </div>
                             </div>
-                            <div className="text-sm sm:text-base font-bold text-white mt-0.5">{user.xp || 0}</div>
+                            <div className="text-base sm:text-xl font-bold text-white tracking-tight">{user.xp || 0}</div>
                         </div>
                     </div>
 
-                    {/* Action Buttons: 2x2 grid on mobile, flex on desktop */}
-                    <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-2.5 pt-3 border-t border-white/5">
+                    {/* ACTION BUTTONS: 2x2 ON MOBILE, 4-COLUMN ON DESKTOP */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 pt-3 border-t border-white/5">
                         <button 
                             onClick={() => router.push(`/portfolio/${user._id}`)} 
-                            className="w-full sm:w-auto h-10 px-3 sm:px-5 rounded-xl bg-white text-slate-900 hover:bg-blue-600 hover:text-white font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-1.5 sm:gap-2 shadow-md shadow-white/5 hover:shadow-blue-500/25 active:scale-95 cursor-pointer"
+                            className="h-10 px-3 sm:px-4 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-white border border-white/10 hover:border-blue-500/40 font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-1.5 sm:gap-2 active:scale-95 cursor-pointer shadow-sm"
                         >
-                            <ExternalLink size={14} />
+                            <ExternalLink size={14} className="text-blue-400" />
                             <span>Portfolio</span>
                         </button>
                         <button 
                             onClick={() => router.push('/resume')} 
-                            className="w-full sm:w-auto h-10 px-3 sm:px-5 rounded-xl bg-purple-500/15 hover:bg-purple-500 text-purple-300 hover:text-white border border-purple-500/30 font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-1.5 sm:gap-2 shadow-md shadow-purple-500/10 hover:shadow-purple-500/25 active:scale-95 cursor-pointer"
+                            className="h-10 px-3 sm:px-4 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-white border border-white/10 hover:border-purple-500/40 font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-1.5 sm:gap-2 active:scale-95 cursor-pointer shadow-sm"
                         >
                             <Briefcase size={14} className="text-purple-400" />
                             <span>My Resume</span>
                         </button>
                         <button 
                             onClick={() => router.push('/profile/edit')} 
-                            className="w-full sm:w-auto h-10 px-3 sm:px-5 rounded-xl bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-1.5 sm:gap-2 shadow-md shadow-blue-500/10 hover:shadow-blue-500/25 active:scale-95 cursor-pointer"
+                            className="h-10 px-3 sm:px-4 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-white border border-white/10 hover:border-yellow-500/40 font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-1.5 sm:gap-2 active:scale-95 cursor-pointer shadow-sm"
                         >
                             <Sparkles size={14} className="text-yellow-400" />
                             <span>Edit Info</span>
                         </button>
                         <button 
                             onClick={() => router.push('/profile/security')} 
-                            className="w-full sm:w-auto h-10 px-3 sm:px-5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white border border-white/15 font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-1.5 sm:gap-2 shadow-md shadow-black/20 active:scale-95 cursor-pointer"
+                            className="h-10 px-3 sm:px-4 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-white border border-white/10 hover:border-emerald-500/40 font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-1.5 sm:gap-2 active:scale-95 cursor-pointer shadow-sm"
                         >
-                            <Lock size={14} className="text-slate-400" />
+                            <Lock size={14} className="text-emerald-400" />
                             <span>Security</span>
                         </button>
                     </div>
@@ -240,7 +278,8 @@ export function ProfileClientContent({
             <div>
                 <div className="flex items-center justify-between mb-2.5">
                     <h2 className="text-sm sm:text-base font-bold text-white tracking-tight flex items-center gap-2">
-                        <div className="w-1 h-4 bg-blue-500 rounded-full" /> Student Hub
+                        <div className="w-1 h-4 bg-blue-500 rounded-full" />
+                        <span>Student Hub</span>
                     </h2>
                     <div className="flex items-center gap-1 text-[11px] font-medium text-slate-500">
                         <Clock size={11} /> Live Updates
@@ -255,28 +294,28 @@ export function ProfileClientContent({
                             onClick={() => setActiveTab(tab)}
                             className={`shrink-0 sm:flex-1 min-w-[85px] sm:min-w-0 px-2.5 py-1.5 rounded-lg font-medium text-xs capitalize transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
                                 activeTab === tab 
-                                    ? 'bg-white text-black shadow-md font-semibold' 
+                                    ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-semibold' 
                                     : 'text-slate-400 hover:text-white hover:bg-white/5'
                             }`}
                         >
-                            {tab === 'courses' && <BookOpen size={13} className={activeTab === tab ? 'text-blue-600' : 'text-blue-400'} />}
-                            {tab === 'internships' && <Briefcase size={13} className={activeTab === tab ? 'text-purple-600' : 'text-purple-400'} />}
-                            {tab === 'grades' && <Trophy size={13} className={activeTab === tab ? 'text-amber-600' : 'text-amber-400'} />}
-                            {tab === 'hackathons' && <Zap size={13} className={activeTab === tab ? 'text-orange-600' : 'text-orange-400'} />}
-                            {tab === 'privacy' && <Lock size={13} className={activeTab === tab ? 'text-slate-800' : 'text-slate-400'} />}
+                            {tab === 'courses' && <BookOpen size={13} className={activeTab === tab ? 'text-white' : 'text-blue-400'} />}
+                            {tab === 'internships' && <Briefcase size={13} className={activeTab === tab ? 'text-white' : 'text-purple-400'} />}
+                            {tab === 'grades' && <Trophy size={13} className={activeTab === tab ? 'text-white' : 'text-amber-400'} />}
+                            {tab === 'hackathons' && <Zap size={13} className={activeTab === tab ? 'text-white' : 'text-orange-400'} />}
+                            {tab === 'privacy' && <Lock size={13} className={activeTab === tab ? 'text-white' : 'text-slate-400'} />}
                             <span>{tab}</span>
                             {tab === 'courses' && enrollments.length > 0 && (
-                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-semibold ${activeTab === tab ? 'bg-black/10 text-black' : 'bg-white/10 text-slate-300'}`}>
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${activeTab === tab ? 'bg-white/20 text-white' : 'bg-white/10 text-slate-300'}`}>
                                     {enrollments.length}
                                 </span>
                             )}
                             {tab === 'internships' && applications.length > 0 && (
-                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-semibold ${activeTab === tab ? 'bg-black/10 text-black' : 'bg-white/10 text-slate-300'}`}>
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${activeTab === tab ? 'bg-white/20 text-white' : 'bg-white/10 text-slate-300'}`}>
                                     {applications.length}
                                 </span>
                             )}
                             {tab === 'hackathons' && hackathons.length > 0 && (
-                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-semibold ${activeTab === tab ? 'bg-black/10 text-black' : 'bg-white/10 text-slate-300'}`}>
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${activeTab === tab ? 'bg-white/20 text-white' : 'bg-white/10 text-slate-300'}`}>
                                     {hackathons.length}
                                 </span>
                             )}
@@ -333,7 +372,8 @@ export function ProfileClientContent({
                 <div className="relative group">
                     <div className="flex items-center justify-between mb-2.5">
                         <h2 className="text-sm sm:text-base font-bold text-white tracking-tight flex items-center gap-2">
-                            <BookOpen className="text-blue-400" size={15} /> Enrolled Courses
+                            <BookOpen className="text-blue-400" size={16} />
+                            <span>Enrolled Courses</span>
                         </h2>
                         <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
                             {enrollments.length} Active
@@ -402,7 +442,7 @@ export function ProfileClientContent({
                                     <div className="flex gap-2 w-full pt-0.5">
                                         <button 
                                             onClick={() => handleDownloadInvoice(enrollment, 'course')}
-                                            className="flex-1 h-8 flex items-center justify-center gap-1.5 bg-white/5 hover:bg-white/10 border border-white/8 text-slate-300 hover:text-white rounded-lg text-xs font-medium transition-all cursor-pointer"
+                                            className="flex-1 h-8 flex items-center justify-center gap-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white rounded-lg text-xs font-medium transition-all cursor-pointer"
                                         >
                                             <Download size={11} className="text-slate-400" /> Invoice
                                         </button>
@@ -433,7 +473,8 @@ export function ProfileClientContent({
                 <div className="relative group">
                     <div className="flex items-center justify-between mb-2.5">
                         <h2 className="text-sm sm:text-base font-bold text-white tracking-tight flex items-center gap-2">
-                            <Briefcase className="text-purple-400" size={15} /> Internship Desk
+                            <Briefcase className="text-purple-400" size={16} />
+                            <span>Internship Desk</span>
                         </h2>
                         <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20">
                             {applications.length} Applications
@@ -487,61 +528,61 @@ export function ProfileClientContent({
                                     </div>
 
                                     {/* Action Buttons */}
-                                    <div className="flex flex-wrap gap-1.5 items-center pt-2 border-t border-white/5">
+                                    <div className="flex flex-wrap gap-2 items-center pt-3 border-t border-white/5">
                                         {app.status === 'pending' && (app.internship?.price || 0) > 0 && !(app.transactionId && !app.transactionId.startsWith('PENDING_') && (app.amountPaid || 0) > 0) && (
-                                            <button onClick={() => setPaymentModalData(app)} className="h-7.5 px-2.5 flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 rounded-lg text-[10px] font-semibold uppercase tracking-wider text-white transition-all shadow-sm shadow-orange-500/20 cursor-pointer">
-                                                <CreditCard size={10} /> Pay Now
+                                            <button onClick={() => setPaymentModalData(app)} className="h-9 px-3.5 flex items-center gap-1.5 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 rounded-xl text-xs font-bold uppercase tracking-wide text-white transition-all shadow-md shadow-orange-500/25 active:scale-95 cursor-pointer">
+                                                <CreditCard size={14} /> Pay Now
                                             </button>
                                         )}
                                         {app.resume && app.resume !== "Pending Upload" ? (
                                             <>
-                                                <a href={app.resume} target="_blank" rel="noopener noreferrer" className="h-7.5 px-2.5 flex items-center gap-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-[10px] font-medium text-slate-300 transition-all border border-white/8 shadow-sm">
-                                                    <FileText size={10} className="text-blue-400" /> Resume
+                                                <a href={app.resume} target="_blank" rel="noopener noreferrer" className="h-9 px-3.5 flex items-center gap-1.5 bg-white/[0.06] hover:bg-white/[0.12] rounded-xl text-xs font-semibold text-slate-200 hover:text-white transition-all border border-white/10 shadow-sm active:scale-95">
+                                                    <FileText size={14} className="text-blue-400" /> Resume
                                                 </a>
                                                 <input type="file" id={`resume-reupload-${app._id}`} className="hidden" accept=".pdf,.doc,.docx" onChange={(e) => handleFileUpload(e, app._id)} />
-                                                <label htmlFor={`resume-reupload-${app._id}`} className="h-7.5 px-2.5 flex items-center gap-1.5 bg-orange-500/10 hover:bg-orange-500/20 rounded-lg text-[10px] font-medium text-orange-400 transition-all border border-orange-500/20 cursor-pointer">
-                                                    {uploadingAppId === app._id ? <Clock size={10} className="animate-spin" /> : <Upload size={10} />}
+                                                <label htmlFor={`resume-reupload-${app._id}`} className="h-9 px-3.5 flex items-center gap-1.5 bg-orange-500/15 hover:bg-orange-500/25 rounded-xl text-xs font-semibold text-orange-300 hover:text-orange-200 transition-all border border-orange-500/30 cursor-pointer active:scale-95">
+                                                    {uploadingAppId === app._id ? <Clock size={14} className="animate-spin" /> : <Upload size={14} />}
                                                     {uploadingAppId === app._id ? "Uploading..." : "Re-upload"}
                                                 </label>
                                             </>
                                         ) : (
                                             <>
                                                 <input type="file" id={`resume-upload-${app._id}`} className="hidden" accept=".pdf,.doc,.docx" onChange={(e) => handleFileUpload(e, app._id)} />
-                                                <label htmlFor={`resume-upload-${app._id}`} className="h-7.5 px-2.5 flex items-center gap-1.5 bg-blue-500/10 hover:bg-blue-500/20 rounded-lg text-[10px] font-medium text-blue-400 transition-all border border-blue-500/20 cursor-pointer">
-                                                    {uploadingAppId === app._id ? <Clock size={10} className="animate-spin" /> : <Upload size={10} />}
+                                                <label htmlFor={`resume-upload-${app._id}`} className="h-9 px-3.5 flex items-center gap-1.5 bg-blue-500/15 hover:bg-blue-500/25 rounded-xl text-xs font-semibold text-blue-300 hover:text-blue-200 transition-all border border-blue-500/30 cursor-pointer active:scale-95">
+                                                    {uploadingAppId === app._id ? <Clock size={14} className="animate-spin" /> : <Upload size={14} />}
                                                     {uploadingAppId === app._id ? "Uploading..." : "Upload CV"}
                                                 </label>
                                             </>
                                         )}
                                         {app.status === 'interview_scheduled' && (
-                                            <button onClick={() => window.location.href = `/api/live/join-interview?applicationId=${app._id}`} className="h-7.5 px-2.5 bg-emerald-500 text-white rounded-lg text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1.5 shadow-sm shadow-emerald-500/20 cursor-pointer">
-                                                <Video size={10} /> Join Call
+                                            <button onClick={() => window.location.href = `/api/live/join-interview?applicationId=${app._id}`} className="h-9 px-3.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold uppercase tracking-wide flex items-center gap-1.5 shadow-md shadow-emerald-600/25 active:scale-95 cursor-pointer">
+                                                <Video size={14} /> Join Call
                                             </button>
                                         )}
                                         {(app.status !== 'pending' && app.status !== 'rejected') && (
                                             <>
-                                                <button onClick={() => app.internship?._id && router.push(`/internships/${app.internship.slug || app.internship._id}`)} className="h-7.5 px-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1.5 shadow-sm shadow-blue-600/20 cursor-pointer">
-                                                    <PlayCircle size={10} /> Content
+                                                <button onClick={() => app.internship?._id && router.push(`/internships/${app.internship.slug || app.internship._id}`)} className="h-9 px-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-blue-600/25 active:scale-95 cursor-pointer">
+                                                    <PlayCircle size={14} /> Content
                                                 </button>
-                                                <button onClick={() => app.internship?._id && router.push(`/internships/${app.internship.slug || app.internship._id}/tasks`)} className="h-7.5 px-2.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1.5 shadow-sm shadow-purple-500/20 cursor-pointer">
-                                                    <FileText size={10} /> Tasks
+                                                <button onClick={() => app.internship?._id && router.push(`/internships/${app.internship.slug || app.internship._id}/tasks`)} className="h-9 px-3.5 bg-purple-600/20 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/30 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm active:scale-95 cursor-pointer">
+                                                    <FileText size={14} /> Tasks
                                                 </button>
                                                 {(app.amountPaid > 0) && (
                                                     <button 
                                                         onClick={() => handleDownloadInvoice(app, 'internship')}
-                                                        className="h-7.5 px-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 rounded-lg text-[10px] font-medium flex items-center gap-1.5 transition-all cursor-pointer"
+                                                        className="h-9 px-3.5 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 hover:text-emerald-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer active:scale-95"
                                                     >
-                                                        <Download size={10} /> Invoice
+                                                        <Download size={14} /> Invoice
                                                     </button>
                                                 )}
                                                 {(app.status === 'accepted' || app.status === 'completed') && (
-                                                    <button onClick={() => router.push(`/internships/${app.internship?.slug || app.internship?._id}/offer-letter`)} className="h-7.5 px-2.5 bg-white/5 hover:bg-white/10 border border-white/8 text-emerald-400 rounded-lg text-[10px] font-medium flex items-center gap-1.5 cursor-pointer">
-                                                        📄 Offer
+                                                    <button onClick={() => router.push(`/internships/${app.internship?.slug || app.internship?._id}/offer-letter`)} className="h-9 px-3.5 bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-emerald-400 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer active:scale-95">
+                                                        📄 Offer Letter
                                                     </button>
                                                 )}
                                                 {app.status === 'completed' && (
-                                                    <button onClick={() => router.push(`/internships/${app.internship?.slug || app.internship?._id}/certificate`)} className="h-7.5 px-2.5 bg-blue-500 text-white rounded-lg text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1.5 shadow-sm shadow-blue-500/20 cursor-pointer">
-                                                        🎓 Cert
+                                                    <button onClick={() => router.push(`/internships/${app.internship?.slug || app.internship?._id}/certificate`)} className="h-9 px-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold uppercase tracking-wide flex items-center gap-1.5 shadow-md shadow-blue-600/25 cursor-pointer active:scale-95">
+                                                        🎓 Certificate
                                                     </button>
                                                 )}
                                             </>
