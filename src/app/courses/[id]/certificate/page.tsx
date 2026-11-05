@@ -121,23 +121,23 @@ export default function CertificatePage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 flex flex-col items-center py-8 px-4 print:p-0 print:bg-white print:overflow-hidden">
+        <div className="certificate-page-root min-h-screen bg-gray-100 flex flex-col items-center py-6 sm:py-8 px-2 sm:px-4 print:p-0 print:m-0 print:bg-white print:overflow-visible">
             {/* Controls */}
-            <div className="w-full max-w-[297mm] flex justify-between items-center mb-8 print:hidden">
-                <Button variant="ghost" onClick={() => router.back()} className="text-gray-600 hover:text-gray-900">
-                    <ArrowLeft className="mr-2" size={20} />
+            <div className="w-full max-w-[1122px] flex justify-between items-center mb-6 print:hidden">
+                <Button variant="ghost" onClick={() => router.back()} className="text-gray-600 hover:text-gray-900 text-xs sm:text-sm">
+                    <ArrowLeft className="mr-1.5 sm:mr-2" size={18} />
                     Back to Course
                 </Button>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-2 sm:gap-3">
                     <Button 
                         onClick={handleDownloadPDF} 
                         disabled={downloadingPdf}
-                        className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold uppercase tracking-wider text-xs px-5 h-10 shadow-md"
+                        className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold uppercase tracking-wider text-xs px-3 sm:px-5 h-9 sm:h-10 shadow-md"
                     >
-                        <Download className="mr-2 h-4 w-4" /> {downloadingPdf ? "Generating PDF..." : "Download PDF"}
+                        <Download className="mr-1.5 sm:mr-2 h-4 w-4" /> {downloadingPdf ? "Generating PDF..." : "Download PDF"}
                     </Button>
-                    <Button onClick={() => window.print()} variant="outline" className="bg-white hover:bg-gray-50 text-gray-800 text-xs px-4 h-10 border-gray-300">
-                        <Printer className="mr-2 h-4 w-4" /> Print
+                    <Button onClick={() => window.print()} variant="outline" className="bg-white hover:bg-gray-50 text-gray-800 text-xs px-3 sm:px-4 h-9 sm:h-10 border-gray-300">
+                        <Printer className="mr-1.5 sm:mr-2 h-4 w-4" /> Print
                     </Button>
                 </div>
             </div>
@@ -154,85 +154,65 @@ export default function CertificatePage() {
                 signatures={course?.signatures}
             />
 
-            <style jsx global>{`
+            {/* Print Styles - EXACT same bulletproof A4 landscape engine */}
+            <style dangerouslySetInnerHTML={{ __html: `
                 @media print {
-                    @page {
-                        size: landscape;
-                        margin: 0;
-                    }
-                    body {
-                        visibility: hidden;
-                        -webkit-print-color-adjust: exact;
-                        print-color-adjust: exact;
-                        background: white;
-                        margin: 0;
-                        padding: 0;
+                    @page { 
+                        size: A4 landscape; 
+                        margin: 0; 
                     }
                     html, body {
-                        width: 100%;
-                        height: 100%;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        height: 100% !important;
+                        width: 100% !important;
+                        overflow: hidden !important;
+                        background: white !important;
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                    }
+                    body {
+                        visibility: hidden !important;
+                    }
+                    #certificate-container, 
+                    #certificate-container * {
+                        visibility: visible !important;
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                    }
+                    #certificate-container {
+                        position: fixed !important;
+                        top: 0 !important;
+                        left: 0 !important;
+                        width: 297mm !important;
+                        height: 210mm !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        z-index: 99999999 !important;
+                        background: #fafaf8 !important;
+                        transform: none !important;
+                        -webkit-transform: none !important;
+                        page-break-after: avoid !important;
+                        break-after: avoid !important;
+                        visibility: visible !important;
+                    }
+                    /* Ensure parents are not display:none but content is hidden */
+                    main, .container, .motion-wrapper, .certificate-wrapper, .certificate-page-root, body > div {
+                        display: block !important;
+                        visibility: hidden !important;
+                        position: static !important;
+                        height: auto !important;
+                        width: auto !important;
                         margin: 0 !important;
                         padding: 0 !important;
                         overflow: visible !important;
                     }
-                    .certificate-wrapper {
-                        width: 1122px !important;
-                        height: 794px !important;
-                        max-width: none !important;
-                        overflow: visible !important;
-                        margin: 0 auto !important;
-                    }
-                    #certificate-container {
-                        visibility: visible;
-                        position: relative !important;
-                        left: auto !important;
-                        top: auto !important;
-                        margin: 0 auto !important;
-                        padding: 0 !important;
-                        z-index: 9999;
-                        overflow: hidden;
-                        box-shadow: none;
-                        background: white;
-                        border: none;
-                        width: 1122px !important;
-                        height: 794px !important;
-                        transform-origin: top center !important;
-                    }
-                    @media print and (orientation: portrait) {
-                         @page {
-                            size: portrait;
-                            margin: 0;
-                        }
-                        .certificate-wrapper {
-                            width: 100% !important;
-                            height: auto !important;
-                        }
-                        #certificate-container {
-                            transform: scale(0.68) !important;
-                            transform-origin: top center !important;
-                            left: 0 !important;
-                            right: 0 !important;
-                            margin: 30px auto 0 auto !important;
-                        }
-                    }
-                    @media print and (orientation: landscape) {
-                        @page { 
-                            size: landscape; 
-                            margin: 0;
-                        }
-                        #certificate-container {
-                            transform: scale(0.98) !important;
-                            transform-origin: top center !important;
-                            left: 0 !important;
-                            right: 0 !important;
-                            margin: 0 auto !important;
-                        }
-                    }
-                    #certificate-container * {
-                        visibility: visible;
+                    /* Force hide other specific non-parents */
+                    navbar, footer, .print\\:hidden, button {
+                        display: none !important;
                     }
                 }
-            `}</style>
+            ` }} />
         </div>
     );
 }

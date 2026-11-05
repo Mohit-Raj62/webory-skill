@@ -264,9 +264,7 @@ export const CertificateModal = ({ isOpen, onClose, reward, stats, user }: Certi
                         {/* CEO Signature (Right) */}
                         <div className="text-center w-72 mb-4">
                             <div className="h-16 flex items-end justify-center mb-1">
-                                <span className="font-signature text-4xl text-[#1a237e] opacity-90 drop-shadow-sm transform rotate-1 select-none">
-                                    Mohit Sinha
-                                </span>
+                                <img src="/signatures/mohit-sinha-signature.png" alt="Mohit Sinha" className="h-14 w-auto max-w-[180px] object-contain select-none pointer-events-none" />
                             </div>
                             <div className="w-full h-[1.5px] bg-[#c5a059]/40 mb-2 max-w-[160px] mx-auto"></div>
                             <p className="text-[10px] text-[#1a237e] font-black uppercase tracking-[0.2em]">CEO & Founder</p>
@@ -371,3 +369,4 @@ export const CertificateModal = ({ isOpen, onClose, reward, stats, user }: Certi
     </div>
   );
 };
+

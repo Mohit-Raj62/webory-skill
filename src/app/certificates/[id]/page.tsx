@@ -61,10 +61,24 @@ const getCachedCertificate = unstable_cache(
             }
         }
 
+        // Sanitize project name, description & security key
+        if (certificate) {
+            if (!certificate.projectName || certificate.projectName.includes("node_modules") || certificate.projectName.includes("DEBUG_") || certificate.projectName.includes("@sentry") || certificate.projectName.length > 70) {
+                certificate.projectName = "CyberSentinel AI – Threat Detection & Analytics";
+            }
+            if (!certificate.description || certificate.description.includes("node_modules") || certificate.description.includes("DEBUG_")) {
+                certificate.description = `Awarded for Outstanding performance in the ${certificate.hackathonTitle || "Webory Hackathon"}. Project: ${certificate.projectName}`;
+            }
+            if (certificate.certificateKey && (certificate.certificateKey.length > 16 || certificate.certificateKey.startsWith("#"))) {
+                const cleanKey = certificate.certificateKey.replace(/^#/, '');
+                certificate.certificateKey = `SEC-${cleanKey.slice(0, 4).toUpperCase()}-${cleanKey.slice(-4).toUpperCase()}`;
+            }
+        }
+
         return JSON.parse(JSON.stringify(certificate));
     },
-    ['public-certificate'],
-    { revalidate: 3600, tags: ['certificates'] }
+    ['public-certificate-v4'],
+    { revalidate: 10, tags: ['certificates'] }
 );
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {

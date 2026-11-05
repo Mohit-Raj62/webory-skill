@@ -1,6 +1,5 @@
 "use client";
 
-import { Award, Clock, CalendarDays } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { useEffect, useState, useRef } from "react";
 
@@ -12,303 +11,333 @@ interface HackathonCertificateProps {
   endDate?: string;
   certificateId?: string;
   certificateKey?: string;
+  type?: "winner" | "participant" | string;
+  rank?: number;
+  awardTitle?: string;
+  projectName?: string;
   collaborations?: { name: string, logo?: string }[];
   signatures?: {
-    founder?: { name: string, title: string },
-    director?: { name: string, title: string, credential?: string },
-    partner?: { name: string, title: string },
+    founder?: { name?: string, title?: string, image?: string },
+    director?: { name?: string, title?: string, credential?: string, image?: string },
+    partner?: { name?: string, title?: string, image?: string },
   };
 }
 
 export default function HackathonCertificate({
-  studentName = "Student Name",
-  hackathonName = "Hackathon Name",
-  duration = "N/A",
-  startDate = "N/A",
-  endDate = "N/A",
-  certificateId = "",
+  studentName = "Mohit Raj",
+  hackathonName = "National AI & Web3 Innovation Hackathon",
+  duration = "48 Hours",
+  startDate = "11 Aug 2026",
+  endDate = "09 Oct 2026",
+  certificateId = "WS/HCK/2026/08437",
   certificateKey = "",
+  type = "participant",
+  rank,
+  awardTitle,
+  projectName,
   collaborations,
   signatures
 }: HackathonCertificateProps) {
-  const [isMobile, setIsMobile] = useState(false);
+  const [scale, setScale] = useState(1);
+  const [mounted, setMounted] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    setMounted(true);
+    const updateSize = () => {
+      if (typeof window !== "undefined") {
+        const availableWidth = window.innerWidth - 32;
+        if (availableWidth < 1122) {
+          setScale(Math.max(0.2, availableWidth / 1122));
+        } else {
+          setScale(1);
+        }
+      }
+    };
+
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    window.addEventListener("orientationchange", updateSize);
+    return () => {
+      window.removeEventListener("resize", updateSize);
+      window.removeEventListener("orientationchange", updateSize);
+    };
   }, []);
 
-  let collabs = collaborations || [];
+  const collabs = collaborations || [];
+  const hasDirector = Boolean(signatures?.director?.name?.trim());
+  const hasPartner = Boolean(signatures?.partner?.name?.trim());
+
+  const renderedWidth = mounted && scale < 1 ? Math.round(1122 * scale) : 1122;
+  const renderedHeight = mounted && scale < 1 ? Math.round(794 * scale) : 794;
   
   return (
     <div 
-        className="certificate-wrapper relative mx-auto overflow-hidden shadow-2xl print:shadow-none print:!overflow-visible print:!w-[1122px] print:!h-[794px] print:!max-w-none"
+        className="certificate-wrapper relative mx-auto overflow-hidden shadow-2xl print:shadow-none print:!overflow-visible print:!w-[1122px] print:!h-[794px] print:!max-w-none print:!m-0 print:!p-0"
         ref={wrapperRef}
         style={{
-            width: isMobile ? window.innerWidth - 32 : '297mm',
-            height: isMobile ? (window.innerWidth - 32) * (210/297) : '210mm',
+            width: mounted && scale < 1 ? `${renderedWidth}px` : "1122px",
+            maxWidth: "100%",
+            height: mounted && scale < 1 ? `${renderedHeight}px` : "794px",
+            touchAction: "pan-y",
         }}
     >
         <div 
             id="certificate-container"
             style={{
-                width: '1122px',
-                height: '794px',
-                transform: isMobile ? `scale(${(window.innerWidth - 32) / 1122})` : 'none',
-                transformOrigin: 'top left',
+                width: "1122px",
+                height: "794px",
+                transform: mounted && scale < 1 ? `scale(${scale})` : "none",
+                transformOrigin: "top left",
+                WebkitTransform: mounted && scale < 1 ? `scale(${scale})` : "none",
+                WebkitTransformOrigin: "top left",
             }}
-            className="bg-white text-black relative print:transform-none print:w-full print:h-full"
+            className="bg-[#fafaf8] text-black relative print:!transform-none print:!w-full print:!h-full overflow-hidden select-none font-sans"
         >
-            {/* Outer Border */}
-            <div className="absolute inset-0 p-[12px]">
-                <div className="w-full h-full border-[12px] border-double border-[#1a237e] relative">
-                    {/* Inner Ornamental Border */}
-                    <div className="absolute inset-1 border border-[#c5a059]"></div>
-                    <div className="absolute inset-3 border-2 border-[#1a237e]"></div>
+            {/* Pristine Clean Base Template (Border, Floral Divider, Laurel Wreath, Building Sketch & Signature Underline) */}
+            <img 
+                src="/assets/certificate-clean-format.png" 
+                alt="Certificate Template" 
+                className="absolute inset-0 w-[1122px] h-[794px] object-cover pointer-events-none z-0"
+            />
 
-                    {/* Corner Ornaments */}
-                    <div className="absolute top-0 left-0 w-24 h-24 border-t-[12px] border-l-[12px] border-[#c5a059] rounded-tl-sm"></div>
-                    <div className="absolute top-0 right-0 w-24 h-24 border-t-[12px] border-r-[12px] border-[#c5a059] rounded-tr-sm"></div>
-                    <div className="absolute bottom-0 left-0 w-24 h-24 border-b-[12px] border-l-[12px] border-[#c5a059] rounded-bl-sm"></div>
-                    <div className="absolute bottom-0 right-0 w-24 h-24 border-b-[12px] border-r-[12px] border-[#c5a059] rounded-br-sm"></div>
-                </div>
-            </div>
-
-            {/* Watermark */}
-            <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none z-0">
-                <Award size={600} />
-            </div>
-
-            {/* Content */}
-            <div className="relative z-10 h-full flex flex-col items-center justify-between pt-12 pb-6 px-20">
-                
-                {/* Header */}
-                <div className="text-center w-full">
-                    <div className="flex items-center justify-center gap-6 mb-2">
-                        <Award className="text-[#c5a059]" size={42} />
-                        <div className="text-left">
-                            <h2 className="text-3xl font-bold text-[#1a237e] tracking-wide uppercase font-serif leading-none">
-                                WEBORY <span className="relative inline-block ml-2">
-                                    <span className="absolute -top-1.5 left-[30%] -translate-x-1/2 flex gap-1">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-[#FF9933]"></span>
-                                        <span className="w-1.5 h-1.5 rounded-full bg-white border border-gray-200"></span>
-                                        <span className="w-1.5 h-1.5 rounded-full bg-[#138808]"></span>
-                                    </span>
-                                    SKILLS
-                                </span>
-                            </h2>
-                            <p className="text-sm text-[#c5a059] tracking-[0.2em] uppercase mt-1">Excellence in Education</p>
-                        </div>
-                        
-                        {/* MSME Details */}
-                        <div className="flex flex-col items-start border-l border-gray-200 pl-4 py-1 ml-2">
-                            <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wide leading-tight">Govt. Recognized Startup</p>
-                            <p className="text-[8px] text-[#c5a056] font-bold font-mono tracking-wider mt-0.5">MSME: UDYAM-BR-26-0208472</p>
-                        </div>
-                    </div>
-
-                    {/* Collaborations Section */}
-                    {collabs.length > 0 && (
-                        <div className="flex items-center justify-center mb-2 px-12">
-                            <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent flex-1 max-w-[100px]"></div>
-                            <div className="flex items-center mx-3">
-                                <p className="text-[9px] text-gray-400 font-black uppercase tracking-[0.2em]">In Association With</p>
-                                <div className="h-4 w-px bg-[#c5a059]/40 ml-3"></div>
-                            </div>
-                            <div className="flex flex-wrap items-center justify-center">
-                                {collabs.map((collab: any, index: number) => (
-                                    <div key={index} className="flex items-center mx-2">
-                                        {index > 0 && <span className="text-[#c5a059]/40 font-light mr-2 text-[10px]">|</span>}
-                                        <div className="flex items-center">
-                                            {collab.logo && <img src={collab.logo} alt={collab.name} className="h-5 object-contain grayscale opacity-80 mr-1.5" />}
-                                            <p className="text-[10px] text-[#1a237e] font-black font-serif tracking-widest uppercase">{collab.name}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent flex-1 max-w-[100px]"></div>
+            {/* Left Body: Seamless Transparent QR Code & Verification Details (Enlarged size, stacked vertically) */}
+            <div className="absolute left-[88px] top-[270px] z-10 flex flex-col items-center text-center bg-transparent w-[130px]">
+                <div className="shrink-0 bg-transparent mb-1.5">
+                    {certificateId ? (
+                        <QRCodeSVG 
+                            value={`${process.env.NEXT_PUBLIC_APP_URL || 'https://weboryskills.in'}/verify-certificate/${certificateId}`}
+                            size={102}
+                            level="H"
+                            bgColor="transparent"
+                            fgColor="#0b1c3d"
+                        />
+                    ) : (
+                        <div className="w-[102px] h-[102px] flex items-center justify-center text-[10px] text-gray-400">
+                            Verifying...
                         </div>
                     )}
-
-                    <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-[#1a237e] to-transparent mb-2.5 opacity-30"></div>
-
-                    <h1 className="text-5xl font-serif font-bold text-[#1a237e] mb-1.5 tracking-tight leading-tight certificate-title">
-                        Certificate of Completion
-                    </h1>
-                    <p className="text-lg text-gray-500 italic font-serif leading-normal">This is to certify that</p>
                 </div>
 
-                {/* Recipient */}
-                <div className="text-center w-full my-1.5">
-                    <h2 className="text-5xl font-serif font-bold text-[#1a237e] px-8 py-1.5 inline-block border-b-2 border-[#c5a059] min-w-[400px] capitalize leading-snug">
-                        {studentName}
-                    </h2>
-                </div>
-
-                {/* Course Details */}
-                <div className="text-center w-full">
-                    <p className="text-lg text-gray-600 font-serif mb-1 leading-normal">
-                        has successfully participated in and completed the
+                <p className="text-[11px] font-bold text-[#111827] tracking-wider uppercase leading-tight">
+                    Scan to Verify
+                </p>
+                <p className="text-[10px] font-mono font-bold text-gray-800 leading-tight mt-0.5">
+                    ID: <span className="font-extrabold text-[#0b1c3d]">{certificateId || "WS/HCK/2026/08437"}</span>
+                </p>
+                {certificateKey && (
+                    <p className="text-[8.5px] font-mono text-gray-500 leading-none mt-0.5">
+                        Key: <span className="font-bold text-gray-700">{certificateKey.length > 16 ? `SEC-${certificateKey.slice(0, 4).toUpperCase()}-${certificateKey.slice(-4).toUpperCase()}` : certificateKey}</span>
                     </p>
-                    <h3 className="text-4xl font-bold text-black font-serif tracking-wide mb-3 leading-tight">
-                        {hackathonName}
-                    </h3>
+                )}
+            </div>
 
-                    <div className="flex justify-center items-center mb-2.5 border-y border-gray-200 py-2 mx-10">
-                        {/* Duration */}
-                        <div className="flex flex-col items-center px-8">
-                            <div className="flex items-center text-gray-500 mb-1">
-                                <Clock size={14} className="mr-1.5" />
-                                <span className="text-[10px] uppercase tracking-widest font-semibold">Duration</span>
-                            </div>
-                            <span className="font-sans text-base font-bold text-[#1a237e] tracking-wide leading-tight">{duration}</span>
-                        </div>
-
-                        {/* Joining Date */}
-                        <div className="flex flex-col items-center px-8 border-l border-gray-200">
-                            <div className="flex items-center text-gray-500 mb-1">
-                                <CalendarDays size={14} className="mr-1.5" />
-                                <span className="text-[10px] uppercase tracking-widest font-semibold">Started</span>
-                            </div>
-                            <span className="font-sans text-base font-bold text-[#1a237e] tracking-wide leading-tight">
-                                {startDate}
+            {/* Top Header: Brand Identity & MSME Recognition (Slightly reduced for balanced hierarchy) */}
+            <div className="absolute top-[82px] left-0 right-0 flex items-center justify-center z-10 px-8 pointer-events-none">
+                {/* Brand Typography */}
+                <div className="flex flex-col text-left pointer-events-auto">
+                    <div className="flex items-center">
+                        <span className="text-[31px] font-bold text-[#0b1c3d] tracking-wide font-serif leading-none">
+                            WEBORY
+                        </span>
+                        <span className="text-[31px] font-bold text-[#0b1c3d] tracking-wide font-serif leading-none ml-2 relative">
+                            {/* Indian Tricolor Dots above the I of SKILLS */}
+                            <span className="absolute -top-3 left-[58%] -translate-x-1/2 flex gap-1">
+                                <span className="w-2 h-2 rounded-full bg-[#FF9933] shadow-sm"></span>
+                                <span className="w-2 h-2 rounded-full bg-white border border-gray-300 shadow-sm"></span>
+                                <span className="w-2 h-2 rounded-full bg-[#138808] shadow-sm"></span>
                             </span>
-                        </div>
-
-                        {/* Date Issued */}
-                        <div className="flex flex-col items-center px-8 border-l border-gray-200">
-                            <div className="flex items-center text-gray-500 mb-1">
-                                <Award size={14} className="mr-1.5" />
-                                <span className="text-[10px] uppercase tracking-widest font-semibold">Completed</span>
-                            </div>
-                            <span className="font-sans text-base font-bold text-[#1a237e] tracking-wide leading-tight">
-                                {endDate}
-                            </span>
-                        </div>
+                            SKILLS
+                        </span>
                     </div>
-                   
-                    <p className="text-lg text-gray-600 font-serif max-w-2xl mx-auto leading-normal">
-                        demonstrating proficiency and dedication to excellence.
+                    <p className="text-[10.5px] font-bold text-[#c5a059] tracking-[0.26em] uppercase mt-1.5 leading-none">
+                        Excellence in Education
                     </p>
                 </div>
 
-                {/* Footer / Signatures */}
-                <div className="w-full relative mt-1 mb-2">
-                    {/* Seal with QR Code - Centered Top */}
-                    <div className="flex flex-col items-center justify-center mb-3">
-                        <div className="relative w-20 h-20 flex items-center justify-center mb-1">
-                            <div className="absolute inset-0 border-4 border-[#c5a059] border-dashed rounded-full opacity-25"></div>
-                            <div className="bg-white p-1 rounded-lg shadow-sm border border-[#c5a059]/30">
-                            {certificateId ? (
-                                <QRCodeSVG 
-                                    value={`${process.env.NEXT_PUBLIC_APP_URL || 'https://weboryskills.in'}/verify-certificate/${certificateId}`}
-                                    size={72}
-                                    level="H"
-                                />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-gray-50 text-[10px] text-gray-400 text-center leading-tight p-2">
-                                    Verifying...
-                                </div>
-                            )}
-                            </div>
-                        </div>
-                        <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold leading-normal">
-                            {certificateId ? "Scan to Verify" : "Generating ID..."}
-                        </p>
+                {/* Vertical Divider */}
+                <div className="h-10 w-[1.5px] bg-[#94a3b8] mx-6 shrink-0 pointer-events-auto"></div>
 
-                        {/* Security Key - QR ke paas */}
-                        {certificateKey && (
-                            <p className="text-[9px] font-mono text-gray-600 font-semibold tracking-wider mt-0.5 leading-normal">
-                                Security Key: <span className="text-gray-900 font-bold">{certificateKey}</span>
-                            </p>
-                        )}
-
-                        <p className="text-[8px] text-[#2e7d32] font-bold uppercase tracking-widest mt-0.5 leading-normal">Govt. Recognized</p>
-                    </div>
-
-                    {/* Signatures Row */}
-                    <div className="w-full flex justify-between items-start px-12 relative z-20">
-                        {/* Signature 1 (Left) - Founder */}
-                        <div className="text-center w-64 flex flex-col items-center">
-                            <div className="h-14 flex items-center justify-center mb-1">
-                                <span className="font-signature text-4xl text-[#1a237e] whitespace-nowrap px-2 leading-none">
-                                    {signatures?.founder?.name || "Mohit Sinha"}
-                                </span>
-                            </div>
-                            <div className="min-h-[36px] flex flex-col justify-start">
-                                <p className="text-xs text-gray-600 font-bold uppercase tracking-widest leading-normal">{signatures?.founder?.title || "Founder & CEO, Weboryskill"}</p>
-                            </div>
-                        </div>
-
-                        {/* Signature 3 (Partner) - Only if collaboration */}
-                        {signatures?.partner?.name?.trim() && (
-                            <div className="text-center w-64 flex flex-col items-center">
-                                <div className="h-14 flex items-center justify-center mb-1">
-                                    <span className="font-signature text-4xl text-[#c5a059] whitespace-nowrap px-2 leading-none">
-                                        {signatures.partner.name}
-                                    </span>
-                                </div>
-                                <div className="min-h-[36px] flex flex-col justify-start">
-                                    <p className="text-xs text-gray-600 font-bold uppercase tracking-widest leading-normal">{signatures.partner.title || "Authorized Signatory"}</p>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Signature 2 (Right) */}
-                        <div className="text-center w-64 flex flex-col items-center">
-                            <div className="h-14 flex items-center justify-center mb-1">
-                                <span className="font-signature text-4xl text-[#1a237e] whitespace-nowrap px-2 leading-none">
-                                    {signatures?.director?.name || "Vijay Kumar"}
-                                </span>
-                            </div>
-                            <div className="min-h-[36px] flex flex-col justify-start">
-                                <p className="text-xs text-gray-600 font-bold uppercase tracking-widest leading-normal">{signatures?.director?.title || "Director of Education, Weboryskills"}</p>
-                                <p className="text-[10px] text-[#1a237e] font-bold leading-normal">{signatures?.director?.credential || "Alumnus, IIT Mandi"}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* OFFICIAL SEAL - Positioned cleanly on bottom right */}
-                <div className="absolute bottom-28 right-14 opacity-90 print:block z-10 pointer-events-none">
-                    <div className="w-28 h-28 rounded-full border-4 border-[#c5a059] flex items-center justify-center p-1 shadow-lg bg-[#fffbe6]">
-                        <div className="w-full h-full rounded-full border-2 border-[#c5a059] border-dashed flex items-center justify-center relative">
-                            <div className="absolute inset-0 rounded-full flex items-center justify-center">
-                                <svg viewBox="0 0 100 100" className="w-full h-full">
-                                    <path id="curve" d="M 20,50 A 30,30 0 1,1 80,50 A 30,30 0 1,1 20,50" fill="none" />
-                                    <text width="100" className="text-[11px] font-bold uppercase tracking-widest fill-[#b8860b]">
-                                        <textPath xlinkHref="#curve" startOffset="50%" textAnchor="middle">
-                                            Webory Official Seal
-                                        </textPath>
-                                    </text>
-                                </svg>
-                            </div>
-                            <div className="flex flex-col items-center">
-                                <Award size={28} className="text-[#c5a059]" />
-                                <span className="text-[9px] font-bold text-[#b8860b] uppercase mt-0.5">Verified</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Certificate ID - Top Left */}
-                <div className="absolute top-10 left-20 z-20 text-left">
-                    <p className="text-xs font-mono tracking-wider font-bold text-[#1a237e]">
-                        Certificate ID: <span className="text-gray-900 font-extrabold">{certificateId}</span>
-                    </p>
+                {/* Govt. Recognition & MSME */}
+                <div className="flex flex-col text-left justify-center pointer-events-auto">
+                    <span className="text-[12px] font-bold text-[#0b1c3d] uppercase tracking-wider leading-tight">
+                        Govt. Recognized Startup
+                    </span>
+                    <span className="text-[10.5px] font-bold font-mono text-[#b8860b] tracking-wider mt-0.5 leading-tight">
+                        MSME : UDYAM-BR-26-0208472
+                    </span>
                 </div>
             </div>
-            <style jsx global>{`
-                .font-serif {
-                    font-family: 'Playfair Display', serif;
-                }
-                .font-signature {
-                    font-family: 'Mr De Haviland', cursive;
-                }
-            `}</style>
+
+            {/* Official Seal (High-Definition Official Seal with W Emblem) */}
+            <div className="absolute top-[164px] right-[62px] z-10 pointer-events-none">
+                <img 
+                    src="/assets/webory-official-seal.png" 
+                    alt="Webory Official Seal" 
+                    className="w-[132px] h-[132px] object-contain drop-shadow-md select-none"
+                />
+            </div>
+
+            {/* Collaborations (In Association With) - Elegantly placed in clear upper section above floral divider */}
+            {collabs.length > 0 && (
+                <div className="absolute top-[142px] left-0 right-0 flex items-center justify-center z-10 pointer-events-none">
+                    <div className="flex items-center gap-2.5 px-4 py-1 rounded-full bg-white/95 border border-[#c5a059]/40 shadow-sm backdrop-blur-[1px]">
+                        <span className="text-[10px] text-[#8a6d3b] font-serif font-bold uppercase tracking-[0.16em]">
+                            In Association With :
+                        </span>
+                        <div className="h-3.5 w-[1px] bg-[#c5a059]/50"></div>
+                        <div className="flex items-center gap-3">
+                            {collabs.map((collab: any, idx: number) => (
+                                <div key={idx} className="flex items-center gap-1.5">
+                                    {collab.logo ? (
+                                        <img 
+                                            src={collab.logo} 
+                                            alt={collab.name} 
+                                            className="h-[16px] w-auto max-w-[80px] object-contain"
+                                        />
+                                    ) : null}
+                                    <span className="text-[12px] font-serif font-bold text-[#0b1c3d] tracking-wide">
+                                        {collab.name}
+                                    </span>
+                                    {idx < collabs.length - 1 && (
+                                        <span className="text-[#c5a059] font-bold mx-1">•</span>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Main Title: CERTIFICATE OF EXCELLENCE / PARTICIPATION */}
+            <div className="absolute top-[222px] left-0 right-0 text-center z-10 px-12">
+                <h1 className="text-[34px] font-serif font-bold text-[#0b1c3d] tracking-[0.12em] uppercase leading-none">
+                    {type === "winner" || (rank && rank > 0) ? "CERTIFICATE OF EXCELLENCE" : "CERTIFICATE OF PARTICIPATION"}
+                </h1>
+            </div>
+
+            {/* Subtitle: This is proudly presented to (Enlarged) */}
+            <div className="absolute top-[266px] left-0 right-0 text-center z-10 px-12">
+                <p className="font-serif italic text-[23px] text-gray-800 leading-none">
+                    This is proudly presented to
+                </p>
+            </div>
+
+            {/* Recipient Name */}
+            <div className="absolute top-[310px] left-0 right-0 text-center z-10 px-12">
+                <h2 className="text-[44px] font-serif font-bold text-[#0b1c3d] tracking-wide capitalize leading-none">
+                    {studentName}
+                </h2>
+            </div>
+
+            {/* Program Completion Line (Enlarged) */}
+            <div className="absolute top-[376px] left-0 right-0 text-center z-10 px-12">
+                <p className="font-serif italic text-[22px] text-gray-800 leading-none">
+                    {rank === 1
+                        ? "for securing 1st Place (Champion) in"
+                        : rank === 2
+                        ? "for securing 2nd Place (1st Runner Up) in"
+                        : rank === 3
+                        ? "for securing 3rd Place (2nd Runner Up) in"
+                        : type === "winner"
+                        ? "for exemplary performance and winning honors in"
+                        : "for outstanding performance and participation in"}
+                </p>
+            </div>
+
+            {/* Hackathon Name */}
+            <div className="absolute top-[420px] left-0 right-0 text-center z-10 px-12">
+                <h3 className="text-[28px] font-serif font-bold text-[#0b1c3d] tracking-wide leading-none">
+                    {hackathonName}
+                </h3>
+            </div>
+
+            {/* Conducted By & Dates Line (Larger, Darker, High Contrast) */}
+            <div className="absolute top-[474px] left-0 right-0 text-center z-10 px-12">
+                <p className="font-sans text-[15px] text-[#0b1c3d] font-bold tracking-wide leading-none">
+                    organized by Webory Skills from {startDate} to {endDate} (Duration: {duration}).
+                </p>
+            </div>
+
+            {/* Commendation Paragraph (Larger, Darker, High Contrast over Watermark) */}
+            <div className="absolute top-[510px] left-0 right-0 text-center z-10 px-20">
+                <p className="font-serif italic text-[15px] font-semibold text-[#1e293b] max-w-2xl mx-auto leading-relaxed drop-shadow-[0_1px_1px_rgba(255,255,255,0.9)]">
+                    {projectName 
+                        ? `Recognized for the project '${projectName}', demonstrating exemplary problem-solving, innovative engineering, and technical mastery.`
+                        : "Recognized for remarkable problem-solving ability, creative engineering skills, and exemplary technical excellence demonstrated throughout the competition."}
+                </p>
+            </div>
+
+            {/* Bottom-Left: Director of Education Signature */}
+            <div className="absolute left-[114px] top-[594px] text-center w-[164px] flex flex-col items-center z-10">
+                <div className="h-[52px] flex items-end justify-center mb-1">
+                    <img 
+                        src={signatures?.director?.image || "/signatures/vijay-kumar-signature.png"} 
+                        alt={signatures?.director?.name || "Vijay Kumar"} 
+                        className="h-[48px] w-auto max-w-[145px] object-contain select-none pointer-events-none"
+                    />
+                </div>
+                <div className="border-b border-[#0b1c3d] w-full mb-1.5"></div>
+                <p className="text-[13.5px] font-serif font-bold text-[#0b1c3d] leading-snug">
+                    {signatures?.director?.name || "Vijay Kumar"}
+                </p>
+                <p className="text-[11px] text-gray-600 font-medium leading-tight">
+                    {signatures?.director?.title || "Director of Education"}
+                </p>
+                <p className="text-[10px] text-gray-500 leading-tight">
+                    Webory Skills
+                </p>
+                <p className="text-[9px] text-[#0b1c3d] font-semibold leading-tight mt-0.5">
+                    {signatures?.director?.credential || "Alumnus, IIT Mandi"}
+                </p>
+            </div>
+
+            {/* Optional Partner Signature (Center if provided) */}
+            {hasPartner && (
+                <div className="absolute left-1/2 -translate-x-1/2 top-[594px] text-center w-[164px] flex flex-col items-center z-10">
+                    <div className="h-[52px] flex items-end justify-center mb-1">
+                        {signatures?.partner?.image ? (
+                            <img 
+                                src={signatures.partner.image} 
+                                alt={signatures.partner.name} 
+                                className="h-[48px] w-auto max-w-[145px] object-contain select-none pointer-events-none"
+                            />
+                        ) : (
+                            <span className="font-serif italic text-xl text-[#0b1c3d] whitespace-nowrap px-2 leading-none">
+                                {signatures?.partner?.name}
+                            </span>
+                        )}
+                    </div>
+                    <div className="border-b border-[#0b1c3d] w-full mb-1.5"></div>
+                    <p className="text-[13.5px] font-serif font-bold text-[#0b1c3d] leading-snug">
+                        {signatures?.partner?.name}
+                    </p>
+                    <p className="text-[11px] text-gray-600 font-medium leading-tight">
+                        {signatures?.partner?.title || "Authorized Signatory"}
+                    </p>
+                </div>
+            )}
+
+            {/* Bottom-Right: Founder & CEO Signature (Line removed per user request) */}
+            <div className="absolute right-[114px] top-[594px] text-center w-[164px] flex flex-col items-center z-10">
+                <div className="h-[52px] flex items-end justify-center mb-1">
+                    <img 
+                        src={signatures?.founder?.image || "/signatures/mohit-sinha-signature.png"} 
+                        alt={signatures?.founder?.name || "Mohit Sinha"} 
+                        className="h-[52px] w-auto max-w-[155px] object-contain select-none pointer-events-none"
+                    />
+                </div>
+                <p className="text-[13.5px] font-serif font-bold text-[#0b1c3d] leading-snug mt-1">
+                    {signatures?.founder?.name || "Mohit Sinha"}
+                </p>
+                <p className="text-[11px] text-gray-600 font-medium leading-tight">
+                    {signatures?.founder?.title || "Founder & CEO"}
+                </p>
+                <p className="text-[10px] text-gray-500 leading-tight">
+                    Webory Skills
+                </p>
+            </div>
+
         </div>
     </div>
   );
