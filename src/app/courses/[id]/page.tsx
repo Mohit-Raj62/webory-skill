@@ -494,79 +494,26 @@ export default function CourseDetailsPage() {
                             {/* Mobile CTA (shown below thumb on mobile, sidebar on desktop) */}
                             <div className="lg:hidden mt-4 p-4 rounded-xl border border-white/10 bg-[#0B0F19]/80">
                                 {isEnrolled ? (
-                                    <div className="space-y-3">
-                                        <div className="flex items-center justify-between pb-1 border-b border-white/5">
-                                            <div className="flex items-center gap-2">
-                                                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                                <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Enrolled &amp; Active</span>
-                                            </div>
-                                            <span className="text-[11px] text-gray-400 font-medium">Lifetime Access</span>
-                                        </div>
-
-                                        {/* Certificate Status for Enrolled Mobile Users */}
-                                        {certificateData && (
-                                            <div className={`p-3.5 rounded-xl border ${certificateData.isEligible ? 'bg-amber-500/10 border-amber-500/30' : 'bg-white/[0.04] border-white/8'} space-y-2.5`}>
-                                                <div className="flex items-center justify-between">
-                                                    <div className="flex items-center gap-2">
-                                                        {certificateData.isEligible ? (
-                                                            <Trophy size={16} className="text-amber-400 shrink-0" />
-                                                        ) : (
-                                                            <Lock size={15} className="text-gray-500 shrink-0" />
-                                                        )}
-                                                        <span className="text-white text-xs font-bold">Course Certificate</span>
-                                                    </div>
-                                                    <span className={`text-[11px] font-bold ${certificateData.isEligible ? 'text-amber-400' : 'text-gray-400'}`}>
-                                                        {certificateData.isEligible ? "Unlocked! 🎉" : `${Math.min(Math.round(certificateData.videoProgress || 0), 100)}% Complete`}
-                                                    </span>
-                                                </div>
-
-                                                {!certificateData.isEligible && (
-                                                    <div className="space-y-1.5 pt-0.5">
-                                                        <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-                                                            <div
-                                                                className="h-full rounded-full bg-blue-500 transition-all duration-500"
-                                                                style={{ width: `${Math.min(certificateData.videoProgress || 0, 100)}%` }}
-                                                            />
-                                                        </div>
-                                                        <p className="text-[10px] text-gray-400">Watch all course videos to unlock your verified certificate</p>
-                                                    </div>
-                                                )}
-
-                                                {certificateData.isEligible && (
-                                                    <Link href={`/courses/${id}/certificate`} className="block w-full pt-1">
-                                                        <Button className="w-full h-10 bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-black font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20">
-                                                            <Trophy size={14} /> View &amp; Download Certificate
-                                                        </Button>
-                                                    </Link>
-                                                )}
-                                            </div>
+                                    <div className="space-y-2.5">
+                                        <Button onClick={handleBuyClick} className="w-full h-11 font-bold text-sm bg-blue-600 hover:bg-blue-500 text-white">
+                                            Continue Learning
+                                        </Button>
+                                        {certificateData?.isEligible && (
+                                            <Link href={`/courses/${id}/certificate`} className="block w-full">
+                                                <Button variant="outline" className="w-full h-10 border-white/15 bg-white/5 hover:bg-white/10 text-white text-xs font-semibold rounded-lg">
+                                                    View Certificate
+                                                </Button>
+                                            </Link>
                                         )}
-
-                                        <Link href={`/courses/${course?.slug || id}/video/0`} className="block w-full">
-                                            <Button className="w-full h-11 font-bold text-sm bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20">
-                                                <PlayCircle size={17} /> Continue Learning
-                                            </Button>
-                                        </Link>
-
-                                        <div className="grid grid-cols-2 gap-2 pt-0.5">
-                                            <Button
-                                                type="button"
-                                                onClick={handleDownloadCurriculumPdf}
-                                                variant="outline"
-                                                className="h-9 border-white/12 bg-white/5 text-gray-200 hover:bg-white/10 hover:text-white text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5"
-                                            >
-                                                <Download size={13} className="text-blue-400" />
-                                                <span>Curriculum PDF</span>
-                                            </Button>
-                                            <Button
-                                                type="button"
-                                                onClick={handleDownloadInvoice}
-                                                variant="outline"
-                                                className="h-9 border-white/12 bg-white/5 text-gray-200 hover:bg-white/10 hover:text-white text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5"
-                                            >
-                                                <span>📄 Invoice</span>
-                                            </Button>
-                                        </div>
+                                        <Button
+                                            type="button"
+                                            onClick={handleDownloadCurriculumPdf}
+                                            variant="outline"
+                                            className="w-full h-10 border-white/12 bg-white/5 text-gray-200 hover:bg-white/10 hover:text-white text-xs font-semibold rounded-lg flex items-center justify-center gap-2"
+                                        >
+                                            <Download size={13} className="text-blue-400" />
+                                            <span>Curriculum PDF</span>
+                                        </Button>
                                     </div>
                                 ) : (
                                     <>
@@ -691,18 +638,8 @@ export default function CourseDetailsPage() {
 
                                 {/* Certificate */}
                                 {(course.certificateImage || isEnrolled) && (
-                                    <div className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-6">
-                                        <div className="flex items-center justify-between mb-5">
-                                            <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                                                <Trophy size={20} className="text-amber-400" />
-                                                Earn Your Certificate
-                                            </h2>
-                                            {isEnrolled && certificateData?.isEligible && (
-                                                <span className="px-2.5 py-1 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-400 text-xs font-bold">
-                                                    Unlocked! 🎉
-                                                </span>
-                                            )}
-                                        </div>
+                                    <div className="rounded-xl border border-white/10 bg-[#0B0F19]/50 p-6">
+                                        <h2 className="text-lg font-bold text-white mb-5">Earn Your Certificate</h2>
                                         <div className="flex flex-col md:flex-row gap-6 items-center">
                                             <div className="w-full md:w-[45%] rounded-xl overflow-hidden border border-white/10 shadow-xl shrink-0 bg-slate-900">
                                                 <img 
@@ -712,37 +649,25 @@ export default function CourseDetailsPage() {
                                                 />
                                             </div>
                                             <div className="flex-1 space-y-4">
-                                                <h3 className="text-base font-bold text-amber-400">Industry Recognized Certificate</h3>
+                                                <h3 className="text-base font-bold text-blue-400">Industry Recognized Certificate</h3>
                                                 <p className="text-sm text-gray-300 leading-relaxed">
                                                     Complete this course to receive a verified Webory Skills certificate — shareable on LinkedIn and your resume.
                                                 </p>
                                                 <ul className="space-y-2.5">
                                                     {["Shareable on LinkedIn & Resume", "Downloadable High-Res PDF", "Unique Verification ID", "QR Code Verified"].map((item, i) => (
                                                         <li key={i} className="flex items-center gap-2.5 text-sm text-gray-300">
-                                                            <CheckCircle size={14} className="text-amber-400 shrink-0" />
+                                                            <CheckCircle size={14} className="text-blue-400 shrink-0" />
                                                             {item}
                                                         </li>
                                                     ))}
                                                 </ul>
-                                                {isEnrolled && (
+                                                {isEnrolled && certificateData?.isEligible && (
                                                     <div className="pt-2">
-                                                        {certificateData?.isEligible ? (
-                                                            <Link href={`/courses/${id}/certificate`}>
-                                                                <Button className="h-10 px-5 bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-black font-extrabold text-xs flex items-center gap-2 shadow-lg shadow-amber-500/20">
-                                                                    <Trophy size={15} /> View &amp; Download Your Certificate
-                                                                </Button>
-                                                            </Link>
-                                                        ) : (
-                                                            <div className="p-3 rounded-lg bg-white/5 border border-white/8 space-y-1.5">
-                                                                <div className="flex justify-between text-xs">
-                                                                    <span className="text-gray-400 flex items-center gap-1.5"><Lock size={12} /> Certificate Progress</span>
-                                                                    <span className="text-blue-400 font-bold">{Math.min(Math.round(certificateData?.videoProgress || 0), 100)}%</span>
-                                                                </div>
-                                                                <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-                                                                    <div className="h-full bg-blue-500 rounded-full" style={{ width: `${Math.min(certificateData?.videoProgress || 0, 100)}%` }} />
-                                                                </div>
-                                                            </div>
-                                                        )}
+                                                        <Link href={`/courses/${id}/certificate`}>
+                                                            <Button className="h-10 px-5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs">
+                                                                View Certificate
+                                                            </Button>
+                                                        </Link>
                                                     </div>
                                                 )}
                                             </div>
@@ -1240,13 +1165,13 @@ export default function CourseDetailsPage() {
                     {certificateData?.isEligible ? (
                         <div className="flex gap-2">
                             <Link href={`/courses/${course?.slug || id}/video/0`} className="flex-1">
-                                <Button className="w-full h-11 font-bold bg-white/10 hover:bg-white/15 text-white flex items-center justify-center gap-1.5 text-xs">
-                                    <PlayCircle size={15} /> Course
+                                <Button className="w-full h-11 font-semibold text-sm bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center gap-2">
+                                    <PlayCircle size={18} /> Continue Learning
                                 </Button>
                             </Link>
-                            <Link href={`/courses/${id}/certificate`} className="flex-[2]">
-                                <Button className="w-full h-11 font-extrabold bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-black flex items-center justify-center gap-1.5 text-xs shadow-lg shadow-amber-500/25">
-                                    <Trophy size={15} /> View Certificate
+                            <Link href={`/courses/${id}/certificate`} className="flex-1">
+                                <Button variant="outline" className="w-full h-11 font-semibold text-sm border-white/20 bg-white/5 hover:bg-white/10 text-white flex items-center justify-center">
+                                    View Certificate
                                 </Button>
                             </Link>
                         </div>

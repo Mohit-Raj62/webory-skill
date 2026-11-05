@@ -54,8 +54,8 @@ export function EnrolledCourses() {
                                     <BookOpen size={24} />
                                 </div>
                                 {enrollment.certificateId || enrollment.completedAt || (enrollment.progress >= 95) ? (
-                                    <span className="px-3 py-1 rounded-full bg-amber-500/15 text-amber-400 text-xs font-bold border border-amber-500/30 flex items-center gap-1">
-                                        🏆 Completed
+                                    <span className="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-semibold border border-blue-500/20">
+                                        Completed
                                     </span>
                                 ) : (
                                     <span className="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs border border-green-500/20">
@@ -85,8 +85,8 @@ export function EnrolledCourses() {
                                         </Button>
                                     </Link>
                                     <Link href={`/courses/${enrollment.course?.slug || enrollment.course?._id}/certificate`} className="flex-1">
-                                        <Button className="w-full bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-black font-extrabold text-xs shadow-lg shadow-amber-500/20">
-                                            🏆 Certificate
+                                        <Button className="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold">
+                                            Certificate
                                         </Button>
                                     </Link>
                                 </div>
