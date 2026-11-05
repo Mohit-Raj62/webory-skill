@@ -329,11 +329,17 @@ export default function HackathonCertificate({
 
             {/* Bottom-Right: Founder & CEO Signature (Line removed per user request) */}
             <div className="absolute right-[114px] top-[594px] text-center w-[164px] flex flex-col items-center z-10">
-                <div className="h-[52px] flex items-end justify-center mb-1">
+                <div className="h-[52px] flex items-end justify-center mb-1 relative">
+                    {/* Official Signatory Emblem Stamp under Signature */}
+                    <img 
+                        src="/assets/webory-signatory-stamp.png" 
+                        alt="Official Stamp" 
+                        className="absolute -top-1 left-1/2 -translate-x-1/2 w-[58px] h-[58px] object-contain opacity-25 select-none pointer-events-none"
+                    />
                     <img 
                         src={signatures?.founder?.image || "/signatures/mohit-sinha-signature.png"} 
                         alt={signatures?.founder?.name || "Mohit Sinha"} 
-                        className="h-[52px] w-auto max-w-[155px] object-contain select-none pointer-events-none"
+                        className="h-[52px] w-auto max-w-[155px] object-contain select-none pointer-events-none relative z-10"
                     />
                 </div>
                 <p className="text-[13.5px] font-serif font-bold text-[#0b1c3d] leading-snug mt-1">
