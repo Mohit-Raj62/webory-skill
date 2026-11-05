@@ -53,9 +53,15 @@ export function EnrolledCourses() {
                                 <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
                                     <BookOpen size={24} />
                                 </div>
-                                <span className="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs border border-green-500/20">
-                                    Enrolled
-                                </span>
+                                {enrollment.certificateId || enrollment.completedAt || (enrollment.progress >= 95) ? (
+                                    <span className="px-3 py-1 rounded-full bg-amber-500/15 text-amber-400 text-xs font-bold border border-amber-500/30 flex items-center gap-1">
+                                        🏆 Completed
+                                    </span>
+                                ) : (
+                                    <span className="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs border border-green-500/20">
+                                        Enrolled
+                                    </span>
+                                )}
                             </div>
 
                             <h3 className="text-xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
@@ -71,12 +77,27 @@ export function EnrolledCourses() {
                                 Enrolled on {new Date(enrollment.enrolledAt).toLocaleDateString()}
                             </div>
 
-                            <Link href={`/courses/${enrollment.course?._id}`}>
-                                <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0">
-                                    Continue Learning
-                                    <ArrowRight className="ml-2 h-4 w-4" />
-                                </Button>
-                            </Link>
+                            {enrollment.certificateId || enrollment.completedAt || (enrollment.progress >= 95) ? (
+                                <div className="flex gap-2">
+                                    <Link href={`/courses/${enrollment.course?.slug || enrollment.course?._id}`} className="flex-1">
+                                        <Button variant="outline" className="w-full border-white/10 text-white hover:bg-white/5 text-xs">
+                                            Course
+                                        </Button>
+                                    </Link>
+                                    <Link href={`/courses/${enrollment.course?.slug || enrollment.course?._id}/certificate`} className="flex-1">
+                                        <Button className="w-full bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-black font-extrabold text-xs shadow-lg shadow-amber-500/20">
+                                            🏆 Certificate
+                                        </Button>
+                                    </Link>
+                                </div>
+                            ) : (
+                                <Link href={`/courses/${enrollment.course?.slug || enrollment.course?._id}`}>
+                                    <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0">
+                                        Continue Learning
+                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Button>
+                                </Link>
+                            )}
                         </motion.div>
                     ))}
                 </div>

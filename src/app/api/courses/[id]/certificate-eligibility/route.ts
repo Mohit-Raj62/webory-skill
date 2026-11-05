@@ -105,11 +105,12 @@ export async function GET(
     }
 
     // Eligibility Check
-    // 1. Video progress must be 100%
+    // 1. Video progress >= 95% (or already marked completed/issued)
     // 2. Overall score >= 90% (or 100 if no assessments)
-    const isVideoComplete = videoProgress >= 100;
+    const isAlreadyCompleted = !!enrollment?.completedAt || !!enrollment?.certificateId || !!(enrollment as any)?.isCompleted;
+    const isVideoComplete = videoProgress >= 95 || isAlreadyCompleted;
     const isScoreEligible = overallScore >= 90;
-    const isEligible = isVideoComplete && isScoreEligible;
+    const isEligible = isAlreadyCompleted || (isVideoComplete && isScoreEligible);
 
     // Send certificate unlock email if newly eligible
     if (isEligible && enrollment) {
