@@ -97,6 +97,15 @@ export default function CourseCertificate({
                 className="absolute inset-0 w-[1122px] h-[794px] object-cover pointer-events-none z-0"
             />
 
+            {/* Subtle Security Brand Watermark */}
+            <div className="absolute top-[430px] left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1] pointer-events-none select-none flex items-center justify-center opacity-[0.065] print:opacity-[0.08]">
+                <img 
+                    src="/assets/webory-watermark.png" 
+                    alt="Webory Watermark" 
+                    className="w-[390px] h-auto object-contain"
+                />
+            </div>
+
             {/* Left Body: Seamless Transparent QR Code & Verification Details (Enlarged size, stacked vertically) */}
             <div className="absolute left-[88px] top-[270px] z-10 flex flex-col items-center text-center bg-transparent w-[130px]">
                 <div className="shrink-0 bg-transparent mb-1.5">
