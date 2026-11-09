@@ -33,7 +33,7 @@ export default function PromoPopupManager() {
   }, []);
 
   useEffect(() => {
-    if (!popups || popups.length === 0) return;
+    if (!popups || popups.length === 0 || pathname?.startsWith("/exams")) return;
 
     // Support wildcard matching or exact path matching
     const matchingPopup = popups.find(p => 

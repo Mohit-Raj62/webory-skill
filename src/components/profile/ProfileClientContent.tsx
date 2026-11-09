@@ -6,7 +6,7 @@ import { useAuth } from "@/components/auth/session-provider";
 import { 
     Mail, Award, Briefcase, LogOut, ExternalLink, Trophy, 
     Calendar, Video, FileText, Clock, Upload, ChevronRight, Zap, Sparkles, Download, PlayCircle, Lock, CreditCard,
-    BookOpen, Building2
+    BookOpen, Building2, CheckSquare
 } from "lucide-react";
 import dynamic from 'next/dynamic';
 import { Badge } from "@/components/ui/badge";
@@ -34,7 +34,7 @@ export function ProfileClientContent({
     const [enrollments] = useState(initialEnrollments);
     const [applications, setApplications] = useState(initialApplications);
     const [hackathons] = useState(initialHackathons);
-    const [activeTab, setActiveTab] = useState<'courses' | 'internships' | 'grades' | 'hackathons' | 'privacy'>('courses');
+    const [activeTab, setActiveTab] = useState<'courses' | 'internships' | 'exams' | 'grades' | 'hackathons' | 'privacy'>('courses');
     const [uploadingAppId, setUploadingAppId] = useState<string | null>(null);
     const [showPhoneModal, setShowPhoneModal] = useState(!initialUser.phone);
     const [mounted, setMounted] = useState(false);
@@ -288,7 +288,7 @@ export function ProfileClientContent({
 
                 {/* Pill Tabs with Count Badges */}
                 <div className="p-1 bg-[#0C1020]/90 backdrop-blur-xl border border-white/10 rounded-xl flex gap-1 mb-4 overflow-x-auto no-scrollbar shadow-inner">
-                    {(['courses', 'internships', 'grades', 'hackathons', 'privacy'] as const).map((tab) => (
+                    {(['courses', 'internships', 'exams', 'grades', 'hackathons', 'privacy'] as const).map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
@@ -300,10 +300,11 @@ export function ProfileClientContent({
                         >
                             {tab === 'courses' && <BookOpen size={13} className={activeTab === tab ? 'text-white' : 'text-blue-400'} />}
                             {tab === 'internships' && <Briefcase size={13} className={activeTab === tab ? 'text-white' : 'text-purple-400'} />}
+                            {tab === 'exams' && <CheckSquare size={13} className={activeTab === tab ? 'text-white' : 'text-emerald-400'} />}
                             {tab === 'grades' && <Trophy size={13} className={activeTab === tab ? 'text-white' : 'text-amber-400'} />}
                             {tab === 'hackathons' && <Zap size={13} className={activeTab === tab ? 'text-white' : 'text-orange-400'} />}
                             {tab === 'privacy' && <Lock size={13} className={activeTab === tab ? 'text-white' : 'text-slate-400'} />}
-                            <span>{tab}</span>
+                            <span>{tab === 'exams' ? 'Exams' : tab}</span>
                             {tab === 'courses' && enrollments.length > 0 && (
                                 <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${activeTab === tab ? 'bg-white/20 text-white' : 'bg-white/10 text-slate-300'}`}>
                                     {enrollments.length}
@@ -326,6 +327,28 @@ export function ProfileClientContent({
                 <div className="relative">
                     <div className={activeTab === 'courses' ? 'block' : 'hidden'}><ActivityDashboard category="course" title="Courses" /></div>
                     <div className={activeTab === 'internships' ? 'block' : 'hidden'}><ActivityDashboard category="internship" title="Internships" /></div>
+                    <div className={activeTab === 'exams' ? 'block' : 'hidden'}>
+                        <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 text-center space-y-4">
+                            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center mx-auto">
+                                <CheckSquare size={24} />
+                            </div>
+                            <div>
+                                <h3 className="text-base font-bold text-white">Online Examinations &amp; Assessments</h3>
+                                <p className="text-xs text-slate-400 max-w-md mx-auto mt-1">
+                                    Participate in live timed examinations, view upcoming schedules, and review your performance and answer keys.
+                                </p>
+                            </div>
+                            <div className="pt-2">
+                                <button
+                                    onClick={() => router.push('/exams')}
+                                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-blue-500/20 flex items-center gap-2 mx-auto transition-all active:scale-95"
+                                >
+                                    <span>Open Examinations Portal</span>
+                                    <ExternalLink size={13} />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                     <div className={activeTab === 'grades' ? 'block' : 'hidden'}><GradesDashboard /></div>
                     
                     {/* Compact Hackathon Cards */}

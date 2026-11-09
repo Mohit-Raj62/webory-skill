@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, User, Code2, Sparkles, MessageSquare, GraduationCap, Briefcase, BrainCircuit, Bot, Orbit, ArrowRight, Trophy } from "lucide-react";
+import { Menu, X, User, Code2, Sparkles, MessageSquare, GraduationCap, Briefcase, BrainCircuit, Bot, Orbit, ArrowRight, Trophy, CheckSquare } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/components/auth/session-provider";
 import dynamic from "next/dynamic";
@@ -168,6 +168,7 @@ export function Navbar() {
 
                         <NavLink href="/courses" icon={GraduationCap}>Courses</NavLink>
                         <NavLink href="/internships" icon={Briefcase}>Internships</NavLink>
+                        <NavLink href="/exams" icon={CheckSquare} badge="Live">Exams</NavLink>
 
                         {/* Animated AI Copilot Showcase (Visible to all users) */}
                         <Link href={user ? "/ai-weboryskills" : "/signup"}>
@@ -363,7 +364,10 @@ export function Navbar() {
                                     <MobileNavLink href="/internships" icon={Briefcase} onClick={() => setIsOpen(false)} index={1}>
                                         Internships
                                     </MobileNavLink>
-                                    <MobileNavLink href="/hackathons" icon={Trophy} badge="NEW" onClick={() => setIsOpen(false)} index={2}>
+                                    <MobileNavLink href="/exams" icon={CheckSquare} badge="LIVE" onClick={() => setIsOpen(false)} index={2}>
+                                        Exams & Tests
+                                    </MobileNavLink>
+                                    <MobileNavLink href="/hackathons" icon={Trophy} badge="NEW" onClick={() => setIsOpen(false)} index={3}>
                                         Hackathons
                                     </MobileNavLink>
 

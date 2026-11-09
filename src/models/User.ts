@@ -224,14 +224,6 @@ UserSchema.index({ role: 1 });
 UserSchema.index({ xp: -1 });
 UserSchema.index({ createdAt: -1 });
 
-// Force Schema Recompile to avoid stale enum caches during hot-reloads
-if (models.User) {
-  delete (models as any).User;
-}
-if ((mongoose as any).connection?.models?.User) {
-  delete (mongoose as any).connection.models.User;
-}
-
 const User = models.User || model("User", UserSchema);
 
 export default User;

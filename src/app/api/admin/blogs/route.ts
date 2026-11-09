@@ -8,14 +8,25 @@ import { getDataFromToken } from "@/helpers/getDataFromToken";
 export async function GET(request: NextRequest) {
   try {
     await dbConnect();
-    const userId = await getDataFromToken(request);
+
+    let userId: string | null = null;
+    try {
+      userId = await getDataFromToken(request);
+    } catch (authErr: any) {
+      console.warn("Auth check failed in /api/admin/blogs:", authErr.message);
+      return NextResponse.json(
+        { error: authErr.message || "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await User.findById(userId);
-    if (!user || user.role !== "admin" && user.role !== "superadmin") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const user = await User.findById(userId).select("role").lean();
+    if (!user || (user.role !== "admin" && user.role !== "superadmin")) {
+      return NextResponse.json({ error: "Forbidden: Admin access required" }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -84,6 +95,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("GET /api/admin/blogs error:", error);
+    return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
   }
 }

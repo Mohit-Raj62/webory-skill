@@ -1,4 +1,5 @@
 import mongoose, { Schema, model, models } from "mongoose";
+import "./User";
 
 const BlogSchema = new Schema(
   {
@@ -79,12 +80,7 @@ const BlogSchema = new Schema(
 // Index for efficient queries
 BlogSchema.index({ author: 1, status: 1 });
 BlogSchema.index({ status: 1, publishedAt: -1 });
-// Delete cached model to ensure fresh schema (avoids stale pre-save hooks in dev)
-if (models.Blog) {
-  delete (mongoose as any).connection.models.Blog;
-  delete (mongoose as any).models.Blog;
-}
 
-const Blog = model("Blog", BlogSchema);
+const Blog = models.Blog || model("Blog", BlogSchema);
 
 export default Blog;

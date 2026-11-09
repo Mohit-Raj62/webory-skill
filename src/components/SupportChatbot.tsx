@@ -39,6 +39,7 @@ export default function SupportChatbot() {
       "/checkout",
       "/ai-weboryskills",
       "/api",
+      "/exams",
     ];
     
     const shouldHide = hiddenPaths.some((hiddenPath) =>

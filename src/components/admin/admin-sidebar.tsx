@@ -29,6 +29,8 @@ import {
     Crown,
     History,
     X,
+    CheckSquare,
+    BrainCircuit,
 } from "lucide-react";
 
 interface MenuItem {
@@ -43,6 +45,8 @@ const menuItems: MenuItem[] = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Users", href: "/admin/users", icon: Users },
     { name: "Courses", href: "/admin/courses", icon: BookOpen },
+    { name: "Examinations", href: "/admin/exams", icon: CheckSquare },
+    { name: "Question Bank", href: "/admin/question-bank", icon: BrainCircuit },
     { name: "Internships", href: "/admin/internships", icon: Briefcase },
     { name: "Applications", href: "/admin/applications", icon: FileText },
     { name: "Enrollments", href: "/admin/enrollments", icon: GraduationCap },

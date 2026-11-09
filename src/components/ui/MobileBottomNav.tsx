@@ -124,8 +124,11 @@ export function MobileBottomNav() {
     }, []);
 
     // Only show on mobile AND in standalone mode
-    // Hide on admin and teacher pages, or when suppressed by main content
-    const isRestrictedPage = pathname?.startsWith('/admin') || pathname?.startsWith('/teacher');
+    // Hide on admin, teacher and exam pages, or when suppressed by main content
+    const isRestrictedPage =
+        pathname?.startsWith('/admin') ||
+        pathname?.startsWith('/teacher') ||
+        pathname?.startsWith('/exams');
 
     useEffect(() => {
         if (isStandalone && !isRestrictedPage && !isHiddenByMain) {

@@ -12,13 +12,22 @@ export async function PUT(
   try {
     await dbConnect();
     const { id } = await params;
-    const userId = await getDataFromToken(request);
+    let userId: string | null = null;
+    try {
+      userId = await getDataFromToken(request);
+    } catch (authErr: any) {
+      return NextResponse.json(
+        { error: authErr.message || "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await User.findById(userId);
-    if (!user || user.role !== "admin" && user.role !== "superadmin") {
+    const user = await User.findById(userId).select("role").lean();
+    if (!user || (user.role !== "admin" && user.role !== "superadmin")) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -107,13 +116,22 @@ export async function DELETE(
   try {
     await dbConnect();
     const { id } = await params;
-    const userId = await getDataFromToken(request);
+    let userId: string | null = null;
+    try {
+      userId = await getDataFromToken(request);
+    } catch (authErr: any) {
+      return NextResponse.json(
+        { error: authErr.message || "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await User.findById(userId);
-    if (!user || user.role !== "admin" && user.role !== "superadmin") {
+    const user = await User.findById(userId).select("role").lean();
+    if (!user || (user.role !== "admin" && user.role !== "superadmin")) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
