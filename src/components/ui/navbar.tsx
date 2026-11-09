@@ -108,6 +108,7 @@ export function Navbar() {
     const [announcement, setAnnouncement] = useState({ enabled: false, text: "" });
     const [isAnnouncementVisible, setIsAnnouncementVisible] = useState(true);
     const [isStandalone, setIsStandalone] = useState(false);
+    const [examsEnabled, setExamsEnabled] = useState(false);
 
     useEffect(() => {
         const checkStandalone = () => {
@@ -150,8 +151,13 @@ export function Navbar() {
         fetch("/api/settings")
             .then(res => res.json())
             .then(data => {
-                if (mounted && data.announcementBar) {
-                    setAnnouncement(data.announcementBar);
+                if (mounted) {
+                    if (data.announcementBar) {
+                        setAnnouncement(data.announcementBar);
+                    }
+                    if (data.examsEnabled !== undefined) {
+                        setExamsEnabled(Boolean(data.examsEnabled));
+                    }
                 }
             })
             .catch(err => console.error("Failed to fetch settings", err));
@@ -222,7 +228,9 @@ export function Navbar() {
 
                         <NavLink href="/courses" icon={GraduationCap}>Courses</NavLink>
                         <NavLink href="/internships" icon={Briefcase}>Internships</NavLink>
-                        <NavLink href="/exams" icon={CheckSquare} badge="Live">Exams</NavLink>
+                        {(examsEnabled || (user && (user.role === 'admin' || user.role === 'superadmin'))) && (
+                            <NavLink href="/exams" icon={CheckSquare} badge="Live">Exams</NavLink>
+                        )}
 
                         {/* Animated AI Copilot Showcase (Visible to all users) */}
                         <Link href={user ? "/ai-weboryskills" : "/signup"}>
@@ -402,9 +410,11 @@ export function Navbar() {
                                     <MobileNavLink href="/courses" icon={GraduationCap} badge="FREE" onClick={() => setIsOpen(false)} index={0}>
                                         Courses
                                     </MobileNavLink>
-                                    <MobileNavLink href="/exams" icon={CheckSquare} badge="LIVE" onClick={() => setIsOpen(false)} index={1}>
-                                        Exams &amp; Tests
-                                    </MobileNavLink>
+                                    {(examsEnabled || (user && (user.role === 'admin' || user.role === 'superadmin'))) && (
+                                        <MobileNavLink href="/exams" icon={CheckSquare} badge="LIVE" onClick={() => setIsOpen(false)} index={1}>
+                                            Exams &amp; Tests
+                                        </MobileNavLink>
+                                    )}
                                     <MobileNavLink href="/internships" icon={Briefcase} onClick={() => setIsOpen(false)} index={2}>
                                         Internships
                                     </MobileNavLink>

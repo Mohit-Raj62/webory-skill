@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 import "./User";
 import "./Course";
+import "./Internship";
 import "./QuestionBank";
 
 export interface IExamQuestion {
@@ -60,7 +61,8 @@ export interface IExamination extends Document {
   disableCopyPaste: boolean;
   autoSubmitOnViolations: boolean;
   studentEligibility: {
-    type: "all" | "course" | "specific";
+    type: "all" | "internship" | "course" | "specific";
+    internshipIds?: mongoose.Types.ObjectId[];
     courseIds?: mongoose.Types.ObjectId[];
     allowedEmails?: string[];
   };
@@ -294,9 +296,15 @@ const ExaminationSchema = new Schema<IExamination>(
     studentEligibility: {
       type: {
         type: String,
-        enum: ["all", "course", "specific"],
+        enum: ["all", "internship", "course", "specific"],
         default: "all",
       },
+      internshipIds: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "Internship",
+        },
+      ],
       courseIds: [
         {
           type: Schema.Types.ObjectId,
@@ -357,7 +365,7 @@ ExaminationSchema.index({ createdBy: 1 });
 ExaminationSchema.index({ subject: 1 });
 ExaminationSchema.index({ courseId: 1 });
 
-if (mongoose.models.Examination && !mongoose.models.Examination.schema?.paths?.maxTabSwitches) {
+if (mongoose.models.Examination && (!mongoose.models.Examination.schema?.paths?.maxTabSwitches || !mongoose.models.Examination.schema?.paths?.["studentEligibility.internshipIds"])) {
   delete (mongoose.models as any).Examination;
 }
 

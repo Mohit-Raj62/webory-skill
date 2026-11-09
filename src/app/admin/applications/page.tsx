@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CheckCircle, XCircle, Clock, Search, ExternalLink, Edit2, Save, X, Calendar, Award, Trash2 } from "lucide-react";
+import { CheckCircle, XCircle, Clock, Search, ExternalLink, Edit2, Save, X, Calendar, Award, Trash2, CheckSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -18,6 +18,17 @@ interface Application {
         price?: number;
     };
     status: string;
+    assignedExam?: {
+        _id: string;
+        title: string;
+        duration?: number;
+        totalMarks?: number;
+        passingPercentage?: number;
+    };
+    examScore?: number;
+    examPercentage?: number;
+    examPassed?: boolean;
+    examCompletedAt?: string;
     resume: string;
     resumeType?: 'file' | 'link';
     coverLetter: string;
@@ -59,11 +70,23 @@ export default function ApplicationsPage() {
         link: ""
     });
 
+    // Exam Assignment Modal State
+    const [examModalApp, setExamModalApp] = useState<Application | null>(null);
+    const [selectedExamId, setSelectedExamId] = useState<string>("");
+    const [availableExams, setAvailableExams] = useState<any[]>([]);
+    const [examAssigning, setExamAssigning] = useState(false);
+
     // View Details Modal State
     const [viewApp, setViewApp] = useState<Application | null>(null);
 
     useEffect(() => {
         fetchApplications();
+        fetch("/api/admin/exams")
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.exams) setAvailableExams(data.exams);
+            })
+            .catch((err) => console.error("Failed to load exams", err));
     }, []);
 
     const fetchApplications = async () => {
@@ -181,6 +204,46 @@ export default function ApplicationsPage() {
         } catch (error) {
             console.error("Schedule error:", error);
             alert("Failed to schedule interview");
+        }
+    };
+
+    const handleAssignExamAndMove = async () => {
+        if (!examModalApp) return;
+        try {
+            setExamAssigning(true);
+            const res = await fetch(`/api/admin/applications/${examModalApp._id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    status: "exam_pending",
+                    assignedExam: selectedExamId || null,
+                }),
+            });
+
+            if (res.ok) {
+                const assignedObj = availableExams.find((e) => e._id === selectedExamId);
+                setApplications(
+                    applications.map((app) =>
+                        app._id === examModalApp._id
+                            ? {
+                                  ...app,
+                                  status: "exam_pending",
+                                  assignedExam: assignedObj || app.assignedExam,
+                              }
+                            : app
+                    )
+                );
+                setExamModalApp(null);
+                setSelectedExamId("");
+                alert("Candidate moved to Assessment Round successfully!");
+            } else {
+                alert("Failed to assign exam");
+            }
+        } catch (error) {
+            console.error("Assign error:", error);
+            alert("Error assigning exam");
+        } finally {
+            setExamAssigning(false);
         }
     };
 
@@ -325,7 +388,7 @@ export default function ApplicationsPage() {
                         />
                     </div>
                     <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
-                        {["all", "pending_review", "pending_payment", "interview_pending", "interview_scheduled", "accepted", "rejected"].map((f) => (
+                        {["all", "pending_review", "pending_payment", "exam_pending", "exam_completed", "interview_pending", "interview_scheduled", "accepted", "rejected"].map((f) => (
                             <button
                                 key={f}
                                 onClick={() => setFilter(f)}
@@ -333,14 +396,16 @@ export default function ApplicationsPage() {
                                     ? f === "all" ? "bg-blue-600 text-white" :
                                         f === "pending_review" ? "bg-yellow-600 text-white" :
                                             f === "pending_payment" ? "bg-orange-600 text-white" :
-                                                f === "interview_pending" ? "bg-indigo-600 text-white" :
-                                                    f === "interview_scheduled" ? "bg-purple-600 text-white" :
-                                                        f === "accepted" ? "bg-green-600 text-white" :
-                                                            "bg-red-600 text-white"
+                                                f === "exam_pending" ? "bg-cyan-600 text-white font-bold" :
+                                                    f === "exam_completed" ? "bg-teal-600 text-white font-bold" :
+                                                        f === "interview_pending" ? "bg-indigo-600 text-white" :
+                                                            f === "interview_scheduled" ? "bg-purple-600 text-white" :
+                                                                f === "accepted" ? "bg-green-600 text-white" :
+                                                                    "bg-red-600 text-white"
                                     : "bg-white/5 text-gray-400 hover:bg-white/10"
                                     }`}
                             >
-                                {f === 'pending_review' ? 'Review Needed' : f === 'pending_payment' ? 'Payment Pending' : f.replace('_', ' ')}
+                                {f === 'pending_review' ? 'Review Needed' : f === 'pending_payment' ? 'Payment Pending' : f === 'exam_pending' ? 'Exam Pending' : f === 'exam_completed' ? 'Exam Done' : f.replace('_', ' ')}
                             </button>
                         ))}
                     </div>
@@ -348,38 +413,43 @@ export default function ApplicationsPage() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-4 md:gap-4 mb-6">
-                {/* Stats cards remain same */}
-                 <div className="glass-card p-4 rounded-xl">
-                    <p className="text-gray-400 text-xs mb-1">Total</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-6">
+                 <div className="glass-card p-3 rounded-xl">
+                    <p className="text-gray-400 text-xs mb-0.5">Total</p>
                     <p className="text-2xl font-bold text-white">{applications.length}</p>
                 </div>
-                <div className="glass-card p-4 rounded-xl">
-                    <p className="text-gray-400 text-xs mb-1">Review Needed</p>
+                <div className="glass-card p-3 rounded-xl">
+                    <p className="text-gray-400 text-xs mb-0.5">Review Needed</p>
                     <p className="text-2xl font-bold text-yellow-400">
                         {pendingReviewCount}
                     </p>
                 </div>
-                <div className="glass-card p-4 rounded-xl">
-                    <p className="text-gray-400 text-xs mb-1">Payment Pending</p>
+                <div className="glass-card p-3 rounded-xl">
+                    <p className="text-gray-400 text-xs mb-0.5">Exam Round</p>
+                    <p className="text-2xl font-bold text-cyan-400">
+                        {applications.filter((a) => a.status === "exam_pending" || a.status === "exam_completed").length}
+                    </p>
+                </div>
+                <div className="glass-card p-3 rounded-xl">
+                    <p className="text-gray-400 text-xs mb-0.5">Payment Pending</p>
                     <p className="text-2xl font-bold text-orange-400">
                         {pendingPaymentCount}
                     </p>
                 </div>
-                <div className="glass-card p-4 rounded-xl">
-                    <p className="text-gray-400 text-xs mb-1">Interviews</p>
+                <div className="glass-card p-3 rounded-xl">
+                    <p className="text-gray-400 text-xs mb-0.5">Interviews</p>
                     <p className="text-2xl font-bold text-purple-400">
                         {applications.filter((a) => a.status === "interview_scheduled").length}
                     </p>
                 </div>
-                <div className="glass-card p-4 rounded-xl">
-                    <p className="text-gray-400 text-xs mb-1">Accepted</p>
+                <div className="glass-card p-3 rounded-xl">
+                    <p className="text-gray-400 text-xs mb-0.5">Accepted</p>
                     <p className="text-2xl font-bold text-green-400">
                         {applications.filter((a) => a.status === "accepted").length}
                     </p>
                 </div>
-                <div className="glass-card p-4 rounded-xl">
-                    <p className="text-gray-400 text-xs mb-1">Rejected</p>
+                <div className="glass-card p-3 rounded-xl">
+                    <p className="text-gray-400 text-xs mb-0.5">Rejected</p>
                     <p className="text-2xl font-bold text-red-400">
                         {applications.filter((a) => a.status === "rejected").length}
                     </p>
@@ -397,21 +467,27 @@ export default function ApplicationsPage() {
                                         {app.student?.firstName} {app.student?.lastName}
                                     </h3>
                                     <span
-                                        className={`px-3 py-1 rounded-full text-xs ${app.status === "pending"
+                                        className={`px-3 py-1 rounded-full text-xs font-semibold ${app.status === "pending"
                                             ? ((app.internship?.price || 0) > 0 && !(app.transactionId && !app.transactionId.startsWith('PENDING_') && (app.amountPaid || 0) > 0))
                                                 ? "bg-orange-500/20 text-orange-300 border border-orange-500/30"
                                                 : "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30"
-                                            : app.status === "interview_pending"
-                                                ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
-                                                : app.status === "interview_scheduled"
-                                                    ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
-                                                    : app.status === "accepted"
-                                                        ? "bg-green-500/20 text-green-300 border border-green-500/30"
-                                                        : "bg-red-500/20 text-red-300 border border-red-500/30"
+                                            : app.status === "exam_pending"
+                                                ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30"
+                                                : app.status === "exam_completed"
+                                                    ? "bg-teal-500/20 text-teal-300 border border-teal-500/30"
+                                                    : app.status === "interview_pending"
+                                                        ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
+                                                        : app.status === "interview_scheduled"
+                                                            ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
+                                                            : app.status === "accepted"
+                                                                ? "bg-green-500/20 text-green-300 border border-green-500/30"
+                                                                : "bg-red-500/20 text-red-300 border border-red-500/30"
                                             }`}
                                     >
                                         {app.status === 'pending' 
                                             ? ((app.internship?.price || 0) > 0 && !(app.transactionId && !app.transactionId.startsWith('PENDING_') && (app.amountPaid || 0) > 0)) ? 'PAYMENT PENDING' : 'REVIEW NEEDED'
+                                            : app.status === 'exam_pending' ? 'ASSESSMENT PENDING'
+                                            : app.status === 'exam_completed' ? 'EXAM COMPLETED'
                                             : app.status === 'interview_pending' ? 'INTERVIEW PENDING'
                                             : app.status === 'accepted' && (app.internship?.price || 0) > 0 ? 'PAYMENT COMPLETE'
                                             : app.status.toUpperCase().replace('_', ' ')
@@ -425,6 +501,32 @@ export default function ApplicationsPage() {
                                 <p className="text-gray-500 text-sm mt-1">
                                     Applied on {new Date(app.appliedAt).toLocaleDateString()}
                                 </p>
+
+                                {/* Assigned Exam & Score Information */}
+                                {app.assignedExam && (
+                                    <div className="flex items-center gap-1.5 text-xs text-cyan-400 mt-1.5">
+                                        <CheckSquare size={13} className="shrink-0" />
+                                        <span>Allotted Exam: <strong>{app.assignedExam.title}</strong></span>
+                                    </div>
+                                )}
+
+                                {app.status === 'exam_completed' && (
+                                    <div className="flex items-center gap-2 mt-2 text-xs flex-wrap">
+                                        <span className="text-gray-400">Exam Evaluation:</span>
+                                        <span className="font-bold text-white bg-white/10 px-2 py-0.5 rounded border border-white/10">
+                                            {app.examPercentage !== null && app.examPercentage !== undefined ? `${app.examPercentage}%` : "Completed"}
+                                            {app.examScore !== null && app.examScore !== undefined ? ` (${app.examScore} marks)` : ""}
+                                        </span>
+                                        {app.examPassed !== null && (
+                                            <span className={`px-2 py-0.5 rounded font-extrabold text-[10px] tracking-wider ${
+                                                app.examPassed ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "bg-red-500/20 text-red-400 border border-red-500/30"
+                                            }`}>
+                                                {app.examPassed ? "PASSED" : "FAILED"}
+                                            </span>
+                                        )}
+                                    </div>
+                                )}
+
                                 {/* Summarized Details */}
                                 <div className="flex gap-4 mt-2">
                                      <button onClick={() => openViewModal(app)} className="text-blue-400 text-xs hover:underline flex items-center gap-1">
@@ -433,7 +535,7 @@ export default function ApplicationsPage() {
                                 </div>
                             </div>
 
-                            <div className="flex gap-2 flex-wrap justify-end">
+                            <div className="flex gap-2 flex-wrap justify-end items-center">
                                 <Button
                                     onClick={() => openEditModal(app)}
                                     variant="outline"
@@ -443,13 +545,26 @@ export default function ApplicationsPage() {
                                     Edit
                                 </Button>
 
-                                {app.status === "pending" && (
+                                {(app.status === "pending" || app.status === "exam_pending") && (
+                                    <Button
+                                        onClick={() => {
+                                            setExamModalApp(app);
+                                            setSelectedExamId(app.assignedExam?._id || (availableExams[0]?._id || ""));
+                                        }}
+                                        className="bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs"
+                                    >
+                                        <CheckSquare size={16} className="mr-1.5" />
+                                        {app.status === "exam_pending" ? "Change Exam" : "Move to Exam"}
+                                    </Button>
+                                )}
+
+                                {(app.status === "pending" || app.status === "exam_completed") && (
                                     <Button
                                         onClick={() => openInterviewModal(app)}
-                                        className="bg-purple-600 hover:bg-purple-700"
+                                        className="bg-purple-600 hover:bg-purple-700 text-xs"
                                     >
-                                        <Calendar size={18} className="mr-2" />
-                                        Schedule
+                                        <Calendar size={16} className="mr-1.5" />
+                                        Schedule Interview
                                     </Button>
                                 )}
 
@@ -462,20 +577,20 @@ export default function ApplicationsPage() {
                                     </Link>
                                 )}
 
-                                {(app.status === "pending" || app.status === "interview_pending" || app.status === "interview_scheduled") && (
+                                {(app.status === "pending" || app.status === "exam_pending" || app.status === "exam_completed" || app.status === "interview_pending" || app.status === "interview_scheduled") && (
                                     <>
                                         <Button
                                             onClick={() => handleStatusChange(app._id, "accepted")}
-                                            className="bg-green-600 hover:bg-green-700"
+                                            className="bg-green-600 hover:bg-green-700 text-xs"
                                         >
-                                            <CheckCircle size={18} className="mr-2" />
+                                            <CheckCircle size={16} className="mr-1.5" />
                                             Accept
                                         </Button>
                                         <Button
                                             onClick={() => handleStatusChange(app._id, "rejected")}
-                                            className="bg-red-600 hover:bg-red-700"
+                                            className="bg-red-600 hover:bg-red-700 text-xs"
                                         >
-                                            <XCircle size={18} className="mr-2" />
+                                            <XCircle size={16} className="mr-1.5" />
                                             Reject
                                         </Button>
                                     </>
@@ -775,6 +890,74 @@ export default function ApplicationsPage() {
                                 <Button onClick={handleScheduleInterview} className="flex-1 bg-purple-600 hover:bg-purple-700">
                                     <Calendar size={18} className="mr-2" />
                                     Schedule
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Exam Assignment Modal */}
+            {examModalApp && (
+                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+                    <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-md shadow-2xl">
+                        <div className="flex justify-between items-center mb-5 border-b border-white/10 pb-3">
+                            <div>
+                                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                                    <CheckSquare size={18} className="text-cyan-400" />
+                                    <span>Move to Assessment Round</span>
+                                </h2>
+                                <p className="text-xs text-gray-400 mt-0.5">
+                                    {examModalApp.student?.firstName} {examModalApp.student?.lastName} • {examModalApp.internship?.title}
+                                </p>
+                            </div>
+                            <button onClick={() => setExamModalApp(null)} className="text-gray-400 hover:text-white">
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-xs font-semibold text-gray-300 mb-1.5">
+                                    Choose Examination to Assign:
+                                </label>
+                                {availableExams.length > 0 ? (
+                                    <select
+                                        value={selectedExamId}
+                                        onChange={(e) => setSelectedExamId(e.target.value)}
+                                        className="w-full bg-black/40 border border-white/15 rounded-xl p-3 text-white text-sm focus:border-cyan-500 outline-none"
+                                    >
+                                        <option value="">-- Select an Examination --</option>
+                                        {availableExams.map((e) => (
+                                            <option key={e._id} value={e._id} className="bg-slate-800 text-white">
+                                                {e.title} ({e.duration} mins • {e.totalMarks || 100} marks)
+                                            </option>
+                                        ))}
+                                    </select>
+                                ) : (
+                                    <p className="text-xs text-amber-400 italic bg-amber-500/10 p-2.5 rounded-lg border border-amber-500/20">
+                                        No active examinations found. Create an examination first in the Examination Management panel.
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-xs text-cyan-300 space-y-1">
+                                <p className="font-semibold">Candidate Experience:</p>
+                                <p className="text-cyan-300/80 leading-relaxed">
+                                    Candidate's application status will update to <strong>Online Assessment Round (Pending)</strong> and a direct <strong>[ Take Assessment Exam ]</strong> button will appear on their dashboard card.
+                                </p>
+                            </div>
+
+                            <div className="flex gap-3 mt-6">
+                                <Button onClick={() => setExamModalApp(null)} variant="outline" className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-800">
+                                    Cancel
+                                </Button>
+                                <Button
+                                    onClick={handleAssignExamAndMove}
+                                    disabled={examAssigning}
+                                    className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold"
+                                >
+                                    {examAssigning ? "Assigning..." : "Confirm & Send"}
                                 </Button>
                             </div>
                         </div>

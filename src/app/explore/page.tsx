@@ -41,6 +41,7 @@ import {
     Compass
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/components/auth/session-provider";
 
 interface ExploreItem {
     label: string;
@@ -145,7 +146,20 @@ const SOCIALS = [
 
 export default function ExplorePage() {
     const router = useRouter();
+    const { user } = useAuth();
     const [currentTime, setCurrentTime] = useState("");
+    const [examsEnabled, setExamsEnabled] = useState(false);
+
+    useEffect(() => {
+        fetch("/api/settings")
+            .then(res => res.json())
+            .then(data => {
+                if (data.examsEnabled !== undefined) {
+                    setExamsEnabled(Boolean(data.examsEnabled));
+                }
+            })
+            .catch(err => console.error("Failed to load settings in explore", err));
+    }, []);
 
     useEffect(() => {
         const updateClock = () => {
@@ -228,7 +242,16 @@ export default function ExplorePage() {
 
             <main className="relative z-10 max-w-xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16">
                 
-                {MENU_RAIL_CATEGORIES.map((category, catIdx) => (
+                {MENU_RAIL_CATEGORIES.map((category, catIdx) => {
+                    const isExamsVisible = examsEnabled || (user && (user.role === 'admin' || user.role === 'superadmin'));
+                    const filteredItems = category.items.filter(item => {
+                        if (item.href === "/exams" && !isExamsVisible) return false;
+                        return true;
+                    });
+
+                    if (filteredItems.length === 0) return null;
+
+                    return (
                     <section key={category.id} className="mb-16 sm:mb-20 last:mb-0 space-y-5 sm:space-y-6">
                         {/* Technical Section Divider */}
                         <div className="flex flex-col gap-2">
@@ -241,7 +264,7 @@ export default function ExplorePage() {
 
                         {/* Premium Vertical Rail */}
                         <div className="flex flex-col gap-2.5 sm:gap-3">
-                            {category.items.map((item, itemIdx) => (
+                            {filteredItems.map((item, itemIdx) => (
                                 <motion.div
                                     key={itemIdx}
                                     initial={{ opacity: 0, x: -20 }}
@@ -286,7 +309,8 @@ export default function ExplorePage() {
                             ))}
                         </div>
                     </section>
-                ))}
+                    );
+                })}
 
                 {/* Final Professional Identity Rail */}
                 <footer className="pt-10 sm:pt-12 pb-8 sm:pb-10 space-y-8 sm:space-y-10 border-t border-white/5">

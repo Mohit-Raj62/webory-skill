@@ -534,7 +534,15 @@ export function ProfileClientContent({
 
                                         {/* Status Tag */}
                                         <div className="shrink-0">
-                                            {app.status === 'pending' && (app.internship?.price || 0) > 0 && !(app.transactionId && !app.transactionId.startsWith('PENDING_') && (app.amountPaid || 0) > 0) ? (
+                                            {app.status === 'exam_pending' ? (
+                                                <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-tight bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                                                    ASSESSMENT PENDING
+                                                </span>
+                                            ) : app.status === 'exam_completed' ? (
+                                                <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-tight bg-teal-500/20 text-teal-300 border border-teal-500/30">
+                                                    EXAM COMPLETED
+                                                </span>
+                                            ) : app.status === 'pending' && (app.internship?.price || 0) > 0 && !(app.transactionId && !app.transactionId.startsWith('PENDING_') && (app.amountPaid || 0) > 0) ? (
                                                 <span className="px-1.5 py-0.2 rounded text-[9px] font-semibold uppercase tracking-tight bg-orange-500/10 text-orange-400 border border-orange-500/20">
                                                     PAYMENT PENDING
                                                 </span>
@@ -552,6 +560,19 @@ export function ProfileClientContent({
 
                                     {/* Action Buttons */}
                                     <div className="flex flex-wrap gap-2 items-center pt-3 border-t border-white/5">
+                                        {app.status === 'exam_pending' && (
+                                            <button
+                                                onClick={() => router.push(app.assignedExam?._id ? `/exams/${app.assignedExam._id}` : (app.assignedExam ? `/exams/${app.assignedExam}` : '/exams'))}
+                                                className="h-9 px-3.5 flex items-center gap-1.5 bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 rounded-xl text-xs font-bold uppercase tracking-wide text-white transition-all shadow-md shadow-cyan-500/25 active:scale-95 cursor-pointer"
+                                            >
+                                                <CheckSquare size={14} /> Take Exam
+                                            </button>
+                                        )}
+                                        {app.status === 'exam_completed' && app.examPercentage !== null && app.examPercentage !== undefined && (
+                                            <span className="h-9 px-3 flex items-center rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-xs font-bold text-emerald-300">
+                                                Score: {app.examPercentage}% {app.examPassed ? "(Passed)" : ""}
+                                            </span>
+                                        )}
                                         {app.status === 'pending' && (app.internship?.price || 0) > 0 && !(app.transactionId && !app.transactionId.startsWith('PENDING_') && (app.amountPaid || 0) > 0) && (
                                             <button onClick={() => setPaymentModalData(app)} className="h-9 px-3.5 flex items-center gap-1.5 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 rounded-xl text-xs font-bold uppercase tracking-wide text-white transition-all shadow-md shadow-orange-500/25 active:scale-95 cursor-pointer">
                                                 <CreditCard size={14} /> Pay Now

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
+import { useAuth } from "@/components/auth/session-provider";
 import {
   CheckSquare,
   Clock,
@@ -15,6 +16,8 @@ import {
   Calendar,
   AlertCircle,
   Trophy,
+  EyeOff,
+  Home,
 } from "lucide-react";
 
 interface ExamCard {
@@ -40,14 +43,23 @@ interface ExamCard {
 }
 
 export default function StudentExamsPortalPage() {
+  const { user } = useAuth();
   const [exams, setExams] = useState<ExamCard[]>([]);
   const [loading, setLoading] = useState(true);
+  const [examsEnabled, setExamsEnabled] = useState(false);
   const [activeTab, setActiveTab] = useState<"live" | "upcoming" | "history">("live");
 
   useEffect(() => {
     const fetchStudentExams = async () => {
       try {
         setLoading(true);
+
+        const settingsRes = await fetch("/api/settings");
+        const settingsData = await settingsRes.json();
+        if (settingsData.examsEnabled !== undefined) {
+          setExamsEnabled(Boolean(settingsData.examsEnabled));
+        }
+
         const res = await fetch("/api/exams");
         const data = await res.json();
         if (data.success) {
@@ -63,6 +75,9 @@ export default function StudentExamsPortalPage() {
     fetchStudentExams();
   }, []);
 
+  const isAdmin = user && (user.role === "admin" || user.role === "superadmin");
+  const isAccessible = examsEnabled || isAdmin;
+
   const liveExams = exams.filter((e) => e.status === "live");
   const upcomingExams = exams.filter((e) => e.status === "scheduled");
   const attemptedExams = exams.filter((e) => Boolean(e.myAttempt));
@@ -76,8 +91,50 @@ export default function StudentExamsPortalPage() {
 
       <Navbar />
 
-      <div className="pt-28 sm:pt-32 pb-20 container mx-auto px-4 max-w-6xl space-y-8">
-        {/* Hero Header */}
+      {!loading && !isAccessible ? (
+        <div className="pt-28 sm:pt-36 pb-24 container mx-auto px-4 max-w-xl text-center space-y-6">
+          <div className="p-8 sm:p-12 rounded-3xl bg-[#0b1120]/90 border border-slate-800 shadow-2xl backdrop-blur-xl space-y-5">
+            <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 mx-auto flex items-center justify-center">
+              <EyeOff size={30} />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">Examinations Currently Inactive</h2>
+              <p className="text-sm text-gray-400 max-w-md mx-auto leading-relaxed">
+                Online exams are currently not open for candidates. Whenever an examination goes live, this portal will open automatically.
+              </p>
+            </div>
+            <div className="pt-2">
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold text-sm shadow-lg shadow-blue-500/20 hover:from-blue-500 hover:to-indigo-500 transition-all active:scale-95"
+              >
+                <Home size={16} />
+                <span>Return to Home</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="pt-28 sm:pt-32 pb-20 container mx-auto px-4 max-w-6xl space-y-8">
+          {/* Admin Warning Banner if Hidden */}
+          {!examsEnabled && isAdmin && (
+            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-lg">
+              <div className="flex items-center gap-2.5">
+                <div className="p-1.5 rounded-lg bg-amber-500/20 text-amber-400">
+                  <EyeOff size={16} />
+                </div>
+                <span><strong>Admin Preview Mode:</strong> Exams are currently <strong>HIDDEN</strong> from public students. You have access because you are an admin.</span>
+              </div>
+              <Link 
+                href="/admin/exams" 
+                className="px-3.5 py-1.5 rounded-xl bg-amber-500 text-black font-extrabold hover:bg-amber-400 transition-colors shrink-0 text-center"
+              >
+                Open Admin Controls
+              </Link>
+            </div>
+          )}
+
+          {/* Hero Header */}
         <div className="text-center space-y-3 max-w-2xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold">
             <CheckSquare size={14} />
@@ -342,6 +399,7 @@ export default function StudentExamsPortalPage() {
           )
         )}
       </div>
+      )}
 
       <Footer />
     </main>

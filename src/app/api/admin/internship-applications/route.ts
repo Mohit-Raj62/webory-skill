@@ -3,6 +3,7 @@ import dbConnect from "@/lib/db";
 import Application from "@/models/Application";
 import Internship from "@/models/Internship"; // Ensure model is registered
 import User from "@/models/User"; // Ensure model is registered
+import "@/models/Examination"; // Ensure Examination model is registered
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
@@ -28,6 +29,7 @@ export async function GET(req: Request) {
     const applications = await Application.find()
       .populate("student", "firstName lastName email")
       .populate("internship", "title company price")
+      .populate("assignedExam", "title duration totalMarks passingPercentage status")
       .sort({ appliedAt: -1 })
       .lean();
 

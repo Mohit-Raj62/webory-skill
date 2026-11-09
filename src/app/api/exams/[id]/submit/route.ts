@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Examination from "@/models/Examination";
 import ExaminationAttempt from "@/models/ExaminationAttempt";
+import Application from "@/models/Application";
 import { getAuthenticatedUser } from "@/lib/exam-auth";
 import { evaluateStudentSubmission } from "@/lib/exam-evaluation";
 
@@ -62,6 +63,32 @@ export async function POST(
     });
 
     await attempt.save();
+
+    // Auto-sync score to Internship Application if this candidate was in exam_pending or assigned this test
+    try {
+      await Application.updateMany(
+        {
+          student: auth.user._id,
+          $or: [
+            { assignedExam: id },
+            { status: "exam_pending" },
+          ],
+        },
+        {
+          $set: {
+            status: "exam_completed",
+            assignedExam: id,
+            examScore: evaluation.obtainedMarks,
+            examPercentage: evaluation.percentage,
+            examPassed: evaluation.passed,
+            examAttemptId: attempt._id,
+            examCompletedAt: submittedAt,
+          },
+        }
+      );
+    } catch (syncErr) {
+      console.error("Failed to auto-sync score to internship application:", syncErr);
+    }
 
     const canViewResult =
       exam.resultVisibility === "immediate" || exam.resultsPublished === true;

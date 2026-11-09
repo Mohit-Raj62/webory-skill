@@ -3,6 +3,7 @@ import dbConnect from "@/lib/db";
 import Application from "@/models/Application";
 import User from "@/models/User";
 import Internship from "@/models/Internship";
+import "@/models/Examination";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { sendEmail, emailTemplates } from "@/lib/mail";
@@ -32,6 +33,7 @@ export async function PATCH(
     const body = await req.json();
     const {
       status,
+      assignedExam,
       startDate,
       duration,
       interviewDate,
@@ -41,6 +43,7 @@ export async function PATCH(
 
     const updateData: any = {};
     if (status) updateData.status = status;
+    if (assignedExam !== undefined) updateData.assignedExam = assignedExam;
     if (startDate) updateData.startDate = startDate;
     if (duration) updateData.duration = duration;
     if (interviewDate) updateData.interviewDate = interviewDate;
@@ -51,6 +54,8 @@ export async function PATCH(
       status &&
       ![
         "pending",
+        "exam_pending",
+        "exam_completed",
         "interview_pending",
         "accepted",
         "rejected",
@@ -73,7 +78,8 @@ export async function PATCH(
       new: true,
     })
       .populate("student")
-      .populate("internship");
+      .populate("internship")
+      .populate("assignedExam", "title duration totalMarks passingPercentage");
 
     if (!application) {
       return NextResponse.json({ error: "Application not found" }, { status: 404 });

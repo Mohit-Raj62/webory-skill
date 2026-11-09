@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Examination from "@/models/Examination";
 import ExaminationAttempt from "@/models/ExaminationAttempt";
+import Application from "@/models/Application";
 import { getAuthenticatedUser } from "@/lib/exam-auth";
 
 export async function GET(
@@ -32,6 +33,28 @@ export async function GET(
         { error: "This examination is currently not available." },
         { status: 403 }
       );
+    }
+
+    // Check internship candidate eligibility if exam is restricted
+    if (!isAdmin && exam.studentEligibility?.type === "internship") {
+      const eligibility = exam.studentEligibility;
+      const targetInternships = eligibility.internshipIds || [];
+
+      const hasValidApplication = await Application.findOne({
+        student: auth.user._id,
+        status: { $ne: "rejected" },
+        $or: [
+          { assignedExam: id },
+          ...(targetInternships.length > 0 ? [{ internship: { $in: targetInternships } }] : [{ status: "exam_pending" }]),
+        ],
+      });
+
+      if (!hasValidApplication) {
+        return NextResponse.json(
+          { error: "Access Restricted: This examination is reserved for selected internship candidates." },
+          { status: 403 }
+        );
+      }
     }
 
     // Check student's attempts

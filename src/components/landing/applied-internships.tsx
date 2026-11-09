@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Briefcase, MapPin, Clock, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Briefcase, MapPin, Clock, ArrowRight, CheckCircle2, CheckSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -78,16 +78,20 @@ export function AppliedInternships() {
                                 </div>
                             </div>
 
-                            <div className="pt-4 border-t border-white/10">
+                            <div className="pt-4 border-t border-white/10 space-y-2">
                                 <p className="text-xs text-gray-400 font-medium">
                                     Status: <span className={`${
                                         application.status === 'accepted' ? 'text-green-400' :
                                         application.status === 'rejected' ? 'text-red-400' :
+                                        application.status === 'exam_pending' ? 'text-cyan-400 font-bold' :
+                                        application.status === 'exam_completed' ? 'text-emerald-400 font-semibold' :
                                         application.status === 'interview_scheduled' ? 'text-purple-400' :
                                         application.status === 'interview_pending' ? 'text-indigo-400' :
                                         'text-yellow-400'
                                     }`}>
-                                        {application.status === 'interview_pending' ? 'Interview Pending' : 
+                                        {application.status === 'exam_pending' ? 'Online Assessment Round (Pending)' :
+                                         application.status === 'exam_completed' ? 'Assessment Completed' :
+                                         application.status === 'interview_pending' ? 'Interview Pending' : 
                                          application.status === 'interview_scheduled' ? 'Interview Scheduled' : 
                                          application.status === 'accepted' ? 'Accepted' : 
                                          application.status === 'rejected' ? 'Rejected' : 
@@ -95,6 +99,33 @@ export function AppliedInternships() {
                                          'Under Review'}
                                     </span>
                                 </p>
+
+                                {application.status === 'exam_pending' && (
+                                    <div className="pt-1">
+                                        <Link href={application.assignedExam ? `/exams/${application.assignedExam._id}` : "/exams"}>
+                                            <Button className="w-full bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold text-xs py-2 rounded-xl shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-1.5 transition-all active:scale-95">
+                                                <CheckSquare size={14} />
+                                                <span>Take Assessment Exam</span>
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                )}
+
+                                {application.status === 'exam_completed' && (
+                                    <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between text-xs">
+                                        <span className="text-gray-400">Exam Result:</span>
+                                        <span className="text-emerald-300 font-bold">
+                                            {application.examPercentage !== null && application.examPercentage !== undefined
+                                                ? `${application.examPercentage}%`
+                                                : "Submitted"}
+                                            {application.examPassed !== null && (
+                                                <span className={application.examPassed ? "text-emerald-400 ml-1.5" : "text-amber-400 ml-1.5"}>
+                                                    ({application.examPassed ? "Passed" : "Under Review"})
+                                                </span>
+                                            )}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
                         </motion.div>
                     ))}

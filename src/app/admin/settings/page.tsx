@@ -116,6 +116,7 @@ export default function AdminSettingsPage() {
 
   const [careerEnabled, setCareerEnabled] = useState(true);
   const [mentorshipEnabled, setMentorshipEnabled] = useState(true);
+  const [examsEnabled, setExamsEnabled] = useState(false);
   
   const [announcementSettings, setAnnouncementSettings] = useState({
     enabled: true,
@@ -140,6 +141,9 @@ export default function AdminSettingsPage() {
         const data = await res.json();
         setCareerEnabled(data.careerApplicationsEnabled);
         setMentorshipEnabled(data.mentorshipEnabled);
+        if (data.examsEnabled !== undefined) {
+          setExamsEnabled(Boolean(data.examsEnabled));
+        }
         if (data.announcementBar) {
             setAnnouncementSettings(data.announcementBar);
         }
@@ -216,6 +220,39 @@ export default function AdminSettingsPage() {
       }
     } catch (error) {
       setMentorshipEnabled(!checked);
+      toast.error("Network error. Please check your connection.");
+      console.error("Fetch error:", error);
+    }
+  };
+
+  const handleExamsToggle = async (checked: boolean) => {
+    try {
+      setExamsEnabled(checked); // Optimistic update
+      const res = await fetch("/api/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          key: "examsEnabled",
+          value: checked
+        }),
+      });
+
+      if (res.ok) {
+        toast.success(`Exams section is now ${checked ? "VISIBLE" : "HIDDEN"} to users`);
+      } else {
+        setExamsEnabled(!checked); // Revert on failure
+        const errorText = await res.text();
+        let errorData;
+        try {
+            errorData = JSON.parse(errorText);
+        } catch (e) {
+            errorData = { error: `Server Error (${res.status})` };
+        }
+        toast.error(errorData.error || "Failed to update setting");
+        console.error("Setting error:", errorData);
+      }
+    } catch (error) {
+      setExamsEnabled(!checked);
       toast.error("Network error. Please check your connection.");
       console.error("Fetch error:", error);
     }
@@ -616,6 +653,24 @@ export default function AdminSettingsPage() {
               <Switch
                 checked={mentorshipEnabled}
                 onCheckedChange={handleMentorshipToggle}
+              />
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <Label className="text-base">Show Exams in Menu &amp; Navbar</Label>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${examsEnabled ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30" : "bg-amber-500/15 text-amber-400 border-amber-500/30"}`}>
+                    {examsEnabled ? "VISIBLE TO USERS" : "HIDDEN FROM USERS"}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-400">
+                  When disabled, the Exams section is completely hidden from the public navigation bar, mobile menu, and explore catalog. Turn it ON whenever tests are active for students.
+                </p>
+              </div>
+              <Switch
+                checked={examsEnabled}
+                onCheckedChange={handleExamsToggle}
               />
             </div>
 

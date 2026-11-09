@@ -4,6 +4,7 @@ import Enrollment from "@/models/Enrollment";
 import Application from "@/models/Application";
 import "@/models/Course"; // Ensure Course model is registered for populate
 import "@/models/Internship"; // Ensure Internship model is registered for populate
+import "@/models/Examination"; // Ensure Examination model is registered for populate
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 
@@ -44,6 +45,7 @@ export async function GET() {
 
       Application.find({ student: decoded.userId, status: { $ne: "rejected" } })
         .populate("internship", "title company location type stipend tags slug") // Only load needed fields
+        .populate("assignedExam", "title duration totalMarks passingPercentage status")
         .populate("student", "firstName lastName email") // Only load needed fields
         .lean()
         .then((res) => {

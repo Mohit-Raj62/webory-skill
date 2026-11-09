@@ -42,6 +42,8 @@ const ApplicationSchema = new Schema({
     type: String,
     enum: [
       "pending",
+      "exam_pending",
+      "exam_completed",
       "interview_pending",
       "accepted",
       "rejected",
@@ -49,6 +51,32 @@ const ApplicationSchema = new Schema({
       "completed",
     ],
     default: "pending",
+  },
+  assignedExam: {
+    type: Schema.Types.ObjectId,
+    ref: "Examination",
+    default: null,
+  },
+  examScore: {
+    type: Number,
+    default: null,
+  },
+  examPercentage: {
+    type: Number,
+    default: null,
+  },
+  examPassed: {
+    type: Boolean,
+    default: null,
+  },
+  examAttemptId: {
+    type: Schema.Types.ObjectId,
+    ref: "ExaminationAttempt",
+    default: null,
+  },
+  examCompletedAt: {
+    type: Date,
+    default: null,
   },
   transactionId: {
     type: String,
@@ -128,6 +156,10 @@ ApplicationSchema.index({ student: 1 }); // For user dashboard queries
 ApplicationSchema.index({ student: 1, status: 1 }); // For filtered queries (excluding rejected)
 ApplicationSchema.index({ internship: 1 }); // For internship-related queries
 ApplicationSchema.index({ status: 1 }); // For admin panel filtering
+
+if (models.Application && !models.Application.schema?.paths?.assignedExam) {
+  delete (models as any).Application;
+}
 
 const Application =
   models.Application || model("Application", ApplicationSchema);

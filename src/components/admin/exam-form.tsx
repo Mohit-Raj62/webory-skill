@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   CheckSquare,
@@ -25,6 +25,9 @@ import {
   Layers,
   Zap,
   Shuffle,
+  Globe,
+  Briefcase,
+  Users,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -100,6 +103,28 @@ export function ExamForm({ initialData, isEdit = false }: ExamFormProps) {
   const [explanationVisibility, setExplanationVisibility] = useState<boolean>(
     initialData?.explanationVisibility !== undefined ? initialData.explanationVisibility : true
   );
+
+  // Target Audience & Candidate Eligibility
+  const [eligibilityType, setEligibilityType] = useState<"all" | "internship">(
+    initialData?.studentEligibility?.type === "internship" ? "internship" : "all"
+  );
+  const [selectedInternshipIds, setSelectedInternshipIds] = useState<string[]>(
+    initialData?.studentEligibility?.internshipIds?.map((id: any) =>
+      typeof id === "object" && id._id ? id._id.toString() : id.toString()
+    ) || []
+  );
+  const [availableInternships, setAvailableInternships] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("/api/admin/internships")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.internships) {
+          setAvailableInternships(data.internships);
+        }
+      })
+      .catch((err) => console.error("Failed to load internships in exam form", err));
+  }, []);
 
   // Questions
   const [questions, setQuestions] = useState<QuestionItem[]>(
@@ -481,6 +506,10 @@ export function ExamForm({ initialData, isEdit = false }: ExamFormProps) {
         resultVisibility,
         answerKeyVisibility,
         explanationVisibility,
+        studentEligibility: {
+          type: eligibilityType,
+          internshipIds: eligibilityType === "internship" ? selectedInternshipIds : [],
+        },
         difficultyDistribution: difficultyCounts,
         questions,
       };
@@ -753,6 +782,128 @@ export function ExamForm({ initialData, isEdit = false }: ExamFormProps) {
             />
             <span>Auto Submit on 00:00</span>
           </label>
+        </div>
+      </div>
+
+      {/* 3. Target Audience & Candidate Eligibility */}
+      <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 space-y-4">
+        <div className="flex items-center gap-2 border-b border-white/10 pb-3">
+          <Users size={18} className="text-purple-400" />
+          <h2 className="text-base font-bold text-white">Target Audience &amp; Eligibility (पात्रता)</h2>
+        </div>
+
+        <div className="space-y-4">
+          <label className="text-xs font-semibold text-gray-300 block">
+            Who can view and attempt this examination?
+          </label>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setEligibilityType("all")}
+              className={`p-4 rounded-xl border text-left transition-all flex items-start gap-3 ${
+                eligibilityType === "all"
+                  ? "bg-blue-600/15 border-blue-500/50 shadow-md shadow-blue-500/10"
+                  : "bg-black/30 border-white/10 hover:border-white/20"
+              }`}
+            >
+              <div
+                className={`p-2 rounded-lg shrink-0 ${
+                  eligibilityType === "all" ? "bg-blue-500/20 text-blue-400" : "bg-white/5 text-gray-400"
+                }`}
+              >
+                <Globe size={18} />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-white flex items-center gap-2">
+                  Open for All Students
+                  {eligibilityType === "all" && <Check size={14} className="text-blue-400" />}
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Public exam. Any registered student on the platform can view and attempt this test when live.
+                </p>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setEligibilityType("internship")}
+              className={`p-4 rounded-xl border text-left transition-all flex items-start gap-3 ${
+                eligibilityType === "internship"
+                  ? "bg-purple-600/15 border-purple-500/50 shadow-md shadow-purple-500/10"
+                  : "bg-black/30 border-white/10 hover:border-white/20"
+              }`}
+            >
+              <div
+                className={`p-2 rounded-lg shrink-0 ${
+                  eligibilityType === "internship" ? "bg-purple-500/20 text-purple-400" : "bg-white/5 text-gray-400"
+                }`}
+              >
+                <Briefcase size={18} />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-white flex items-center gap-2">
+                  Internship Applicants Only
+                  {eligibilityType === "internship" && <Check size={14} className="text-purple-400" />}
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Restricted screening test. Only candidates who applied for the selected internship(s) or were assigned by Admin can take it.
+                </p>
+              </div>
+            </button>
+          </div>
+
+          {/* If Internship Selected: Choose which internship(s) */}
+          {eligibilityType === "internship" && (
+            <div className="pt-3 border-t border-white/5 space-y-3">
+              <label className="text-xs font-semibold text-purple-300 block">
+                Select Internship Track(s):
+              </label>
+
+              {availableInternships.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto pr-1">
+                  {availableInternships.map((internship) => {
+                    const isSelected = selectedInternshipIds.includes(internship._id);
+                    return (
+                      <button
+                        key={internship._id}
+                        type="button"
+                        onClick={() => {
+                          if (isSelected) {
+                            setSelectedInternshipIds(selectedInternshipIds.filter((id) => id !== internship._id));
+                          } else {
+                            setSelectedInternshipIds([...selectedInternshipIds, internship._id]);
+                          }
+                        }}
+                        className={`p-2.5 rounded-xl border text-left text-xs transition-all flex items-center justify-between gap-2 ${
+                          isSelected
+                            ? "bg-purple-500/20 border-purple-500/50 text-white font-semibold"
+                            : "bg-black/20 border-white/10 text-gray-400 hover:text-white"
+                        }`}
+                      >
+                        <span className="truncate">{internship.title}</span>
+                        {isSelected ? (
+                          <Check size={14} className="text-purple-400 shrink-0" />
+                        ) : (
+                          <Plus size={14} className="text-gray-500 shrink-0" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-xs text-gray-500 italic">
+                  Loading internships or no internships found.
+                </p>
+              )}
+
+              <p className="text-[11px] text-gray-400">
+                {selectedInternshipIds.length === 0
+                  ? "💡 Tip: If no tracks are selected, any applicant manually moved to the 'Assessment Round' by Admin can attempt this test."
+                  : `✓ Selected: ${selectedInternshipIds.length} internship track(s). Applicants in these tracks will see this assessment.`}
+              </p>
+            </div>
+          )}
         </div>
       </div>
 

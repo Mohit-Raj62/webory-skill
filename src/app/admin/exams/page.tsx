@@ -49,6 +49,50 @@ export default function AdminExamsPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
+  const [examsEnabled, setExamsEnabled] = useState(false);
+  const [togglingVisibility, setTogglingVisibility] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.examsEnabled !== undefined) {
+          setExamsEnabled(Boolean(data.examsEnabled));
+        }
+      })
+      .catch((err) => console.error("Failed to load settings in admin exams", err));
+  }, []);
+
+  const handleToggleExamsVisibility = async () => {
+    try {
+      setTogglingVisibility(true);
+      const nextVal = !examsEnabled;
+      const res = await fetch("/api/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          key: "examsEnabled",
+          value: nextVal,
+        }),
+      });
+
+      if (res.ok) {
+        setExamsEnabled(nextVal);
+        toast.success(
+          nextVal
+            ? "Exams are now VISIBLE to users in Navbar & Menus!"
+            : "Exams are now HIDDEN from public Navbar & Menus!"
+        );
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        toast.error(errorData.error || "Failed to update visibility");
+      }
+    } catch {
+      toast.error("Network error updating visibility");
+    } finally {
+      setTogglingVisibility(false);
+    }
+  };
 
   const fetchExams = async () => {
     try {
@@ -185,6 +229,62 @@ export default function AdminExamsPage() {
             <span>Create Examination</span>
           </Link>
         </div>
+      </div>
+
+      {/* Public Visibility Quick Toggle Bar */}
+      <div className={`p-4 sm:p-5 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl ${
+        examsEnabled 
+          ? "bg-gradient-to-r from-emerald-950/40 via-emerald-900/20 to-transparent border-emerald-500/30 shadow-emerald-500/5"
+          : "bg-gradient-to-r from-amber-950/40 via-amber-900/20 to-transparent border-amber-500/30 shadow-amber-500/5"
+      }`}>
+        <div className="flex items-center gap-3.5 min-w-0">
+          <div className={`p-2.5 rounded-xl border shrink-0 ${
+            examsEnabled ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-400" : "bg-amber-500/20 border-amber-500/40 text-amber-400"
+          }`}>
+            {examsEnabled ? <Eye size={22} /> : <EyeOff size={22} />}
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <span className="font-bold text-sm text-white">Public Visibility for Students:</span>
+              <span className={`text-[10px] font-extrabold tracking-wider uppercase px-2.5 py-0.5 rounded-full border ${
+                examsEnabled 
+                  ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40" 
+                  : "bg-amber-500/20 text-amber-300 border-amber-500/40"
+              }`}>
+                {examsEnabled ? "● VISIBLE IN NAVBAR & MENU" : "○ HIDDEN FROM PUBLIC MENUS"}
+              </span>
+            </div>
+            <p className="text-xs text-gray-400 mt-1 leading-relaxed">
+              {examsEnabled 
+                ? "Students can see the 'Exams' link in the top Navbar, mobile drawer, and Explore Menu. Turn off to hide."
+                : "The Exams link is currently HIDDEN from navigation & menus for all normal users. Turn on when an exam is active."}
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={handleToggleExamsVisibility}
+          disabled={togglingVisibility}
+          className={`px-4 sm:px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 shrink-0 ${
+            examsEnabled
+              ? "bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/40 active:scale-95"
+              : "bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold shadow-lg shadow-emerald-500/25 active:scale-95"
+          }`}
+        >
+          {togglingVisibility ? (
+            <span className="animate-pulse">Updating...</span>
+          ) : examsEnabled ? (
+            <>
+              <EyeOff size={15} />
+              <span>Hide Exams from Menu</span>
+            </>
+          ) : (
+            <>
+              <Eye size={15} />
+              <span>Show Exams to Users</span>
+            </>
+          )}
+        </button>
       </div>
 
       {/* Metric Cards */}

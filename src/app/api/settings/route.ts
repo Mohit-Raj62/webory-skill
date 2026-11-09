@@ -18,6 +18,7 @@ export async function GET() {
         $in: [
           "careerApplicationsEnabled",
           "mentorshipEnabled",
+          "examsEnabled",
           "announcementBar",
           "promoPopups",
           "role2FARequirements",
@@ -34,6 +35,7 @@ export async function GET() {
     const careerApplicationsEnabled =
       settingsMap.careerApplicationsEnabled ?? true;
     const mentorshipEnabled = settingsMap.mentorshipEnabled ?? true;
+    const examsEnabled = settingsMap.examsEnabled ?? false;
     const announcementBar = settingsMap.announcementBar ?? {
       enabled: true,
       text: "Waitlist for January 2026 is full. February batch closing soon!",
@@ -46,10 +48,10 @@ export async function GET() {
     };
 
     return NextResponse.json(
-      { careerApplicationsEnabled, mentorshipEnabled, announcementBar, promoPopups, role2FARequirements },
+      { careerApplicationsEnabled, mentorshipEnabled, examsEnabled, announcementBar, promoPopups, role2FARequirements },
       {
         headers: {
-          "Cache-Control": "public, s-maxage=300, stale-while-revalidate=150",
+          "Cache-Control": "no-cache, no-store, max-age=0, must-revalidate",
         },
       },
     );
