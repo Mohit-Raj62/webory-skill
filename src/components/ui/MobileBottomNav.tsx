@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { Home, GraduationCap, Briefcase, Bot, BrainCircuit, Code, LayoutGrid } from "lucide-react";
+import { Home, GraduationCap, Briefcase, Bot, BrainCircuit, Code, LayoutGrid, CheckSquare } from "lucide-react";
 import { useAuth } from "@/components/auth/session-provider";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
@@ -124,11 +124,11 @@ export function MobileBottomNav() {
     }, []);
 
     // Only show on mobile AND in standalone mode
-    // Hide on admin, teacher and exam pages, or when suppressed by main content
+    // Hide on admin, teacher and active exam test room (/take), or when suppressed by main content
     const isRestrictedPage =
         pathname?.startsWith('/admin') ||
         pathname?.startsWith('/teacher') ||
-        pathname?.startsWith('/exams');
+        pathname?.includes('/take');
 
     useEffect(() => {
         if (isStandalone && !isRestrictedPage && !isHiddenByMain) {
@@ -174,10 +174,10 @@ export function MobileBottomNav() {
                     />
 
                     <NavItem 
-                        href="/internships" 
-                        icon={Briefcase} 
-                        label="Intern" 
-                        isActive={pathname === "/internships"} 
+                        href="/exams" 
+                        icon={CheckSquare} 
+                        label="Exams" 
+                        isActive={pathname?.startsWith("/exams")} 
                     />
 
                     <NavItem 
@@ -189,10 +189,10 @@ export function MobileBottomNav() {
                     />
 
                     <NavItem 
-                        href="/playground" 
-                        icon={Code} 
-                        label="DevLab" 
-                        isActive={pathname === "/playground"} 
+                        href="/internships" 
+                        icon={Briefcase} 
+                        label="Intern" 
+                        isActive={pathname === "/internships"} 
                     />
 
                     <NavItem 

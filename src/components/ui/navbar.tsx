@@ -3,7 +3,29 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, User, Code2, Sparkles, MessageSquare, GraduationCap, Briefcase, BrainCircuit, Bot, Orbit, ArrowRight, Trophy, CheckSquare } from "lucide-react";
+import { 
+    Menu, 
+    X, 
+    User, 
+    Code2, 
+    Sparkles, 
+    MessageSquare, 
+    GraduationCap, 
+    Briefcase, 
+    BrainCircuit, 
+    Bot, 
+    Orbit, 
+    ArrowRight, 
+    Trophy, 
+    CheckSquare,
+    Video,
+    Monitor,
+    BookOpen,
+    MessagesSquare,
+    ShieldCheck,
+    LayoutGrid,
+    Compass
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/components/auth/session-provider";
 import dynamic from "next/dynamic";
@@ -251,56 +273,43 @@ export function Navbar() {
                         )}
                     </div>
 
-                    {/* Mobile Quick Actions (Feedback & Profile) - Only in Standalone/App */}
-                    {isStandalone && (
-                        <div className="min-[990px]:hidden flex items-center gap-1.5">
-                            <MobileNavbarSearch />
-                            <button
-                                onClick={() => setIsFeedbackOpen(true)}
-                                className="p-2 rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-400 hover:text-white transition-all active:scale-90"
-                            >
-                                <MessageSquare size={18} />
-                            </button>
-                            
-                            {user ? (
-                                <Link href={(user.role === 'admin' || user.role === 'superadmin') ? "/admin" : "/profile"}>
-                                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white shadow-lg border border-white/10 active:scale-95 transition-transform">
-                                        {user?.firstName?.[0] || 'U'}
-                                    </div>
-                                </Link>
-                            ) : (
-                                <Link href="/login">
-                                    <div className="p-2 rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-400 hover:text-white transition-all active:scale-90">
-                                        <User size={18} />
-                                    </div>
-                                </Link>
-                            )}
-                        </div>
-                    )}
+                    {/* Mobile Quick Actions & Menu Toggle - Available in Browser & Installed App */}
+                    <div className="min-[990px]:hidden flex items-center gap-1.5">
+                        <MobileNavbarSearch />
+                        
+                        {user ? (
+                            <Link href={(user.role === 'admin' || user.role === 'superadmin') ? "/admin" : "/profile"}>
+                                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-[11px] font-bold text-white shadow-md border border-white/10 active:scale-95 transition-transform">
+                                    {user?.firstName?.[0] || 'U'}
+                                </div>
+                            </Link>
+                        ) : (
+                            <Link href="/login">
+                                <div className="p-2 rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-300 hover:text-white transition-all active:scale-90">
+                                    <User size={17} />
+                                </div>
+                            </Link>
+                        )}
 
-                    {/* Mobile Menu Button - Shown only in Browser/Non-Standalone */}
-                    {!isStandalone && (
-                        <div className="min-[990px]:hidden flex items-center gap-1.5">
-                            <MobileNavbarSearch />
-                            <motion.button
-                                whileTap={{ scale: 0.9 }}
-                                className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-300 hover:text-white hover:border-white/20 transition-all"
-                                onClick={() => setIsOpen(!isOpen)}
-                            >
-                                <AnimatePresence mode="wait">
-                                    {isOpen ? (
-                                        <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                                            <X size={20} />
-                                        </motion.div>
-                                    ) : (
-                                        <motion.div key="menu" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                                            <Menu size={20} />
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </motion.button>
-                        </div>
-                    )}
+                        <motion.button
+                            whileTap={{ scale: 0.9 }}
+                            className="relative w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-300 hover:text-white hover:border-white/20 transition-all"
+                            onClick={() => setIsOpen(!isOpen)}
+                            aria-label="Toggle Navigation Menu"
+                        >
+                            <AnimatePresence mode="wait">
+                                {isOpen ? (
+                                    <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                                        <X size={19} />
+                                    </motion.div>
+                                ) : (
+                                    <motion.div key="menu" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                                        <Menu size={19} />
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </motion.button>
+                    </div>
                 </div>
 
                 {/* Mobile Menu */}
@@ -314,19 +323,17 @@ export function Navbar() {
                             className="min-[990px]:hidden max-h-[calc(100vh-4rem)] sm:max-h-[calc(100vh-4.5rem)] overflow-y-auto overscroll-contain scrollbar-hide"
                         >
                             <div className="bg-[#050814]/95 backdrop-blur-2xl border-t border-white/[0.08] px-3.5 sm:px-5 py-3.5 sm:py-5 space-y-2 sm:space-y-3 shadow-2xl pb-6">
-                                {/* Centered Explore Link - Only in App Mode */}
-                                {isStandalone && (
-                                    <div className="flex justify-center pb-0.5">
-                                        <Link 
-                                            href="/explore" 
-                                            onClick={() => setIsOpen(false)}
-                                            className="w-full flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 text-white shadow-lg shadow-blue-500/10 active:scale-[0.98] transition-all"
-                                        >
-                                            <Orbit size={16} className="text-blue-400 group-hover:animate-spin" />
-                                            <span className="text-xs font-black uppercase tracking-[0.18em] italic">Explore <span className="text-blue-400 font-black">Everything</span></span>
-                                        </Link>
-                                    </div>
-                                )}
+                                {/* Centered Explore Link - Quick Access to All Features */}
+                                <div className="flex justify-center pb-0.5">
+                                    <Link 
+                                        href="/explore" 
+                                        onClick={() => setIsOpen(false)}
+                                        className="w-full flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 text-white shadow-lg shadow-blue-500/10 active:scale-[0.98] transition-all"
+                                    >
+                                        <Orbit size={16} className="text-blue-400 group-hover:animate-spin" />
+                                        <span className="text-xs font-black uppercase tracking-[0.18em] italic">Explore <span className="text-blue-400 font-black">All Modules</span></span>
+                                    </Link>
+                                </div>
 
                                 {/* Animated AI Copilot Feature Card for Mobile */}
                                 <Link 
@@ -361,28 +368,41 @@ export function Navbar() {
                                     <MobileNavLink href="/courses" icon={GraduationCap} badge="FREE" onClick={() => setIsOpen(false)} index={0}>
                                         Courses
                                     </MobileNavLink>
-                                    <MobileNavLink href="/internships" icon={Briefcase} onClick={() => setIsOpen(false)} index={1}>
-                                        Internships
+                                    <MobileNavLink href="/exams" icon={CheckSquare} badge="LIVE" onClick={() => setIsOpen(false)} index={1}>
+                                        Exams &amp; Tests
                                     </MobileNavLink>
-                                    <MobileNavLink href="/exams" icon={CheckSquare} badge="LIVE" onClick={() => setIsOpen(false)} index={2}>
-                                        Exams & Tests
+                                    <MobileNavLink href="/internships" icon={Briefcase} onClick={() => setIsOpen(false)} index={2}>
+                                        Internships
                                     </MobileNavLink>
                                     <MobileNavLink href="/hackathons" icon={Trophy} badge="NEW" onClick={() => setIsOpen(false)} index={3}>
                                         Hackathons
                                     </MobileNavLink>
+                                    <MobileNavLink href="/live-classes" icon={Video} badge="LIVE" onClick={() => setIsOpen(false)} index={4}>
+                                        Live Classes
+                                    </MobileNavLink>
+                                    <MobileNavLink href="/playground" icon={Code2} onClick={() => setIsOpen(false)} index={5}>
+                                        DevLab IDE
+                                    </MobileNavLink>
+                                    <MobileNavLink href="/ai-prep" icon={BrainCircuit} badge="PRO" onClick={() => setIsOpen(false)} index={6}>
+                                        AI Nexus Prep
+                                    </MobileNavLink>
+                                    <MobileNavLink href="/simulator" icon={Monitor} onClick={() => setIsOpen(false)} index={7}>
+                                        WeboryOS
+                                    </MobileNavLink>
+                                    <MobileNavLink href="/blog" icon={BookOpen} onClick={() => setIsOpen(false)} index={8}>
+                                        Tech Blog
+                                    </MobileNavLink>
+                                    <MobileNavLink href="/mentorship" icon={MessagesSquare} onClick={() => setIsOpen(false)} index={9}>
+                                        Mentorship
+                                    </MobileNavLink>
+                                    <MobileNavLink href="/verify-certificate" icon={ShieldCheck} onClick={() => setIsOpen(false)} index={10}>
+                                        Verify Certificate
+                                    </MobileNavLink>
 
-                                    {user && (
-                                        <>
-                                            <MobileNavLink href="/playground" icon={Code2} onClick={() => setIsOpen(false)} index={3}>
-                                                DevLab
-                                            </MobileNavLink>
-                                            <MobileNavLink href="/ai-weboryskills" icon={Bot} onClick={() => setIsOpen(false)} index={4}>
-                                                Weboryskills AI
-                                            </MobileNavLink>
-                                            <MobileNavLink href="/ai-prep" icon={BrainCircuit} badge="PRO" onClick={() => setIsOpen(false)} index={5}>
-                                                AI Nexus
-                                            </MobileNavLink>
-                                        </>
+                                    {user && (user.role === 'admin' || user.role === 'superadmin') && (
+                                        <MobileNavLink href="/admin" icon={ShieldCheck} badge="ADMIN" onClick={() => setIsOpen(false)} index={11}>
+                                            Admin Dashboard
+                                        </MobileNavLink>
                                     )}
 
                                     {user && (

@@ -33,7 +33,12 @@ import {
     LayoutGrid,
     Clock,
     Activity,
-    ExternalLink
+    ExternalLink,
+    CheckSquare,
+    Video,
+    Bot,
+    BrainCircuit,
+    Compass
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -55,48 +60,78 @@ interface Category {
 
 const MENU_RAIL_CATEGORIES: Category[] = [
     {
-        title: "CORE DIRECTIVES",
-        id: "core",
-        subtitle: "Primary Platform Modules",
+        title: "ACADEMICS & ASSESSMENTS",
+        id: "academics",
+        subtitle: "Learning, Testing & Certifications",
         items: [
+            { 
+                label: "ONLINE EXAMS", 
+                href: "/exams", 
+                icon: CheckSquare, 
+                badge: "LIVE", 
+                description: "Proctored timed tests, JEE/CBT assessments & instant evaluation", 
+                verified: true
+            },
+            { 
+                label: "COURSES", 
+                href: "/courses", 
+                icon: GraduationCap, 
+                badge: "POPULAR", 
+                description: "Full-stack development, AI, DSA & core tech modules", 
+                verified: true
+            },
+            { 
+                label: "INTERNSHIPS", 
+                href: "/internships", 
+                icon: Briefcase, 
+                badge: "CAREER", 
+                description: "Industry verified virtual internships with official certificates", 
+                verified: true
+            },
             { 
                 label: "HACKATHONS", 
                 href: "/hackathons", 
                 icon: Trophy, 
-                badge: "LIVE", 
-                description: "Participate in global industrial competitions", 
+                badge: "GLOBAL", 
+                description: "Participate in real-world industrial competitions and prizes", 
                 verified: true
             },
             { 
-                label: "MENTORSHIP", 
-                href: "/mentorship", 
-                icon: MessagesSquare, 
-                badge: "ELITE", 
-                description: "One-on-one sessions with industry veterans",
+                label: "LIVE CLASSES", 
+                href: "/live-classes", 
+                icon: Video, 
+                badge: "INTERACTIVE", 
+                description: "Join scheduled mentor-led live interactive coding sessions", 
                 verified: true
             },
         ]
     },
     {
-        title: "INNOVATION LABS",
+        title: "AI & DEV INNOVATION LABS",
         id: "labs",
-        subtitle: "Experimental Tech Hub",
+        subtitle: "Neural Engines & Developer Tooling",
         items: [
-            { label: "WEBORY OS", href: "/simulator", icon: Monitor, badge: "STABLE", description: "Terminal-based learning environment" },
-            { label: "LOGICROOM", href: "/viz", icon: Orbit, badge: "3D", description: "Advanced code visualization engine", verified: true },
-            { label: "RESUME AI", href: "/resume-checker", icon: FileText, badge: "NEURAL", description: "AI-powered skill verification", verified: true },
+            { label: "AI COPILOT", href: "/ai-weboryskills", icon: Bot, badge: "24/7", description: "Personal AI Mentor & interactive career roadmap", verified: true },
+            { label: "AI NEXUS", href: "/ai-prep", icon: BrainCircuit, badge: "PRO", description: "Adaptive AI interview practice & skill evaluation", verified: true },
+            { label: "DEVLAB IDE", href: "/playground", icon: Code2, badge: "LIVE", description: "In-browser multi-language compiler & code runner", verified: true },
+            { label: "WEBORY OS", href: "/simulator", icon: Monitor, badge: "STABLE", description: "Terminal-based virtual OS environment" },
+            { label: "LOGICROOM 3D", href: "/viz", icon: Orbit, badge: "3D", description: "Interactive 3D code & data structure visualizer", verified: true },
+            { label: "RESUME AI", href: "/resume-checker", icon: FileText, badge: "NEURAL", description: "AI-powered resume verification & ATS score", verified: true },
+            { label: "CAREER ROADMAP", href: "/career-roadmap", icon: Compass, badge: "GUIDE", description: "Step-by-step role roadmaps for engineering", verified: true },
         ]
     },
     {
-        title: "PLATFORM SYNC",
-        id: "sync",
-        subtitle: "Global Network Transparency",
+        title: "COMMUNITY & PLATFORM",
+        id: "community",
+        subtitle: "Global Network & Verification",
         items: [
-            { label: "ABOUT US", href: "/about", icon: Info, description: "Our mission and story" },
-            { label: "CAREERS", href: "/careers", icon: Briefcase, description: "Join our core engineering team" },
-            { label: "AMBASSADOR", href: "/ambassador", icon: UserCircle, badge: "JOIN", description: "Spread the innovation", verified: true },
-            { label: "TECH BLOG", href: "/blog", icon: BookOpen, description: "Latest platform engineering insights" },
-            { label: "SUPPORT", href: "/contact", icon: Mail, description: "Direct link to neural support" },
+            { label: "MENTORSHIP", href: "/mentorship", icon: MessagesSquare, badge: "ELITE", description: "One-on-one sessions with industry veterans", verified: true },
+            { label: "CAMPUS AMBASSADOR", href: "/ambassador", icon: UserCircle, badge: "JOIN", description: "Lead campus communities and earn rewards", verified: true },
+            { label: "TECH BLOG", href: "/blog", icon: BookOpen, description: "Latest platform engineering insights & articles" },
+            { label: "CAREERS & JOBS", href: "/careers", icon: Briefcase, description: "Join our core engineering and operations team" },
+            { label: "VERIFY CERTIFICATE", href: "/verify-certificate", icon: ShieldCheck, badge: "INSTANT", description: "Verify official Webory student credentials" },
+            { label: "ABOUT US", href: "/about", icon: Info, description: "Our mission, vision and founding story" },
+            { label: "SUPPORT & CONTACT", href: "/contact", icon: Mail, description: "24/7 dedicated support & inquiry line" },
         ]
     }
 ];
