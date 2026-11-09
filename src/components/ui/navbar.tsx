@@ -110,7 +110,39 @@ export function Navbar() {
     const [isStandalone, setIsStandalone] = useState(false);
 
     useEffect(() => {
-        setIsStandalone(window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone);
+        const checkStandalone = () => {
+            const isApp = 
+                (typeof window !== 'undefined' && (
+                    window.matchMedia('(display-mode: standalone)').matches || 
+                    (navigator as any).standalone === true ||
+                    window.matchMedia('(display-mode: fullscreen)').matches ||
+                    window.matchMedia('(display-mode: minimal-ui)').matches ||
+                    (typeof document !== 'undefined' && document.referrer.includes('android-app://'))
+                ));
+            setIsStandalone(Boolean(isApp));
+            return Boolean(isApp);
+        };
+
+        checkStandalone();
+
+        const mediaQuery = typeof window !== 'undefined' ? window.matchMedia('(display-mode: standalone)') : null;
+        const handler = () => checkStandalone();
+        if (mediaQuery) {
+            if (mediaQuery.addEventListener) {
+                mediaQuery.addEventListener('change', handler);
+            } else if ((mediaQuery as any).addListener) {
+                (mediaQuery as any).addListener(handler);
+            }
+        }
+        return () => {
+            if (mediaQuery) {
+                if (mediaQuery.removeEventListener) {
+                    mediaQuery.removeEventListener('change', handler);
+                } else if ((mediaQuery as any).removeListener) {
+                    (mediaQuery as any).removeListener(handler);
+                }
+            }
+        };
     }, []);
 
     useEffect(() => {
@@ -273,7 +305,7 @@ export function Navbar() {
                         )}
                     </div>
 
-                    {/* Mobile Quick Actions & Menu Toggle - Available in Browser & Installed App */}
+                    {/* Mobile Quick Actions & Menu Toggle - 3-line hamburger hidden in Mobile App / Standalone (where bottom nav Menu exists) */}
                     <div className="min-[990px]:hidden flex items-center gap-1.5">
                         <MobileNavbarSearch />
                         
@@ -291,30 +323,32 @@ export function Navbar() {
                             </Link>
                         )}
 
-                        <motion.button
-                            whileTap={{ scale: 0.9 }}
-                            className="relative w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-300 hover:text-white hover:border-white/20 transition-all"
-                            onClick={() => setIsOpen(!isOpen)}
-                            aria-label="Toggle Navigation Menu"
-                        >
-                            <AnimatePresence mode="wait">
-                                {isOpen ? (
-                                    <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                                        <X size={19} />
-                                    </motion.div>
-                                ) : (
-                                    <motion.div key="menu" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                                        <Menu size={19} />
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </motion.button>
+                        {!isStandalone && (
+                            <motion.button
+                                whileTap={{ scale: 0.9 }}
+                                className="relative w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl bg-white/[0.06] border border-white/[0.08] text-gray-300 hover:text-white hover:border-white/20 transition-all"
+                                onClick={() => setIsOpen(!isOpen)}
+                                aria-label="Toggle Navigation Menu"
+                            >
+                                <AnimatePresence mode="wait">
+                                    {isOpen ? (
+                                        <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                                            <X size={19} />
+                                        </motion.div>
+                                    ) : (
+                                        <motion.div key="menu" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                                            <Menu size={19} />
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </motion.button>
+                        )}
                     </div>
                 </div>
 
-                {/* Mobile Menu */}
+                {/* Mobile Menu - Only in Browser */}
                 <AnimatePresence>
-                    {isOpen && (
+                    {isOpen && !isStandalone && (
                         <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: "auto" }}

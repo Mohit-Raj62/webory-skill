@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { Home, GraduationCap, Briefcase, Bot, BrainCircuit, Code, LayoutGrid, CheckSquare } from "lucide-react";
+import { Home, GraduationCap, Briefcase, Bot, BrainCircuit, Code, LayoutGrid } from "lucide-react";
 import { useAuth } from "@/components/auth/session-provider";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
@@ -174,10 +174,10 @@ export function MobileBottomNav() {
                     />
 
                     <NavItem 
-                        href="/exams" 
-                        icon={CheckSquare} 
-                        label="Exams" 
-                        isActive={pathname?.startsWith("/exams")} 
+                        href="/internships" 
+                        icon={Briefcase} 
+                        label="Intern" 
+                        isActive={pathname === "/internships"} 
                     />
 
                     <NavItem 
@@ -189,10 +189,10 @@ export function MobileBottomNav() {
                     />
 
                     <NavItem 
-                        href="/internships" 
-                        icon={Briefcase} 
-                        label="Intern" 
-                        isActive={pathname === "/internships"} 
+                        href="/playground" 
+                        icon={Code} 
+                        label="DevLab" 
+                        isActive={pathname === "/playground"} 
                     />
 
                     <NavItem 
