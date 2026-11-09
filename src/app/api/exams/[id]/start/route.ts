@@ -31,6 +31,34 @@ export async function POST(
       );
     }
 
+    // Synchronized slot window validation
+    const now = new Date();
+    if (!isAdmin && exam.isSynchronizedSlot) {
+      if (exam.startDate && now.getTime() < new Date(exam.startDate).getTime()) {
+        return NextResponse.json(
+          {
+            error: "The examination has not started yet. Please wait in the live waiting room.",
+            slotState: "waiting",
+            startDate: exam.startDate,
+            serverTime: now.toISOString(),
+          },
+          { status: 403 }
+        );
+      }
+
+      if (exam.endDate && now.getTime() > new Date(exam.endDate).getTime()) {
+        return NextResponse.json(
+          {
+            error: "This examination slot has expired and is no longer accepting attempts.",
+            slotState: "expired",
+            endDate: exam.endDate,
+            serverTime: now.toISOString(),
+          },
+          { status: 403 }
+        );
+      }
+    }
+
     // Check internship candidate eligibility if exam is restricted
     if (!isAdmin && exam.studentEligibility?.type === "internship") {
       const eligibility = exam.studentEligibility;
@@ -75,7 +103,17 @@ export async function POST(
       const startTime = new Date();
       const extraMinutes = exam.globalTimeExtensionMinutes || 0;
       const totalDurationMinutes = exam.duration + extraMinutes;
-      const endTime = new Date(startTime.getTime() + totalDurationMinutes * 60 * 1000);
+      let calculatedEndTime = new Date(startTime.getTime() + totalDurationMinutes * 60 * 1000);
+
+      // Strict Window Enforcement for Synchronized Slots:
+      // If student enters late, their end time is capped to the slot's scheduled endDate
+      if (exam.isSynchronizedSlot && exam.strictWindowEnforcement !== false && exam.endDate) {
+        const slotEndMs = new Date(exam.endDate).getTime();
+        if (calculatedEndTime.getTime() > slotEndMs) {
+          calculatedEndTime = new Date(slotEndMs);
+        }
+      }
+      const endTime = calculatedEndTime;
 
       // Initialize default response statuses for all questions
       const initialResponses = (exam.questions || []).map((q: any) => ({

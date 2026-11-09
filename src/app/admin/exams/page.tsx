@@ -40,6 +40,9 @@ interface ExamItem {
   answerKeyPublished: boolean;
   submissionsCount?: number;
   activeAttemptingCount?: number;
+  isSynchronizedSlot?: boolean;
+  startDate?: string;
+  endDate?: string;
   createdAt: string;
 }
 
@@ -438,6 +441,14 @@ export default function AdminExamsPage() {
                         <span className="text-[11px] px-2 py-0.5 rounded-md bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 flex items-center gap-1 animate-pulse">
                           <Users size={11} />
                           {exam.activeAttemptingCount} attempting now
+                        </span>
+                      )}
+
+                      {/* Live Sync Slot Badge */}
+                      {exam.isSynchronizedSlot && (
+                        <span className="text-[11px] px-2.5 py-0.5 rounded-md bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 flex items-center gap-1 font-semibold">
+                          <Clock size={11} />
+                          Live Sync Slot {exam.startDate ? `(${new Date(exam.startDate).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })})` : ""}
                         </span>
                       )}
                     </div>

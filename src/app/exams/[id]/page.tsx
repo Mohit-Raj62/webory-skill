@@ -15,6 +15,12 @@ import {
   CheckCircle2,
   ArrowRight,
   BookOpen,
+  Calendar,
+  Radio,
+  Sparkles,
+  Lock,
+  Unlock,
+  Timer,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -31,6 +37,11 @@ export default function ExamInstructionPage({
   const [agreed, setAgreed] = useState(false);
   const [starting, setStarting] = useState(false);
 
+  // Synchronized Slot Waiting Room State
+  const [slotState, setSlotState] = useState<"waiting" | "active" | "expired">("active");
+  const [secondsUntilStart, setSecondsUntilStart] = useState<number>(0);
+  const [serverTimeOffsetMs, setServerTimeOffsetMs] = useState<number>(0);
+
   useEffect(() => {
     const fetchExamInfo = async () => {
       try {
@@ -40,6 +51,20 @@ export default function ExamInstructionPage({
         if (data.success) {
           setExam(data.exam);
           setAttemptStatus(data.attemptStatus);
+          setSlotState(data.slotState || "active");
+
+          if (data.serverTime) {
+            const serverMs = new Date(data.serverTime).getTime();
+            const localMs = Date.now();
+            const offset = serverMs - localMs;
+            setServerTimeOffsetMs(offset);
+
+            if (data.exam?.isSynchronizedSlot && data.exam?.startDate) {
+              const startMs = new Date(data.exam.startDate).getTime();
+              const diff = Math.max(0, Math.ceil((startMs - serverMs) / 1000));
+              setSecondsUntilStart(diff);
+            }
+          }
         } else {
           toast.error(data.error || "Failed to load examination");
         }
@@ -53,6 +78,40 @@ export default function ExamInstructionPage({
     fetchExamInfo();
   }, [id]);
 
+  // Synchronized Slot live ticking countdown
+  useEffect(() => {
+    if (!exam?.isSynchronizedSlot || !exam?.startDate) return;
+
+    const startMs = new Date(exam.startDate).getTime();
+    const endMs = exam.endDate ? new Date(exam.endDate).getTime() : 0;
+
+    const timer = setInterval(() => {
+      const currentServerMs = Date.now() + serverTimeOffsetMs;
+      const diffSecs = Math.ceil((startMs - currentServerMs) / 1000);
+
+      if (diffSecs > 0) {
+        setSecondsUntilStart(diffSecs);
+        setSlotState("waiting");
+      } else {
+        setSecondsUntilStart(0);
+        if (endMs && currentServerMs > endMs) {
+          setSlotState("expired");
+        } else {
+          setSlotState((prev) => {
+            if (prev === "waiting") {
+              toast.success("Examination has started! You can now begin.", {
+                duration: 6000,
+              });
+            }
+            return "active";
+          });
+        }
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [exam, serverTimeOffsetMs]);
+
   const handleStartExam = () => {
     if (!agreed) {
       toast.error("Please agree to the examination terms before starting");
@@ -61,6 +120,16 @@ export default function ExamInstructionPage({
     setStarting(true);
     router.push(`/exams/${id}/take`);
   };
+
+  const formatCountdown = (totalSecs: number) => {
+    const days = Math.floor(totalSecs / 86400);
+    const hours = Math.floor((totalSecs % 86400) / 3600);
+    const minutes = Math.floor((totalSecs % 3600) / 60);
+    const seconds = totalSecs % 60;
+    return { days, hours, minutes, seconds };
+  };
+
+  const { days, hours, minutes, seconds } = formatCountdown(secondsUntilStart);
 
   if (loading) {
     return (
@@ -164,6 +233,175 @@ export default function ExamInstructionPage({
           </div>
         </div>
 
+        {/* Synchronized Live Exam Waiting Room Banner */}
+        {exam.isSynchronizedSlot && (
+          <div className="relative overflow-hidden rounded-3xl border border-blue-500/30 bg-gradient-to-b from-blue-950/40 via-black/60 to-purple-950/30 p-6 sm:p-8 backdrop-blur-xl shadow-2xl space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+              <div className="flex items-center gap-2.5">
+                <span className="relative flex h-3 w-3">
+                  <span
+                    className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                      slotState === "waiting"
+                        ? "bg-amber-400"
+                        : slotState === "active"
+                        ? "bg-emerald-400"
+                        : "bg-red-400"
+                    }`}
+                  />
+                  <span
+                    className={`relative inline-flex rounded-full h-3 w-3 ${
+                      slotState === "waiting"
+                        ? "bg-amber-500"
+                        : slotState === "active"
+                        ? "bg-emerald-500"
+                        : "bg-red-500"
+                    }`}
+                  />
+                </span>
+                <div>
+                  <h2 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                    {slotState === "waiting" && "Live Waiting Room: Exam Locked"}
+                    {slotState === "active" && "Exam is Live! Ready to Start"}
+                    {slotState === "expired" && "Examination Slot Ended"}
+                  </h2>
+                  <p className="text-[11px] text-gray-400">
+                    Synchronized Live Slot • All candidates start at the exact same moment
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 text-xs text-blue-300/80 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20 w-fit">
+                <Radio size={13} className="text-blue-400 animate-pulse" />
+                <span>Synced with Server Clock</span>
+              </div>
+            </div>
+
+            {/* If Waiting: Prominent Countdown Timer */}
+            {slotState === "waiting" && (
+              <div className="space-y-4">
+                <div className="text-center space-y-1">
+                  <p className="text-xs uppercase tracking-widest text-blue-400 font-semibold">
+                    Examination Begins In
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    No need to refresh the page — the test paper will unlock automatically at 00:00:00!
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-center gap-2 sm:gap-4 py-2">
+                  {days > 0 && (
+                    <div className="flex flex-col items-center">
+                      <div className="w-16 sm:w-20 h-16 sm:h-20 rounded-2xl bg-black/80 border border-white/15 flex items-center justify-center shadow-inner">
+                        <span className="text-2xl sm:text-4xl font-black text-white font-mono">
+                          {String(days).padStart(2, "0")}
+                        </span>
+                      </div>
+                      <span className="text-[10px] sm:text-xs text-gray-400 mt-1 uppercase font-semibold">Days</span>
+                    </div>
+                  )}
+
+                  <div className="flex flex-col items-center">
+                    <div className="w-16 sm:w-20 h-16 sm:h-20 rounded-2xl bg-black/80 border border-white/15 flex items-center justify-center shadow-inner">
+                      <span className="text-2xl sm:text-4xl font-black text-white font-mono">
+                        {String(hours).padStart(2, "0")}
+                      </span>
+                    </div>
+                    <span className="text-[10px] sm:text-xs text-gray-400 mt-1 uppercase font-semibold">Hours</span>
+                  </div>
+
+                  <span className="text-2xl sm:text-4xl font-bold text-blue-400 mb-5">:</span>
+
+                  <div className="flex flex-col items-center">
+                    <div className="w-16 sm:w-20 h-16 sm:h-20 rounded-2xl bg-black/80 border border-white/15 flex items-center justify-center shadow-inner">
+                      <span className="text-2xl sm:text-4xl font-black text-white font-mono">
+                        {String(minutes).padStart(2, "0")}
+                      </span>
+                    </div>
+                    <span className="text-[10px] sm:text-xs text-gray-400 mt-1 uppercase font-semibold">Minutes</span>
+                  </div>
+
+                  <span className="text-2xl sm:text-4xl font-bold text-blue-400 mb-5">:</span>
+
+                  <div className="flex flex-col items-center">
+                    <div className="w-16 sm:w-20 h-16 sm:h-20 rounded-2xl bg-black/80 border border-blue-500/40 flex items-center justify-center shadow-inner shadow-blue-500/20">
+                      <span className="text-2xl sm:text-4xl font-black text-blue-400 font-mono animate-pulse">
+                        {String(seconds).padStart(2, "0")}
+                      </span>
+                    </div>
+                    <span className="text-[10px] sm:text-xs text-blue-400 mt-1 uppercase font-semibold">Seconds</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-xs">
+                  <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center gap-3">
+                    <Calendar size={16} className="text-blue-400 shrink-0" />
+                    <div>
+                      <span className="text-gray-400 block text-[11px]">Scheduled Start Time</span>
+                      <span className="text-white font-semibold">
+                        {exam.startDate
+                          ? new Date(exam.startDate).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })
+                          : "TBA"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center gap-3">
+                    <Timer size={16} className="text-purple-400 shrink-0" />
+                    <div>
+                      <span className="text-gray-400 block text-[11px]">Slot Hard Deadline</span>
+                      <span className="text-white font-semibold">
+                        {exam.endDate
+                          ? new Date(exam.endDate).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })
+                          : "TBA"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* If Active */}
+            {slotState === "active" && (
+              <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-3">
+                <CheckCircle2 size={24} className="text-emerald-400 shrink-0" />
+                <div>
+                  <h3 className="text-sm font-bold text-white">The Examination Paper is Unlocked</h3>
+                  <p className="text-xs text-emerald-300/80">
+                    You can start your examination now.
+                    {exam.strictWindowEnforcement && exam.endDate && (
+                      <span className="block mt-0.5 text-amber-300">
+                        Notice: Strict window enforcement is active. The exam auto-submits simultaneously for everyone at{" "}
+                        {new Date(exam.endDate).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}.
+                      </span>
+                    )}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* If Expired */}
+            {slotState === "expired" && (
+              <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center gap-3">
+                <AlertTriangle size={24} className="text-red-400 shrink-0" />
+                <div>
+                  <h3 className="text-sm font-bold text-white">Scheduled Exam Slot Expired</h3>
+                  <p className="text-xs text-red-300/80">
+                    This test concluded at{" "}
+                    {exam.endDate
+                      ? new Date(exam.endDate).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+                      : ""}{" "}
+                    on{" "}
+                    {exam.endDate
+                      ? new Date(exam.endDate).toLocaleDateString()
+                      : ""}
+                    . No new attempts can be started.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Rules & Guidelines */}
         <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 space-y-4">
           <h2 className="text-base font-bold text-white flex items-center gap-2">
@@ -225,10 +463,10 @@ export default function ExamInstructionPage({
         </div>
 
         {/* Start / Resume Action */}
-        <div className="flex items-center justify-between pt-2">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
           <Link
             href="/exams"
-            className="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 text-xs font-semibold"
+            className="w-full sm:w-auto text-center px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 text-xs font-semibold"
           >
             Cancel
           </Link>
@@ -237,16 +475,34 @@ export default function ExamInstructionPage({
             <button
               onClick={handleStartExam}
               disabled={starting}
-              className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white text-sm font-bold shadow-lg shadow-amber-500/25 flex items-center gap-2 transition-all active:scale-95 animate-pulse"
+              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white text-sm font-bold shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 transition-all active:scale-95 animate-pulse"
             >
               <span>Resume Active Test</span>
               <ArrowRight size={16} />
             </button>
-          ) : canAttempt ? (
+          ) : exam.isSynchronizedSlot && slotState === "waiting" ? (
+            <button
+              disabled
+              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-blue-900/30 border border-blue-500/30 text-blue-300 text-sm font-bold shadow-lg flex items-center justify-center gap-2 cursor-not-allowed opacity-90"
+            >
+              <Lock size={15} className="text-blue-400 animate-pulse" />
+              <span>
+                Unlocks in {hours > 0 ? `${hours}h ` : ""}{String(minutes).padStart(2, "0")}m {String(seconds).padStart(2, "0")}s
+              </span>
+            </button>
+          ) : exam.isSynchronizedSlot && slotState === "expired" ? (
+            <button
+              disabled
+              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-red-900/30 border border-red-500/30 text-red-400 text-sm font-bold flex items-center justify-center gap-2 cursor-not-allowed"
+            >
+              <AlertTriangle size={15} />
+              <span>Slot Expired</span>
+            </button>
+          ) : canAttempt || (exam.isSynchronizedSlot && slotState === "active") ? (
             <button
               onClick={handleStartExam}
               disabled={!agreed || starting}
-              className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold shadow-lg shadow-blue-500/25 flex items-center gap-2 transition-all active:scale-95"
+              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 transition-all active:scale-95"
             >
               <span>{starting ? "Launching Examination..." : "Begin Examination Now"}</span>
               <ArrowRight size={16} />

@@ -28,6 +28,7 @@ import {
   Globe,
   Briefcase,
   Users,
+  Calendar,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -90,6 +91,28 @@ export function ExamForm({ initialData, isEdit = false }: ExamFormProps) {
   );
   const [autoSubmission, setAutoSubmission] = useState<boolean>(
     initialData?.autoSubmission !== undefined ? initialData.autoSubmission : true
+  );
+
+  // Synchronized Slot Scheduling
+  const toDateTimeLocal = (date?: string | Date) => {
+    if (!date) return "";
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return "";
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+
+  const [isSynchronizedSlot, setIsSynchronizedSlot] = useState<boolean>(
+    initialData?.isSynchronizedSlot || false
+  );
+  const [startDate, setStartDate] = useState<string>(
+    initialData?.startDate ? toDateTimeLocal(initialData.startDate) : ""
+  );
+  const [endDate, setEndDate] = useState<string>(
+    initialData?.endDate ? toDateTimeLocal(initialData.endDate) : ""
+  );
+  const [strictWindowEnforcement, setStrictWindowEnforcement] = useState<boolean>(
+    initialData?.strictWindowEnforcement !== undefined ? initialData.strictWindowEnforcement : true
   );
 
   // Status & Visibility
@@ -506,6 +529,10 @@ export function ExamForm({ initialData, isEdit = false }: ExamFormProps) {
         resultVisibility,
         answerKeyVisibility,
         explanationVisibility,
+        isSynchronizedSlot,
+        startDate: isSynchronizedSlot && startDate ? new Date(startDate).toISOString() : null,
+        endDate: isSynchronizedSlot && endDate ? new Date(endDate).toISOString() : null,
+        strictWindowEnforcement,
         studentEligibility: {
           type: eligibilityType,
           internshipIds: eligibilityType === "internship" ? selectedInternshipIds : [],
@@ -677,6 +704,108 @@ export function ExamForm({ initialData, isEdit = false }: ExamFormProps) {
               />
             )}
           </div>
+        </div>
+
+        {/* Synchronized Live Exam Timing Mode */}
+        <div className="pt-4 mt-2 border-t border-white/10 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-gradient-to-r from-blue-950/40 via-indigo-950/30 to-purple-950/20 border border-blue-500/20">
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-2 flex-wrap">
+                <Calendar size={16} className="text-blue-400" />
+                <span className="text-xs font-bold text-white uppercase tracking-wider">
+                  Synchronized Live Exam Slot (All Students Start Simultaneously)
+                </span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 font-semibold border border-blue-500/30">
+                  Live Countdown Waiting Room
+                </span>
+              </div>
+              <p className="text-[11px] text-gray-400">
+                When enabled, all students wait in a synchronized live countdown waiting room. The test automatically unlocks at the scheduled Start Time for everyone without page refresh.
+              </p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer shrink-0">
+              <input
+                type="checkbox"
+                checked={isSynchronizedSlot}
+                onChange={(e) => {
+                  const val = e.target.checked;
+                  setIsSynchronizedSlot(val);
+                  if (val && !startDate) {
+                    const now = new Date();
+                    now.setMinutes(now.getMinutes() + 10);
+                    setStartDate(toDateTimeLocal(now));
+                    const end = new Date(now.getTime() + duration * 60 * 1000);
+                    setEndDate(toDateTimeLocal(end));
+                  }
+                }}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+
+          {isSynchronizedSlot && (
+            <div className="p-4 rounded-xl bg-black/40 border border-blue-500/20 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-blue-300 flex items-center gap-1.5">
+                    <Clock size={13} />
+                    <span>Live Scheduled Start Time (Local / IST)</span>
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={startDate}
+                    onChange={(e) => {
+                      setStartDate(e.target.value);
+                      if (e.target.value) {
+                        const start = new Date(e.target.value);
+                        if (!isNaN(start.getTime())) {
+                          const calculatedEnd = new Date(start.getTime() + duration * 60 * 1000);
+                          setEndDate(toDateTimeLocal(calculatedEnd));
+                        }
+                      }
+                    }}
+                    className="w-full px-3.5 py-2 rounded-xl bg-black/60 border border-white/15 text-white text-sm focus:border-blue-500 focus:outline-none"
+                  />
+                  <p className="text-[11px] text-gray-500">
+                    Students will see a live countdown clock ticking down to this second.
+                  </p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-purple-300 flex items-center gap-1.5">
+                    <Clock size={13} />
+                    <span>Slot End Time (Hard Deadline)</span>
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="w-full px-3.5 py-2 rounded-xl bg-black/60 border border-white/15 text-white text-sm focus:border-purple-500 focus:outline-none"
+                  />
+                  <p className="text-[11px] text-gray-500">
+                    Default is Start Time + Duration ({duration} mins).
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                <input
+                  type="checkbox"
+                  id="strictWindow"
+                  checked={strictWindowEnforcement}
+                  onChange={(e) => setStrictWindowEnforcement(e.target.checked)}
+                  className="w-4 h-4 rounded border-gray-600 text-blue-600 mt-0.5"
+                />
+                <label htmlFor="strictWindow" className="text-xs text-gray-300 cursor-pointer space-y-0.5">
+                  <span className="font-semibold text-white block">Strict Window Enforcement (Late Entry Penalty)</span>
+                  <span className="text-gray-400 block text-[11px]">
+                    If a student joins 10 minutes late, their exam will only last the remaining 50 minutes. The exam auto-submits simultaneously for all students when the Slot End Time is reached.
+                  </span>
+                </label>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

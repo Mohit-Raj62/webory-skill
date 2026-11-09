@@ -50,6 +50,8 @@ export interface IExamination extends Document {
   maxAttempts: number;
   startDate?: Date;
   endDate?: Date;
+  isSynchronizedSlot?: boolean;
+  strictWindowEnforcement?: boolean;
   resultVisibility: "immediate" | "manual";
   answerKeyVisibility: "immediate" | "manual" | "scheduled" | "hidden";
   explanationVisibility: boolean;
@@ -251,6 +253,14 @@ const ExaminationSchema = new Schema<IExamination>(
       type: Date,
       default: null,
     },
+    isSynchronizedSlot: {
+      type: Boolean,
+      default: false,
+    },
+    strictWindowEnforcement: {
+      type: Boolean,
+      default: true,
+    },
     resultVisibility: {
       type: String,
       enum: ["immediate", "manual"],
@@ -365,7 +375,7 @@ ExaminationSchema.index({ createdBy: 1 });
 ExaminationSchema.index({ subject: 1 });
 ExaminationSchema.index({ courseId: 1 });
 
-if (mongoose.models.Examination && (!mongoose.models.Examination.schema?.paths?.maxTabSwitches || !mongoose.models.Examination.schema?.paths?.["studentEligibility.internshipIds"])) {
+if (mongoose.models.Examination && (!mongoose.models.Examination.schema?.paths?.maxTabSwitches || !mongoose.models.Examination.schema?.paths?.isSynchronizedSlot)) {
   delete (mongoose.models as any).Examination;
 }
 

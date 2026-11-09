@@ -67,12 +67,38 @@ export async function GET(
 
     const activeAttempt = attempts.find((a) => a.status === "in-progress");
     const completedAttemptsCount = attempts.filter((a) => a.status !== "in-progress").length;
+
+    // Determine slot synchronization state based on server time
+    const now = new Date();
+    let slotState: "waiting" | "active" | "expired" = "active";
+    let waitingSeconds = 0;
+
+    if (exam.isSynchronizedSlot) {
+      const nowMs = now.getTime();
+      const startMs = exam.startDate ? new Date(exam.startDate).getTime() : 0;
+      const endMs = exam.endDate ? new Date(exam.endDate).getTime() : 0;
+
+      if (startMs && nowMs < startMs) {
+        slotState = "waiting";
+        waitingSeconds = Math.max(0, Math.ceil((startMs - nowMs) / 1000));
+      } else if (endMs && nowMs > endMs) {
+        slotState = "expired";
+      } else {
+        slotState = "active";
+      }
+    }
+
     const canAttempt =
       Boolean(activeAttempt) ||
-      (exam.status === "live" && completedAttemptsCount < (exam.maxAttempts || 1));
+      (exam.status === "live" &&
+        slotState === "active" &&
+        completedAttemptsCount < (exam.maxAttempts || 1));
 
     return NextResponse.json({
       success: true,
+      serverTime: now.toISOString(),
+      slotState,
+      waitingSeconds,
       exam: {
         _id: exam._id,
         title: exam.title,
@@ -88,6 +114,8 @@ export async function GET(
         negativeMarksPerQuestion: exam.negativeMarksPerQuestion,
         maxAttempts: exam.maxAttempts,
         status: exam.status,
+        isSynchronizedSlot: Boolean(exam.isSynchronizedSlot),
+        strictWindowEnforcement: exam.strictWindowEnforcement !== false,
         startDate: exam.startDate,
         endDate: exam.endDate,
         resultsPublished: exam.resultsPublished,
