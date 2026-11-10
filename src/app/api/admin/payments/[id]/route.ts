@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { creditTeacherCommission } from "@/lib/teacher-commission";
 import dbConnect from "@/lib/db";
 import PaymentProof from "@/models/PaymentProof";
 import Enrollment from "@/models/Enrollment";
@@ -97,6 +98,9 @@ export async function PUT(
             status: "active",
             enrolledAt: new Date(),
           });
+
+          // Credit Teacher Commission
+          await creditTeacherCommission(paymentProof.course.toString(), paymentProof.amount || 0);
 
           // Record Activity for Course Enrollment
           await Activity.create({

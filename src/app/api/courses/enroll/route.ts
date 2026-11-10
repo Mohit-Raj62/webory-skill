@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { creditTeacherCommission } from "@/lib/teacher-commission";
 import dbConnect from "@/lib/db";
 import Enrollment from "@/models/Enrollment";
 import User from "@/models/User";
@@ -119,6 +120,9 @@ export async function POST(req: Request) {
       course: actualCourseId,
       // In a real app, we would save the transactionId here
     });
+
+    // Credit Teacher Commission
+    await creditTeacherCommission(actualCourseId, finalPrice);
 
     // Record Activity
     await Activity.create({

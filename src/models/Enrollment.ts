@@ -53,6 +53,18 @@ const EnrollmentSchema = new Schema({
   certificateKey: {
     type: String,
   },
+  isRevoked: {
+    type: Boolean,
+    default: false,
+  },
+  revokedReason: {
+    type: String,
+    default: null,
+  },
+  revokedAt: {
+    type: Date,
+    default: null,
+  },
   completedAt: {
     type: Date,
   },
@@ -67,6 +79,10 @@ EnrollmentSchema.index({ student: 1, course: 1 }, { unique: true });
 EnrollmentSchema.index({ student: 1 }); // For user dashboard queries
 EnrollmentSchema.index({ course: 1 }); // For course aggregations
 EnrollmentSchema.index({ enrolledAt: -1 }); // For admin dashboard queries (most recent first)
+
+if (models.Enrollment && !models.Enrollment.schema?.paths?.isRevoked) {
+  delete (models as any).Enrollment;
+}
 
 const Enrollment = models.Enrollment || model("Enrollment", EnrollmentSchema);
 

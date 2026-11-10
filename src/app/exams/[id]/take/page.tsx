@@ -1149,11 +1149,18 @@ export default function StudentExamTakePage({
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-xs font-bold text-white truncate">
-                  {candidate?.name || "Student Candidate"}
+                  {candidate?.name || "Candidate"}
                 </p>
-                <p className="text-[10px] text-blue-400 font-semibold truncate">
-                  {currentSectionName}
-                </p>
+                <div className="flex items-center gap-2">
+                  {candidate?.rollNumber && (
+                    <span className="text-[10px] font-mono text-slate-400">
+                      ROLL: {candidate.rollNumber}
+                    </span>
+                  )}
+                  <span className="text-[10px] text-blue-400 font-semibold truncate">
+                    {currentSectionName}
+                  </span>
+                </div>
               </div>
             </div>
 

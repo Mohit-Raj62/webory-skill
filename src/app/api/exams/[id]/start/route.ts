@@ -215,9 +215,11 @@ export async function POST(
         violationCount: activeAttempt.violationCount || 0,
       },
       student: {
-        name: `${auth.user.firstName || ""} ${auth.user.lastName || ""}`.trim() || auth.user.email || "Candidate",
+        _id: auth.user._id,
+        name: [auth.user.firstName, auth.user.lastName].filter(Boolean).join(" ").trim() || auth.user.email?.split("@")[0] || "Candidate",
         email: auth.user.email,
         image: auth.user.image,
+        rollNumber: String(auth.user._id).slice(-8).toUpperCase(),
       },
       questions: safeQuestions,
       savedResponses: activeAttempt.responses || [],

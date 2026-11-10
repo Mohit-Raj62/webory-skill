@@ -64,6 +64,20 @@ export async function GET(
         );
       }
 
+      if (enrollment.isRevoked) {
+        return NextResponse.json({
+          valid: false,
+          isRevoked: true,
+          revokedReason: enrollment.revokedReason || "Revoked by administration",
+          revokedAt: enrollment.revokedAt,
+          data: {
+            studentName: `${enrollment.student.firstName} ${enrollment.student.lastName}`,
+            title: enrollment.course.title,
+            certificateId: enrollment.certificateId,
+          },
+        });
+      }
+
       // Ensure certificateKey exists in DB
       if (!enrollment.certificateKey) {
         enrollment.certificateKey = generateKey();
@@ -107,6 +121,20 @@ export async function GET(
         );
       }
 
+      if (application.isRevoked) {
+        return NextResponse.json({
+          valid: false,
+          isRevoked: true,
+          revokedReason: application.revokedReason || "Revoked by administration",
+          revokedAt: application.revokedAt,
+          data: {
+            studentName: `${application.student.firstName} ${application.student.lastName}`,
+            title: application.internship?.title,
+            certificateId: application.certificateId,
+          },
+        });
+      }
+
       // Ensure certificateKey exists in DB
       if (!application.certificateKey) {
         application.certificateKey = generateKey();
@@ -136,6 +164,20 @@ export async function GET(
     });
 
     if (customCert) {
+      if (customCert.isRevoked) {
+        return NextResponse.json({
+          valid: false,
+          isRevoked: true,
+          revokedReason: customCert.revokedReason || "Revoked by administration",
+          revokedAt: customCert.revokedAt,
+          data: {
+            studentName: customCert.studentName,
+            title: customCert.title,
+            certificateId: customCert.certificateId,
+          },
+        });
+      }
+
       // Ensure certificateKey exists in DB
       if (!customCert.certificateKey) {
         customCert.certificateKey = generateKey();

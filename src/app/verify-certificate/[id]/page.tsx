@@ -102,7 +102,32 @@ export default function VerifyCertificatePage() {
         </div>
 
         <div className="p-6 sm:p-8">
-          {error ? (
+          {verificationResult?.isRevoked ? (
+            <div className="text-center py-4 space-y-4">
+              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 text-red-600 mb-2">
+                <AlertTriangle className="h-10 w-10 text-red-600 animate-bounce" />
+              </div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-red-100 border border-red-300 rounded-full text-red-800 text-xs font-black uppercase tracking-wider">
+                ⚠️ REVOKED / INVALID CERTIFICATE
+              </div>
+              <h2 className="text-2xl font-black text-gray-900">Certificate Invalidated</h2>
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-left space-y-2">
+                <p className="text-xs text-red-700 font-bold uppercase tracking-wider">Official Revocation Notice:</p>
+                <p className="text-sm text-red-900 font-semibold">{verificationResult.revokedReason || "Revoked by Webory Administration"}</p>
+                {verificationResult.data?.studentName && (
+                  <p className="text-xs text-gray-600 pt-1 border-t border-red-200">
+                    Originally issued to: <span className="font-bold text-gray-900">{verificationResult.data.studentName}</span>
+                  </p>
+                )}
+                {verificationResult.data?.title && (
+                  <p className="text-xs text-gray-600">
+                    Program: <span className="font-bold text-gray-900">{verificationResult.data.title}</span>
+                  </p>
+                )}
+              </div>
+              <p className="text-xs text-gray-400">This credential is no longer recognized as valid or authentic by Webory Skills.</p>
+            </div>
+          ) : error ? (
             <div className="text-center py-4">
               <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-5">
                 <XCircle className="h-10 w-10 text-red-600" />

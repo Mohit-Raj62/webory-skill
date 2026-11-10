@@ -5,22 +5,24 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
+import { useAuth } from "@/components/auth/session-provider";
 import {
   ArrowLeft,
   Clock,
-  CheckSquare,
-  ShieldAlert,
-  AlertTriangle,
+  ShieldCheck,
   Award,
   CheckCircle2,
   ArrowRight,
   BookOpen,
   Calendar,
-  Radio,
-  Sparkles,
+  AlertTriangle,
+  User,
+  Laptop,
+  CheckSquare,
+  FileText,
   Lock,
-  Unlock,
   Timer,
+  Info,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -31,7 +33,9 @@ export default function ExamInstructionPage({
 }) {
   const { id } = use(params);
   const router = useRouter();
+  const { user } = useAuth();
   const [exam, setExam] = useState<any>(null);
+  const [candidate, setCandidate] = useState<any>(null);
   const [attemptStatus, setAttemptStatus] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [agreed, setAgreed] = useState(false);
@@ -41,6 +45,24 @@ export default function ExamInstructionPage({
   const [slotState, setSlotState] = useState<"waiting" | "active" | "expired">("active");
   const [secondsUntilStart, setSecondsUntilStart] = useState<number>(0);
   const [serverTimeOffsetMs, setServerTimeOffsetMs] = useState<number>(0);
+  const [currentTime, setCurrentTime] = useState<string>("");
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      setCurrentTime(
+        now.toLocaleTimeString("en-IN", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
+        }) + " IST"
+      );
+    };
+    updateTime();
+    const timer = setInterval(updateTime, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     const fetchExamInfo = async () => {
@@ -50,6 +72,9 @@ export default function ExamInstructionPage({
         const data = await res.json();
         if (data.success) {
           setExam(data.exam);
+          if (data.candidate) {
+            setCandidate(data.candidate);
+          }
           setAttemptStatus(data.attemptStatus);
           setSlotState(data.slotState || "active");
 
@@ -114,7 +139,7 @@ export default function ExamInstructionPage({
 
   const handleStartExam = () => {
     if (!agreed) {
-      toast.error("Please agree to the examination terms before starting");
+      toast.error("Please confirm the candidate undertaking declaration before beginning");
       return;
     }
     setStarting(true);
@@ -133,10 +158,10 @@ export default function ExamInstructionPage({
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#020617] flex items-center justify-center text-white">
+      <main className="min-h-screen bg-[#060a12] flex items-center justify-center text-white">
         <div className="text-center space-y-3">
           <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-gray-400 text-sm">Preparing examination...</p>
+          <p className="text-slate-400 text-xs font-medium">Verifying candidate credentials &amp; loading paper instructions...</p>
         </div>
       </main>
     );
@@ -144,16 +169,16 @@ export default function ExamInstructionPage({
 
   if (!exam) {
     return (
-      <main className="min-h-screen bg-[#020617] flex items-center justify-center text-white p-4">
-        <div className="p-8 rounded-2xl bg-white/[0.03] border border-white/10 text-center space-y-4 max-w-md">
-          <AlertTriangle size={36} className="text-amber-400 mx-auto" />
-          <h2 className="text-xl font-bold">Examination Unavailable</h2>
-          <p className="text-sm text-gray-400">
+      <main className="min-h-screen bg-[#060a12] flex items-center justify-center text-white p-4">
+        <div className="p-8 rounded-xl bg-[#0c1220] border border-slate-800 text-center space-y-4 max-w-md">
+          <AlertTriangle size={32} className="text-amber-400 mx-auto" />
+          <h2 className="text-lg font-bold">Paper Unavailable</h2>
+          <p className="text-xs text-slate-400">
             This examination is either not published or has expired.
           </p>
           <Link
             href="/exams"
-            className="inline-block px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold"
+            className="inline-block px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold"
           >
             Back to Available Exams
           </Link>
@@ -165,347 +190,397 @@ export default function ExamInstructionPage({
   const hasActiveAttempt = attemptStatus?.hasActiveAttempt;
   const canAttempt = attemptStatus?.canAttempt;
 
+  const displayName =
+    candidate?.name ||
+    [user?.firstName, user?.lastName].filter(Boolean).join(" ").trim() ||
+    (user as any)?.name ||
+    user?.email?.split("@")[0] ||
+    "Candidate";
+
+  const displayRoll =
+    candidate?.rollNumber ||
+    (user?._id ? user._id.slice(-8).toUpperCase() : "REG-ACTIVE");
+
+  const displayEmail =
+    candidate?.email ||
+    user?.email ||
+    "Candidate Email";
+
   return (
-    <main className="min-h-screen bg-[#020617] relative font-sans text-gray-200">
+    <main className="min-h-screen bg-[#060a12] text-slate-200 font-sans selection:bg-blue-600/30">
       <Navbar />
 
-      <div className="pt-28 sm:pt-32 pb-20 container mx-auto px-4 max-w-4xl space-y-6">
+      <div className="pt-24 sm:pt-28 pb-20 container mx-auto px-4 max-w-5xl space-y-5">
         <Link
           href="/exams"
-          className="inline-flex items-center gap-2 text-xs text-gray-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-2 text-xs text-slate-400 hover:text-white transition-colors"
         >
           <ArrowLeft size={14} />
-          <span>Back to All Examinations</span>
+          <span>Back to Examination Portal</span>
         </Link>
 
-        {/* Title Banner */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-blue-900/30 via-purple-900/10 to-white/[0.02] border border-white/10 space-y-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-              OFFICIAL ASSESSMENT
-            </span>
-            <span className="text-xs text-gray-400 font-medium">
-              Subject: {exam.subject || "General"}
-            </span>
+        {/* ================= 1. OFFICIAL CANDIDATE ADMIT / VERIFICATION HEADER ================= */}
+        <div className="rounded-xl bg-[#0c1220] border border-slate-800 shadow-sm overflow-hidden">
+          <div className="px-4 sm:px-6 py-3 bg-[#080d18] border-b border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded bg-blue-600 text-white font-black text-xs flex items-center justify-center">
+                CBT
+              </div>
+              <div>
+                <span className="font-bold text-white uppercase tracking-wider block text-xs">
+                  Official Assessment Instructions &amp; Candidate Verification
+                </span>
+                <span className="text-[11px] text-slate-400">
+                  Paper Code: <strong className="text-blue-400 font-mono">#EXM-{exam._id.slice(-6).toUpperCase()}</strong>
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-[11px] font-mono text-slate-300">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Clock: {currentTime || "Synced"}</span>
+              </div>
+              <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase">
+                {exam.status === "live" ? "Window Open" : exam.status}
+              </span>
+            </div>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-            {exam.title}
-          </h1>
-
-          {exam.description && (
-            <p className="text-sm text-gray-300 leading-relaxed max-w-2xl">
-              {exam.description}
-            </p>
-          )}
-
-          {/* Quick Metrics */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-white/10 text-xs">
-            <div className="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
-              <span className="text-gray-400 flex items-center gap-1">
-                <Clock size={13} className="text-blue-400" /> Duration
-              </span>
-              <p className="text-sm font-bold text-white">{exam.duration} Minutes</p>
+          {/* Candidate Profile Slip */}
+          <div className="p-4 sm:p-5 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs bg-[#0c1220]">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 text-blue-400 flex items-center justify-center font-bold text-sm shrink-0">
+                <User size={18} />
+              </div>
+              <div>
+                <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Candidate Name</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-bold text-white">{displayName}</span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                    ROLL: {displayRoll}
+                  </span>
+                </div>
+                <span className="text-[11px] text-slate-400 block">{displayEmail}</span>
+              </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
-              <span className="text-gray-400 flex items-center gap-1">
-                <CheckSquare size={13} className="text-purple-400" /> Total Questions
-              </span>
-              <p className="text-sm font-bold text-white">{exam.totalQuestions} Qs</p>
+            <div className="space-y-0.5 border-t md:border-t-0 md:border-l border-slate-800/80 pt-2 md:pt-0 md:pl-4">
+              <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Paper / Subject</span>
+              <span className="text-xs font-semibold text-white block">{exam.title}</span>
+              <span className="text-[11px] text-blue-400 font-medium">{exam.subject || "General Engineering"}</span>
             </div>
 
-            <div className="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
-              <span className="text-gray-400 flex items-center gap-1">
-                <Award size={13} className="text-emerald-400" /> Maximum Marks
+            <div className="space-y-0.5 border-t md:border-t-0 md:border-l border-slate-800/80 pt-2 md:pt-0 md:pl-4">
+              <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Test Environment</span>
+              <span className="text-xs font-semibold text-emerald-400 flex items-center gap-1">
+                <ShieldCheck size={13} />
+                Secure AI Proctoring Active
               </span>
-              <p className="text-sm font-bold text-white">{exam.totalMarks} Marks</p>
-            </div>
-
-            <div className="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
-              <span className="text-gray-400 flex items-center gap-1">
-                <ShieldAlert size={13} className="text-amber-400" /> Passing Score
-              </span>
-              <p className="text-sm font-bold text-white">
-                {exam.passingMarks} ({exam.passingPercentage}%)
-              </p>
+              <span className="text-[11px] text-slate-400">Single Attempt Allowed</span>
             </div>
           </div>
         </div>
 
-        {/* Synchronized Live Exam Waiting Room Banner */}
+        {/* ================= 2. SYNCHRONIZED SLOT WAITING ROOM (IF ACTIVE) ================= */}
         {exam.isSynchronizedSlot && (
-          <div className="relative overflow-hidden rounded-3xl border border-blue-500/30 bg-gradient-to-b from-blue-950/40 via-black/60 to-purple-950/30 p-6 sm:p-8 backdrop-blur-xl shadow-2xl space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+          <div className="rounded-xl border border-blue-500/30 bg-[#080d18] p-5 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2.5">
-                <span className="relative flex h-3 w-3">
-                  <span
-                    className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                      slotState === "waiting"
-                        ? "bg-amber-400"
-                        : slotState === "active"
-                        ? "bg-emerald-400"
-                        : "bg-red-400"
-                    }`}
-                  />
-                  <span
-                    className={`relative inline-flex rounded-full h-3 w-3 ${
-                      slotState === "waiting"
-                        ? "bg-amber-500"
-                        : slotState === "active"
-                        ? "bg-emerald-500"
-                        : "bg-red-500"
-                    }`}
-                  />
-                </span>
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse" />
                 <div>
-                  <h2 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
-                    {slotState === "waiting" && "Live Waiting Room: Exam Locked"}
-                    {slotState === "active" && "Exam is Live! Ready to Start"}
-                    {slotState === "expired" && "Examination Slot Ended"}
+                  <h2 className="text-sm font-bold text-white">
+                    {slotState === "waiting" && "Live Slot Waiting Room"}
+                    {slotState === "active" && "Slot Unlocked • Ready to Begin"}
+                    {slotState === "expired" && "Scheduled Slot Ended"}
                   </h2>
-                  <p className="text-[11px] text-gray-400">
-                    Synchronized Live Slot • All candidates start at the exact same moment
+                  <p className="text-[11px] text-slate-400">
+                    Synchronized Examination — All candidates begin together.
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 text-xs text-blue-300/80 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20 w-fit">
-                <Radio size={13} className="text-blue-400 animate-pulse" />
-                <span>Synced with Server Clock</span>
+              <div className="text-[11px] text-slate-300 font-mono bg-slate-900 px-2.5 py-1 rounded border border-slate-800 w-fit">
+                Server Clock Synchronization Verified
               </div>
             </div>
 
-            {/* If Waiting: Prominent Countdown Timer */}
             {slotState === "waiting" && (
-              <div className="space-y-4">
-                <div className="text-center space-y-1">
-                  <p className="text-xs uppercase tracking-widest text-blue-400 font-semibold">
-                    Examination Begins In
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    No need to refresh the page — the test paper will unlock automatically at 00:00:00!
-                  </p>
-                </div>
+              <div className="space-y-3 py-1">
+                <p className="text-center text-xs text-slate-400">
+                  Paper will automatically unlock in:
+                </p>
 
-                <div className="flex items-center justify-center gap-2 sm:gap-4 py-2">
+                <div className="flex items-center justify-center gap-3">
                   {days > 0 && (
                     <div className="flex flex-col items-center">
-                      <div className="w-16 sm:w-20 h-16 sm:h-20 rounded-2xl bg-black/80 border border-white/15 flex items-center justify-center shadow-inner">
-                        <span className="text-2xl sm:text-4xl font-black text-white font-mono">
-                          {String(days).padStart(2, "0")}
-                        </span>
+                      <div className="w-14 h-14 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center font-mono text-xl font-bold text-white">
+                        {String(days).padStart(2, "0")}
                       </div>
-                      <span className="text-[10px] sm:text-xs text-gray-400 mt-1 uppercase font-semibold">Days</span>
+                      <span className="text-[10px] text-slate-400 mt-1 uppercase">Days</span>
                     </div>
                   )}
 
                   <div className="flex flex-col items-center">
-                    <div className="w-16 sm:w-20 h-16 sm:h-20 rounded-2xl bg-black/80 border border-white/15 flex items-center justify-center shadow-inner">
-                      <span className="text-2xl sm:text-4xl font-black text-white font-mono">
-                        {String(hours).padStart(2, "0")}
-                      </span>
+                    <div className="w-14 h-14 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center font-mono text-xl font-bold text-white">
+                      {String(hours).padStart(2, "0")}
                     </div>
-                    <span className="text-[10px] sm:text-xs text-gray-400 mt-1 uppercase font-semibold">Hours</span>
+                    <span className="text-[10px] text-slate-400 mt-1 uppercase">Hours</span>
                   </div>
 
-                  <span className="text-2xl sm:text-4xl font-bold text-blue-400 mb-5">:</span>
+                  <span className="text-xl font-bold text-slate-600 mb-4">:</span>
 
                   <div className="flex flex-col items-center">
-                    <div className="w-16 sm:w-20 h-16 sm:h-20 rounded-2xl bg-black/80 border border-white/15 flex items-center justify-center shadow-inner">
-                      <span className="text-2xl sm:text-4xl font-black text-white font-mono">
-                        {String(minutes).padStart(2, "0")}
-                      </span>
+                    <div className="w-14 h-14 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center font-mono text-xl font-bold text-white">
+                      {String(minutes).padStart(2, "0")}
                     </div>
-                    <span className="text-[10px] sm:text-xs text-gray-400 mt-1 uppercase font-semibold">Minutes</span>
+                    <span className="text-[10px] text-slate-400 mt-1 uppercase">Minutes</span>
                   </div>
 
-                  <span className="text-2xl sm:text-4xl font-bold text-blue-400 mb-5">:</span>
+                  <span className="text-xl font-bold text-slate-600 mb-4">:</span>
 
                   <div className="flex flex-col items-center">
-                    <div className="w-16 sm:w-20 h-16 sm:h-20 rounded-2xl bg-black/80 border border-blue-500/40 flex items-center justify-center shadow-inner shadow-blue-500/20">
-                      <span className="text-2xl sm:text-4xl font-black text-blue-400 font-mono animate-pulse">
-                        {String(seconds).padStart(2, "0")}
-                      </span>
+                    <div className="w-14 h-14 rounded-lg bg-slate-900 border border-blue-500/40 flex items-center justify-center font-mono text-xl font-bold text-blue-400">
+                      {String(seconds).padStart(2, "0")}
                     </div>
-                    <span className="text-[10px] sm:text-xs text-blue-400 mt-1 uppercase font-semibold">Seconds</span>
+                    <span className="text-[10px] text-blue-400 mt-1 uppercase font-semibold">Seconds</span>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-xs">
-                  <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center gap-3">
-                    <Calendar size={16} className="text-blue-400 shrink-0" />
+                  <div className="p-2.5 rounded bg-slate-900/60 border border-slate-800 flex items-center gap-2">
+                    <Calendar size={14} className="text-slate-400" />
                     <div>
-                      <span className="text-gray-400 block text-[11px]">Scheduled Start Time</span>
-                      <span className="text-white font-semibold">
-                        {exam.startDate
-                          ? new Date(exam.startDate).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })
-                          : "TBA"}
+                      <span className="text-[10px] text-slate-400 block">Scheduled Start</span>
+                      <span className="font-semibold text-white">
+                        {exam.startDate ? new Date(exam.startDate).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }) : "TBA"}
                       </span>
                     </div>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center gap-3">
-                    <Timer size={16} className="text-purple-400 shrink-0" />
+                  <div className="p-2.5 rounded bg-slate-900/60 border border-slate-800 flex items-center gap-2">
+                    <Timer size={14} className="text-slate-400" />
                     <div>
-                      <span className="text-gray-400 block text-[11px]">Slot Hard Deadline</span>
-                      <span className="text-white font-semibold">
-                        {exam.endDate
-                          ? new Date(exam.endDate).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })
-                          : "TBA"}
+                      <span className="text-[10px] text-slate-400 block">Slot Deadline</span>
+                      <span className="font-semibold text-white">
+                        {exam.endDate ? new Date(exam.endDate).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }) : "TBA"}
                       </span>
                     </div>
                   </div>
-                </div>
-              </div>
-            )}
-
-            {/* If Active */}
-            {slotState === "active" && (
-              <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-3">
-                <CheckCircle2 size={24} className="text-emerald-400 shrink-0" />
-                <div>
-                  <h3 className="text-sm font-bold text-white">The Examination Paper is Unlocked</h3>
-                  <p className="text-xs text-emerald-300/80">
-                    You can start your examination now.
-                    {exam.strictWindowEnforcement && exam.endDate && (
-                      <span className="block mt-0.5 text-amber-300">
-                        Notice: Strict window enforcement is active. The exam auto-submits simultaneously for everyone at{" "}
-                        {new Date(exam.endDate).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}.
-                      </span>
-                    )}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* If Expired */}
-            {slotState === "expired" && (
-              <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center gap-3">
-                <AlertTriangle size={24} className="text-red-400 shrink-0" />
-                <div>
-                  <h3 className="text-sm font-bold text-white">Scheduled Exam Slot Expired</h3>
-                  <p className="text-xs text-red-300/80">
-                    This test concluded at{" "}
-                    {exam.endDate
-                      ? new Date(exam.endDate).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-                      : ""}{" "}
-                    on{" "}
-                    {exam.endDate
-                      ? new Date(exam.endDate).toLocaleDateString()
-                      : ""}
-                    . No new attempts can be started.
-                  </p>
                 </div>
               </div>
             )}
           </div>
         )}
 
-        {/* Rules & Guidelines */}
-        <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 space-y-4">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
-            <BookOpen size={18} className="text-blue-400" />
-            <span>Important Examination Rules</span>
-          </h2>
+        {/* ================= 3. SCHEME OF EXAMINATION (PATTERN TABLE) ================= */}
+        <div className="rounded-xl bg-[#0c1220] border border-slate-800 overflow-hidden shadow-sm">
+          <div className="px-4 sm:px-6 py-3 bg-[#080d18] border-b border-slate-800 flex items-center gap-2">
+            <FileText size={15} className="text-blue-400" />
+            <h2 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
+              Scheme of Examination &amp; Evaluation Blueprint
+            </h2>
+          </div>
 
-          <ul className="space-y-2.5 text-xs text-gray-300">
-            <li className="flex items-start gap-2">
-              <CheckCircle2 size={15} className="text-emerald-400 shrink-0 mt-0.5" />
-              <span>
-                <strong>Synchronized Live Timer:</strong> The countdown timer will start immediately when you click &quot;Begin Examination&quot;. The timer is synchronized with the server clock.
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <CheckCircle2 size={15} className="text-emerald-400 shrink-0 mt-0.5" />
-              <span>
-                <strong>Automatic Answer Saving:</strong> Every response you choose is saved instantly in real time. If your internet disconnects or your browser refreshes, your progress will be restored upon reconnecting.
-              </span>
-            </li>
-            {exam.negativeMarking ? (
-              <li className="flex items-start gap-2 text-amber-300">
-                <AlertTriangle size={15} className="text-amber-400 shrink-0 mt-0.5" />
-                <span>
-                  <strong>Negative Marking Active:</strong> Incorrect answers will deduct{" "}
-                  <strong>{exam.negativeMarksPerQuestion} marks</strong> per question. Unattempted questions will not be penalized.
+          <div className="p-4 sm:p-5 space-y-4 text-xs">
+            {/* Blueprint Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="p-3 rounded-lg bg-slate-900/60 border border-slate-800 space-y-1">
+                <span className="text-[11px] text-slate-400 block flex items-center gap-1.5">
+                  <Clock size={13} className="text-slate-400" /> Allocated Time
                 </span>
-              </li>
-            ) : (
-              <li className="flex items-start gap-2">
-                <CheckCircle2 size={15} className="text-emerald-400 shrink-0 mt-0.5" />
-                <span>
-                  <strong>No Negative Marking:</strong> There is no penalty for incorrect answers. Attempt all questions!
-                </span>
-              </li>
-            )}
-            <li className="flex items-start gap-2">
-              <CheckCircle2 size={15} className="text-emerald-400 shrink-0 mt-0.5" />
-              <span>
-                <strong>Automatic Submission:</strong> When the timer expires (00:00), your examination will be submitted automatically.
-              </span>
-            </li>
-          </ul>
+                <span className="text-sm font-bold text-white">{exam.duration} Minutes</span>
+              </div>
 
-          {/* Agreement Checkbox */}
-          <div className="pt-4 border-t border-white/10">
-            <label className="flex items-start gap-3 cursor-pointer">
+              <div className="p-3 rounded-lg bg-slate-900/60 border border-slate-800 space-y-1">
+                <span className="text-[11px] text-slate-400 block flex items-center gap-1.5">
+                  <CheckSquare size={13} className="text-slate-400" /> Total Questions
+                </span>
+                <span className="text-sm font-bold text-white">{exam.totalQuestions} Questions</span>
+              </div>
+
+              <div className="p-3 rounded-lg bg-slate-900/60 border border-slate-800 space-y-1">
+                <span className="text-[11px] text-slate-400 block flex items-center gap-1.5">
+                  <Award size={13} className="text-slate-400" /> Maximum Marks
+                </span>
+                <span className="text-sm font-bold text-white">{exam.totalMarks} Marks</span>
+              </div>
+
+              <div className="p-3 rounded-lg bg-slate-900/60 border border-slate-800 space-y-1">
+                <span className="text-[11px] text-slate-400 block flex items-center gap-1.5">
+                  <Award size={13} className="text-slate-400" /> Qualifying Cutoff
+                </span>
+                <span className="text-sm font-bold text-white">
+                  {exam.passingMarks} ({exam.passingPercentage}%)
+                </span>
+              </div>
+            </div>
+
+            {/* Marking Criteria Strip */}
+            <div className="p-3 rounded-lg bg-slate-900/90 border border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-3">
+                <span className="text-slate-400">Marking Scheme:</span>
+                <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-semibold border border-emerald-500/20">
+                  +1.0 Mark for Correct
+                </span>
+                {exam.negativeMarking ? (
+                  <span className="px-2 py-0.5 rounded bg-red-500/10 text-red-400 font-semibold border border-red-500/20">
+                    -{exam.negativeMarksPerQuestion || 0.25} Deduct for Incorrect
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-semibold">
+                    No Negative Penalty
+                  </span>
+                )}
+              </div>
+
+              <span className="text-[11px] text-slate-400">
+                Unattempted questions: <strong>0 Marks</strong>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* ================= 4. OFFICIAL CBT QUESTION PALETTE SYMBOLS (SIGNATURE EXAM LEGEND) ================= */}
+        <div className="rounded-xl bg-[#0c1220] border border-slate-800 p-4 sm:p-5 space-y-3 text-xs">
+          <div className="flex items-center gap-2 border-b border-slate-800 pb-2.5">
+            <Info size={15} className="text-blue-400" />
+            <h3 className="font-bold text-white uppercase tracking-wider text-xs">
+              Computer Based Test (CBT) Question Palette Symbols
+            </h3>
+          </div>
+
+          <p className="text-slate-400 text-[11px]">
+            During the examination, the question status palette on the right side will display the status of each question using the following official symbols:
+          </p>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+            <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800 flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded bg-emerald-600 text-white font-bold flex items-center justify-center shrink-0 text-xs">
+                01
+              </div>
+              <div>
+                <span className="font-bold text-white block">Answered</span>
+                <span className="text-[10px] text-slate-400">You have answered</span>
+              </div>
+            </div>
+
+            <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800 flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded bg-red-600 text-white font-bold flex items-center justify-center shrink-0 text-xs">
+                02
+              </div>
+              <div>
+                <span className="font-bold text-white block">Not Answered</span>
+                <span className="text-[10px] text-slate-400">Question skipped</span>
+              </div>
+            </div>
+
+            <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800 flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded bg-purple-600 text-white font-bold flex items-center justify-center shrink-0 text-xs">
+                03
+              </div>
+              <div>
+                <span className="font-bold text-white block">Review</span>
+                <span className="text-[10px] text-slate-400">Marked for review</span>
+              </div>
+            </div>
+
+            <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800 flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded bg-slate-800 text-slate-400 font-bold flex items-center justify-center shrink-0 text-xs border border-slate-700">
+                04
+              </div>
+              <div>
+                <span className="font-bold text-slate-300 block">Not Visited</span>
+                <span className="text-[10px] text-slate-400">Not opened yet</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ================= 5. GENERAL CANDIDATE CONDUCT & RULES ================= */}
+        <div className="rounded-xl bg-[#0c1220] border border-slate-800 p-4 sm:p-5 space-y-3 text-xs">
+          <div className="flex items-center gap-2 border-b border-slate-800 pb-2.5">
+            <BookOpen size={15} className="text-blue-400" />
+            <h3 className="font-bold text-white uppercase tracking-wider text-xs">
+              General Examination Instructions &amp; Security Protocol
+            </h3>
+          </div>
+
+          <ol className="list-decimal list-inside space-y-2 text-slate-300 text-[11px] sm:text-xs leading-relaxed">
+            <li>
+              <strong>Synchronized Timer:</strong> The countdown timer in the top header will display the remaining time. When the timer hits 00:00:00, the examination will be submitted automatically.
+            </li>
+            <li>
+              <strong>Instant Server Cloud Saving:</strong> Every response chosen is saved in real time. If your network interrupts or your system reboots, your answers remain saved on the server.
+            </li>
+            <li>
+              <strong>Proctoring &amp; Anti-Cheating:</strong> Switching browser tabs, minimizing the screen, or exiting fullscreen is recorded. Reaching the maximum warning limit will automatically disqualify and submit your test.
+            </li>
+            <li>
+              <strong>Question Navigation:</strong> You can click on any question number in the question palette to jump directly to that question.
+            </li>
+          </ol>
+
+          {/* Candidate Undertaking Declaration */}
+          <div className="pt-3.5 border-t border-slate-800">
+            <label className="flex items-start gap-2.5 cursor-pointer p-3 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition-colors">
               <input
                 type="checkbox"
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
-                className="w-4 h-4 rounded border-gray-600 text-blue-600 mt-0.5"
+                className="w-4 h-4 rounded border-slate-700 bg-slate-900 text-blue-600 mt-0.5 focus:ring-0 shrink-0"
               />
-              <span className="text-xs text-gray-300">
-                I have read and understood all the examination rules. I confirm that I will complete this test honestly without external malpractice.
+              <span className="text-[11px] sm:text-xs text-slate-200 leading-relaxed">
+                <strong>Candidate Undertaking:</strong> I declare that I am the genuine registered candidate. I have read and understood all the above instructions and agree to abide by the rules. I will not engage in any malpractice during this examination.
               </span>
             </label>
           </div>
         </div>
 
-        {/* Start / Resume Action */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+        {/* ================= 6. OFFICIAL PROCEED ACTION BAR ================= */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
           <Link
             href="/exams"
-            className="w-full sm:w-auto text-center px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 text-xs font-semibold"
+            className="w-full sm:w-auto text-center px-4 py-2 rounded-lg border border-slate-700 bg-slate-800/60 hover:bg-slate-800 text-slate-300 text-xs font-semibold transition-colors"
           >
-            Cancel
+            Cancel &amp; Return
           </Link>
 
           {hasActiveAttempt ? (
             <button
               onClick={handleStartExam}
               disabled={starting}
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white text-sm font-bold shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 transition-all active:scale-95 animate-pulse"
+              className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors flex items-center justify-center gap-2 shadow-sm"
             >
-              <span>Resume Active Test</span>
-              <ArrowRight size={16} />
+              <span>Resume In-Progress Examination</span>
+              <ArrowRight size={14} />
             </button>
           ) : exam.isSynchronizedSlot && slotState === "waiting" ? (
             <button
               disabled
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-blue-900/30 border border-blue-500/30 text-blue-300 text-sm font-bold shadow-lg flex items-center justify-center gap-2 cursor-not-allowed opacity-90"
+              className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-400 text-xs font-semibold flex items-center justify-center gap-2 cursor-not-allowed"
             >
-              <Lock size={15} className="text-blue-400 animate-pulse" />
+              <Clock size={14} className="text-slate-400" />
               <span>
-                Unlocks in {hours > 0 ? `${hours}h ` : ""}{String(minutes).padStart(2, "0")}m {String(seconds).padStart(2, "0")}s
+                Slot Locked • Unlocks in {hours > 0 ? `${hours}h ` : ""}{String(minutes).padStart(2, "0")}m {String(seconds).padStart(2, "0")}s
               </span>
             </button>
           ) : exam.isSynchronizedSlot && slotState === "expired" ? (
             <button
               disabled
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-red-900/30 border border-red-500/30 text-red-400 text-sm font-bold flex items-center justify-center gap-2 cursor-not-allowed"
+              className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-red-400 text-xs font-semibold flex items-center justify-center gap-2 cursor-not-allowed"
             >
-              <AlertTriangle size={15} />
-              <span>Slot Expired</span>
+              <AlertTriangle size={14} />
+              <span>Examination Slot Expired</span>
             </button>
           ) : canAttempt || (exam.isSynchronizedSlot && slotState === "active") ? (
             <button
               onClick={handleStartExam}
               disabled={!agreed || starting}
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 transition-all active:scale-95"
+              className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold transition-colors flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider"
             >
-              <span>{starting ? "Launching Examination..." : "Begin Examination Now"}</span>
-              <ArrowRight size={16} />
+              <span>{starting ? "Launching Test Terminal..." : "I Am Ready To Begin Test"}</span>
+              <ArrowRight size={14} />
             </button>
           ) : (
             <div className="text-right">
@@ -514,17 +589,17 @@ export default function ExamInstructionPage({
               </p>
               <Link
                 href={`/exams/${exam._id}/result`}
-                className="text-xs text-blue-400 underline mt-0.5 block"
+                className="text-xs text-blue-400 hover:underline mt-0.5 block font-medium"
               >
-                View Previous Result
+                View Official Scorecard
               </Link>
             </div>
           )}
         </div>
+
       </div>
 
       <Footer />
     </main>
   );
 }
-

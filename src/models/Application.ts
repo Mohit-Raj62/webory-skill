@@ -149,6 +149,18 @@ const ApplicationSchema = new Schema({
   certificateKey: {
     type: String,
   },
+  isRevoked: {
+    type: Boolean,
+    default: false,
+  },
+  revokedReason: {
+    type: String,
+    default: null,
+  },
+  revokedAt: {
+    type: Date,
+    default: null,
+  },
 });
 
 // Performance indexes for faster queries
@@ -157,7 +169,7 @@ ApplicationSchema.index({ student: 1, status: 1 }); // For filtered queries (exc
 ApplicationSchema.index({ internship: 1 }); // For internship-related queries
 ApplicationSchema.index({ status: 1 }); // For admin panel filtering
 
-if (models.Application && !models.Application.schema?.paths?.assignedExam) {
+if (models.Application && (!models.Application.schema?.paths?.assignedExam || !models.Application.schema?.paths?.isRevoked)) {
   delete (models as any).Application;
 }
 

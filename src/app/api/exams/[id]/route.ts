@@ -99,6 +99,12 @@ export async function GET(
       serverTime: now.toISOString(),
       slotState,
       waitingSeconds,
+      candidate: {
+        _id: auth.user._id,
+        name: [auth.user.firstName, auth.user.lastName].filter(Boolean).join(" ").trim() || auth.user.email?.split("@")[0] || "Candidate",
+        email: auth.user.email,
+        rollNumber: String(auth.user._id).slice(-8).toUpperCase(),
+      },
       exam: {
         _id: exam._id,
         title: exam.title,

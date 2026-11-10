@@ -14,6 +14,7 @@ import dynamic from "next/dynamic";
 import { GlobalClientBootstrap } from "@/components/GlobalClientBootstrap";
 import { SecurityProvider } from "@/components/SecurityProvider";
 import PromoPopupManager from "@/components/ui/PromoPopupManager";
+import { AnnouncementBanner } from "@/components/ui/AnnouncementBanner";
 
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -177,6 +178,7 @@ export default function RootLayout({
                     <SecurityProvider>
                         <GlobalClientBootstrap />
                         <PromoPopupManager />
+                        <AnnouncementBanner />
                         {children}
                     </SecurityProvider>
                 </SessionProvider>

@@ -30,10 +30,13 @@ export async function GET(request: NextRequest) {
       totalStudents += count;
     });
 
+    const walletBal = user.teacherProfile?.walletBalance || 0;
+    const withdrawnBal = user.teacherProfile?.totalWithdrawn || 0;
+
     const stats = {
       totalCourses: courses.length,
       totalStudents: totalStudents,
-      totalEarnings: 0, // Placeholder for now
+      totalEarnings: walletBal + withdrawnBal,
     };
 
     return NextResponse.json({

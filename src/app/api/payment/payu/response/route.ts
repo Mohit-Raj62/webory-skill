@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { creditTeacherCommission } from "@/lib/teacher-commission";
 import { verifyPayUHash } from "@/lib/payu";
 import dbConnect from "@/lib/db";
 import Enrollment from "@/models/Enrollment";
@@ -132,6 +133,9 @@ async function handleCourseEnrollment(
       enrolledAt: new Date(),
       // Store transaction details if schema allows
     });
+
+    // Credit Teacher Commission
+    await creditTeacherCommission(courseId, amount || 0);
 
     await Activity.create({
       student: userId,

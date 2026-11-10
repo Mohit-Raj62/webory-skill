@@ -48,7 +48,23 @@ const CustomCertificateSchema = new Schema({
     director: { name: String, title: String },
     partner: { name: String, title: String },
   },
+  isRevoked: {
+    type: Boolean,
+    default: false,
+  },
+  revokedReason: {
+    type: String,
+    default: null,
+  },
+  revokedAt: {
+    type: Date,
+    default: null,
+  },
 });
+
+if (models.CustomCertificate && !models.CustomCertificate.schema?.paths?.isRevoked) {
+  delete (models as any).CustomCertificate;
+}
 
 const CustomCertificate =
   models.CustomCertificate ||

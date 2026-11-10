@@ -217,6 +217,18 @@ const UserSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  teacherProfile: {
+    commissionRate: { type: Number, default: 70 },
+    walletBalance: { type: Number, default: 0 },
+    totalWithdrawn: { type: Number, default: 0 },
+    upiId: { type: String, default: null },
+    bankDetails: {
+      accountNo: String,
+      ifsc: String,
+      holderName: String,
+      bankName: String,
+    },
+  },
 });
 
 // Performance indexes for faster queries

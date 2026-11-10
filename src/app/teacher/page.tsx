@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BookOpen, Users, DollarSign, TrendingUp } from "lucide-react";
+import Link from "next/link";
+import { BookOpen, Users, DollarSign, TrendingUp, ArrowRight } from "lucide-react";
 
 export default function TeacherDashboard() {
     const [stats, setStats] = useState({
@@ -79,6 +80,9 @@ export default function TeacherDashboard() {
                     </div>
                     <h3 className="text-green-300/80 text-sm font-medium uppercase tracking-wider mb-1 relative z-10">Total Earnings</h3>
                     <p className="text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-200 mt-1 relative z-10">₹{stats.totalEarnings}</p>
+                    <Link href="/teacher/wallet" className="inline-flex items-center gap-1.5 text-xs font-bold text-green-300 hover:text-white mt-3 relative z-10 bg-green-500/20 px-3 py-1.5 rounded-lg border border-green-500/30 transition-colors">
+                        Open Wallet & Withdraw <ArrowRight size={13} />
+                    </Link>
                 </div>
             </div>
 

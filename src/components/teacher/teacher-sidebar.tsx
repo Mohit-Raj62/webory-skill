@@ -14,6 +14,7 @@ import {
     Shield,
     Home,
     KeyRound,
+    Wallet,
 } from "lucide-react";
 
 const menuItems = [
@@ -25,6 +26,7 @@ const menuItems = [
     { name: "Live Classes", href: "/teacher/live-classes", icon: Video },
     { name: "Create Course", href: "/teacher/courses/create", icon: PlusCircle },
     { name: "Student Doubts", href: "/teacher/doubts", icon: HelpCircle },
+    { name: "Earnings & Wallet", href: "/teacher/wallet", icon: Wallet },
     { name: "My Profile / KYC", href: "/teacher/profile", icon: Shield },
     { name: "Security (2FA)", href: "/teacher/security", icon: KeyRound },
 ];

@@ -31,6 +31,8 @@ import {
     X,
     CheckSquare,
     BrainCircuit,
+    Wallet,
+    AlertTriangle,
 } from "lucide-react";
 
 interface MenuItem {
@@ -66,7 +68,10 @@ const menuItems: MenuItem[] = [
     { name: "WeboryOS", href: "/admin/simulators", icon: Terminal },
     { name: "Hackathons", href: "/admin/hackathons", icon: Trophy },
     { name: "Campus Ambassadors", href: "/admin/ambassadors", icon: Megaphone },
+    { name: "Announcements", href: "/admin/announcements", icon: Megaphone },
     // 👑 Founder & Superadmin Exclusive Controls:
+    { name: "Teacher Payouts", href: "/admin/payouts", icon: Wallet, superadminOnly: true },
+    { name: "Student Retention", href: "/admin/retention", icon: AlertTriangle, superadminOnly: true },
     { name: "Audit Logs", href: "/admin/audit-logs", icon: History, superadminOnly: true },
     { name: "Analytics & Revenue", href: "/admin/analytics", icon: BarChart3, superadminOnly: true },
     { name: "Broadcast Emails", href: "/admin/broadcast", icon: Megaphone, superadminOnly: true },
