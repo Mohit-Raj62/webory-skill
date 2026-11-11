@@ -15,7 +15,7 @@ import {
     CheckCircle, Clock, Globe, PlayCircle, Lock,
     ClipboardList, FileText, Video, ChevronDown, ChevronUp,
     Star, Shield, Trophy, Zap, Play, X, ArrowRight,
-    BookOpen, Award, Download
+    BookOpen, Award, Download, Briefcase, Home, HelpCircle, Sparkles, GraduationCap
 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -304,14 +304,51 @@ export default function CourseDetailsPage() {
 
     if (!course) {
         return (
-            <div className="min-h-screen bg-[#020617] flex items-center justify-center">
-                <div className="text-center space-y-3">
-                    <p className="text-white font-semibold text-lg">Course not found</p>
-                    <Link href="/courses" className="text-blue-400 hover:text-blue-300 text-sm flex items-center justify-center gap-1">
-                        ← Back to Courses
-                    </Link>
+            <main className="min-h-screen bg-[#020617] text-slate-100 flex flex-col justify-between selection:bg-blue-600/30">
+                <Navbar />
+
+                <div className="pt-32 pb-20 px-4 container mx-auto max-w-xl flex-1 flex items-center justify-center">
+                    <div className="w-full p-8 rounded-xl bg-[#0c1322] border border-slate-800 text-center space-y-5">
+                        <div className="mx-auto w-12 h-12 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center justify-center text-slate-300">
+                            <BookOpen size={22} />
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <h1 className="text-xl sm:text-2xl font-semibold text-white">
+                                Course Updating
+                            </h1>
+                            <p className="text-sm text-slate-400 max-w-md mx-auto leading-relaxed">
+                                Is course ka curriculum aur practical sessions update ho rahe hain. Jald hi naya batch live hoga. Tab tak aap hamare baaki courses ya internships check kar sakte hain.
+                            </p>
+                        </div>
+
+                        <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2.5">
+                            <Link
+                                href="/courses"
+                                className="w-full sm:w-auto px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs sm:text-sm transition-colors"
+                            >
+                                All Courses
+                            </Link>
+
+                            <Link
+                                href="/internships"
+                                className="w-full sm:w-auto px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-medium text-xs sm:text-sm transition-colors"
+                            >
+                                Browse Internships
+                            </Link>
+
+                            <Link
+                                href="/"
+                                className="w-full sm:w-auto px-4 py-2 rounded-lg bg-transparent hover:bg-slate-800/60 text-slate-400 hover:text-white font-medium text-xs sm:text-sm transition-colors"
+                            >
+                                Home
+                            </Link>
+                        </div>
+                    </div>
                 </div>
-            </div>
+
+                <Footer />
+            </main>
         );
     }
 

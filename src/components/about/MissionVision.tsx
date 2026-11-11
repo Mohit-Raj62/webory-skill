@@ -1,52 +1,78 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Target, Globe } from "lucide-react";
+import { Target, Compass, CheckCircle2 } from "lucide-react";
 
 export function MissionVision() {
     return (
-        <section className="py-24 px-4 md:px-8 relative z-10">
-            <div className="max-w-7xl mx-auto">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-                     <motion.div 
-                        initial={{ opacity: 0, x: -50 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        className="relative group"
-                    >
-                        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl blur-2xl opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
-                        <div className="glass-card p-10 md:p-12 rounded-3xl border border-white/10 bg-[#0a0a0a] relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] -mr-32 -mt-32 pointer-events-none"></div>
-                            <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-8 text-blue-400 border border-blue-500/20 shadow-[0_0_30px_rgba(59,130,246,0.2)]">
-                                <Target size={32} />
-                            </div>
-                            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">Mission</span></h2>
-                            <p className="text-gray-400 leading-relaxed text-lg mb-6">
-                                To democratize access to elite tech education. We believe talent is universal, but opportunity is not. We are building the bridge that connects ambitious learners with world-class careers, regardless of their background.
-                            </p>
-                        </div>
-                    </motion.div>
+        <section className="py-20 px-4 md:px-8 relative z-10 border-t border-slate-800/80 bg-[#06090e]">
+            <div className="max-w-6xl mx-auto">
+                <div className="text-center max-w-2xl mx-auto mb-14">
+                    <span className="text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full">
+                        Guiding Principles
+                    </span>
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mt-3 mb-3">
+                        Our Mission & Vision
+                    </h2>
+                    <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
+                        Built with a clear, singular purpose: empowering students across India with genuine software engineering proficiency.
+                    </p>
+                </div>
 
-                    <motion.div 
-                        initial={{ opacity: 0, x: 50 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        className="relative group"
-                    >
-                         <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl blur-2xl opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
-                         <div className="glass-card p-10 md:p-12 rounded-3xl border border-white/10 bg-[#0a0a0a] relative overflow-hidden">
-                            <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/10 rounded-full blur-[80px] -ml-32 -mb-32 pointer-events-none"></div>
-                            <div className="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-8 text-purple-400 border border-purple-500/20 shadow-[0_0_30px_rgba(168,85,247,0.2)]">
-                                <Globe size={32} />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Mission Card */}
+                    <div className="rounded-xl border border-slate-800 bg-[#0b101b] p-8 sm:p-10 flex flex-col justify-between shadow-lg">
+                        <div className="space-y-4">
+                            <div className="w-12 h-12 rounded-lg bg-slate-900 border border-slate-800 text-blue-400 flex items-center justify-center">
+                                <Target size={24} />
                             </div>
-                            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">Vision</span></h2>
-                            <p className="text-gray-400 leading-relaxed text-lg mb-6">
-                                To become the global launchpad for the next generation of tech leaders. We envision a future where every aspiring developer has the mentorship, tools, and community needed to build technology that shapes the world.
+                            <h3 className="text-2xl font-bold text-white tracking-tight">
+                                Our Mission
+                            </h3>
+                            <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+                                To eliminate the gap between college education and industry expectations. We believe every aspiring engineer deserves direct access to production-level codebases, realistic workflows, and verified industrial credentials regardless of their college tier or location.
                             </p>
                         </div>
-                    </motion.div>
+
+                        <div className="pt-6 mt-6 border-t border-slate-800/80 space-y-2 text-xs sm:text-sm text-slate-400">
+                            <div className="flex items-center gap-2">
+                                <CheckCircle2 size={15} className="text-blue-400 shrink-0" />
+                                <span>100% practical, project-driven learning</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <CheckCircle2 size={15} className="text-blue-400 shrink-0" />
+                                <span>Democratizing top-tier tech education for Tier-2 & Tier-3 colleges</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Vision Card */}
+                    <div className="rounded-xl border border-slate-800 bg-[#0b101b] p-8 sm:p-10 flex flex-col justify-between shadow-lg">
+                        <div className="space-y-4">
+                            <div className="w-12 h-12 rounded-lg bg-slate-900 border border-slate-800 text-blue-400 flex items-center justify-center">
+                                <Compass size={24} />
+                            </div>
+                            <h3 className="text-2xl font-bold text-white tracking-tight">
+                                Our Vision
+                            </h3>
+                            <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+                                To become India's premier practical career launchpad where students graduate not just with certificates, but with verifiable Git contributions, deployed full-stack products, and the engineering discipline demanded by high-growth tech companies worldwide.
+                            </p>
+                        </div>
+
+                        <div className="pt-6 mt-6 border-t border-slate-800/80 space-y-2 text-xs sm:text-sm text-slate-400">
+                            <div className="flex items-center gap-2">
+                                <CheckCircle2 size={15} className="text-blue-400 shrink-0" />
+                                <span>Verifiable career portfolios over paper resumes</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <CheckCircle2 size={15} className="text-blue-400 shrink-0" />
+                                <span>Direct placement pipelines with high-growth technology startups</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
     );
 }
+

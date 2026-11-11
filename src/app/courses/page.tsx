@@ -11,32 +11,6 @@ import jwt from "jsonwebtoken";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-// Fallback data if API fails or DB is empty
-const fallbackCourses = [
-    {
-        _id: "1",
-        title: "Full Stack Development",
-        icon: "Globe",
-        level: "Advanced",
-        studentsCount: "2.5k+",
-        color: "from-blue-500 to-cyan-500",
-        description: "Master the MERN stack and build scalable web applications.",
-        price: 0,
-        discountPercentage: 0
-    },
-    {
-        _id: "2",
-        title: "UI/UX Design",
-        icon: "Palette",
-        level: "Intermediate",
-        studentsCount: "1.8k+",
-        color: "from-purple-500 to-pink-500",
-        description: "Learn design principles, Figma, and create stunning interfaces.",
-        price: 0,
-        discountPercentage: 0
-    },
-];
-
 // Cache the courses data to avoid expensive aggregations on every request
 async function getCachedCoursesData() {
     try {
@@ -86,7 +60,7 @@ async function getCachedCoursesData() {
         return JSON.parse(JSON.stringify(courses));
     } catch (error) {
         console.error("Failed to fetch courses:", error);
-        return null;
+        return [];
     }
 }
 
@@ -132,7 +106,7 @@ export default async function CoursesPage() {
         userId ? getCachedUserEnrollments(userId) : Promise.resolve([])
     ]);
 
-    const courses = (coursesData && coursesData.length > 0) ? coursesData : fallbackCourses;
+    const courses = Array.isArray(coursesData) ? coursesData : [];
 
     return <CoursesView courses={courses} enrolledCourseIds={enrolledCourseIds as string[]} />;
 }

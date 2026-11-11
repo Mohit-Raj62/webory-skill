@@ -12,7 +12,8 @@ import {
     ArrowRight, 
     PlayCircle, 
     X,
-    Users
+    Users,
+    Briefcase
 } from "lucide-react";
 
 interface CourseItem {
@@ -247,21 +248,47 @@ export function CoursesView({ courses, enrolledCourseIds = [] }: CoursesViewProp
                         })}
                     </div>
                 ) : (
-                    /* Clean Empty State */
-                    <div className="text-center py-16 px-4 rounded-xl border border-white/10 max-w-sm mx-auto">
-                        <p className="text-sm font-medium text-white mb-1">No courses found</p>
-                        <p className="text-xs text-gray-400 mb-4">
-                            Try searching for something else or clearing the filters.
-                        </p>
-                        <button
-                            onClick={() => {
-                                setSelectedLevel("All");
-                                setSearchQuery("");
-                            }}
-                            className="px-3 py-1.5 rounded-lg bg-white hover:bg-gray-100 text-gray-950 text-xs font-semibold transition-colors"
-                        >
-                            Reset Filters
-                        </button>
+                    /* Clean Premium Empty State */
+                    <div className="text-center py-12 px-6 sm:px-8 rounded-xl bg-[#0c1322] border border-slate-800 max-w-lg mx-auto space-y-4">
+                        <div className="w-12 h-12 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-300 mx-auto flex items-center justify-center">
+                            <BookOpen size={22} />
+                        </div>
+                        <div className="space-y-1.5">
+                            <h3 className="text-lg font-semibold text-white">
+                                New Courses Updating
+                            </h3>
+                            <p className="text-slate-400 text-xs sm:text-sm leading-relaxed max-w-md mx-auto">
+                                {searchQuery || selectedLevel !== "All"
+                                    ? "Is filter ke mutabiq abhi koi course available nahi hai. Aap filters reset karke doosre tracks dekh sakte hain."
+                                    : "Naye technology aur project-based certification courses update ho rahe hain. Jald hi naye batches open honge. Tab tak aap hamari internships explore kar sakte hain."}
+                            </p>
+                        </div>
+                        <div className="pt-2 flex flex-wrap items-center justify-center gap-2.5">
+                            {(searchQuery || selectedLevel !== "All") && (
+                                <button
+                                    onClick={() => {
+                                        setSelectedLevel("All");
+                                        setSearchQuery("");
+                                    }}
+                                    className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-xs font-medium transition-colors"
+                                >
+                                    Reset Filters
+                                </button>
+                            )}
+                            <Link
+                                href="/internships"
+                                className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-medium transition-colors flex items-center gap-1.5"
+                            >
+                                <Briefcase size={15} />
+                                <span>View Internships</span>
+                            </Link>
+                            <Link
+                                href="/"
+                                className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-xs sm:text-sm font-medium transition-colors"
+                            >
+                                Home
+                            </Link>
+                        </div>
                     </div>
                 )}
 

@@ -47,11 +47,25 @@ export async function POST(req: Request) {
     }
 
     const mongoose = require("mongoose");
-    let actualInternshipId = internshipId;
-    if (!mongoose.isValidObjectId(internshipId)) {
-        const intDoc = await Internship.findOne({ slug: internshipId }).select("_id");
-        if (intDoc) actualInternshipId = intDoc._id.toString();
+    const isIdValid = mongoose.isValidObjectId(internshipId);
+    
+    // Check if internship exists and is currently active
+    const targetQuery: any = { isActive: { $ne: false } };
+    if (isIdValid) {
+      targetQuery.$or = [{ _id: internshipId }, { slug: internshipId }];
+    } else {
+      targetQuery.slug = internshipId;
     }
+
+    const internshipDoc = await Internship.findOne(targetQuery);
+    if (!internshipDoc) {
+      return NextResponse.json(
+        { error: "This internship is currently closed or unavailable for applications." },
+        { status: 404 }
+      );
+    }
+
+    const actualInternshipId = internshipDoc._id;
 
     // Check if already applied
     let application = await Application.findOne({
@@ -119,7 +133,7 @@ export async function POST(req: Request) {
       });
 
       // Increment filled seats
-      await Internship.findByIdAndUpdate(internshipId, { $inc: { filledSeats: 1 } });
+      await Internship.findByIdAndUpdate(actualInternshipId, { $inc: { filledSeats: 1 } });
     }
 
     // Record Activity
@@ -127,10 +141,9 @@ export async function POST(req: Request) {
       student: decoded.userId,
       type: "internship_applied",
       category: "internship",
-      relatedId: internshipId,
+      relatedId: actualInternshipId,
       metadata: {
-        internshipName:
-          (await Internship.findById(internshipId))?.title || "Internship",
+        internshipName: internshipDoc.title || "Internship",
         tier: selectedTier || "Basic",
       },
       date: new Date(),
@@ -138,13 +151,12 @@ export async function POST(req: Request) {
 
     // Fetch details for email
     const student = await User.findById(decoded.userId);
-    const internship = await Internship.findById(internshipId);
 
-    if (student && internship) {
+    if (student && internshipDoc) {
       await sendEmail(
         student.email,
-        `Application Received: ${internship.title}`,
-        emailTemplates.applicationReceived(student.firstName, internship.title),
+        `Application Received: ${internshipDoc.title}`,
+        emailTemplates.applicationReceived(student.firstName, internshipDoc.title),
       );
 
       // Optional: Notify Admin

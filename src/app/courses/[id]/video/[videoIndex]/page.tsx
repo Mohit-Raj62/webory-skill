@@ -3,11 +3,12 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import {
     ArrowLeft, ChevronLeft, ChevronRight, CheckCircle,
     MoreVertical, Settings, Maximize, Minimize, Expand,
     MessageCircle, HelpCircle, FileText, Lock, Play, Pause,
-    ThumbsUp, ThumbsDown, MessageSquare, Heart, HeartOff
+    ThumbsUp, ThumbsDown, MessageSquare, Heart, HeartOff, Video
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -751,8 +752,24 @@ export default function VideoPlayerPage() {
 
     if (!loading && !currentVideo) {
         return (
-            <div className="min-h-screen bg-black flex items-center justify-center text-white">
-                Video not found
+            <div className="min-h-screen bg-[#020617] flex items-center justify-center p-4">
+                <div className="p-8 rounded-2xl bg-[#0c1220] border border-slate-800 text-center space-y-4 max-w-md shadow-xl">
+                    <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 mx-auto flex items-center justify-center">
+                        <Video size={24} />
+                    </div>
+                    <div className="space-y-1">
+                        <h2 className="text-lg font-bold text-white">Lecture Video Not Found</h2>
+                        <p className="text-xs text-slate-400">
+                            Yeh lecture video available nahi hai ya update ki ja rahi hai.
+                        </p>
+                    </div>
+                    <Link
+                        href={`/courses/${courseId}`}
+                        className="inline-block px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition-colors"
+                    >
+                        Return to Course Content
+                    </Link>
+                </div>
             </div>
         );
     }

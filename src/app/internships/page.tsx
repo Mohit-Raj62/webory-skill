@@ -9,33 +9,6 @@ import jwt from "jsonwebtoken";
 
 export const dynamic = "force-dynamic";
 
-const fallbackInternships = [
-    {
-        _id: "1",
-        title: "Frontend Developer Intern",
-        company: "Webory Tech",
-        location: "Remote",
-        type: "Full-time",
-        stipend: "₹15,000 - ₹30,000 / month",
-        tags: ["React", "Tailwind", "TypeScript"],
-        price: 999,
-        description: "Join our core team to build modern web applications using React and Next.js. You'll work on production-level code and collaborate with senior developers.",
-        requirements: ["Basic knowledge of HTML/CSS/JS", "Familiarity with React is a plus"]
-    },
-    {
-        _id: "2",
-        title: "UI/UX Design Intern",
-        company: "Creative Studio",
-        location: "Remote",
-        type: "Part-time",
-        stipend: "₹10,000 - ₹20,000 / month",
-        tags: ["Figma", "Prototyping", "User Research"],
-        price: 999,
-        description: "Help us create stunning user experiences for our clients. You will be involved in the entire design process from research to prototyping.",
-        requirements: ["Proficiency in Figma", "Strong understanding of design principles"]
-    },
-];
-
 async function getCachedInternshipsData() {
     try {
         await dbConnect();
@@ -46,7 +19,7 @@ async function getCachedInternshipsData() {
         return JSON.parse(JSON.stringify(internships));
     } catch (error) {
         console.error("Failed to fetch internships:", error);
-        return null;
+        return [];
     }
 }
 
@@ -91,7 +64,7 @@ export default async function InternshipsPage() {
         userId ? getCachedUserApplications(userId) : Promise.resolve([])
     ]);
 
-    const internships = (internshipsData && internshipsData.length > 0) ? internshipsData : fallbackInternships;
+    const internships = Array.isArray(internshipsData) ? internshipsData : [];
 
     return <InternshipsView internships={internships} user={user} userApplications={userApplications as any} />;
 }

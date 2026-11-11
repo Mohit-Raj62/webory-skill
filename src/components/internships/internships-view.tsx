@@ -3,6 +3,7 @@
 import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { Clock, IndianRupee, CheckCircle2, X, Search, Zap, Sparkles, GraduationCap, Globe, ArrowUpRight, ShieldCheck, Briefcase, Download, Eye, ExternalLink } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
@@ -622,25 +623,45 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                 );
                             })
                         ) : (
-                            <motion.div 
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="py-20 text-center"
-                            >
-                                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/5 mb-6 border border-white/10">
-                                    <Search size={32} className="text-slate-500" />
+                            <div className="py-12 text-center max-w-lg mx-auto p-6 sm:p-8 rounded-xl bg-[#0c1322] border border-slate-800 space-y-4">
+                                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-300">
+                                    <Briefcase size={22} />
                                 </div>
-                                <h3 className="text-xl font-bold text-white mb-2">No internships found</h3>
-                                <p className="text-slate-400 max-w-xs mx-auto text-sm">
-                                    Try adjusting your search or filter to find available opportunities.
-                                </p>
-                                <Button 
-                                    onClick={() => { setSearchQuery(""); setSelectedType("All"); }}
-                                    className="mt-6 bg-white/10 hover:bg-white/20 text-white border-white/10"
-                                >
-                                    Clear all filters
-                                </Button>
-                            </motion.div>
+                                <div className="space-y-1.5">
+                                    <h3 className="text-lg font-semibold text-white">
+                                        New Internship Batches Updating
+                                    </h3>
+                                    <p className="text-slate-400 text-xs sm:text-sm leading-relaxed max-w-md mx-auto">
+                                        {searchQuery || selectedType !== "All"
+                                            ? "Is category me filhal koi open slot nahi hai. Aap filters clear karke doosre domains dekh sakte hain ya courses check kar sakte hain."
+                                            : "Naye industrial batches aur projects schedule ho rahe hain. Jald hi naye slots open honge. Tab tak aap hamare courses explore kar sakte hain."}
+                                    </p>
+                                </div>
+                                <div className="pt-2 flex flex-wrap items-center justify-center gap-2.5">
+                                    {(searchQuery || selectedType !== "All") && (
+                                        <Button 
+                                            onClick={() => { setSearchQuery(""); setSelectedType("All"); }}
+                                            variant="outline"
+                                            className="border-slate-700 text-slate-300 hover:bg-slate-800 text-xs font-medium px-4 py-2 h-auto rounded-lg"
+                                        >
+                                            Reset Filters
+                                        </Button>
+                                    )}
+                                    <Link
+                                        href="/courses"
+                                        className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-medium transition-colors flex items-center gap-1.5"
+                                    >
+                                        <GraduationCap size={15} />
+                                        <span>View Skill Courses</span>
+                                    </Link>
+                                    <Link
+                                        href="/"
+                                        className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-xs sm:text-sm font-medium transition-colors"
+                                    >
+                                        Home
+                                    </Link>
+                                </div>
+                            </div>
                         )}
                     </AnimatePresence>
                 </div>

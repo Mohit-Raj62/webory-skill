@@ -18,36 +18,31 @@ export function HeroSection() {
                         <Rocket size={12} />
                         <span>Innovating Education</span>
                     </div>
-                    <h1 className="text-4xl md:text-7xl font-bold text-white mb-6 tracking-tight">
+                    <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight">
                         Empowering the <br className="hidden md:block" />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 animate-gradient">Next Generation</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Next Generation of Engineers</span>
                     </h1>
-                    <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed mb-8">
-                        We are bridging the gap between academic learning and industry demands. Join us to master the skills that define the future of technology.
+                    <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto leading-relaxed mb-8">
+                        Bridging the gap between university engineering curriculums and modern industry demands with hands-on, production-grade training.
                     </p>
                     
-                    <div className="flex flex-wrap items-center justify-center gap-4">
+                    <div className="flex flex-wrap items-center justify-center gap-3">
                         <Link href="/courses">
-                            <Button className="h-12 px-8 rounded-full bg-white text-black hover:bg-gray-100 font-bold transition-transform hover:scale-105">
+                            <Button className="h-11 px-7 rounded-xl bg-blue-600 text-white hover:bg-blue-500 font-semibold transition-colors">
                                 Explore Courses
                             </Button>
                         </Link>
                         <Link href="/contact">
-                            <Button variant="outline" className="h-12 px-8 rounded-full border-white/10 text-white hover:bg-white/5 hover:text-white hover:border-white/20 transition-all">
+                            <Button variant="outline" className="h-11 px-7 rounded-xl border-slate-700 text-slate-200 hover:bg-slate-800 hover:text-white transition-colors">
                                 Partner With Us
                             </Button>
                         </Link>
                     </div>
 
-                    <div className="mt-12 flex justify-center px-4">
-                        <div className="inline-flex items-center space-x-2 bg-green-500/5 border border-green-500/20 rounded-full px-4 py-2 md:px-5 md:py-2.5 shadow-[0_0_20px_rgba(34,197,94,0.15)] hover:bg-green-500/10 transition-all cursor-default group max-w-full">
-                            <span className="relative flex h-2.5 w-2.5 mr-1">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
-                            </span>
-                            <span className="text-gray-200 text-sm font-medium tracking-wide">
-                                Registered EdTech <span className="text-white font-bold">Startup</span> (MSME)
-                            </span>
+                    <div className="mt-10 flex justify-center px-4">
+                        <div className="inline-flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-full px-4 py-1.5 text-xs text-slate-300">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            <span>Recognized EdTech Venture • <strong className="text-white">Govt. of India (MSME)</strong></span>
                         </div>
                     </div>
                 </motion.div>

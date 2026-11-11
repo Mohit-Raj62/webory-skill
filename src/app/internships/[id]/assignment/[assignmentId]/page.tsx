@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Upload, X, Send, CheckCircle } from "lucide-react";
+import { ArrowLeft, Upload, X, Send, CheckCircle, FileText } from "lucide-react";
 import Link from "next/link";
 
 export default function SubmitAssignmentPage() {
@@ -134,8 +134,24 @@ export default function SubmitAssignmentPage() {
 
     if (!assignment) {
         return (
-            <div className="min-h-screen bg-background flex items-center justify-center">
-                <div className="text-white">Assignment not found</div>
+            <div className="min-h-screen bg-[#020617] flex items-center justify-center p-4">
+                <div className="p-8 rounded-2xl bg-[#0c1220] border border-slate-800 text-center space-y-4 max-w-md shadow-xl">
+                    <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center">
+                        <FileText size={24} />
+                    </div>
+                    <div className="space-y-1">
+                        <h2 className="text-lg font-bold text-white">Assignment Not Found</h2>
+                        <p className="text-xs text-slate-400">
+                            Yeh assignment abhi active nahi hai ya remove kar diya gaya hai.
+                        </p>
+                    </div>
+                    <Link
+                        href={`/internships/${internshipId}`}
+                        className="inline-block px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-colors"
+                    >
+                        Back to Internship
+                    </Link>
+                </div>
             </div>
         );
     }
