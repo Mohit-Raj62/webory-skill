@@ -58,7 +58,7 @@ export default function VerificationSearchPage() {
 
           <div className="pt-8 text-sm text-gray-500">
             <p>
-              Having trouble? Contact <a href="mailto:support@webory.in" className="text-blue-400 hover:underline">support@webory.in</a>
+              Having trouble? Contact <a href="mailto:support@weboryskills.in" className="text-blue-400 hover:underline">support@weboryskills.in</a>
             </p>
           </div>
         </div>

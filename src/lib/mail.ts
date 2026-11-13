@@ -1,27 +1,33 @@
 import nodemailer from "nodemailer";
 import { createInvoiceHTML } from "./invoiceTemplate";
 
+const authUser = process.env.EMAIL_AUTH_USER || process.env.EMAIL_USER;
+const defaultFrom = process.env.EMAIL_FROM || "info@weboryskills.in";
+
 const transporter = nodemailer.createTransport({
   pool: true,
   maxConnections: 5,
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // true for 465, false for other ports
+  host: process.env.EMAIL_HOST || "smtp.gmail.com",
+  port: parseInt(process.env.EMAIL_PORT || "587"),
+  secure: process.env.EMAIL_SECURE === "true", // true for 465, false for other ports
   auth: {
-    user: process.env.EMAIL_USER,
+    user: authUser,
     pass: process.env.EMAIL_PASS,
   },
 });
 
 export const sendEmail = async (to: string, subject: string, html: string) => {
   try {
+    const fromAddress = process.env.EMAIL_FROM || "info@weboryskills.in";
     console.log("📨 Sending email via Nodemailer...");
-    console.log("Service: Gmail");
-    console.log("From:", process.env.EMAIL_USER);
+    console.log("Host:", process.env.EMAIL_HOST || "smtp.gmail.com");
+    console.log("Authenticated User:", authUser ? authUser.replace(/(.{3})(.*)(@.*)/, "$1***$3") : "None");
+    console.log("From (Display):", fromAddress);
     console.log("To:", to);
 
     const info = await transporter.sendMail({
-      from: `"Webory Skills" <${process.env.EMAIL_USER}>`,
+      from: `"Webory Skills" <${fromAddress}>`,
+      replyTo: fromAddress,
       to,
       subject,
       html,

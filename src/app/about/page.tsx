@@ -97,6 +97,9 @@ async function getAboutStats() {
 // Lazy load sections below the fold
 const StatsSection = nextDynamic(() => import("@/components/about/StatsSection").then(mod => mod.StatsSection));
 const TrustAccreditationSection = nextDynamic(() => import("@/components/about/TrustAccreditationSection").then(mod => mod.TrustAccreditationSection));
+const CorporateComplianceSection = nextDynamic(() => import("@/components/about/CorporateComplianceSection").then(mod => mod.CorporateComplianceSection));
+const CampusPartnershipSection = nextDynamic(() => import("@/components/about/CampusPartnershipSection").then(mod => mod.CampusPartnershipSection));
+const QualityGuaranteeSection = nextDynamic(() => import("@/components/about/QualityGuaranteeSection").then(mod => mod.QualityGuaranteeSection));
 const LearningPath = nextDynamic(() => import("@/components/about/LearningPath").then(mod => mod.LearningPath));
 const CertificateShowcase = nextDynamic(() => import("@/components/about/CertificateShowcase").then(mod => mod.CertificateShowcase));
 const JourneyTimeline = nextDynamic(() => import("@/components/about/JourneyTimeline").then(mod => mod.JourneyTimeline));
@@ -146,6 +149,16 @@ const aboutSchemaJsonLd = {
                 "https://www.linkedin.com/in/mohit0sinha",
                 "https://github.com/Mohit-Raj62"
             ]
+        },
+        {
+            "@type": "Person",
+            "@id": "https://weboryskills.com/#vijay-kumar",
+            "name": "Vijay Kumar",
+            "jobTitle": "Director of Education, Webory Skills",
+            "alumniOf": "Indian Institute of Technology Mandi",
+            "worksFor": {
+                "@id": "https://weboryskills.com/#organization"
+            }
         },
         {
             "@type": "FAQPage",
@@ -202,13 +215,16 @@ export default async function AboutPage() {
             <TrustAccreditationSection />
             <TechStack />
             <StatsSection stats={stats} />
+            <LeadershipSection />
             <JourneyTimeline />
             <LearningPath />
             <CertificateShowcase />
+            <QualityGuaranteeSection />
+            <CampusPartnershipSection />
+            <CorporateComplianceSection />
             <MissionVision />
             <MentorshipSection />
             <CoreValues />
-            <LeadershipSection />
             <FaqSection />
             <CtaSection />
 

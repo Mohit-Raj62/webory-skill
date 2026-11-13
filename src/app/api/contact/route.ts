@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       await sendEmail(
         process.env.ADMIN_EMAIL ||
           process.env.EMAIL_USER ||
-          "admin@example.com",
+          "info@weboryskills.in",
         `New Contact Request: ${subject}`,
         emailTemplates.contactFormSubmission(name, email, subject, message)
       );

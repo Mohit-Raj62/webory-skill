@@ -124,19 +124,18 @@ export async function POST(request: NextRequest) {
     );
 
     // Send notification to Admin
-    if (process.env.EMAIL_USER) {
-      await sendEmail(
-        process.env.EMAIL_USER,
-        `New Job Application: ${name} for ${job.title}`,
-        emailTemplates.adminJobApplicationNotification(
-          name,
-          job.title,
-          email,
-          phone,
-          resumeUrl,
-        ),
-      );
-    }
+    const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER || "info@weboryskills.in";
+    await sendEmail(
+      adminEmail,
+      `New Job Application: ${name} for ${job.title}`,
+      emailTemplates.adminJobApplicationNotification(
+        name,
+        job.title,
+        email,
+        phone,
+        resumeUrl,
+      ),
+    );
 
     return NextResponse.json({
       message: "Application submitted successfully",

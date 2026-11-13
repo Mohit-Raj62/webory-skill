@@ -98,7 +98,7 @@ export default function RefundPolicyPage() {
                                     To request a refund, please email us at:
                                 </p>
                                 <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
-                                    <p className="text-blue-400 font-semibold text-lg">supporrtwebory@gmail.com</p>
+                                    <p className="text-blue-400 font-semibold text-lg">info@weboryskills.in</p>
                                 </div>
                                 <p className="text-gray-300 text-sm">
                                     Please include the following information in your email:
@@ -155,7 +155,7 @@ export default function RefundPolicyPage() {
                             </p>
                             <div className="space-y-2 text-sm">
                                 <p className="text-gray-300">
-                                    📧 Email: <a href="mailto:supporrtwebory@gmail.com" className="text-blue-400 hover:underline">supporrtwebory@gmail.com</a>
+                                    📧 Email: <a href="mailto:info@weboryskills.in" className="text-blue-400 hover:underline">info@weboryskills.in</a>
                                 </p>
                                 <p className="text-gray-300">
                                     📞 Phone: +91 620 594 7359

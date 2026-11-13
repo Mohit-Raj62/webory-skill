@@ -50,7 +50,7 @@ export async function POST(req: Request) {
 
     console.log("📧 Attempting to send password reset email...");
     console.log("To:", user.email);
-    console.log("From:", process.env.EMAIL_USER);
+    console.log("From:", process.env.EMAIL_FROM || process.env.EMAIL_USER || "info@weboryskills.in");
     console.log("Reset URL:", resetUrl);
 
     // Send email

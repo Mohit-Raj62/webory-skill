@@ -205,7 +205,7 @@ export default function OfferLetterPage() {
                             <p className="font-black text-[#1a237e] text-sm print:text-xs tracking-wide uppercase">WEBORY SKILLS PLATFORM</p>
                             <p className="flex items-center justify-end gap-1.5"><MapPin size={12} className="text-[#c5a059]" /> Patna, Bihar, India</p>
                             <p className="flex items-center justify-end gap-1.5"><Phone size={12} className="text-[#c5a059]" /> +91 94734 71153</p>
-                            <p className="flex items-center justify-end gap-1.5"><Mail size={12} className="text-[#c5a059]" />weboryinfo@gmail.com</p>
+                            <p className="flex items-center justify-end gap-1.5"><Mail size={12} className="text-[#c5a059]" />info@weboryskills.in</p>
                             <p className="flex items-center justify-end gap-1.5"><Globe size={12} className="text-[#c5a059]" /> www.weboryskills.in</p>
                         </div>
                     </div>

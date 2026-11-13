@@ -140,6 +140,61 @@ export function LeadershipSection() {
                         </div>
                     </div>
                 </div>
+
+                {/* Academic Leadership Card: Vijay Kumar (IIT Mandi) */}
+                <div className="mt-8 rounded-2xl border border-slate-800 bg-[#0b101b] p-6 sm:p-8 md:p-10 shadow-lg">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
+                        <div className="lg:col-span-4 flex flex-col items-center space-y-4">
+                            <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full border-2 border-slate-700/80 bg-gradient-to-br from-slate-800 to-slate-900 flex flex-col items-center justify-center text-center shadow-xl ring-4 ring-blue-500/10">
+                                <span className="text-3xl sm:text-4xl font-black text-blue-400 font-mono tracking-tighter">VK</span>
+                                <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider mt-1">Academic Head</span>
+                            </div>
+
+                            <div className="w-full max-w-[260px] p-2 rounded-lg bg-slate-900/90 border border-slate-800 flex items-center justify-between text-xs">
+                                <span className="text-slate-300 font-medium flex items-center gap-1.5">
+                                    <Award size={14} className="text-blue-400" />
+                                    Alumnus, IIT Mandi
+                                </span>
+                                <span className="text-[10px] font-semibold text-slate-400 bg-slate-800 px-2 py-0.5 rounded">
+                                    Academic Council
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="lg:col-span-8 space-y-4 text-left">
+                            <div className="border-b border-slate-800 pb-3">
+                                <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded text-[11px] font-semibold text-slate-300 bg-slate-800/80 border border-slate-700 mb-2">
+                                    <span>Academic & Curriculum Rigor</span>
+                                </div>
+                                <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                                    Vijay Kumar
+                                </h3>
+                                <p className="text-blue-400 font-medium text-xs sm:text-sm">
+                                    Director of Education, Webory Skills • Alumnus, IIT Mandi
+                                </p>
+                            </div>
+
+                            <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
+                                Heading the curriculum design and technical standards at Webory Skills, Vijay Kumar brings the academic discipline of <strong className="text-white font-semibold">IIT Mandi</strong> combined with real industrial systems architecture. He oversees mentor allocations, code quality benchmarks, and the evaluation framework for all certification cohorts.
+                            </p>
+
+                            <div className="p-3.5 rounded-lg bg-slate-900/60 border border-slate-800 text-slate-300 text-xs italic font-serif leading-relaxed">
+                                &ldquo;True engineering education goes beyond coding tutorials. It requires architectural discipline, code readability, and knowing how to debug production failures under pressure.&rdquo;
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-2 pt-1 text-xs text-slate-400">
+                                <span className="flex items-center gap-1 text-emerald-400 font-medium">
+                                    <CheckCircle2 size={13} />
+                                    Official Certificate Co-Signatory
+                                </span>
+                                <span className="text-slate-600">•</span>
+                                <span>IIT Mandi Engineering Pedagogy</span>
+                                <span className="text-slate-600">•</span>
+                                <span>Curriculum Quality Audit</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     );

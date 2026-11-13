@@ -15,7 +15,7 @@ const getVapidDetails = () => {
   return {
     publicKey: public_key,
     privateKey: private_key,
-    subject: "mailto:admin@weboryskills.in"
+    subject: "mailto:info@weboryskills.in"
   };
 };
 

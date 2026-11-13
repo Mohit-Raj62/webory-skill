@@ -96,8 +96,8 @@ export default function ContactPage() {
                                     title="Email Us"
                                     content={
                                         <div className="flex flex-col gap-1 break-all">
-                                            <a href="mailto:weboryinfo@gmail.com" className="hover:text-blue-400 transition-colors">weboryinfo@gmail.com</a>
-                                            <a href="mailto:supportskillwebory@gmail.com" className="hover:text-blue-400 transition-colors">supportskillwebory@gmail.com</a>
+                                            <a href="mailto:info@weboryskills.in" className="hover:text-blue-400 transition-colors">info@weboryskills.in</a>
+                                            <a href="mailto:support@weboryskills.in" className="hover:text-blue-400 transition-colors">support@weboryskills.in</a>
                                         </div>
                                     }
                                     color="text-blue-400"

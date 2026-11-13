@@ -71,7 +71,7 @@ export default function TermsPage() {
                             Near by jbit college Dehradun<br />
                             Dehradun, Uttarakhand 248197<br />
                             India<br />
-                            legalwebory@gmail.com   
+                            info@weboryskills.in   
                         </address>
                     </section>
                 </div>
