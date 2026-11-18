@@ -419,6 +419,45 @@ export const emailTemplates = {
       <p style="color: #999; font-size: 12px; text-align: center;">Best Regards,<br/>Webory Skills Team</p>
     </div>
   `,
+  supportTicketCreated: (name: string, ticketId: string, category: string, subject: string) => `
+    <div style="font-family: Arial, sans-serif; padding: 25px; color: #1e293b; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
+      <div style="border-bottom: 2px solid #3b82f6; padding-bottom: 15px; margin-bottom: 20px;">
+        <h2 style="color: #1e40af; margin: 0; font-size: 22px;">Support Ticket Received 🎫</h2>
+        <p style="color: #64748b; font-size: 13px; margin: 5px 0 0 0;">Webory Skills Student Support Desk</p>
+      </div>
+      <p>Hello <strong>${name}</strong>,</p>
+      <p>Your support request has been logged successfully. Our student support team will review your ticket and respond within <strong>4 to 6 business hours</strong>.</p>
+      <div style="background: #f8fafc; border-left: 4px solid #3b82f6; padding: 15px; margin: 20px 0; border-radius: 6px;">
+        <p style="margin: 0 0 8px 0; font-size: 13px; color: #64748b;"><strong>Ticket Reference ID:</strong></p>
+        <p style="margin: 0; font-size: 20px; font-weight: bold; color: #1e40af; font-family: monospace;">${ticketId}</p>
+        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 12px 0;">
+        <p style="margin: 0 0 4px 0; font-size: 13px;"><strong>Category:</strong> ${category.toUpperCase()}</p>
+        <p style="margin: 0; font-size: 13px;"><strong>Subject:</strong> ${subject}</p>
+      </div>
+      <p style="font-size: 13px; color: #475569;">You can reply directly to this email or quote your Ticket ID if you have any additional details to add.</p>
+      <hr style="border: none; border-top: 1px solid #f1f5f9; margin: 25px 0 15px 0;">
+      <p style="color: #94a3b8; font-size: 12px; text-align: center;">Webory Skills Help Desk • <a href="mailto:support@weboryskills.in" style="color: #3b82f6;">support@weboryskills.in</a></p>
+    </div>
+  `,
+  adminSupportTicketNotification: (ticketId: string, name: string, email: string, phone: string, category: string, subject: string, message: string) => `
+    <div style="font-family: Arial, sans-serif; padding: 25px; color: #1e293b; max-width: 600px; margin: 0 auto; border: 1px solid #fed7aa; border-radius: 12px; background: #fffaf5;">
+      <div style="border-bottom: 2px solid #ea580c; padding-bottom: 15px; margin-bottom: 20px;">
+        <h2 style="color: #c2410c; margin: 0; font-size: 22px;">⚡ New Support Ticket Alert</h2>
+        <p style="color: #9a3412; font-size: 13px; margin: 5px 0 0 0;">Ticket ID: <strong>${ticketId}</strong> • Category: ${category.toUpperCase()}</p>
+      </div>
+      <div style="background: #ffffff; border: 1px solid #ffedd5; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        <p style="margin: 4px 0; font-size: 13px;"><strong>Student Name:</strong> ${name}</p>
+        <p style="margin: 4px 0; font-size: 13px;"><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
+        <p style="margin: 4px 0; font-size: 13px;"><strong>Phone:</strong> ${phone || "Not provided"}</p>
+        <p style="margin: 4px 0; font-size: 13px;"><strong>Subject:</strong> ${subject}</p>
+      </div>
+      <div style="background: #ffffff; border-left: 4px solid #ea580c; padding: 15px; border-radius: 6px;">
+        <p style="margin: 0 0 6px 0; font-size: 12px; color: #64748b; font-weight: bold; text-transform: uppercase;">Issue Description:</p>
+        <p style="margin: 0; white-space: pre-wrap; font-size: 14px; line-height: 1.5; color: #334155;">${message}</p>
+      </div>
+      <p style="font-size: 12px; color: #64748b; margin-top: 20px; text-align: center;">Please resolve within SLA (4-6 hours).</p>
+    </div>
+  `,
   feedbackRequest: (name: string, feedbackLink: string, source: string) => `
     <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #2563eb;">We'd Love Your Feedback! 🌟</h2>

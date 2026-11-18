@@ -123,10 +123,10 @@ export async function POST(request: NextRequest) {
       emailTemplates.jobApplicationReceived(name, job.title),
     );
 
-    // Send notification to Admin
-    const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER || "info@weboryskills.in";
+    // Send notification to Careers & HR Desk
+    const careersNotificationEmail = process.env.CAREERS_EMAIL || "careers@weboryskills.in";
     await sendEmail(
-      adminEmail,
+      careersNotificationEmail,
       `New Job Application: ${name} for ${job.title}`,
       emailTemplates.adminJobApplicationNotification(
         name,

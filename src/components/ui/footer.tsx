@@ -122,6 +122,7 @@ export function Footer({ className }: { className?: string }) {
                                         <li><Link href="/careers" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">Careers</Link></li>
                                         <li><Link href="/blog" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">Blog</Link></li>
                                         <li><Link href="/contact" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">Contact</Link></li>
+                                        <li><Link href="/support" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block text-blue-400 font-medium">Support Center</Link></li>
                                         <li><Link href="/faq" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block">FAQs</Link></li>
                                         <li><Link href="/ambassador" className="hover:text-white hover:translate-x-1 transition-all duration-200 inline-block bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent font-medium">Ambassador</Link></li>
                                     </ul>
@@ -148,9 +149,16 @@ export function Footer({ className }: { className?: string }) {
                                         <SocialLink href="https://www.youtube.com/@CodeWithWebory" icon={<Youtube size={18} />} brandColor="hover:text-white hover:bg-[#ff0000]" />
                                     </div>
 
-                                    <p className="text-[10px] text-gray-400 font-medium leading-relaxed text-center md:text-left bg-white/5 py-2 px-3 rounded-lg border border-white/5">
-                                        Join our community for latest tech insights.
-                                    </p>
+                                    <div className="mt-4 pt-3 border-t border-white/5 space-y-1.5 text-[11px] text-gray-400">
+                                        <p className="flex items-center gap-1.5 truncate">
+                                            <span className="text-gray-500">Desk:</span>
+                                            <a href="mailto:info@weboryskills.in" className="text-gray-300 hover:text-blue-400 font-mono transition-colors">info@weboryskills.in</a>
+                                        </p>
+                                        <p className="flex items-center gap-1.5 truncate">
+                                            <span className="text-gray-500">Help:</span>
+                                            <a href="mailto:support@weboryskills.in" className="text-gray-300 hover:text-blue-400 font-mono transition-colors">support@weboryskills.in</a>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -27,7 +27,7 @@ export default function FAQPage() {
                         <div>
                             <h3 className="text-xl font-bold text-white mb-1">Still Have Questions?</h3>
                             <p className="text-sm text-gray-400 max-w-md">
-                                Can't find the answer you're looking for? Reach out to our student support team and we'll help you right away.
+                                Can't find the answer you're looking for? Reach out directly to our student support desk at <a href="mailto:support@weboryskills.in" className="text-blue-400 hover:underline font-mono">support@weboryskills.in</a>.
                             </p>
                         </div>
                         <Link href="/contact">

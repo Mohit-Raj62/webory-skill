@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { Loader2, Briefcase, MapPin, DollarSign, Send, ArrowLeft, CheckCircle2, Building2, Upload, X, Code2, GraduationCap, Zap, Globe, Plus } from "lucide-react";
+import { Loader2, Briefcase, MapPin, DollarSign, Send, ArrowLeft, CheckCircle2, Building2, Upload, X, Code2, GraduationCap, Zap, Globe, Plus, Mail } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -236,6 +236,31 @@ export default function CareersPage() {
             Empowering the next generation of tech leaders.
             <span className="block mt-3 text-lg text-gray-500 font-normal">Build the future of education with us.</span>
           </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="mt-6 flex flex-wrap items-center justify-center gap-2.5 text-xs sm:text-sm text-gray-400"
+          >
+            <span className="text-gray-500">Direct Application Desk:</span>
+            <a 
+              href="mailto:careers@weboryskills.in" 
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 hover:border-emerald-500/50 text-white hover:text-emerald-400 font-mono transition-colors"
+            >
+              <Mail size={13} className="text-emerald-400" />
+              <span>careers@weboryskills.in</span>
+            </a>
+            <span className="text-gray-600 hidden sm:inline">•</span>
+            <span className="text-gray-500">People & HR:</span>
+            <a 
+              href="mailto:hr@weboryskills.in" 
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 hover:border-blue-500/50 text-white hover:text-blue-400 font-mono transition-colors"
+            >
+              <Mail size={13} className="text-blue-400" />
+              <span>hr@weboryskills.in</span>
+            </a>
+          </motion.div>
         </div>
 
         {/* Why Join Us Section */}

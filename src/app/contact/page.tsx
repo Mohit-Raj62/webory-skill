@@ -95,9 +95,15 @@ export default function ContactPage() {
                                     icon={<Mail size={20} />} 
                                     title="Email Us"
                                     content={
-                                        <div className="flex flex-col gap-1 break-all">
-                                            <a href="mailto:info@weboryskills.in" className="hover:text-blue-400 transition-colors">info@weboryskills.in</a>
-                                            <a href="mailto:support@weboryskills.in" className="hover:text-blue-400 transition-colors">support@weboryskills.in</a>
+                                        <div className="flex flex-col gap-2.5 break-all">
+                                            <div>
+                                                <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider block mb-0.5">Student & Course Support:</span>
+                                                <a href="mailto:support@weboryskills.in" className="text-white hover:text-blue-400 font-mono text-sm transition-colors block">support@weboryskills.in</a>
+                                            </div>
+                                            <div>
+                                                <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider block mb-0.5">General & Partnerships:</span>
+                                                <a href="mailto:info@weboryskills.in" className="text-white hover:text-blue-400 font-mono text-sm transition-colors block">info@weboryskills.in</a>
+                                            </div>
                                         </div>
                                     }
                                     color="text-blue-400"

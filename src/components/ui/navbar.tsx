@@ -24,7 +24,8 @@ import {
     MessagesSquare,
     ShieldCheck,
     LayoutGrid,
-    Compass
+    Compass,
+    HelpCircle
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/components/auth/session-provider";
@@ -441,6 +442,9 @@ export function Navbar() {
                                     </MobileNavLink>
                                     <MobileNavLink href="/verify-certificate" icon={ShieldCheck} onClick={() => setIsOpen(false)} index={10}>
                                         Verify Certificate
+                                    </MobileNavLink>
+                                    <MobileNavLink href="/support" icon={HelpCircle} onClick={() => setIsOpen(false)} index={11}>
+                                        Student Support
                                     </MobileNavLink>
 
                                     {user && (user.role === 'admin' || user.role === 'superadmin') && (

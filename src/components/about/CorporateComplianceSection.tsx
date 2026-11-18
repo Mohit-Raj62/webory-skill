@@ -90,7 +90,7 @@ export function CorporateComplianceSection() {
                         <div className="space-y-2 text-xs border-t border-slate-800/80 pt-3 text-slate-300">
                             <div className="flex justify-between">
                                 <span className="text-slate-500">Support Desk:</span>
-                                <span className="font-mono text-slate-200">support@weboryskills.com</span>
+                                <a href="mailto:support@weboryskills.in" className="font-mono text-slate-200 hover:text-blue-400 transition-colors">support@weboryskills.in</a>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-slate-500">Response SLA:</span>

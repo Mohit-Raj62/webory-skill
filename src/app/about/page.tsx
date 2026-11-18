@@ -107,6 +107,7 @@ const MissionVision = nextDynamic(() => import("@/components/about/MissionVision
 const MentorshipSection = nextDynamic(() => import("@/components/about/MentorshipSection").then(mod => mod.MentorshipSection));
 const CoreValues = nextDynamic(() => import("@/components/about/CoreValues").then(mod => mod.CoreValues));
 const LeadershipSection = nextDynamic(() => import("@/components/about/LeadershipSection").then(mod => mod.LeadershipSection));
+const TeamSection = nextDynamic(() => import("@/components/about/TeamSection").then(mod => mod.TeamSection));
 const FaqSection = nextDynamic(() => import("@/components/about/FaqSection").then(mod => mod.FaqSection));
 const CtaSection = nextDynamic(() => import("@/components/about/CtaSection").then(mod => mod.CtaSection));
 
@@ -126,14 +127,17 @@ const aboutSchemaJsonLd = {
                 "name": "Mohit Sinha",
                 "jobTitle": "Founder & CEO",
                 "image": "https://weboryskills.com/mohit-sinha.jpg",
+                "email": "ceo.mohit_sinha@weboryskills.in",
                 "sameAs": [
                     "https://www.linkedin.com/in/mohit0sinha",
-                    "https://github.com/Mohit-Raj62"
+                    "https://github.com/Mohit-Raj62",
+                    "https://www.instagram.com/it.m0sh.1"
                 ]
             },
             "sameAs": [
                 "https://www.linkedin.com/in/mohit0sinha",
-                "https://github.com/Mohit-Raj62"
+                "https://github.com/Mohit-Raj62",
+                "https://www.instagram.com/it.m0sh.1"
             ]
         },
         {
@@ -142,13 +146,44 @@ const aboutSchemaJsonLd = {
             "name": "Mohit Sinha",
             "jobTitle": "Founder & CEO, Webory Skills",
             "image": "https://weboryskills.com/mohit-sinha.jpg",
+            "email": "ceo.mohit_sinha@weboryskills.in",
             "worksFor": {
                 "@id": "https://weboryskills.com/#organization"
             },
             "sameAs": [
                 "https://www.linkedin.com/in/mohit0sinha",
-                "https://github.com/Mohit-Raj62"
+                "https://github.com/Mohit-Raj62",
+                "https://www.instagram.com/it.m0sh.1"
             ]
+        },
+        {
+            "@type": "Person",
+            "@id": "https://weboryskills.com/#piyush-kashyap",
+            "name": "Piyush Kashyap",
+            "jobTitle": "Chief Operating Officer (COO), Webory Skills",
+            "image": "https://weboryskills.com/piyush-kashyap.jpg",
+            "email": "coo.piyush.kashyap@weboryskills.in",
+            "sameAs": [
+                "https://www.linkedin.com/in/piyush-kashyap-135b353b2/",
+                "https://www.instagram.com/piyusharyan04"
+            ],
+            "worksFor": {
+                "@id": "https://weboryskills.com/#organization"
+            }
+        },
+        {
+            "@type": "Person",
+            "@id": "https://weboryskills.com/#ridhima-singh",
+            "name": "Ridhima Singh",
+            "jobTitle": "Head of Human Resources (HR), Webory Skills",
+            "email": "hr@weboryskills.in",
+            "sameAs": [
+                "https://www.linkedin.com/in/ridhima-singh-5928b93ba/",
+                "https://www.instagram.com/shadesof_ridhima"
+            ],
+            "worksFor": {
+                "@id": "https://weboryskills.com/#organization"
+            }
         },
         {
             "@type": "Person",
@@ -216,6 +251,7 @@ export default async function AboutPage() {
             <TechStack />
             <StatsSection stats={stats} />
             <LeadershipSection />
+            <TeamSection />
             <JourneyTimeline />
             <LearningPath />
             <CertificateShowcase />
