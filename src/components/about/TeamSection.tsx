@@ -115,55 +115,55 @@ export function TeamSection() {
     };
 
     return (
-        <section className="py-24 px-4 md:px-8 relative z-10 border-t border-slate-800/80 bg-[#060a12]">
+        <section className="py-12 sm:py-16 md:py-20 lg:py-24 px-3 sm:px-6 md:px-8 relative z-10 border-t border-slate-800/80 bg-[#060a12]">
             {/* Subtle background ambient lighting */}
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(59,130,246,0.06),rgba(255,255,255,0))] pointer-events-none"></div>
 
             <div className="max-w-7xl mx-auto relative z-10">
                 {/* Section Header */}
-                <div className="text-center max-w-3xl mx-auto mb-16">
-                    <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3.5 py-1.5 rounded-full mb-4">
-                        <Users size={14} className="text-blue-400" />
+                <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14 md:mb-16">
+                    <div className="inline-flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full mb-3 sm:mb-4">
+                        <Users size={13} className="text-blue-400 shrink-0" />
                         <span>Core Operational & Academic Leadership</span>
                     </div>
-                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-4">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-3 sm:mb-4 px-2">
                         The Minds Behind Webory Skills
                     </h2>
-                    <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
+                    <p className="text-slate-400 text-xs sm:text-sm md:text-base leading-relaxed max-w-2xl mx-auto px-2">
                         Meet our executive officers, talent coordinators, and academic mentors driving operational excellence and student success across India.
                     </p>
                 </div>
 
                 {/* Team Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 md:gap-8">
                     {teamMembers.map((member, idx) => (
                         <div
                             key={idx}
-                            className="rounded-3xl border border-slate-800/90 bg-gradient-to-b from-[#0e1626]/90 via-[#0a101d]/90 to-[#070b13] p-6 sm:p-8 flex flex-col justify-between hover:border-slate-700/80 hover:shadow-2xl hover:shadow-blue-500/5 transition-all duration-300 group hover:-translate-y-1.5 relative overflow-hidden"
+                            className="rounded-2xl sm:rounded-3xl border border-slate-800/90 bg-gradient-to-b from-[#0e1626]/90 via-[#0a101d]/90 to-[#070b13] p-4 sm:p-6 md:p-8 flex flex-col justify-between hover:border-slate-700/80 hover:shadow-2xl hover:shadow-blue-500/5 transition-all duration-300 group hover:-translate-y-1.5 relative overflow-hidden"
                         >
                             {/* Ambient Top Glow in Card */}
                             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-slate-700/30 to-transparent group-hover:via-blue-500/50 transition-all duration-500"></div>
 
-                            <div className="space-y-6">
+                            <div className="space-y-4 sm:space-y-6">
                                 {/* Top Profile Presentation Banner */}
-                                <div className="flex items-start gap-4 sm:gap-5">
+                                <div className="flex items-start gap-3 sm:gap-4 md:gap-5">
                                     {member.image ? (
-                                        <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-2xl overflow-hidden border-2 bg-slate-900 shadow-xl shrink-0 group-hover:scale-102 transition-transform duration-500 ring-4 ring-amber-500/10 border-amber-500/30">
+                                        <div className="relative w-20 h-20 xs:w-24 xs:h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-xl sm:rounded-2xl overflow-hidden border-2 bg-slate-900 shadow-xl shrink-0 group-hover:scale-102 transition-transform duration-500 ring-2 sm:ring-4 ring-amber-500/10 border-amber-500/30">
                                             <Image
                                                 src={member.image}
                                                 alt={`${member.name} - ${member.role}`}
                                                 fill
                                                 className="object-cover object-top"
-                                                sizes="(max-width: 768px) 112px, 128px"
+                                                sizes="(max-width: 640px) 80px, (max-width: 768px) 112px, 128px"
                                                 priority={idx === 0}
                                             />
                                         </div>
                                     ) : (
-                                        <div className={`w-28 h-28 sm:w-32 sm:h-32 rounded-2xl border-2 bg-gradient-to-br ${member.avatarGradient} flex flex-col items-center justify-center text-center shadow-xl ring-4 ${member.ringColor} shrink-0`}>
-                                            <span className="text-3xl sm:text-4xl font-black font-mono tracking-tight drop-shadow-sm">
+                                        <div className={`w-20 h-20 xs:w-24 xs:h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-xl sm:rounded-2xl border-2 bg-gradient-to-br ${member.avatarGradient} flex flex-col items-center justify-center text-center shadow-xl ring-2 sm:ring-4 ${member.ringColor} shrink-0`}>
+                                            <span className="text-2xl sm:text-3xl md:text-4xl font-black font-mono tracking-tight drop-shadow-sm">
                                                 {member.initials}
                                             </span>
-                                            <span className="text-[10px] uppercase font-bold text-slate-300 mt-1 tracking-widest px-2 py-0.5 rounded bg-black/30 border border-white/10">
+                                            <span className="text-[8px] sm:text-[10px] uppercase font-bold text-slate-300 mt-0.5 sm:mt-1 tracking-wider px-1.5 py-0.2 sm:px-2 sm:py-0.5 rounded bg-black/30 border border-white/10">
                                                 Executive
                                             </span>
                                         </div>
@@ -172,40 +172,40 @@ export function TeamSection() {
                                     {/* Header Meta: Badge + Organization */}
                                     <div className="flex-1 flex flex-col justify-between self-stretch min-w-0">
                                         <div>
-                                            <span className={`inline-block text-[11px] font-bold border px-2.5 py-1 rounded-full uppercase tracking-wide ${member.badgeColor}`}>
+                                            <span className={`inline-block text-[10px] sm:text-[11px] font-bold border px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full uppercase tracking-wide leading-tight ${member.badgeColor}`}>
                                                 {member.badge}
                                             </span>
-                                            <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium mt-2">
+                                            <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-slate-400 font-medium mt-1.5 sm:mt-2">
                                                 <Building2 size={13} className="text-slate-500 shrink-0" />
                                                 <span className="truncate">Webory Skills Platform</span>
                                             </div>
                                         </div>
 
-                                        <div className="flex items-center gap-1.5 text-[11px] text-emerald-400 font-semibold bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md w-fit mt-2">
-                                            <ShieldCheck size={13} className="text-emerald-400" />
-                                            <span>Govt. Verified EdTech</span>
+                                        <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-emerald-400 font-semibold bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded-md w-fit mt-1.5 sm:mt-2">
+                                            <ShieldCheck size={12} className="text-emerald-400 shrink-0" />
+                                            <span className="truncate">Govt. Verified EdTech</span>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Name, Designation & Department */}
-                                <div className="border-b border-slate-800/80 pb-4">
-                                    <div className="flex items-center gap-2">
-                                        <h3 className="text-2xl font-bold text-white tracking-tight group-hover:text-blue-400 transition-colors">
+                                <div className="border-b border-slate-800/80 pb-3 sm:pb-4">
+                                    <div className="flex items-center gap-1.5 sm:gap-2">
+                                        <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white tracking-tight break-words group-hover:text-blue-400 transition-colors">
                                             {member.name}
                                         </h3>
-                                        <CheckCircle2 size={18} className="text-blue-400 fill-blue-500/10 shrink-0" />
+                                        <CheckCircle2 size={16} className="text-blue-400 fill-blue-500/10 shrink-0" />
                                     </div>
-                                    <p className="text-blue-400 text-sm font-semibold mt-1">
+                                    <p className="text-blue-400 text-xs sm:text-sm font-semibold mt-0.5 sm:mt-1">
                                         {member.role}
                                     </p>
-                                    <p className="text-slate-400 text-xs mt-0.5 font-medium">
+                                    <p className="text-slate-400 text-[11px] sm:text-xs mt-0.5 font-medium leading-relaxed">
                                         {member.department}
                                     </p>
                                 </div>
 
                                 {/* Officer Quote */}
-                                <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800/90 text-slate-300 text-xs italic font-serif leading-relaxed border-l-2 border-l-blue-400/80">
+                                <div className="p-3 sm:p-3.5 rounded-xl bg-slate-900/60 border border-slate-800/90 text-slate-300 text-[11px] sm:text-xs italic font-serif leading-relaxed border-l-2 border-l-blue-400/80">
                                     {member.quote}
                                 </div>
 
@@ -215,17 +215,17 @@ export function TeamSection() {
                                 </p>
 
                                 {/* Structured Highlights */}
-                                <div className="space-y-2.5 pt-1">
-                                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                                <div className="space-y-2 pt-1">
+                                    <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
                                         Key Executive Directives:
                                     </span>
                                     {member.highlights.map((item, hIdx) => (
-                                        <div key={hIdx} className="p-2.5 rounded-xl bg-slate-900/50 border border-slate-800/70 text-xs text-slate-300 space-y-0.5">
-                                            <div className="font-semibold text-white flex items-center gap-1.5">
-                                                <Target size={13} className="text-blue-400 shrink-0" />
+                                        <div key={hIdx} className="p-2 sm:p-2.5 rounded-xl bg-slate-900/50 border border-slate-800/70 text-xs text-slate-300 space-y-0.5">
+                                            <div className="font-semibold text-white flex items-center gap-1.5 text-[11px] sm:text-xs">
+                                                <Target size={12} className="text-blue-400 shrink-0" />
                                                 <span>{item.title}</span>
                                             </div>
-                                            <p className="text-slate-400 text-[11px] leading-snug pl-4">
+                                            <p className="text-slate-400 text-[10px] sm:text-[11px] leading-relaxed pl-3.5 sm:pl-4">
                                                 {item.desc}
                                             </p>
                                         </div>
@@ -233,11 +233,11 @@ export function TeamSection() {
                                 </div>
 
                                 {/* Focus Pills */}
-                                <div className="flex flex-wrap gap-1.5 pt-1">
+                                <div className="flex flex-wrap gap-1 sm:gap-1.5 pt-1">
                                     {member.focusPills.map((pill, pIdx) => (
                                         <span
                                             key={pIdx}
-                                            className="text-[10px] font-medium text-slate-300 bg-slate-900/90 border border-slate-800 px-2.5 py-1 rounded-lg"
+                                            className="text-[9px] sm:text-[10px] font-medium text-slate-300 bg-slate-900/90 border border-slate-800 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg"
                                         >
                                             {pill}
                                         </span>
@@ -246,32 +246,32 @@ export function TeamSection() {
                             </div>
 
                             {/* Card Footer: Direct Email Capsule + Social Connect */}
-                            <div className="pt-6 mt-6 border-t border-slate-800/80 space-y-3">
+                            <div className="pt-4 sm:pt-6 mt-4 sm:mt-6 border-t border-slate-800/80 space-y-2.5 sm:space-y-3">
                                 {/* Official Email Capsule */}
-                                <div className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between gap-2 hover:border-slate-700 transition-colors">
+                                <div className="p-2 sm:p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between gap-2 hover:border-slate-700 transition-colors">
                                     <a
                                         href={`mailto:${member.emailLink}`}
-                                        className="flex items-center gap-2 text-xs text-slate-300 hover:text-blue-400 font-mono truncate transition-colors"
+                                        className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs text-slate-300 hover:text-blue-400 font-mono truncate transition-colors min-w-0"
                                         title={`Email ${member.emailLink}`}
                                     >
-                                        <Mail size={14} className="text-blue-400 shrink-0" />
+                                        <Mail size={13} className="text-blue-400 shrink-0" />
                                         <span className="truncate">{member.emailLink}</span>
                                     </a>
 
                                     <button
                                         type="button"
                                         onClick={() => handleCopy(member.emailLink)}
-                                        className="shrink-0 p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors flex items-center gap-1 text-[10px] font-medium"
+                                        className="shrink-0 px-2 py-1 sm:p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors flex items-center gap-1 text-[10px] font-medium active:scale-95"
                                         title="Copy Email Address"
                                     >
                                         {copiedEmail === member.emailLink ? (
                                             <>
-                                                <Check size={12} className="text-emerald-400" />
-                                                <span className="text-emerald-400">Copied</span>
+                                                <Check size={11} className="text-emerald-400" />
+                                                <span className="text-emerald-400 font-semibold">Copied</span>
                                             </>
                                         ) : (
                                             <>
-                                                <Copy size={12} />
+                                                <Copy size={11} />
                                                 <span>Copy</span>
                                             </>
                                         )}
@@ -279,11 +279,11 @@ export function TeamSection() {
                                 </div>
 
                                 {/* Social Links Bar */}
-                                <div className="flex items-center justify-between gap-2">
-                                    <span className="text-[11px] text-slate-500 font-medium">
+                                <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5">
+                                    <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium">
                                         Direct Connect:
                                     </span>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                                         {member.linkedinLink && (
                                             <Link
                                                 href={member.linkedinLink}
@@ -291,9 +291,9 @@ export function TeamSection() {
                                                 rel="noopener noreferrer"
                                                 aria-label={`${member.name} LinkedIn Profile`}
                                                 title={`${member.name} LinkedIn Profile`}
-                                                className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-[#0077B5] hover:text-white text-slate-300 border border-slate-800 text-xs font-medium flex items-center gap-1.5 transition-all shadow-sm"
+                                                className="px-2.5 sm:px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-[#0077B5] hover:text-white text-slate-300 border border-slate-800 text-[11px] sm:text-xs font-medium flex items-center gap-1 sm:gap-1.5 transition-all shadow-sm active:scale-95"
                                             >
-                                                <Linkedin size={13} className="text-[#0077B5] group-hover:text-white" />
+                                                <Linkedin size={12} className="text-[#0077B5] group-hover:text-white" />
                                                 <span>LinkedIn</span>
                                             </Link>
                                         )}
@@ -304,9 +304,9 @@ export function TeamSection() {
                                                 rel="noopener noreferrer"
                                                 aria-label={`${member.name} Instagram Profile`}
                                                 title={`${member.name} Instagram Profile`}
-                                                className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-gradient-to-tr hover:from-[#f09433] hover:via-[#dc2743] hover:to-[#bc1888] hover:text-white text-slate-300 border border-slate-800 text-xs font-medium flex items-center gap-1.5 transition-all shadow-sm"
+                                                className="px-2.5 sm:px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-gradient-to-tr hover:from-[#f09433] hover:via-[#dc2743] hover:to-[#bc1888] hover:text-white text-slate-300 border border-slate-800 text-[11px] sm:text-xs font-medium flex items-center gap-1 sm:gap-1.5 transition-all shadow-sm active:scale-95"
                                             >
-                                                <Instagram size={13} className="text-rose-400 group-hover:text-white" />
+                                                <Instagram size={12} className="text-rose-400 group-hover:text-white" />
                                                 <span>Instagram</span>
                                             </Link>
                                         )}
@@ -318,28 +318,28 @@ export function TeamSection() {
                 </div>
 
                 {/* Bottom Trust Note */}
-                <div className="mt-14 p-6 rounded-2xl border border-slate-800 bg-gradient-to-r from-[#0b101b] via-[#0f172a] to-[#0b101b] flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
-                    <div className="flex items-center gap-4 text-center md:text-left">
-                        <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
-                            <HeartHandshake size={24} />
+                <div className="mt-8 sm:mt-12 md:mt-14 p-4 sm:p-6 rounded-2xl border border-slate-800 bg-gradient-to-r from-[#0b101b] via-[#0f172a] to-[#0b101b] flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6 shadow-xl">
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-3 sm:gap-4">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+                            <HeartHandshake size={20} className="sm:w-6 sm:h-6" />
                         </div>
                         <div>
-                            <h4 className="text-white text-base font-bold">Join the Webory Skills Executive & Mentorship Network</h4>
-                            <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
+                            <h4 className="text-white text-sm sm:text-base font-bold">Join the Webory Skills Executive & Mentorship Network</h4>
+                            <p className="text-slate-400 text-xs sm:text-sm mt-0.5 leading-relaxed">
                                 We partner with passionate educators, working engineers, and campus leaders across all Indian universities.
                             </p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-3 shrink-0">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full md:w-auto shrink-0">
                         <Link
                             href="/contact"
-                            className="px-4 py-2.5 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors"
+                            className="w-full sm:w-auto text-center px-4 py-2 sm:py-2.5 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors"
                         >
                             Contact Leadership
                         </Link>
                         <Link
                             href="/careers"
-                            className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition-colors shadow-lg shadow-blue-600/20"
+                            className="w-full sm:w-auto text-center px-5 py-2 sm:py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition-colors shadow-lg shadow-blue-600/20"
                         >
                             View Open Roles
                         </Link>

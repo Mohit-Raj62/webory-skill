@@ -4,36 +4,36 @@ import { Target, Compass, CheckCircle2 } from "lucide-react";
 
 export function MissionVision() {
     return (
-        <section className="py-20 px-4 md:px-8 relative z-10 border-t border-slate-800/80 bg-[#06090e]">
+        <section className="py-12 sm:py-16 md:py-20 px-3 sm:px-6 md:px-8 relative z-10 border-t border-slate-800/80 bg-[#06090e]">
             <div className="max-w-6xl mx-auto">
-                <div className="text-center max-w-2xl mx-auto mb-14">
-                    <span className="text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full">
+                <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
+                    <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full">
                         Guiding Principles
                     </span>
-                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mt-3 mb-3">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight mt-3 mb-2 sm:mb-3">
                         Our Mission & Vision
                     </h2>
-                    <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
+                    <p className="text-slate-400 text-xs sm:text-sm md:text-base leading-relaxed px-2">
                         Built with a clear, singular purpose: empowering students across India with genuine software engineering proficiency.
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
                     {/* Mission Card */}
-                    <div className="rounded-xl border border-slate-800 bg-[#0b101b] p-8 sm:p-10 flex flex-col justify-between shadow-lg">
+                    <div className="rounded-xl border border-slate-800 bg-[#0b101b] p-5 sm:p-8 md:p-10 flex flex-col justify-between shadow-lg">
                         <div className="space-y-4">
-                            <div className="w-12 h-12 rounded-lg bg-slate-900 border border-slate-800 text-blue-400 flex items-center justify-center">
-                                <Target size={24} />
+                            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-lg bg-slate-900 border border-slate-800 text-blue-400 flex items-center justify-center">
+                                <Target size={22} className="sm:w-6 sm:h-6" />
                             </div>
-                            <h3 className="text-2xl font-bold text-white tracking-tight">
+                            <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
                                 Our Mission
                             </h3>
-                            <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+                            <p className="text-slate-300 text-xs sm:text-sm md:text-base leading-relaxed">
                                 To eliminate the gap between college education and industry expectations. We believe every aspiring engineer deserves direct access to production-level codebases, realistic workflows, and verified industrial credentials regardless of their college tier or location.
                             </p>
                         </div>
 
-                        <div className="pt-6 mt-6 border-t border-slate-800/80 space-y-2 text-xs sm:text-sm text-slate-400">
+                        <div className="pt-5 sm:pt-6 mt-5 sm:mt-6 border-t border-slate-800/80 space-y-2 text-xs sm:text-sm text-slate-400">
                             <div className="flex items-center gap-2">
                                 <CheckCircle2 size={15} className="text-blue-400 shrink-0" />
                                 <span>100% practical, project-driven learning</span>
@@ -46,7 +46,7 @@ export function MissionVision() {
                     </div>
 
                     {/* Vision Card */}
-                    <div className="rounded-xl border border-slate-800 bg-[#0b101b] p-8 sm:p-10 flex flex-col justify-between shadow-lg">
+                    <div className="rounded-xl border border-slate-800 bg-[#0b101b] p-5 sm:p-8 md:p-10 flex flex-col justify-between shadow-lg">
                         <div className="space-y-4">
                             <div className="w-12 h-12 rounded-lg bg-slate-900 border border-slate-800 text-blue-400 flex items-center justify-center">
                                 <Compass size={24} />

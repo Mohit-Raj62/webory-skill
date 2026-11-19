@@ -5,19 +5,19 @@ import Image from "next/image";
 
 export function CertificateShowcase() {
     return (
-        <section className="py-20 px-4 md:px-8 relative z-10 border-t border-slate-800/80 bg-[#06090e]">
+        <section className="py-12 sm:py-16 md:py-20 px-3 sm:px-6 md:px-8 relative z-10 border-t border-slate-800/80 bg-[#06090e]">
             <div className="max-w-6xl mx-auto">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-12 items-center">
                     {/* Left: Info */}
-                    <div className="lg:col-span-5 space-y-6 text-left">
+                    <div className="lg:col-span-5 space-y-4 sm:space-y-6 text-left">
                         <div>
-                            <span className="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full">
+                            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full">
                                 Industry Recognized Certification
                             </span>
-                            <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mt-3 mb-3">
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight mt-3 mb-2 sm:mb-3">
                                 Official Certificate of Completion
                             </h2>
-                            <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
+                            <p className="text-slate-400 text-xs sm:text-sm md:text-base leading-relaxed">
                                 Every graduate from Webory Skills receives a verifiable, industry-recognized certificate validating their hands-on project work and technical proficiency.
                             </p>
                         </div>
@@ -52,12 +52,12 @@ export function CertificateShowcase() {
                                     priority
                                 />
                             </div>
-                            <div className="mt-2.5 px-2 flex items-center justify-between text-[11px] text-slate-400">
+                            <div className="mt-2.5 px-1 sm:px-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-2 text-[10px] sm:text-[11px] text-slate-400">
                                 <span className="flex items-center gap-1.5 text-slate-300">
-                                    <ShieldCheck size={14} className="text-amber-400" />
-                                    Official MSME Certified Credential
+                                    <ShieldCheck size={14} className="text-amber-400 shrink-0" />
+                                    <span>Official MSME Certified Credential</span>
                                 </span>
-                                <span className="text-slate-500 font-mono">MSME: UDYAM-BR-26-0208472</span>
+                                <span className="text-slate-500 font-mono text-[10px] sm:text-[11px]">MSME: UDYAM-BR-26-0208472</span>
                             </div>
                         </div>
                     </div>

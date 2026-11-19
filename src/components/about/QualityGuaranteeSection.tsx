@@ -27,16 +27,16 @@ export function QualityGuaranteeSection() {
     ];
 
     return (
-        <section className="py-20 px-4 md:px-8 relative z-10 border-t border-slate-800/80 bg-[#06090e]">
+        <section className="py-12 sm:py-16 md:py-20 px-3 sm:px-6 md:px-8 relative z-10 border-t border-slate-800/80 bg-[#06090e]">
             <div className="max-w-6xl mx-auto">
-                <div className="text-center max-w-2xl mx-auto mb-14">
-                    <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">
+                <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
+                    <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">
                         Our Quality Commitment
                     </span>
-                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mt-3 mb-3">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight mt-3 mb-2 sm:mb-3">
                         Student Protection & Quality Guarantee
                     </h2>
-                    <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
+                    <p className="text-slate-400 text-xs sm:text-sm md:text-base leading-relaxed px-2">
                         We hold our cohorts to strict engineering and ethical standards to ensure your certificate commands genuine respect in the job market.
                     </p>
                 </div>

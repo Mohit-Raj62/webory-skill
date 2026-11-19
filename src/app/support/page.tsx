@@ -240,45 +240,46 @@ export default function SupportPage() {
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none"></div>
             </div>
 
-            <div className="relative z-10 pt-32 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <div className="relative z-10 pt-24 sm:pt-32 pb-14 sm:pb-24 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto">
                 {/* Hero Header */}
-                <div className="text-center max-w-3xl mx-auto mb-16">
-                    <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-500/10 border border-blue-500/20 px-4 py-1.5 rounded-full mb-4 shadow-sm">
-                        <ShieldCheck size={14} className="text-blue-400" />
+                <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-16">
+                    <div className="inline-flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full mb-3 sm:mb-4 shadow-sm">
+                        <ShieldCheck size={14} className="text-blue-400 shrink-0" />
                         <span>Official Student Help & Support Center</span>
                     </div>
-                    <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white mb-4">
+                    <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white mb-3 sm:mb-4 px-1">
                         How can we <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400">help you</span> today?
                     </h1>
-                    <p className="text-slate-400 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
+                    <p className="text-slate-400 text-xs sm:text-sm md:text-base leading-relaxed max-w-2xl mx-auto px-2">
                         Fast resolutions for enrolled learners. Find instant answers, track support tickets, or connect directly with our technical resolution desk.
                     </p>
 
                     {/* Quick Ticket Tracker Bar */}
-                    <form onSubmit={handleSearchTicket} className="mt-8 max-w-xl mx-auto relative flex items-center">
+                    <form onSubmit={handleSearchTicket} className="mt-6 sm:mt-8 max-w-xl mx-auto relative flex items-center px-1">
                         <div className="relative w-full">
-                            <Ticket size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+                            <Ticket size={16} className="absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 text-slate-500" />
                             <input
                                 type="text"
-                                placeholder="Enter Your Ticket ID (e.g. WS-TICK-849201)"
+                                placeholder="Enter Ticket ID (e.g. WS-TICK-849201)"
                                 value={ticketSearchId}
                                 onChange={(e) => setTicketSearchId(e.target.value)}
-                                className="w-full bg-[#0d131f] border border-slate-800 rounded-2xl pl-11 pr-28 py-3.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 font-mono transition-all shadow-inner"
+                                className="w-full bg-[#0d131f] border border-slate-800 rounded-xl sm:rounded-2xl pl-9 sm:pl-11 pr-24 sm:pr-28 py-2.5 sm:py-3.5 text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 font-mono transition-all shadow-inner"
                             />
                             <button
                                 type="submit"
                                 disabled={searchLoading || !ticketSearchId.trim()}
-                                className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors disabled:opacity-60 shadow-md shadow-blue-600/20"
+                                className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 px-2.5 sm:px-4 py-1.5 sm:py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-semibold flex items-center gap-1.5 transition-colors disabled:opacity-60 shadow-md shadow-blue-600/20 active:scale-95 cursor-pointer"
                             >
-                                {searchLoading ? <Loader2 size={13} className="animate-spin" /> : <Search size={13} />}
-                                <span>Track Status</span>
+                                {searchLoading ? <Loader2 size={12} className="animate-spin" /> : <Search size={12} />}
+                                <span className="hidden xs:inline">Track Status</span>
+                                <span className="xs:hidden">Track</span>
                             </button>
                         </div>
                     </form>
 
                     {/* Detailed Visual Live Ticket Tracker Result Card */}
                     {searchedTicket && (
-                        <div className="mt-6 max-w-2xl mx-auto p-6 sm:p-7 rounded-3xl border border-slate-800/90 bg-gradient-to-b from-[#0f172a] via-[#0b1120] to-[#070b13] text-left animate-in fade-in zoom-in-95 duration-300 shadow-2xl relative overflow-hidden">
+                        <div className="mt-5 sm:mt-6 max-w-2xl mx-auto p-4 sm:p-6 md:p-7 rounded-2xl sm:rounded-3xl border border-slate-800/90 bg-gradient-to-b from-[#0f172a] via-[#0b1120] to-[#070b13] text-left animate-in fade-in zoom-in-95 duration-300 shadow-2xl relative overflow-hidden">
                             {/* Ambient Top Glow */}
                             <div className={`absolute top-0 left-0 right-0 h-1.5 ${
                                 searchedTicket.status === 'resolved' 
@@ -289,19 +290,19 @@ export default function SupportPage() {
                             }`}></div>
 
                             {/* Ticket Header & Status */}
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-slate-800">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 pb-4 sm:pb-5 border-b border-slate-800">
                                 <div>
                                     <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">
                                         Ticket Reference ID
                                     </span>
                                     <div className="flex items-center gap-2 mt-0.5">
-                                        <h3 className="font-mono font-extrabold text-blue-400 text-lg sm:text-xl tracking-tight">
+                                        <h3 className="font-mono font-extrabold text-blue-400 text-base sm:text-xl tracking-tight">
                                             {searchedTicket.ticketId}
                                         </h3>
                                         <button
                                             type="button"
                                             onClick={() => handleCopy(searchedTicket.ticketId)}
-                                            className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+                                            className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors active:scale-95"
                                             title="Copy Ticket ID"
                                         >
                                             <Copy size={12} />
@@ -309,15 +310,15 @@ export default function SupportPage() {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-2">
-                                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border shadow-sm ${
+                                <div className="flex items-center gap-2 self-start sm:self-auto">
+                                    <span className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wide border shadow-sm ${
                                         searchedTicket.status === 'resolved'
                                             ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
                                             : searchedTicket.status === 'in_progress'
                                             ? 'bg-amber-500/10 border-amber-500/30 text-amber-400'
                                             : 'bg-blue-500/10 border-blue-500/30 text-blue-400'
                                     }`}>
-                                        <span className="w-2 h-2 rounded-full animate-pulse bg-current"></span>
+                                        <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-current"></span>
                                         <span>
                                             {searchedTicket.status === 'resolved' 
                                                 ? 'Resolved & Closed' 
@@ -338,30 +339,30 @@ export default function SupportPage() {
                             </div>
 
                             {/* 3-Stage Visual Progress Timeline */}
-                            <div className="py-6 border-b border-slate-800/80">
-                                <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block mb-4">
+                            <div className="py-4 sm:py-6 border-b border-slate-800/80">
+                                <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block mb-3 sm:mb-4">
                                     Live Resolution Timeline
                                 </span>
-                                <div className="grid grid-cols-3 gap-2 relative">
+                                <div className="grid grid-cols-3 gap-1.5 sm:gap-2 relative">
                                     {/* Line connecting stages */}
                                     <div className="absolute top-4 left-6 right-6 h-0.5 bg-slate-800 z-0 hidden sm:block"></div>
 
                                     {/* Stage 1: Received */}
-                                    <div className="flex flex-col items-center sm:items-start text-center sm:text-left relative z-10 space-y-1.5">
-                                        <div className="w-8 h-8 rounded-full bg-emerald-500 text-black font-bold flex items-center justify-center text-xs shadow-md shadow-emerald-500/20">
+                                    <div className="flex flex-col items-center sm:items-start text-center sm:text-left relative z-10 space-y-1">
+                                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-emerald-500 text-black font-bold flex items-center justify-center text-[11px] sm:text-xs shadow-md shadow-emerald-500/20">
                                             ✓
                                         </div>
                                         <div>
-                                            <p className="text-xs font-bold text-white">Ticket Logged</p>
-                                            <p className="text-[10px] text-slate-400 font-mono">
+                                            <p className="text-[11px] sm:text-xs font-bold text-white">Ticket Logged</p>
+                                            <p className="text-[9px] sm:text-[10px] text-slate-400 font-mono">
                                                 {new Date(searchedTicket.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}
                                             </p>
                                         </div>
                                     </div>
 
                                     {/* Stage 2: In Review */}
-                                    <div className="flex flex-col items-center sm:items-start text-center sm:text-left relative z-10 space-y-1.5">
-                                        <div className={`w-8 h-8 rounded-full font-bold flex items-center justify-center text-xs shadow-md ${
+                                    <div className="flex flex-col items-center sm:items-start text-center sm:text-left relative z-10 space-y-1">
+                                        <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full font-bold flex items-center justify-center text-[11px] sm:text-xs shadow-md ${
                                             searchedTicket.status === 'in_progress' || searchedTicket.status === 'resolved'
                                                 ? 'bg-blue-500 text-white shadow-blue-500/20'
                                                 : 'bg-slate-800 text-slate-400 border border-slate-700'
@@ -369,18 +370,18 @@ export default function SupportPage() {
                                             {searchedTicket.status === 'in_progress' || searchedTicket.status === 'resolved' ? '✓' : '2'}
                                         </div>
                                         <div>
-                                            <p className={`text-xs font-bold ${searchedTicket.status !== 'open' ? 'text-white' : 'text-slate-400'}`}>
+                                            <p className={`text-[11px] sm:text-xs font-bold ${searchedTicket.status !== 'open' ? 'text-white' : 'text-slate-400'}`}>
                                                 Under Review
                                             </p>
-                                            <p className="text-[10px] text-slate-400 font-mono">
+                                            <p className="text-[9px] sm:text-[10px] text-slate-400 font-mono">
                                                 {searchedTicket.status === 'open' ? 'In Queue' : 'Assigned Desk'}
                                             </p>
                                         </div>
                                     </div>
 
                                     {/* Stage 3: Resolved */}
-                                    <div className="flex flex-col items-center sm:items-start text-center sm:text-left relative z-10 space-y-1.5">
-                                        <div className={`w-8 h-8 rounded-full font-bold flex items-center justify-center text-xs shadow-md ${
+                                    <div className="flex flex-col items-center sm:items-start text-center sm:text-left relative z-10 space-y-1">
+                                        <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full font-bold flex items-center justify-center text-[11px] sm:text-xs shadow-md ${
                                             searchedTicket.status === 'resolved'
                                                 ? 'bg-emerald-500 text-black shadow-emerald-500/20'
                                                 : 'bg-slate-800 text-slate-400 border border-slate-700'
@@ -388,10 +389,10 @@ export default function SupportPage() {
                                             {searchedTicket.status === 'resolved' ? '✓' : '3'}
                                         </div>
                                         <div>
-                                            <p className={`text-xs font-bold ${searchedTicket.status === 'resolved' ? 'text-emerald-400' : 'text-slate-400'}`}>
+                                            <p className={`text-[11px] sm:text-xs font-bold ${searchedTicket.status === 'resolved' ? 'text-emerald-400' : 'text-slate-400'}`}>
                                                 {searchedTicket.status === 'resolved' ? 'Resolved' : 'Resolution'}
                                             </p>
-                                            <p className="text-[10px] text-slate-400 font-mono">
+                                            <p className="text-[9px] sm:text-[10px] text-slate-400 font-mono">
                                                 {searchedTicket.resolvedAt 
                                                     ? new Date(searchedTicket.resolvedAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })
                                                     : 'SLA: 4-6 Hours'}
@@ -402,23 +403,23 @@ export default function SupportPage() {
                             </div>
 
                             {/* Ticket Details & Resolution Note */}
-                            <div className="pt-5 space-y-3 text-xs">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-slate-300">
-                                    <div className="p-3 rounded-xl bg-slate-900/70 border border-slate-800">
-                                        <span className="text-[10px] uppercase font-bold text-slate-500 block">Student Name</span>
-                                        <p className="font-semibold text-white mt-0.5">{searchedTicket.name}</p>
+                            <div className="pt-4 sm:pt-5 space-y-2.5 sm:space-y-3 text-xs">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 text-slate-300">
+                                    <div className="p-2.5 sm:p-3 rounded-xl bg-slate-900/70 border border-slate-800">
+                                        <span className="text-[9px] sm:text-[10px] uppercase font-bold text-slate-500 block">Student Name</span>
+                                        <p className="font-semibold text-white mt-0.5 text-xs sm:text-sm">{searchedTicket.name}</p>
                                     </div>
-                                    <div className="p-3 rounded-xl bg-slate-900/70 border border-slate-800">
-                                        <span className="text-[10px] uppercase font-bold text-slate-500 block">Department Category</span>
-                                        <p className="font-semibold text-blue-400 uppercase tracking-wide mt-0.5">{searchedTicket.category}</p>
+                                    <div className="p-2.5 sm:p-3 rounded-xl bg-slate-900/70 border border-slate-800">
+                                        <span className="text-[9px] sm:text-[10px] uppercase font-bold text-slate-500 block">Department Category</span>
+                                        <p className="font-semibold text-blue-400 uppercase tracking-wide mt-0.5 text-xs sm:text-sm">{searchedTicket.category}</p>
                                     </div>
                                 </div>
 
-                                <div className="p-3 rounded-xl bg-slate-900/70 border border-slate-800 space-y-1">
-                                    <span className="text-[10px] uppercase font-bold text-slate-500 block">Subject</span>
-                                    <p className="font-semibold text-white">{searchedTicket.subject}</p>
+                                <div className="p-2.5 sm:p-3 rounded-xl bg-slate-900/70 border border-slate-800 space-y-1">
+                                    <span className="text-[9px] sm:text-[10px] uppercase font-bold text-slate-500 block">Subject</span>
+                                    <p className="font-semibold text-white text-xs sm:text-sm">{searchedTicket.subject}</p>
                                     {searchedTicket.message && (
-                                        <p className="text-slate-400 text-[11px] pt-1 leading-relaxed border-t border-slate-800/60 mt-1">
+                                        <p className="text-slate-400 text-[11px] sm:text-xs pt-1 leading-relaxed border-t border-slate-800/60 mt-1">
                                             {searchedTicket.message}
                                         </p>
                                     )}
@@ -426,12 +427,12 @@ export default function SupportPage() {
 
                                 {/* Official Admin Resolution Note (If resolved) */}
                                 {searchedTicket.adminNotes && (
-                                    <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 space-y-1">
+                                    <div className="p-3 sm:p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 space-y-1">
                                         <div className="flex items-center gap-1.5 font-bold text-emerald-400 text-xs">
-                                            <CheckCircle2 size={14} />
+                                            <CheckCircle2 size={14} className="shrink-0" />
                                             <span>Official Resolution Note from Support Team:</span>
                                         </div>
-                                        <p className="text-xs text-slate-200 leading-relaxed pl-5">
+                                        <p className="text-[11px] sm:text-xs text-slate-200 leading-relaxed pl-5">
                                             {searchedTicket.adminNotes}
                                         </p>
                                     </div>
@@ -439,23 +440,23 @@ export default function SupportPage() {
                             </div>
 
                             {/* Direct Follow-up Actions */}
-                            <div className="pt-5 mt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
-                                <span className="text-[11px] text-slate-400">
+                            <div className="pt-4 sm:pt-5 mt-3 sm:mt-4 border-t border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
+                                <span className="text-[10px] sm:text-[11px] text-slate-400">
                                     Need urgent assistance regarding this ticket?
                                 </span>
-                                <div className="flex items-center gap-2">
+                                <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
                                     <a
                                         href={`https://wa.me/919473471153?text=Hi%20Webory%20Support,%20I%20am%20following%20up%20on%20my%20Ticket%20ID%20${encodeURIComponent(searchedTicket.ticketId)}.`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm"
+                                        className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-sm active:scale-95"
                                     >
                                         <MessageSquare size={13} />
-                                        <span>WhatsApp Desk</span>
+                                        <span>WhatsApp</span>
                                     </a>
                                     <a
                                         href={`mailto:support@weboryskills.in?subject=Follow-up%20on%20Ticket%20${encodeURIComponent(searchedTicket.ticketId)}`}
-                                        className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium flex items-center gap-1.5 transition-colors border border-slate-700"
+                                        className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors border border-slate-700 active:scale-95"
                                     >
                                         <Mail size={13} />
                                         <span>Email Desk</span>
@@ -467,17 +468,17 @@ export default function SupportPage() {
                 </div>
 
                 {/* Section 1: Problem Categories Selector */}
-                <div className="mb-14">
-                    <div className="text-center mb-8">
-                        <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                <div className="mb-10 sm:mb-14">
+                    <div className="text-center mb-6 sm:mb-8">
+                        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white tracking-tight">
                             Select Your Problem Category
                         </h2>
-                        <p className="text-slate-400 text-xs sm:text-sm mt-1">
+                        <p className="text-slate-400 text-xs sm:text-sm mt-1 px-2">
                             Choose the topic related to your issue to view instant fixes or open a priority ticket.
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                         {CATEGORIES.map((cat) => {
                             const IconComponent = cat.icon;
                             const isSelected = selectedCategory === cat.id;
@@ -491,27 +492,27 @@ export default function SupportPage() {
                                         setFormData(prev => ({ ...prev, category: cat.id }));
                                         setOpenFaqIndex(0);
                                     }}
-                                    className={`p-6 rounded-2xl border text-left transition-all duration-300 relative overflow-hidden group flex flex-col justify-between ${
+                                    className={`p-4 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl border text-left transition-all duration-300 relative overflow-hidden group flex flex-col justify-between active:scale-[0.99] cursor-pointer ${
                                         isSelected 
                                             ? 'bg-slate-900 border-blue-500/50 shadow-xl shadow-blue-500/5 ring-1 ring-blue-500/30' 
                                             : 'bg-[#0b101b] border-slate-800/80 hover:border-slate-700 hover:bg-slate-900/60'
                                     }`}
                                 >
-                                    <div className="space-y-4">
-                                        <div className={`w-12 h-12 rounded-xl border flex items-center justify-center shrink-0 ${cat.color}`}>
-                                            <IconComponent size={22} />
+                                    <div className="space-y-3 sm:space-y-4">
+                                        <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl border flex items-center justify-center shrink-0 ${cat.color}`}>
+                                            <IconComponent size={20} className="sm:w-5 sm:h-5" />
                                         </div>
                                         <div>
-                                            <h3 className={`font-bold text-base transition-colors ${isSelected ? 'text-white' : 'text-slate-200 group-hover:text-white'}`}>
+                                            <h3 className={`font-bold text-sm sm:text-base transition-colors ${isSelected ? 'text-white' : 'text-slate-200 group-hover:text-white'}`}>
                                                 {cat.title}
                                             </h3>
-                                            <p className="text-slate-400 text-xs mt-1 leading-snug">
+                                            <p className="text-slate-400 text-[11px] sm:text-xs mt-1 leading-snug">
                                                 {cat.subtitle}
                                             </p>
                                         </div>
                                     </div>
 
-                                    <div className="pt-4 mt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold">
+                                    <div className="pt-3 sm:pt-4 mt-3 sm:mt-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] sm:text-xs font-semibold">
                                         <span className={isSelected ? 'text-blue-400' : 'text-slate-500 group-hover:text-slate-300'}>
                                             {isSelected ? 'Selected Category' : 'Browse Solutions'}
                                         </span>
@@ -524,27 +525,27 @@ export default function SupportPage() {
                 </div>
 
                 {/* Section 2: Instant Self-Help Solutions + Support Ticket Form Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-10 items-start">
                     {/* Left Column: Instant Self-Help Accordion */}
                     <div className="lg:col-span-6 space-y-6">
-                        <div className="p-6 sm:p-8 rounded-3xl border border-slate-800 bg-[#0b101b] shadow-xl">
-                            <div className="flex items-center gap-3 pb-6 border-b border-slate-800">
-                                <div className={`w-10 h-10 rounded-xl border flex items-center justify-center ${activeCategory.color}`}>
-                                    <activeCategory.icon size={20} />
+                        <div className="p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-slate-800 bg-[#0b101b] shadow-xl">
+                            <div className="flex items-center gap-3 pb-4 sm:pb-6 border-b border-slate-800">
+                                <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl border flex items-center justify-center shrink-0 ${activeCategory.color}`}>
+                                    <activeCategory.icon size={18} className="sm:w-5 sm:h-5" />
                                 </div>
                                 <div>
                                     <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Instant Self-Help</span>
-                                    <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+                                    <h3 className="text-base sm:text-xl font-bold text-white tracking-tight">
                                         {activeCategory.title} Solutions
                                     </h3>
                                 </div>
                             </div>
 
-                            <p className="text-slate-400 text-xs sm:text-sm mt-4 mb-6 leading-relaxed">
+                            <p className="text-slate-400 text-xs sm:text-sm mt-3 sm:mt-4 mb-4 sm:mb-6 leading-relaxed">
                                 Most student queries can be resolved instantly without waiting for a reply. Check the verified solutions below:
                             </p>
 
-                            <div className="space-y-3">
+                            <div className="space-y-2.5 sm:space-y-3">
                                 {activeCategory.issues.map((issue, idx) => {
                                     const isOpen = openFaqIndex === idx;
 
@@ -556,16 +557,16 @@ export default function SupportPage() {
                                             <button
                                                 type="button"
                                                 onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                                                className="w-full p-4 flex items-center justify-between text-left gap-3 focus:outline-none"
+                                                className="w-full p-3.5 sm:p-4 flex items-center justify-between text-left gap-2.5 sm:gap-3 focus:outline-none cursor-pointer"
                                             >
                                                 <span className={`text-xs sm:text-sm font-semibold transition-colors ${isOpen ? 'text-blue-400' : 'text-slate-300'}`}>
                                                     {issue.question}
                                                 </span>
-                                                <ChevronDown size={15} className={`text-slate-400 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180 text-blue-400' : ''}`} />
+                                                <ChevronDown size={14} className={`text-slate-400 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180 text-blue-400' : ''}`} />
                                             </button>
 
                                             {isOpen && (
-                                                <div className="px-4 pb-4 pt-1 text-xs text-slate-400 leading-relaxed border-t border-slate-800/60 space-y-3">
+                                                <div className="px-3.5 sm:px-4 pb-3.5 sm:pb-4 pt-1 text-[11px] sm:text-xs text-slate-400 leading-relaxed border-t border-slate-800/60 space-y-2.5 sm:space-y-3">
                                                     <p>{issue.answer}</p>
                                                     {issue.actionLabel && issue.actionLink && (
                                                         <Link
@@ -584,58 +585,58 @@ export default function SupportPage() {
                             </div>
 
                             {/* Self-Help Notice */}
-                            <div className="mt-8 p-4 rounded-xl bg-blue-500/5 border border-blue-500/10 flex items-start gap-3 text-xs text-slate-400">
-                                <HelpCircle size={16} className="text-blue-400 shrink-0 mt-0.5" />
-                                <span>Did not find your answer? Fill in the Priority Support Ticket form on the right and our engineering helpdesk will take it up immediately.</span>
+                            <div className="mt-6 sm:mt-8 p-3.5 sm:p-4 rounded-xl bg-blue-500/5 border border-blue-500/10 flex items-start gap-2.5 sm:gap-3 text-xs text-slate-400">
+                                <HelpCircle size={15} className="text-blue-400 shrink-0 mt-0.5" />
+                                <span className="text-[11px] sm:text-xs leading-relaxed">Did not find your answer? Fill in the Priority Support Ticket form on the right and our engineering helpdesk will take it up immediately.</span>
                             </div>
                         </div>
                     </div>
 
                     {/* Right Column: Raise a Priority Support Ticket */}
                     <div className="lg:col-span-6">
-                        <div className="p-6 sm:p-8 rounded-3xl border border-slate-800 bg-[#0b101b] shadow-xl relative overflow-hidden">
-                            <div className="flex items-center justify-between pb-6 border-b border-slate-800">
+                        <div className="p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-slate-800 bg-[#0b101b] shadow-xl relative overflow-hidden">
+                            <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-2 pb-4 sm:pb-6 border-b border-slate-800">
                                 <div>
                                     <span className="text-[10px] uppercase font-bold text-blue-400 tracking-wider">Fast Resolution</span>
-                                    <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+                                    <h3 className="text-base sm:text-xl font-bold text-white tracking-tight">
                                         Raise a Priority Support Ticket
                                     </h3>
                                 </div>
-                                <div className="flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
+                                <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full w-fit">
                                     <Clock size={12} />
                                     <span>SLA: 4-6 Hours</span>
                                 </div>
                             </div>
 
                             {generatedTicketId ? (
-                                <div className="py-8 text-center space-y-5 animate-in fade-in duration-300">
-                                    <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/10">
-                                        <CheckCircle2 size={32} />
+                                <div className="py-6 sm:py-8 text-center space-y-4 sm:space-y-5 animate-in fade-in duration-300">
+                                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/10">
+                                        <CheckCircle2 size={28} className="sm:w-8 sm:h-8" />
                                     </div>
                                     <div>
-                                        <h4 className="text-xl font-bold text-white">Ticket Created Successfully!</h4>
-                                        <p className="text-slate-400 text-xs sm:text-sm mt-1 max-w-sm mx-auto">
+                                        <h4 className="text-lg sm:text-xl font-bold text-white">Ticket Created Successfully!</h4>
+                                        <p className="text-slate-400 text-xs sm:text-sm mt-1 max-w-sm mx-auto px-2">
                                             A confirmation email with instructions has been dispatched to your email address.
                                         </p>
                                     </div>
 
                                     {/* Ticket Box */}
-                                    <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 max-w-xs mx-auto flex items-center justify-between">
+                                    <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-900 border border-slate-800 max-w-xs mx-auto flex items-center justify-between">
                                         <div className="text-left">
-                                            <span className="text-[10px] text-slate-500 uppercase font-bold block">Your Reference ID:</span>
-                                            <span className="text-base font-mono font-bold text-blue-400">{generatedTicketId}</span>
+                                            <span className="text-[9px] sm:text-[10px] text-slate-500 uppercase font-bold block">Your Reference ID:</span>
+                                            <span className="text-sm sm:text-base font-mono font-bold text-blue-400">{generatedTicketId}</span>
                                         </div>
                                         <button
                                             type="button"
                                             onClick={() => handleCopy(generatedTicketId)}
-                                            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+                                            className="p-1.5 sm:p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors active:scale-95"
                                             title="Copy Ticket ID"
                                         >
                                             {copiedTicket ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
                                         </button>
                                     </div>
 
-                                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2.5 sm:gap-3 pt-2">
                                         <button
                                             type="button"
                                             onClick={() => {
@@ -645,7 +646,7 @@ export default function SupportPage() {
                                                     .then(r => r.json())
                                                     .then(d => { if (d.ticket) setSearchedTicket(d.ticket); });
                                             }}
-                                            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-md shadow-blue-600/20"
+                                            className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-md shadow-blue-600/20 active:scale-95 cursor-pointer"
                                         >
                                             <Search size={13} />
                                             <span>Track This Ticket Live</span>
@@ -660,9 +661,9 @@ export default function SupportPage() {
                                     </div>
                                 </div>
                             ) : (
-                                <form onSubmit={handleTicketSubmit} className="space-y-4 pt-6">
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        <div className="space-y-1.5">
+                                <form onSubmit={handleTicketSubmit} className="space-y-3.5 sm:space-y-4 pt-4 sm:pt-6">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                        <div className="space-y-1 sm:space-y-1.5">
                                             <label className="text-xs font-semibold text-slate-300">Full Name *</label>
                                             <input
                                                 type="text"
@@ -670,10 +671,10 @@ export default function SupportPage() {
                                                 placeholder="e.g. Rahul Sharma"
                                                 value={formData.name}
                                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                                className="w-full bg-[#070b13] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500/50"
+                                                className="w-full bg-[#070b13] border border-slate-800 rounded-xl px-3 py-2 sm:px-3.5 sm:py-2.5 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500/50"
                                             />
                                         </div>
-                                        <div className="space-y-1.5">
+                                        <div className="space-y-1 sm:space-y-1.5">
                                             <label className="text-xs font-semibold text-slate-300">Registered Email *</label>
                                             <input
                                                 type="email"
@@ -681,23 +682,23 @@ export default function SupportPage() {
                                                 placeholder="student@example.com"
                                                 value={formData.email}
                                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                                className="w-full bg-[#070b13] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500/50 font-mono"
+                                                className="w-full bg-[#070b13] border border-slate-800 rounded-xl px-3 py-2 sm:px-3.5 sm:py-2.5 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500/50 font-mono"
                                             />
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        <div className="space-y-1.5">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                        <div className="space-y-1 sm:space-y-1.5">
                                             <label className="text-xs font-semibold text-slate-300">WhatsApp / Phone Number</label>
                                             <input
                                                 type="tel"
                                                 placeholder="10-digit mobile number"
                                                 value={formData.phone}
                                                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                                className="w-full bg-[#070b13] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500/50 font-mono"
+                                                className="w-full bg-[#070b13] border border-slate-800 rounded-xl px-3 py-2 sm:px-3.5 sm:py-2.5 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500/50 font-mono"
                                             />
                                         </div>
-                                        <div className="space-y-1.5">
+                                        <div className="space-y-1 sm:space-y-1.5">
                                             <label className="text-xs font-semibold text-slate-300">Category *</label>
                                             <select
                                                 value={formData.category}
@@ -705,7 +706,7 @@ export default function SupportPage() {
                                                     setFormData({ ...formData, category: e.target.value });
                                                     setSelectedCategory(e.target.value);
                                                 }}
-                                                className="w-full bg-[#070b13] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500/50"
+                                                className="w-full bg-[#070b13] border border-slate-800 rounded-xl px-3 py-2 sm:px-3.5 sm:py-2.5 text-xs text-white focus:outline-none focus:border-blue-500/50"
                                             >
                                                 <option value="certificate">Certificates & Credentials</option>
                                                 <option value="payment">Payments, Invoices & Refunds</option>
@@ -716,7 +717,7 @@ export default function SupportPage() {
                                         </div>
                                     </div>
 
-                                    <div className="space-y-1.5">
+                                    <div className="space-y-1 sm:space-y-1.5">
                                         <label className="text-xs font-semibold text-slate-300">Subject *</label>
                                         <input
                                             type="text"
@@ -724,11 +725,11 @@ export default function SupportPage() {
                                             placeholder="e.g. Payment deducted but Full Stack course still locked"
                                             value={formData.subject}
                                             onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                                            className="w-full bg-[#070b13] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500/50"
+                                            className="w-full bg-[#070b13] border border-slate-800 rounded-xl px-3 py-2 sm:px-3.5 sm:py-2.5 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500/50"
                                         />
                                     </div>
 
-                                    <div className="space-y-1.5">
+                                    <div className="space-y-1 sm:space-y-1.5">
                                         <label className="text-xs font-semibold text-slate-300">Detailed Problem Description *</label>
                                         <textarea
                                             rows={4}
@@ -736,14 +737,14 @@ export default function SupportPage() {
                                             placeholder="Please describe the issue in detail, including Course Name, Transaction ID or Error message..."
                                             value={formData.message}
                                             onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                                            className="w-full bg-[#070b13] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500/50 resize-none leading-relaxed"
+                                            className="w-full bg-[#070b13] border border-slate-800 rounded-xl px-3 py-2 sm:px-3.5 sm:py-2.5 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500/50 resize-none leading-relaxed"
                                         />
                                     </div>
 
                                     <button
                                         type="submit"
                                         disabled={submitting}
-                                        className="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                                        className="w-full py-3 sm:py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed active:scale-95 cursor-pointer"
                                     >
                                         {submitting ? (
                                             <>
@@ -764,21 +765,21 @@ export default function SupportPage() {
                 </div>
 
                 {/* Section 3: Direct Official Channels Bar */}
-                <div className="mt-16 p-8 rounded-3xl border border-slate-800 bg-gradient-to-r from-[#0b101b] via-[#0f172a] to-[#0b101b] shadow-xl">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
+                <div className="mt-10 sm:mt-16 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-slate-800 bg-gradient-to-r from-[#0b101b] via-[#0f172a] to-[#0b101b] shadow-xl">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4 md:gap-6 text-center md:text-left">
                         {/* Channel 1: WhatsApp Support */}
-                        <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
-                                <MessageSquare size={22} />
+                        <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center gap-3.5 sm:gap-4">
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                                <MessageSquare size={20} className="sm:w-5 sm:h-5" />
                             </div>
-                            <div className="min-w-0 flex-1">
-                                <h4 className="text-white text-sm font-bold">WhatsApp Helpdesk</h4>
-                                <p className="text-slate-400 text-xs mt-0.5">Instant chat for quick doubts</p>
+                            <div className="min-w-0 flex-1 text-left">
+                                <h4 className="text-white text-xs sm:text-sm font-bold">WhatsApp Helpdesk</h4>
+                                <p className="text-slate-400 text-[11px] sm:text-xs mt-0.5">Instant chat for quick doubts</p>
                                 <a
                                     href="https://wa.me/919473471153?text=Hi%20Webory%20Skills%20Support,%20I%20need%20help%20with%20my%20course/account."
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-emerald-400 hover:text-emerald-300 text-xs font-semibold inline-flex items-center gap-1 mt-1"
+                                    className="text-emerald-400 hover:text-emerald-300 text-[11px] sm:text-xs font-semibold inline-flex items-center gap-1 mt-1"
                                 >
                                     <span>Chat on WhatsApp</span>
                                     <ArrowRight size={12} />
@@ -787,16 +788,16 @@ export default function SupportPage() {
                         </div>
 
                         {/* Channel 2: Official Support Email */}
-                        <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
-                                <Mail size={22} />
+                        <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center gap-3.5 sm:gap-4">
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+                                <Mail size={20} className="sm:w-5 sm:h-5" />
                             </div>
-                            <div className="min-w-0 flex-1">
-                                <h4 className="text-white text-sm font-bold">Dedicated Email Desk</h4>
-                                <p className="text-slate-400 text-xs mt-0.5">SLA: 4 to 6 business hours</p>
+                            <div className="min-w-0 flex-1 text-left">
+                                <h4 className="text-white text-xs sm:text-sm font-bold">Dedicated Email Desk</h4>
+                                <p className="text-slate-400 text-[11px] sm:text-xs mt-0.5">SLA: 4 to 6 business hours</p>
                                 <a
                                     href="mailto:support@weboryskills.in"
-                                    className="text-blue-400 hover:text-blue-300 text-xs font-mono font-semibold block truncate mt-1"
+                                    className="text-blue-400 hover:text-blue-300 text-[11px] sm:text-xs font-mono font-semibold block truncate mt-1"
                                 >
                                     support@weboryskills.in
                                 </a>
@@ -804,13 +805,13 @@ export default function SupportPage() {
                         </div>
 
                         {/* Channel 3: Helpline Call */}
-                        <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
-                                <Phone size={22} />
+                        <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center gap-3.5 sm:gap-4">
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                                <Phone size={20} className="sm:w-5 sm:h-5" />
                             </div>
-                            <div className="min-w-0 flex-1">
-                                <h4 className="text-white text-sm font-bold">Helpline Hours</h4>
-                                <p className="text-slate-400 text-xs mt-0.5">Mon - Sat, 10 AM - 6 PM IST</p>
+                            <div className="min-w-0 flex-1 text-left">
+                                <h4 className="text-white text-xs sm:text-sm font-bold">Helpline Hours</h4>
+                                <p className="text-slate-400 text-[11px] sm:text-xs mt-0.5">Mon - Sat, 10 AM - 6 PM IST</p>
                                 <p className="text-white text-xs font-semibold mt-1">
                                     +91 94734 71153
                                 </p>
