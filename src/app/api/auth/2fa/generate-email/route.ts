@@ -37,11 +37,14 @@ export async function POST() {
     await user.save();
 
     // Send email
-    const emailSent = await sendEmail(
-      user.email,
-      "Your 2FA Setup Code - Webory Skills",
-      emailTemplates.loginOtp(user.firstName, otp) // Reuse login template for now, or create a specific one
-    );
+    const emailSent = await sendEmail({
+      to: user.email,
+      subject: "Your 2FA Setup Code - Webory Skills",
+      html: emailTemplates.loginOtp(user.firstName, otp),
+      from: "no-reply@weboryskills.in",
+      replyTo: "no-reply@weboryskills.in",
+      category: "website_accounts",
+    });
 
     if (!emailSent) {
       return NextResponse.json({ error: "Failed to send OTP email" }, { status: 500 });

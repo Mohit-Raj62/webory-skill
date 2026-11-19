@@ -40,7 +40,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const { subject, message, mode = "both", pushImage, templateName, targetAudience = "all", customEmails = [] } = await req.json();
+    const { subject, message, mode = "both", pushImage, templateName, targetAudience = "all", customEmails = [], from } = await req.json();
 
     if (mode !== "whatsapp" && (!subject || !message)) {
       return NextResponse.json(
@@ -97,7 +97,15 @@ export async function POST(req: Request) {
         }
 
         try {
-          const success = await sendEmail(user.email, subject, personalizedMessage);
+          const broadcastSender = from || "info@weboryskills.in";
+          const success = await sendEmail({
+            to: user.email,
+            subject,
+            html: personalizedMessage,
+            from: broadcastSender,
+            replyTo: broadcastSender,
+            category: "general",
+          });
           if (success) sentCount++;
           else errors.push(user.email);
         } catch (error) {

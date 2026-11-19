@@ -37,11 +37,14 @@ export async function GET(req: NextRequest) {
 
             // Send notification to student
             try {
-                await sendEmail(
-                    ticket.email,
-                    `[Resolved] Support Ticket ${ticket.ticketId} - Webory Skills`,
-                    emailTemplates.supportTicketResolved(ticket.name, ticket.ticketId, ticket.subject, ticket.adminNotes)
-                );
+                await sendEmail({
+                    to: ticket.email,
+                    subject: `[Resolved] Support Ticket ${ticket.ticketId} - Webory Skills`,
+                    html: emailTemplates.supportTicketResolved(ticket.name, ticket.ticketId, ticket.subject, ticket.adminNotes),
+                    from: "support@weboryskills.in",
+                    replyTo: "support@weboryskills.in",
+                    category: "support",
+                });
             } catch (mailErr) {
                 console.error("Failed to send student resolution email:", mailErr);
             }

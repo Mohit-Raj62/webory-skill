@@ -2,7 +2,75 @@ import nodemailer from "nodemailer";
 import { createInvoiceHTML } from "./invoiceTemplate";
 
 const authUser = process.env.EMAIL_AUTH_USER || process.env.EMAIL_USER;
-const defaultFrom = process.env.EMAIL_FROM || "info@weboryskills.in";
+
+/**
+ * Official Sender Email Addresses:
+ * - NOREPLY (no-reply@weboryskills.in): Used for all 10 designated transactional & notification categories:
+ *   1. Website & Accounts (Welcome, OTP, password reset)
+ *   2. Internship & Recruitment (Application, selection, interview)
+ *   3. Education & Learning (Course enrollment, assignments)
+ *   4. Examination (Exam schedule, result)
+ *   5. Certificates (Certificate issued, download)
+ *   6. Payment & Finance (Payment receipt, invoice)
+ *   7. Events & Workshops (Registration, event reminder)
+ *   8. College & School (Partnership, training updates)
+ *   9. Projects & Developer (Task assigned, project review)
+ *   10. Other Digital Services (Feedback, support ticket, system alerts)
+ *
+ * - INFO (info@weboryskills.in): Used everywhere else:
+ *   General inquiries, contact forms, partnerships, company contact & announcements.
+ */
+export const EMAIL_ADDRESSES = {
+  NOREPLY: process.env.EMAIL_NOREPLY || "no-reply@weboryskills.in",
+  INFO: process.env.EMAIL_INFO || "info@weboryskills.in",
+  SUPPORT: process.env.EMAIL_SUPPORT || "support@weboryskills.in",
+  CAREERS: process.env.EMAIL_CAREERS || "careers@weboryskills.in",
+} as const;
+
+export type EmailCategory =
+  | "website_accounts"       // 1. Website & Accounts: Welcome, OTP, password reset
+  | "internship_recruitment" // 2. Internship & Recruitment: Application, selection, interview
+  | "education_learning"     // 3. Education & Learning: Course enrollment, assignments
+  | "examination"            // 4. Examination: Exam schedule, result
+  | "certificates"           // 5. Certificates: Certificate issued, download
+  | "payment_finance"        // 6. Payment & Finance: Payment receipt, invoice
+  | "events_workshops"       // 7. Events & Workshops: Registration, event reminder
+  | "college_school"         // 8. College & School: Partnership, training updates
+  | "projects_developer"     // 9. Projects & Developer: Task assigned, project review
+  | "other_digital_services" // 10. Other Digital Services: System alerts, feedback
+  | "support"                // Support Desk & Student Tickets -> support@weboryskills.in
+  | "general";               // General inquiries, info & contact -> info@weboryskills.in
+
+/**
+ * Returns the appropriate sender email based on category.
+ * Support tickets map strictly to support@weboryskills.in.
+ * General inquiries map to info@weboryskills.in.
+ * Automated notifications (Categories 1-10) map to no-reply@weboryskills.in.
+ */
+export function getSenderEmailForCategory(category?: EmailCategory): string {
+  switch (category) {
+    case "support":
+      return EMAIL_ADDRESSES.SUPPORT;
+    case "general":
+      return EMAIL_ADDRESSES.INFO;
+    case "website_accounts":
+    case "internship_recruitment":
+    case "education_learning":
+    case "examination":
+    case "certificates":
+    case "payment_finance":
+    case "events_workshops":
+    case "college_school":
+    case "projects_developer":
+    case "other_digital_services":
+      return EMAIL_ADDRESSES.NOREPLY;
+    default:
+      // Default sender for system/transactional emails is no-reply@weboryskills.in
+      return EMAIL_ADDRESSES.NOREPLY;
+  }
+}
+
+const defaultFrom = EMAIL_ADDRESSES.NOREPLY;
 
 const transporter = nodemailer.createTransport({
   pool: true,
@@ -16,29 +84,75 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+export interface SendEmailOptions {
+  to: string;
+  subject: string;
+  html: string;
+  attachments?: any[];
+  replyTo?: string;
+  from?: string;
+  category?: EmailCategory;
+}
+
 export const sendEmail = async (
-  to: string, 
-  subject: string, 
-  html: string,
+  toOrOptions: string | SendEmailOptions, 
+  subject?: string, 
+  html?: string,
   attachments?: any[],
-  replyTo?: string
-) => {
+  replyTo?: string,
+  from?: string,
+  category?: EmailCategory
+): Promise<boolean> => {
   try {
-    const fromAddress = process.env.EMAIL_FROM || "info@weboryskills.in";
+    let to: string;
+    let emailSubject: string;
+    let emailHtml: string;
+    let emailAttachments: any[] | undefined;
+    let emailReplyTo: string | undefined;
+    let explicitFrom: string | undefined;
+    let emailCategory: EmailCategory | undefined;
+
+    if (typeof toOrOptions === "string") {
+      to = toOrOptions;
+      emailSubject = subject || "";
+      emailHtml = html || "";
+      emailAttachments = attachments;
+      emailReplyTo = replyTo;
+      explicitFrom = from;
+      emailCategory = category;
+    } else {
+      to = toOrOptions.to;
+      emailSubject = toOrOptions.subject;
+      emailHtml = toOrOptions.html;
+      emailAttachments = toOrOptions.attachments;
+      emailReplyTo = toOrOptions.replyTo;
+      explicitFrom = toOrOptions.from;
+      emailCategory = toOrOptions.category;
+    }
+
+    // Determine sender address:
+    // 1. Explicitly passed 'from' takes top precedence
+    // 2. Category resolution: categories 1-10 -> no-reply@weboryskills.in; 'general' -> info@weboryskills.in
+    // 3. Fallback: default NOREPLY (no-reply@weboryskills.in)
+    const fromAddress = explicitFrom || getSenderEmailForCategory(emailCategory);
+
+    // For no-reply sender, default replyTo to no-reply@weboryskills.in unless a specific replyTo was provided
+    const finalReplyTo = emailReplyTo || fromAddress;
+
     console.log("📨 Sending email via Nodemailer...");
     console.log("Host:", process.env.EMAIL_HOST || "smtp.gmail.com");
     console.log("Authenticated User:", authUser ? authUser.replace(/(.{3})(.*)(@.*)/, "$1***$3") : "None");
     console.log("From (Display):", fromAddress);
     console.log("To:", to);
-    if (replyTo) console.log("Reply-To:", replyTo);
+    if (finalReplyTo) console.log("Reply-To:", finalReplyTo);
 
     const info = await transporter.sendMail({
       from: `"Webory Skills" <${fromAddress}>`,
-      replyTo: replyTo || fromAddress,
+      replyTo: finalReplyTo,
       to,
-      subject,
-      html,
-      attachments,
+      subject: emailSubject,
+      html: emailHtml,
+      attachments: emailAttachments,
     });
 
     console.log("✅ Message sent successfully!");
@@ -526,6 +640,103 @@ export const emailTemplates = {
       
       <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
       <p style="color: #999; font-size: 12px; text-align: center;">Best Regards,<br/>Webory Skills Team</p>
+    </div>
+  `,
+  // Category 7: Events & Workshops
+  eventRegistration: (name: string, eventTitle: string, eventDate: string, eventLink?: string) => `
+    <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #2563eb;">Registration Confirmed! 🎟️</h2>
+      <p>Hi ${name},</p>
+      <p>You have successfully registered for <strong>${eventTitle}</strong>.</p>
+      <div style="background: #eff6ff; border-left: 4px solid #2563eb; padding: 15px; margin: 20px 0; border-radius: 6px;">
+        <p style="margin: 4px 0;"><strong>Event:</strong> ${eventTitle}</p>
+        <p style="margin: 4px 0;"><strong>Date & Time:</strong> ${eventDate}</p>
+      </div>
+      ${eventLink ? `
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${eventLink}" style="background-color: #2563eb; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold;">View Event Details</a>
+      </div>` : ""}
+      <p style="color: #666; font-size: 13px;">This is an automated event notification from no-reply@weboryskills.in.</p>
+      <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+      <p style="color: #999; font-size: 12px; text-align: center;">Best Regards,<br/>Webory Skills Events Team</p>
+    </div>
+  `,
+  eventReminder: (name: string, eventTitle: string, eventDate: string, eventLink?: string) => `
+    <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #f59e0b;">Event Reminder ⏰</h2>
+      <p>Hi ${name},</p>
+      <p>This is a quick reminder that your registered event <strong>${eventTitle}</strong> is coming up soon!</p>
+      <div style="background: #fffbeb; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 6px;">
+        <p style="margin: 4px 0;"><strong>Event:</strong> ${eventTitle}</p>
+        <p style="margin: 4px 0;"><strong>Date & Time:</strong> ${eventDate}</p>
+      </div>
+      ${eventLink ? `
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${eventLink}" style="background-color: #f59e0b; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold;">Join / View Event</a>
+      </div>` : ""}
+      <p style="color: #666; font-size: 13px;">Please be ready 10 minutes prior to the scheduled start.</p>
+      <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+      <p style="color: #999; font-size: 12px; text-align: center;">Best Regards,<br/>Webory Skills Events Team</p>
+    </div>
+  `,
+  // Category 8: College & School
+  campusPartnershipUpdate: (institutionName: string, contactPerson: string, updateTitle: string, updateDetails: string) => `
+    <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #0f766e;">Campus Partnership Update 🏫</h2>
+      <p>Dear ${contactPerson},</p>
+      <p>We are writing to share an important institutional update regarding <strong>${institutionName}</strong>'s partnership with Webory Skills.</p>
+      <div style="background: #f0fdfa; border-left: 4px solid #0f766e; padding: 15px; margin: 20px 0; border-radius: 6px;">
+        <p style="margin: 4px 0; font-size: 15px; font-weight: bold; color: #0f766e;">${updateTitle}</p>
+        <p style="margin: 8px 0 0 0; color: #334155; line-height: 1.6;">${updateDetails}</p>
+      </div>
+      <p style="color: #64748b; font-size: 13px;">For any queries regarding this update, our institutional desk is reachable at <a href="mailto:info@weboryskills.in" style="color: #0f766e;">info@weboryskills.in</a>.</p>
+      <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+      <p style="color: #999; font-size: 12px; text-align: center;">Best Regards,<br/>Webory Skills Academic Partnerships</p>
+    </div>
+  `,
+  trainingUpdate: (name: string, programTitle: string, updateMessage: string) => `
+    <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #2563eb;">Training Program Update 📢</h2>
+      <p>Hi ${name},</p>
+      <p>An announcement has been published for your training cohort in <strong>${programTitle}</strong>.</p>
+      <div style="background: #f8fafc; border-left: 4px solid #2563eb; padding: 15px; margin: 20px 0; border-radius: 6px;">
+        <p style="margin: 0; color: #334155; line-height: 1.6;">${updateMessage}</p>
+      </div>
+      <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+      <p style="color: #999; font-size: 12px; text-align: center;">Best Regards,<br/>Webory Skills Training Directorate</p>
+    </div>
+  `,
+  // Category 9: Projects & Developer
+  projectTaskAssigned: (name: string, projectTitle: string, taskTitle: string, dueDate: string, taskLink?: string) => `
+    <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #7c3aed;">New Project Task Assigned 💻</h2>
+      <p>Hi ${name},</p>
+      <p>You have been assigned a new task in <strong>${projectTitle}</strong>.</p>
+      <div style="background: #f5f3ff; border-left: 4px solid #7c3aed; padding: 15px; margin: 20px 0; border-radius: 6px;">
+        <p style="margin: 4px 0;"><strong>Project:</strong> ${projectTitle}</p>
+        <p style="margin: 4px 0;"><strong>Task:</strong> ${taskTitle}</p>
+        <p style="margin: 4px 0;"><strong>Deadline:</strong> ${dueDate}</p>
+      </div>
+      ${taskLink ? `
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${taskLink}" style="background-color: #7c3aed; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold;">View Task in Workspace</a>
+      </div>` : ""}
+      <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+      <p style="color: #999; font-size: 12px; text-align: center;">Best Regards,<br/>Webory Skills DevLab Team</p>
+    </div>
+  `,
+  projectReviewUpdate: (name: string, projectTitle: string, reviewStatus: string, reviewerNotes: string) => `
+    <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #2563eb;">Project Code Review Update 🔍</h2>
+      <p>Hi ${name},</p>
+      <p>Your project submission for <strong>${projectTitle}</strong> has been reviewed.</p>
+      <div style="background: #f8fafc; border-left: 4px solid #2563eb; padding: 15px; margin: 20px 0; border-radius: 6px;">
+        <p style="margin: 4px 0;"><strong>Status:</strong> ${reviewStatus}</p>
+        <p style="margin: 4px 0;"><strong>Reviewer Feedback:</strong></p>
+        <p style="margin: 8px 0 0 0; color: #475569; line-height: 1.6; white-space: pre-wrap;">${reviewerNotes}</p>
+      </div>
+      <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+      <p style="color: #999; font-size: 12px; text-align: center;">Best Regards,<br/>Webory Skills Technical Review Team</p>
     </div>
   `,
 };

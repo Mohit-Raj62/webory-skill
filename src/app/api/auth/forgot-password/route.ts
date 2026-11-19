@@ -50,15 +50,18 @@ export async function POST(req: Request) {
 
     console.log("📧 Attempting to send password reset email...");
     console.log("To:", user.email);
-    console.log("From:", process.env.EMAIL_FROM || process.env.EMAIL_USER || "info@weboryskills.in");
+    console.log("From:", process.env.EMAIL_NOREPLY || process.env.EMAIL_FROM || "no-reply@weboryskills.in");
     console.log("Reset URL:", resetUrl);
 
     // Send email
-    const emailSent = await sendEmail(
-      user.email,
-      "Password Reset Request - Skill Webory",
-      emailTemplates.passwordReset(user.firstName, resetUrl)
-    );
+    const emailSent = await sendEmail({
+      to: user.email,
+      subject: "Password Reset Request - Skill Webory",
+      html: emailTemplates.passwordReset(user.firstName, resetUrl),
+      from: "no-reply@weboryskills.in",
+      replyTo: "no-reply@weboryskills.in",
+      category: "website_accounts",
+    });
 
     if (!emailSent) {
       console.error("❌ Failed to send password reset email");

@@ -37,13 +37,16 @@ export async function POST(req: NextRequest) {
             priority: validCategory === "payment" ? "high" : "medium"
         });
 
-        // 1. Send Student Confirmation Email
+        // 1. Send Student Confirmation Email (from support@weboryskills.in)
         try {
-            await sendEmail(
-                email.trim().toLowerCase(),
-                `[${ticketId}] Support Request Received - Webory Skills`,
-                emailTemplates.supportTicketCreated(name, ticketId, validCategory, subject)
-            );
+            await sendEmail({
+                to: email.trim().toLowerCase(),
+                subject: `[${ticketId}] Support Request Received - Webory Skills`,
+                html: emailTemplates.supportTicketCreated(name, ticketId, validCategory, subject),
+                from: "support@weboryskills.in",
+                replyTo: "support@weboryskills.in",
+                category: "support",
+            });
         } catch (emailErr) {
             console.error("Failed to send student ticket confirmation email:", emailErr);
         }
@@ -51,10 +54,10 @@ export async function POST(req: NextRequest) {
         // 2. Send Support Desk / Admin Alert with Reply-To set to Student's email
         try {
             const supportDeskEmail = process.env.SUPPORT_EMAIL || "support@weboryskills.in";
-            await sendEmail(
-                supportDeskEmail,
-                `[Priority Support Ticket] ${ticketId} - ${subject}`,
-                emailTemplates.adminSupportTicketNotification(
+            await sendEmail({
+                to: supportDeskEmail,
+                subject: `[Priority Support Ticket] ${ticketId} - ${subject}`,
+                html: emailTemplates.adminSupportTicketNotification(
                     ticketId,
                     name,
                     email,
@@ -63,9 +66,10 @@ export async function POST(req: NextRequest) {
                     subject,
                     message
                 ),
-                undefined,
-                `"${name}" <${email}>` // Crucial: When admin clicks "Reply", it replies directly to the student!
-            );
+                from: "support@weboryskills.in",
+                replyTo: `"${name}" <${email}>`, // When admin clicks "Reply", it replies directly to the student
+                category: "support",
+            });
         } catch (adminEmailErr) {
             console.error("Failed to notify support desk:", adminEmailErr);
         }

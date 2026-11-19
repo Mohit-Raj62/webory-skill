@@ -38,11 +38,14 @@ export async function POST(req: Request) {
     await user.save();
 
     // Send OTP email
-    const emailSent = await sendEmail(
-      email,
-      "Your Login OTP - Skill Webory",
-      emailTemplates.loginOtp(user.firstName, otp)
-    );
+    const emailSent = await sendEmail({
+      to: email,
+      subject: "Your Login OTP - Skill Webory",
+      html: emailTemplates.loginOtp(user.firstName, otp),
+      from: "no-reply@weboryskills.in",
+      replyTo: "no-reply@weboryskills.in",
+      category: "website_accounts",
+    });
 
     if (!emailSent) {
       return NextResponse.json(

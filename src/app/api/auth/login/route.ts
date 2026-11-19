@@ -60,11 +60,14 @@ export async function POST(req: Request) {
         await user.save({ validateModifiedOnly: true });
 
         const { sendEmail, emailTemplates } = await import("@/lib/mail");
-        await sendEmail(
-          user.email,
-          "Your 2FA Login Code - Webory Skills",
-          emailTemplates.loginOtp(user.firstName, otp)
-        );
+        await sendEmail({
+          to: user.email,
+          subject: "Your 2FA Login Code - Webory Skills",
+          html: emailTemplates.loginOtp(user.firstName, otp),
+          from: "no-reply@weboryskills.in",
+          replyTo: "no-reply@weboryskills.in",
+          category: "website_accounts",
+        });
       }
 
       // Issue a temporary token for the 2FA verification step

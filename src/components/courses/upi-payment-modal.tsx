@@ -511,7 +511,7 @@ export function UPIPaymentModal({
                                             <li>Refunds available within 7 days of enrollment</li>
                                             <li>No refund if more than 20% course content accessed</li>
                                             <li>Processing time: 5-7 business days</li>
-                                            <li>Contact support@webory.in for refund requests</li>
+                                            <li>Contact support@weboryskills.in for refund requests</li>
                                         </ul>
                                     </div>
                                 </div>

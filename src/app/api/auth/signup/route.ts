@@ -107,11 +107,14 @@ export async function POST(req: Request) {
 
     // Send welcome email
     try {
-      await sendEmail(
-        user.email,
-        "Welcome to Skill Webory! 🎉",
-        emailTemplates.welcomeSignup(user.firstName),
-      );
+      await sendEmail({
+        to: user.email,
+        subject: "Welcome to Skill Webory! 🎉",
+        html: emailTemplates.welcomeSignup(user.firstName),
+        from: "no-reply@weboryskills.in",
+        replyTo: "no-reply@weboryskills.in",
+        category: "website_accounts",
+      });
       console.log("✅ Welcome email sent to:", user.email);
     } catch (emailError) {
       console.error("❌ Failed to send welcome email:", emailError);
