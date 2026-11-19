@@ -840,10 +840,10 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                                 Our dedicated support team and mentors are here to guide you throughout your internship journey.
                             </p>
                             <Button 
-                                onClick={() => router.push('/contact')}
+                                onClick={() => router.push('/support')}
                                 className="w-full bg-white text-black hover:bg-slate-200 h-12 rounded-xl font-black uppercase tracking-widest text-[10px]"
                             >
-                                Contact Support
+                                Open Support Desk
                             </Button>
                         </div>
                     </div>

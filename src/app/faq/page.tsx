@@ -30,9 +30,9 @@ export default function FAQPage() {
                                 Can't find the answer you're looking for? Reach out directly to our student support desk at <a href="mailto:support@weboryskills.in" className="text-blue-400 hover:underline font-mono">support@weboryskills.in</a>.
                             </p>
                         </div>
-                        <Link href="/contact">
+                        <Link href="/support">
                             <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 rounded-xl px-6 font-semibold">
-                                Contact Support <ArrowRight size={15} className="ml-1.5" />
+                                Open Support Desk <ArrowRight size={15} className="ml-1.5" />
                             </Button>
                         </Link>
                     </div>

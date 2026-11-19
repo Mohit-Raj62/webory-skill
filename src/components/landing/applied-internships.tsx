@@ -131,16 +131,22 @@ export function AppliedInternships() {
                     ))}
                 </div>
 
-                {applications.length > 3 && (
-                    <div className="text-center mt-8">
+                <div className="flex flex-wrap items-center justify-center gap-3 mt-8">
+                    {applications.length > 3 && (
                         <Link href="/profile">
                             <Button variant="outline" className="border-purple-500/50 text-purple-400 hover:bg-purple-500/10">
                                 View All Applications
                                 <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
                         </Link>
-                    </div>
-                )}
+                    )}
+                    <Link href="/support">
+                        <Button variant="ghost" className="text-gray-400 hover:text-white text-xs flex items-center gap-1.5 border border-white/10 hover:border-blue-500/30 rounded-xl px-4 py-2 transition-all">
+                            <span>Facing issue with your application?</span>
+                            <span className="text-blue-400 font-semibold underline">Help & Support Desk</span>
+                        </Button>
+                    </Link>
+                </div>
             </div>
         </section>
     );

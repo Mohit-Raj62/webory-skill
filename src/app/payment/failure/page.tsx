@@ -70,9 +70,9 @@ function PaymentFailureContent() {
                     </Button>
                     
                     <div className="grid grid-cols-2 gap-3">
-                        <Link href="/contact">
+                        <Link href="/support">
                             <Button variant="outline" className="w-full border-white/10 hover:bg-white/5 text-gray-400 hover:text-white h-12 rounded-xl">
-                                <MessageSquare className="mr-2" size={16} /> Support
+                                <MessageSquare className="mr-2" size={16} /> Support Desk
                             </Button>
                         </Link>
                          <Link href="/">

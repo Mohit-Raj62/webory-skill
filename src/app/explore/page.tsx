@@ -38,7 +38,8 @@ import {
     Video,
     Bot,
     BrainCircuit,
-    Compass
+    Compass,
+    LifeBuoy
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/session-provider";
@@ -132,7 +133,8 @@ const MENU_RAIL_CATEGORIES: Category[] = [
             { label: "CAREERS & JOBS", href: "/careers", icon: Briefcase, description: "Join our core engineering and operations team" },
             { label: "VERIFY CERTIFICATE", href: "/verify-certificate", icon: ShieldCheck, badge: "INSTANT", description: "Verify official Webory student credentials" },
             { label: "ABOUT US", href: "/about", icon: Info, description: "Our mission, vision and founding story" },
-            { label: "SUPPORT & CONTACT", href: "/contact", icon: Mail, description: "24/7 dedicated support & inquiry line" },
+            { label: "SUPPORT & HELP DESK", href: "/support", icon: LifeBuoy, badge: "HELP", description: "Raise priority tickets, track status & quick resolution", verified: true },
+            { label: "CONTACT US", href: "/contact", icon: Mail, description: "24/7 general desk & partnerships" },
         ]
     }
 ];

@@ -6,7 +6,7 @@ import { useAuth } from "@/components/auth/session-provider";
 import { 
     Mail, Award, Briefcase, LogOut, ExternalLink, Trophy, 
     Calendar, Video, FileText, Clock, Upload, ChevronRight, Zap, Sparkles, Download, PlayCircle, Lock, CreditCard,
-    BookOpen, Building2, CheckSquare
+    BookOpen, Building2, CheckSquare, LifeBuoy
 } from "lucide-react";
 import dynamic from 'next/dynamic';
 import { Badge } from "@/components/ui/badge";
@@ -634,6 +634,26 @@ export function ProfileClientContent({
                                     </div>
                                 </div>
                             ))}
+
+                            {/* Help & Support Banner for Applications */}
+                            <div className="mt-3 p-4 rounded-xl bg-gradient-to-r from-blue-950/40 via-purple-950/30 to-blue-950/40 border border-blue-500/20 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-inner">
+                                <div className="flex items-center gap-3 text-center sm:text-left">
+                                    <div className="w-9 h-9 rounded-lg bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0">
+                                        <LifeBuoy size={18} />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-white text-xs font-bold tracking-tight">Need Help with your Internship Application?</h4>
+                                        <p className="text-slate-400 text-[11px]">Facing issues with assessment, offer letter, task submission or certificate?</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => router.push('/support')}
+                                    className="shrink-0 px-3.5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-blue-600/20 transition-all active:scale-95 cursor-pointer"
+                                >
+                                    <span>Support & Ticket Desk</span>
+                                    <ChevronRight size={13} />
+                                </button>
+                            </div>
                         </div>
                     ) : (
                         <div className="bg-[#0C1020]/60 backdrop-blur-xl border border-white/8 rounded-xl p-6 text-center">
@@ -641,9 +661,14 @@ export function ProfileClientContent({
                                 <Briefcase size={18} />
                             </div>
                             <p className="text-slate-400 font-medium text-xs mb-3">No applications yet.</p>
-                            <Button onClick={() => router.push('/internships')} className="bg-white text-black hover:bg-purple-500 hover:text-white rounded-lg font-semibold text-xs h-8 px-4 cursor-pointer">
-                                Browse Internships
-                            </Button>
+                            <div className="flex items-center justify-center gap-2">
+                                <Button onClick={() => router.push('/internships')} className="bg-white text-black hover:bg-purple-500 hover:text-white rounded-lg font-semibold text-xs h-8 px-4 cursor-pointer">
+                                    Browse Internships
+                                </Button>
+                                <Button onClick={() => router.push('/support')} variant="outline" className="border-white/10 hover:bg-white/5 text-slate-300 rounded-lg font-semibold text-xs h-8 px-4 cursor-pointer">
+                                    Help Desk
+                                </Button>
+                            </div>
                         </div>
                     )}
                 </div>

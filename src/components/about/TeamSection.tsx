@@ -43,26 +43,6 @@ interface TeamMember {
 
 const teamMembers: TeamMember[] = [
     {
-        name: "Piyush Kashyap",
-        role: "Chief Operating Officer (COO)",
-        department: "Executive Management & Operations",
-        badge: "Chief Operating Officer",
-        badgeColor: "text-amber-400 bg-amber-500/10 border-amber-500/20",
-        ringColor: "ring-amber-500/20 border-amber-500/30",
-        quote: "“Operational discipline is what turns ambitious curricula into high-impact engineering careers.”",
-        image: "/piyush-kashyap.jpg",
-        bio: "Directing day-to-day operations, cohort delivery logistics, campus partnership execution, and platform scalability at Webory Skills. He ensures every student, mentor, and academic partner experiences seamless operational excellence.",
-        highlights: [
-            { title: "Cohort Operations", desc: "End-to-end program delivery, live session scheduling, and curriculum execution." },
-            { title: "Campus Partnerships", desc: "Institutional MoUs, university integration, and on-ground college cohorts." },
-            { title: "SLA & Grievance Governance", desc: "Rigorous student support, doubt resolution SLAs, and operational compliance." }
-        ],
-        focusPills: ["Operations Strategy", "Academic Partnerships", "Cohort Scalability", "Process Excellence"],
-        emailLink: "coo.piyush.kashyap@weboryskills.in",
-        linkedinLink: "https://www.linkedin.com/in/piyush-kashyap-135b353b2/",
-        instagramLink: "https://www.instagram.com/piyusharyan04?bqrl=dnJ0ZG9pbDQ2cHc1"
-    },
-    {
         name: "Ridhima Singh",
         role: "Head of Human Resources (HR)",
         department: "People, Culture & Talent Acquisition",
@@ -82,6 +62,26 @@ const teamMembers: TeamMember[] = [
         emailLink: "hr@weboryskills.in",
         linkedinLink: "https://www.linkedin.com/in/ridhima-singh-5928b93ba/",
         instagramLink: "https://www.instagram.com/shadesof_ridhima?knvt=Mnp2ejBneXg3dnJs"
+    },
+    {
+        name: "Piyush Kashyap",
+        role: "Chief Operating Officer (COO)",
+        department: "Executive Management & Operations",
+        badge: "Chief Operating Officer",
+        badgeColor: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+        ringColor: "ring-amber-500/20 border-amber-500/30",
+        quote: "“Operational discipline is what turns ambitious curricula into high-impact engineering careers.”",
+        image: "/piyush-kashyap.jpg",
+        bio: "Directing day-to-day operations, cohort delivery logistics, campus partnership execution, and platform scalability at Webory Skills. He ensures every student, mentor, and academic partner experiences seamless operational excellence.",
+        highlights: [
+            { title: "Cohort Operations", desc: "End-to-end program delivery, live session scheduling, and curriculum execution." },
+            { title: "Campus Partnerships", desc: "Institutional MoUs, university integration, and on-ground college cohorts." },
+            { title: "SLA & Grievance Governance", desc: "Rigorous student support, doubt resolution SLAs, and operational compliance." }
+        ],
+        focusPills: ["Operations Strategy", "Academic Partnerships", "Cohort Scalability", "Process Excellence"],
+        emailLink: "coo.piyush.kashyap@weboryskills.in",
+        linkedinLink: "https://www.linkedin.com/in/piyush-kashyap-135b353b2/",
+        instagramLink: "https://www.instagram.com/piyusharyan04?bqrl=dnJ0ZG9pbDQ2cHc1"
     },
     {
         name: "Vijay Kumar",
