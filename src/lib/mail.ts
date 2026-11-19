@@ -16,7 +16,13 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export const sendEmail = async (to: string, subject: string, html: string) => {
+export const sendEmail = async (
+  to: string, 
+  subject: string, 
+  html: string,
+  attachments?: any[],
+  replyTo?: string
+) => {
   try {
     const fromAddress = process.env.EMAIL_FROM || "info@weboryskills.in";
     console.log("📨 Sending email via Nodemailer...");
@@ -24,13 +30,15 @@ export const sendEmail = async (to: string, subject: string, html: string) => {
     console.log("Authenticated User:", authUser ? authUser.replace(/(.{3})(.*)(@.*)/, "$1***$3") : "None");
     console.log("From (Display):", fromAddress);
     console.log("To:", to);
+    if (replyTo) console.log("Reply-To:", replyTo);
 
     const info = await transporter.sendMail({
       from: `"Webory Skills" <${fromAddress}>`,
-      replyTo: fromAddress,
+      replyTo: replyTo || fromAddress,
       to,
       subject,
       html,
+      attachments,
     });
 
     console.log("✅ Message sent successfully!");
@@ -439,7 +447,12 @@ export const emailTemplates = {
       <p style="color: #94a3b8; font-size: 12px; text-align: center;">Webory Skills Help Desk • <a href="mailto:support@weboryskills.in" style="color: #3b82f6;">support@weboryskills.in</a></p>
     </div>
   `,
-  adminSupportTicketNotification: (ticketId: string, name: string, email: string, phone: string, category: string, subject: string, message: string) => `
+  adminSupportTicketNotification: (ticketId: string, name: string, email: string, phone: string, category: string, subject: string, message: string) => {
+    const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.weboryskills.in";
+    const adminSupportUrl = `${siteUrl}/admin/support?ticketId=${encodeURIComponent(ticketId)}`;
+    const quickResolveUrl = `${siteUrl}/api/support/ticket/action?ticketId=${encodeURIComponent(ticketId)}&action=resolve`;
+
+    return `
     <div style="font-family: Arial, sans-serif; padding: 25px; color: #1e293b; max-width: 600px; margin: 0 auto; border: 1px solid #fed7aa; border-radius: 12px; background: #fffaf5;">
       <div style="border-bottom: 2px solid #ea580c; padding-bottom: 15px; margin-bottom: 20px;">
         <h2 style="color: #c2410c; margin: 0; font-size: 22px;">⚡ New Support Ticket Alert</h2>
@@ -451,11 +464,49 @@ export const emailTemplates = {
         <p style="margin: 4px 0; font-size: 13px;"><strong>Phone:</strong> ${phone || "Not provided"}</p>
         <p style="margin: 4px 0; font-size: 13px;"><strong>Subject:</strong> ${subject}</p>
       </div>
-      <div style="background: #ffffff; border-left: 4px solid #ea580c; padding: 15px; border-radius: 6px;">
+      <div style="background: #ffffff; border-left: 4px solid #ea580c; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
         <p style="margin: 0 0 6px 0; font-size: 12px; color: #64748b; font-weight: bold; text-transform: uppercase;">Issue Description:</p>
         <p style="margin: 0; white-space: pre-wrap; font-size: 14px; line-height: 1.5; color: #334155;">${message}</p>
       </div>
-      <p style="font-size: 12px; color: #64748b; margin-top: 20px; text-align: center;">Please resolve within SLA (4-6 hours).</p>
+
+      <!-- Quick Action Buttons for Admin -->
+      <div style="background: #ffffff; border: 1px dashed #fb923c; padding: 16px; border-radius: 8px; text-align: center;">
+        <p style="margin: 0 0 10px 0; font-size: 12px; font-weight: bold; color: #9a3412; text-transform: uppercase;">⚡ Quick Admin Actions</p>
+        <div style="margin-bottom: 8px;">
+          <a href="${adminSupportUrl}" style="display: inline-block; background: #2563eb; color: #ffffff; text-decoration: none; padding: 9px 18px; border-radius: 6px; font-size: 12px; font-weight: bold; margin: 4px;">Open in Admin Desk</a>
+          <a href="${quickResolveUrl}" style="display: inline-block; background: #059669; color: #ffffff; text-decoration: none; padding: 9px 18px; border-radius: 6px; font-size: 12px; font-weight: bold; margin: 4px;">Mark as Resolved ✓</a>
+        </div>
+        <p style="margin: 6px 0 0 0; font-size: 11px; color: #64748b;">(Or hit <strong>Reply</strong> to email ${name} directly at ${email})</p>
+      </div>
+
+      <p style="font-size: 11px; color: #94a3b8; margin-top: 15px; text-align: center;">Webory Skills Operations • SLA: 4-6 hours</p>
+    </div>
+  `;
+  },
+  supportTicketResolved: (name: string, ticketId: string, subject: string, adminNotes?: string) => `
+    <div style="font-family: Arial, sans-serif; padding: 25px; color: #1e293b; max-width: 600px; margin: 0 auto; border: 1px solid #bbf7d0; border-radius: 12px; background: #ffffff;">
+      <div style="border-bottom: 2px solid #10b981; padding-bottom: 15px; margin-bottom: 20px;">
+        <h2 style="color: #047857; margin: 0; font-size: 22px;">Support Ticket Resolved! 🎉</h2>
+        <p style="color: #065f46; font-size: 13px; margin: 5px 0 0 0;">Webory Skills Student Support Desk</p>
+      </div>
+      <p>Hello <strong>${name}</strong>,</p>
+      <p>Great news! Your support ticket <strong>${ticketId}</strong> regarding <em>"${subject}"</em> has been marked as <strong>Resolved</strong>.</p>
+      
+      ${adminNotes ? `
+        <div style="background: #f0fdf4; border-left: 4px solid #10b981; padding: 15px; margin: 20px 0; border-radius: 6px;">
+          <p style="margin: 0 0 6px 0; font-size: 12px; color: #047857; font-weight: bold; text-transform: uppercase;">Resolution Note from Support Team:</p>
+          <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #1f2937;">${adminNotes}</p>
+        </div>
+      ` : ''}
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 8px; margin: 20px 0; text-align: center;">
+        <p style="margin: 0 0 10px 0; font-size: 13px; color: #64748b;">You can verify your live ticket resolution status anytime on our portal:</p>
+        <a href="https://www.weboryskills.in/support" style="display: inline-block; background: #10b981; color: white; padding: 10px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 13px;">Track Ticket on Portal</a>
+      </div>
+
+      <p style="font-size: 13px; color: #64748b;">If your issue still persists or you need further clarification, simply reply to this email or quote your Ticket ID <strong>${ticketId}</strong>.</p>
+      <hr style="border: none; border-top: 1px solid #f1f5f9; margin: 25px 0 15px 0;">
+      <p style="color: #94a3b8; font-size: 12px; text-align: center;">Webory Skills Help Desk • <a href="mailto:support@weboryskills.in" style="color: #3b82f6;">support@weboryskills.in</a></p>
     </div>
   `,
   feedbackRequest: (name: string, feedbackLink: string, source: string) => `

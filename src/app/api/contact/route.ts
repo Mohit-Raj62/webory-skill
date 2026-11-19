@@ -25,14 +25,16 @@ export async function POST(req: NextRequest) {
       message,
     });
 
-    // Send email notification to admin
+    // Send email notification to admin with Reply-To set to sender
     try {
       await sendEmail(
         process.env.ADMIN_EMAIL ||
           process.env.EMAIL_USER ||
           "info@weboryskills.in",
         `New Contact Request: ${subject}`,
-        emailTemplates.contactFormSubmission(name, email, subject, message)
+        emailTemplates.contactFormSubmission(name, email, subject, message),
+        undefined,
+        `"${name}" <${email}>`
       );
     } catch (emailError) {
       console.error("Failed to send email notification:", emailError);

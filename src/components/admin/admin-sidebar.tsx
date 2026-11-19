@@ -33,6 +33,7 @@ import {
     BrainCircuit,
     Wallet,
     AlertTriangle,
+    LifeBuoy,
 } from "lucide-react";
 
 interface MenuItem {
@@ -54,6 +55,7 @@ const menuItems: MenuItem[] = [
     { name: "Enrollments", href: "/admin/enrollments", icon: GraduationCap },
     { name: "Certificates", href: "/admin/certificates", icon: Award },
     { name: "Doubts", href: "/admin/doubts", icon: MessageCircle },
+    { name: "Support Tickets", href: "/admin/support", icon: LifeBuoy },
     { name: "Feedback", href: "/admin/feedback", icon: Star },
     { name: "Video Testimonials", href: "/admin/video-testimonials", icon: Film },
     { name: "Promo Codes", href: "/admin/promo-codes", icon: Tag },

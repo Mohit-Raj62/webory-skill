@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
             console.error("Failed to send student ticket confirmation email:", emailErr);
         }
 
-        // 2. Send Support Desk / Admin Alert
+        // 2. Send Support Desk / Admin Alert with Reply-To set to Student's email
         try {
             const supportDeskEmail = process.env.SUPPORT_EMAIL || "support@weboryskills.in";
             await sendEmail(
@@ -62,7 +62,9 @@ export async function POST(req: NextRequest) {
                     validCategory,
                     subject,
                     message
-                )
+                ),
+                undefined,
+                `"${name}" <${email}>` // Crucial: When admin clicks "Reply", it replies directly to the student!
             );
         } catch (adminEmailErr) {
             console.error("Failed to notify support desk:", adminEmailErr);
