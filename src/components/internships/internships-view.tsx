@@ -280,7 +280,8 @@ export function InternshipsView({ internships, user, userApplications }: Interns
             const data = await res.json();
             
             if (res.ok || data.error === "Already applied to this internship") {
-                if (internshipDetails?.isFree) {
+                const isFreeApp = Boolean(internshipDetails?.isFree || internshipDetails?.price === 0 || internshipDetails?.type?.toLowerCase() === "free");
+                if (isFreeApp) {
                     toast.success("Application submitted successfully!");
                     setSelectedInternship(null);
                     router.push("/profile?tab=internships");
@@ -302,7 +303,8 @@ export function InternshipsView({ internships, user, userApplications }: Interns
     };
 
     const handleDownloadInvoice = (job: any, app: any) => {
-        const amount = app.amountPaid || job.price || 999;
+        const isJobFree = Boolean(job.isFree || job.price === 0 || app.amountPaid === 0 || job.type?.toLowerCase() === "free");
+        const amount = isJobFree ? 0 : (app.amountPaid || job.price || 0);
         const originalPrice = job.originalPrice || 2999;
         
         const safeId = app.internshipId || app._id || Date.now().toString();
@@ -311,8 +313,8 @@ export function InternshipsView({ internships, user, userApplications }: Interns
             courseTitle: job.title || "Internship Course",
             amount: amount,
             originalAmount: originalPrice,
-            discountAmount: originalPrice - amount,
-            gstPercentage: job.gstPercentage || 18, // Default to 18 if not specified
+            discountAmount: isJobFree ? originalPrice : Math.max(0, originalPrice - amount),
+            gstPercentage: isJobFree ? 0 : (job.gstPercentage || 18), // 0% GST on 100% Scholarship
             date: new Date(app.appliedAt || Date.now()).toLocaleDateString(),
             userEmail: user.email,
             userName: `${user.firstName} ${user.lastName}`,
@@ -402,6 +404,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                 const isFull = remainingSeats <= 0;
                                 const app = userApplications.find(a => a.internshipId === job._id);
                                 const hasApplied = !!app;
+                                const isJobFree = Boolean(job.isFree || job.price === 0 || job.type?.toLowerCase() === "free");
 
                                 return (
                                     <motion.div 
@@ -518,17 +521,37 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                                         <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 blur-[50px] rounded-full pointer-events-none" />
                                                         
                                                         <div className="mb-4 text-center lg:text-left relative z-10">
-                                                            <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-1">Training Program Fee</p>
+                                                            <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-1">
+                                                                {isJobFree ? "Training Program Access" : "Training Program Fee"}
+                                                            </p>
                                                             <div className="flex flex-col items-center lg:items-start gap-1.5 w-full">
                                                                 <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 w-full">
-                                                                    <span className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">₹{job.price || 999}</span>
-                                                                    {(job.originalPrice || 2999) > (job.price || 999) && (
-                                                                        <div className="flex items-center gap-1.5">
-                                                                            <span className="text-xs text-slate-500 line-through shrink-0">₹{job.originalPrice || 2999}</span>
-                                                                            <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 whitespace-nowrap shrink-0">
-                                                                                {Math.round((((job.originalPrice || 2999) - (job.price || 999)) / (job.originalPrice || 2999)) * 100)}% OFF
+                                                                    {isJobFree ? (
+                                                                        <div className="flex items-center gap-2">
+                                                                            <span className="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-green-400 tracking-tight">
+                                                                                FREE
                                                                             </span>
+                                                                            {(job.originalPrice || 2999) > 0 && (
+                                                                                <div className="flex items-center gap-1.5">
+                                                                                    <span className="text-xs text-slate-500 line-through shrink-0">₹{job.originalPrice || 2999}</span>
+                                                                                    <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 whitespace-nowrap shrink-0">
+                                                                                        100% SCHOLARSHIP
+                                                                                    </span>
+                                                                                </div>
+                                                                            )}
                                                                         </div>
+                                                                    ) : (
+                                                                        <>
+                                                                            <span className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">₹{job.price}</span>
+                                                                            {(job.originalPrice || 2999) > (job.price || 0) && (
+                                                                                <div className="flex items-center gap-1.5">
+                                                                                    <span className="text-xs text-slate-500 line-through shrink-0">₹{job.originalPrice || 2999}</span>
+                                                                                    <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 whitespace-nowrap shrink-0">
+                                                                                        {Math.round((((job.originalPrice || 2999) - (job.price || 0)) / (job.originalPrice || 2999)) * 100)}% OFF
+                                                                                    </span>
+                                                                                </div>
+                                                                            )}
+                                                                        </>
                                                                     )}
                                                                 </div>
                                                             </div>
@@ -552,7 +575,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                                                     className="w-full h-9 rounded-lg font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-all border border-white/10"
                                                                 >
                                                                     <Download size={13} className="text-emerald-400" />
-                                                                    Download Invoice
+                                                                    {isJobFree ? "Download Enrollment Slip" : "Download Invoice"}
                                                                 </button>
                                                             </div>
                                                         ) : (
@@ -576,7 +599,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                                                         <span className="whitespace-nowrap tracking-wider text-xs">REGISTRATION CLOSED</span>
                                                                     ) : (
                                                                         <>
-                                                                            <span className="whitespace-nowrap font-bold">ENROLL NOW</span> 
+                                                                            <span className="whitespace-nowrap font-bold">{isJobFree ? "APPLY FOR FREE" : "ENROLL NOW"}</span> 
                                                                             <ArrowUpRight size={15} />
                                                                         </>
                                                                     )}
@@ -811,42 +834,65 @@ export function InternshipsView({ internships, user, userApplications }: Interns
 
                             {/* Modal Sticky Footer */}
                             <div className="p-4 md:p-5 border-t border-white/10 bg-[#090a10] flex flex-col sm:flex-row items-center justify-between gap-4 sticky bottom-0 z-20">
-                                <div className="flex items-center gap-2.5">
-                                    <span className="text-2xl font-extrabold text-white">₹{detailJob.price || 999}</span>
-                                    {(detailJob.originalPrice || 2999) > (detailJob.price || 999) && (
-                                        <div className="flex items-center gap-1.5">
-                                            <span className="text-xs text-slate-500 line-through">₹{detailJob.originalPrice || 2999}</span>
-                                            <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                                                {Math.round((((detailJob.originalPrice || 2999) - (detailJob.price || 999)) / (detailJob.originalPrice || 2999)) * 100)}% OFF
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
+                                {(() => {
+                                    const isDetailFree = Boolean(detailJob.isFree || detailJob.price === 0 || detailJob.type?.toLowerCase() === "free");
+                                    return (
+                                        <>
+                                            <div className="flex items-center gap-2.5">
+                                                {isDetailFree ? (
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-green-400">FREE</span>
+                                                        {(detailJob.originalPrice || 2999) > 0 && (
+                                                            <div className="flex items-center gap-1.5">
+                                                                <span className="text-xs text-slate-500 line-through">₹{detailJob.originalPrice || 2999}</span>
+                                                                <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                                                                    100% SCHOLARSHIP
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <>
+                                                        <span className="text-2xl font-extrabold text-white">₹{detailJob.price}</span>
+                                                        {(detailJob.originalPrice || 2999) > (detailJob.price || 0) && (
+                                                            <div className="flex items-center gap-1.5">
+                                                                <span className="text-xs text-slate-500 line-through">₹{detailJob.originalPrice || 2999}</span>
+                                                                <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                                                                    {Math.round((((detailJob.originalPrice || 2999) - (detailJob.price || 0)) / (detailJob.originalPrice || 2999)) * 100)}% OFF
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                    </>
+                                                )}
+                                            </div>
 
-                                <div className="flex items-center gap-2.5 w-full sm:w-auto">
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => {
-                                            const targetSlug = detailJob.slug || detailJob._id;
-                                            router.push(`/internships/${targetSlug}`);
-                                        }}
-                                        className="h-10 px-4 rounded-xl text-xs font-semibold border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 text-white flex items-center gap-1.5 w-full sm:w-auto justify-center"
-                                    >
-                                        Open Full Page
-                                        <ExternalLink size={13} />
-                                    </Button>
-                                    <Button
-                                        onClick={() => {
-                                            const idToApply = detailJob._id;
-                                            setDetailJob(null);
-                                            handleApplyClick(idToApply);
-                                        }}
-                                        className="h-10 px-5 rounded-xl font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 shadow-md shadow-emerald-500/20 w-full sm:w-auto flex items-center justify-center gap-1.5 border-none"
-                                    >
-                                        Enroll Now
-                                        <ArrowUpRight size={14} />
-                                    </Button>
-                                </div>
+                                            <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={() => {
+                                                        const targetSlug = detailJob.slug || detailJob._id;
+                                                        router.push(`/internships/${targetSlug}`);
+                                                    }}
+                                                    className="h-10 px-4 rounded-xl text-xs font-semibold border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 text-white flex items-center gap-1.5 w-full sm:w-auto justify-center"
+                                                >
+                                                    Open Full Page
+                                                    <ExternalLink size={13} />
+                                                </Button>
+                                                <Button
+                                                    onClick={() => {
+                                                        const idToApply = detailJob._id;
+                                                        setDetailJob(null);
+                                                        handleApplyClick(idToApply);
+                                                    }}
+                                                    className="h-10 px-5 rounded-xl font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 shadow-md shadow-emerald-500/20 w-full sm:w-auto flex items-center justify-center gap-1.5 border-none"
+                                                >
+                                                    {isDetailFree ? "Apply For Free" : "Enroll Now"}
+                                                    <ArrowUpRight size={14} />
+                                                </Button>
+                                            </div>
+                                        </>
+                                    );
+                                })()}
                             </div>
                         </motion.div>
                     </motion.div>
@@ -1018,14 +1064,20 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                 <div className="mt-8 pt-8 border-t border-white/10">
                                     <div className="flex justify-between items-end">
                                         <div>
-                                            <p className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">Registration Fee</p>
+                                            <p className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">
+                                                {Boolean(internships.find(i => i._id === selectedInternship)?.isFree || internships.find(i => i._id === selectedInternship)?.price === 0 || internships.find(i => i._id === selectedInternship)?.type?.toLowerCase() === "free") ? "Registration Status" : "Registration Fee"}
+                                            </p>
                                             <p className="text-3xl font-black text-white">
-                                                {internships.find(i => i._id === selectedInternship)?.isFree ? "FREE" : `₹${internships.find(i => i._id === selectedInternship)?.price}`}
+                                                {Boolean(internships.find(i => i._id === selectedInternship)?.isFree || internships.find(i => i._id === selectedInternship)?.price === 0 || internships.find(i => i._id === selectedInternship)?.type?.toLowerCase() === "free") ? (
+                                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-green-400">FREE</span>
+                                                ) : (
+                                                    `₹${internships.find(i => i._id === selectedInternship)?.price}`
+                                                )}
                                             </p>
                                         </div>
                                         <div className="text-right">
                                              <p className="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">
-                                                Refundable on Performance*
+                                                {Boolean(internships.find(i => i._id === selectedInternship)?.isFree || internships.find(i => i._id === selectedInternship)?.price === 0 || internships.find(i => i._id === selectedInternship)?.type?.toLowerCase() === "free") ? "100% Scholarship Verified" : "Refundable on Performance*"}
                                              </p>
                                         </div>
                                     </div>
@@ -1041,7 +1093,7 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                            {internships.find(i => i._id === selectedInternship)?.title}
                                         </h2>
                                         <p className="text-xs text-gray-400">
-                                            ₹{internships.find(i => i._id === selectedInternship)?.price} • {internships.find(i => i._id === selectedInternship)?.stipend}
+                                            {Boolean(internships.find(i => i._id === selectedInternship)?.isFree || internships.find(i => i._id === selectedInternship)?.price === 0 || internships.find(i => i._id === selectedInternship)?.type?.toLowerCase() === "free") ? "FREE" : `₹${internships.find(i => i._id === selectedInternship)?.price}`} • {internships.find(i => i._id === selectedInternship)?.stipend}
                                         </p>
                                     </div>
                                     <h2 className="text-xl font-bold text-white hidden md:block">Student Application</h2>
@@ -1268,10 +1320,10 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                         disabled={submitting || (uploading && resumeType === 'file')}
                                         className="w-full bg-emerald-500 hover:bg-emerald-400 text-black border-0 py-6 text-sm font-black uppercase tracking-widest rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-[0.98]"
                                     >
-                                        {uploading ? "Uploading File..." : submitting ? "Processing Application..." : (internships.find(i => i._id === selectedInternship)?.isFree ? "Submit Free Application" : `Proceed to Payment (₹${(internships.find(i => i._id === selectedInternship)?.hasTiers) ? (internships.find(i => i._id === selectedInternship)?.tiers?.find((t: any) => t.name === selectedTier)?.price || 0) : (internships.find(i => i._id === selectedInternship)?.price || 0)})`)}
+                                        {uploading ? "Uploading File..." : submitting ? "Processing Application..." : (Boolean(internships.find(i => i._id === selectedInternship)?.isFree || internships.find(i => i._id === selectedInternship)?.price === 0 || internships.find(i => i._id === selectedInternship)?.type?.toLowerCase() === "free") ? "Submit Free Application" : `Proceed to Payment (₹${(internships.find(i => i._id === selectedInternship)?.hasTiers) ? (internships.find(i => i._id === selectedInternship)?.tiers?.find((t: any) => t.name === selectedTier)?.price || 0) : (internships.find(i => i._id === selectedInternship)?.price || 0)})`)}
                                     </Button>
                                     <p className="text-[10px] text-center text-gray-500 mt-3 mb-2 md:mb-0">
-                                        Secure Payment via Razorpay/PhonePe • 100% Secure
+                                        {Boolean(internships.find(i => i._id === selectedInternship)?.isFree || internships.find(i => i._id === selectedInternship)?.price === 0 || internships.find(i => i._id === selectedInternship)?.type?.toLowerCase() === "free") ? "100% Free Scholarship • No Payment Required" : "Secure Payment via Razorpay/PhonePe • 100% Secure"}
                                     </p>
                                 </div>
                             </div>
