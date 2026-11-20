@@ -54,6 +54,15 @@ const supportTicketSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
+    attachments: [
+        {
+            url: { type: String, required: true },
+            name: { type: String, default: "" },
+            fileType: { type: String, default: "" },
+            size: { type: Number, default: 0 },
+            isImage: { type: Boolean, default: false }
+        }
+    ],
     createdAt: {
         type: Date,
         default: Date.now

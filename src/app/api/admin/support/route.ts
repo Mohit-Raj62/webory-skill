@@ -82,7 +82,7 @@ export async function PATCH(req: NextRequest) {
         }
 
         const body = await req.json();
-        const { ticketId, status, adminNotes, priority, notifyStudent } = body;
+        const { ticketId, status, adminNotes, priority, notifyStudent, replyMessage } = body;
 
         if (!ticketId) {
             return NextResponse.json({ error: "Ticket ID is required" }, { status: 400 });
@@ -105,10 +105,26 @@ export async function PATCH(req: NextRequest) {
         if (adminNotes !== undefined) ticket.adminNotes = adminNotes;
         if (priority) ticket.priority = priority;
 
+        // If direct replyMessage is provided, email the student directly from support@weboryskills.in
+        if (replyMessage && typeof replyMessage === "string" && replyMessage.trim()) {
+            try {
+                await sendEmail({
+                    to: ticket.email,
+                    subject: `Re: [${ticket.ticketId}] ${ticket.subject} - Webory Skills Support`,
+                    html: emailTemplates.supportStaffReply(ticket.name, ticket.ticketId, ticket.subject, replyMessage.trim()),
+                    from: "support@weboryskills.in",
+                    replyTo: "support@weboryskills.in",
+                    category: "support"
+                });
+            } catch (replyMailErr) {
+                console.error("Failed to email student direct reply:", replyMailErr);
+            }
+        }
+
         await ticket.save();
 
-        // If ticket was resolved and notifyStudent is requested (or default true when resolved)
-        if (status === "resolved" && notifyStudent) {
+        // If ticket was resolved and notifyStudent is requested (only if custom replyMessage wasn't already dispatched)
+        if (status === "resolved" && notifyStudent && !replyMessage) {
             try {
                 await sendEmail({
                     to: ticket.email,

@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+
 interface CategoryIssue {
     question: string;
     answer: string;
@@ -136,6 +137,34 @@ const CATEGORIES = [
             {
                 question: "How long does mentor task evaluation take?",
                 answer: "Our industry mentors review pull requests within 48 to 72 business hours, providing line-by-line constructive architectural feedback.",
+            }
+        ]
+    },
+    {
+        id: "other",
+        title: "Other Issues & Queries",
+        subtitle: "Account, campus, hackathons & general doubt",
+        icon: HelpCircle,
+        color: "text-rose-400 bg-rose-500/10 border-rose-500/20",
+        ringColor: "hover:border-rose-500/40",
+        issues: [
+            {
+                question: "My issue does not match the 4 categories above.",
+                answer: "You can select 'Other Query / Technical Doubt' in the ticket form below. Fill in your details and describe your issue, and our support team will resolve it within 4-6 business hours.",
+                actionLabel: "Raise a Ticket",
+                actionLink: "#ticket-form"
+            },
+            {
+                question: "Can I directly email the support desk?",
+                answer: "Yes, you can write directly to our helpdesk at support@weboryskills.in with your registered email, mobile number, and screenshots of your issue.",
+                actionLabel: "Email Support Desk",
+                actionLink: "mailto:support@weboryskills.in"
+            },
+            {
+                question: "Need help with College Partnerships or Hackathons?",
+                answer: "For institutional MoUs, training batches, or hackathons, please write to our academic team at info@weboryskills.in or drop an inquiry on our Contact Us page.",
+                actionLabel: "Contact Desk",
+                actionLink: "/contact"
             }
         ]
     }
@@ -276,6 +305,39 @@ export default function SupportPage() {
                             </button>
                         </div>
                     </form>
+
+                    {/* Live Support Chat Page Callout Banner */}
+                    <div className="mt-4 sm:mt-5 max-w-xl mx-auto p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-[#0d1627] to-slate-900 border border-slate-800 hover:border-emerald-500/40 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-left shadow-xl shadow-black/40">
+                        <div className="flex items-center gap-3.5">
+                            <div className="w-12 h-12 rounded-xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center shrink-0 p-2 shadow-inner">
+                                <img
+                                    src="/webory-logo.png"
+                                    alt="Webory Skills Logo"
+                                    className="w-full h-full object-contain"
+                                />
+                            </div>
+                            <div>
+                                <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                                    <span>Support & Help Desk</span>
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                        Live Helpdesk
+                                    </span>
+                                </h4>
+                                <p className="text-xs text-slate-400 mt-0.5">
+                                    Connect with <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600 font-bold">Webory Skills</span> technical resolution desk for instant answers & priority ticketing.
+                                </p>
+                            </div>
+                        </div>
+                        <Link
+                            href="/support/chat"
+                            className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shrink-0 transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/30 active:scale-95 cursor-pointer text-center"
+                        >
+                            <MessageSquare size={14} />
+                            <span>Open Support Chat</span>
+                            <ArrowRight size={14} />
+                        </Link>
+                    </div>
 
                     {/* Detailed Visual Live Ticket Tracker Result Card */}
                     {searchedTicket && (
@@ -478,7 +540,7 @@ export default function SupportPage() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
                         {CATEGORIES.map((cat) => {
                             const IconComponent = cat.icon;
                             const isSelected = selectedCategory === cat.id;
@@ -593,7 +655,7 @@ export default function SupportPage() {
                     </div>
 
                     {/* Right Column: Raise a Priority Support Ticket */}
-                    <div className="lg:col-span-6">
+                    <div id="ticket-form" className="lg:col-span-6">
                         <div className="p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-slate-800 bg-[#0b101b] shadow-xl relative overflow-hidden">
                             <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-2 pb-4 sm:pb-6 border-b border-slate-800">
                                 <div>

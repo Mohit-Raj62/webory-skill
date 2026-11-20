@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
     try {
         await dbConnect();
         const body = await req.json();
-        const { name, email, phone, category, subject, message } = body;
+        const { name, email, phone, category, subject, message, attachments = [] } = body;
 
         if (!name || !email || !subject || !message) {
             return NextResponse.json(
@@ -34,7 +34,8 @@ export async function POST(req: NextRequest) {
             subject: subject.trim(),
             message: message.trim(),
             status: "open",
-            priority: validCategory === "payment" ? "high" : "medium"
+            priority: validCategory === "payment" ? "high" : "medium",
+            attachments: Array.isArray(attachments) ? attachments : []
         });
 
         // 1. Send Student Confirmation Email (from support@weboryskills.in)
@@ -64,7 +65,8 @@ export async function POST(req: NextRequest) {
                     phone || "",
                     validCategory,
                     subject,
-                    message
+                    message,
+                    Array.isArray(attachments) ? attachments : []
                 ),
                 from: "support@weboryskills.in",
                 replyTo: `"${name}" <${email}>`, // When admin clicks "Reply", it replies directly to the student

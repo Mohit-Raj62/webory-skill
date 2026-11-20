@@ -21,10 +21,45 @@ import {
     X,
     Send,
     RefreshCw,
-    ShieldAlert
+    ShieldAlert,
+    Paperclip,
+    FileText,
+    Image as ImageIcon,
+    Sparkles,
+    Eye,
+    EyeOff,
+    CheckCheck
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+
+const QUICK_REPLIES = [
+    {
+        label: "Refund Approved",
+        icon: "💳",
+        text: "Hello,\n\nAapka refund request verify karke approve kar diya gaya hai. Refund payment gateway dwara aapke original payment source (UPI/Card/Bank) me initiate kar diya gaya hai aur agle 3 to 5 business days me aapke account me credit ho jayega.\n\nThank you for reaching out to Webory Skills Support."
+    },
+    {
+        label: "Course Access Unlocked",
+        icon: "🔓",
+        text: "Hello,\n\nAapka payment verification complete ho chuka hai aur course access aapke account me successfully unlock kar diya gaya hai. Kripya student dashboard me jakar apne video lessons aur chapters access karein.\n\nAgar abhi bhi koi samasya aa rahi ho to kripya batayein."
+    },
+    {
+        label: "Certificate Ready",
+        icon: "🎓",
+        text: "Hello,\n\nAapka certificate review karke updated details ke sath re-issue kar diya gaya hai. Aap student dashboard ke Certificates section me jakar apna verified certificate download kar sakte hain."
+    },
+    {
+        label: "More Details Needed",
+        icon: "🔍",
+        text: "Hello,\n\nAapki request par aage karwayi karne ke liye kripya hume yeh details is email ka reply dekar share karein:\n1. Aapka registered email ID\n2. Purchase date\n3. 12-digit UPI UTR / Bank Reference Number\n\nJaise hi details milengi, hum immediate resolve kar denge."
+    },
+    {
+        label: "Issue Resolved",
+        icon: "✅",
+        text: "Hello,\n\nAapka reported issue technical team dwara resolve kar diya gaya hai. Kripya check karein. Agar aapko kisi anya sahayata ki aavashyakta ho to aap direct is email par reply kar sakte hain."
+    }
+];
 
 interface Ticket {
     _id: string;
@@ -38,6 +73,13 @@ interface Ticket {
     priority: string;
     status: "open" | "in_progress" | "resolved" | "closed";
     adminNotes?: string;
+    attachments?: Array<{
+        url: string;
+        name?: string;
+        fileType?: string;
+        size?: number;
+        isImage?: boolean;
+    }>;
     createdAt: string;
     resolvedAt?: string;
 }
@@ -60,6 +102,11 @@ export default function AdminSupportPage() {
     const [notifyStudent, setNotifyStudent] = useState(true);
     const [saving, setSaving] = useState(false);
     const [copiedId, setCopiedId] = useState<string | null>(null);
+
+    // Direct student email reply state
+    const [directReplyText, setDirectReplyText] = useState("");
+    const [sendingReply, setSendingReply] = useState(false);
+    const [showEmailPreview, setShowEmailPreview] = useState(false);
 
     const fetchTickets = async () => {
         setLoading(true);
@@ -113,6 +160,44 @@ export default function AdminSupportPage() {
         setCopiedId(id);
         toast.success("Ticket ID copied!");
         setTimeout(() => setCopiedId(null), 2000);
+    };
+
+    const handleSendDirectReply = async (statusOverride?: "resolved" | "in_progress") => {
+        if (!selectedTicket || !directReplyText.trim()) return;
+        setSendingReply(true);
+
+        try {
+            const res = await fetch("/api/admin/support", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    ticketId: selectedTicket.ticketId,
+                    replyMessage: directReplyText.trim(),
+                    status: statusOverride || undefined,
+                    adminNotes: statusOverride === "resolved" 
+                        ? (editNotes.trim() || directReplyText.trim()) 
+                        : undefined
+                })
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                toast.success(`Official email reply dispatched to ${selectedTicket.email}!`);
+                setDirectReplyText("");
+                setShowEmailPreview(false);
+                if (statusOverride) {
+                    setEditStatus(statusOverride);
+                    setSelectedTicket(prev => prev ? { ...prev, status: statusOverride } : null);
+                    fetchTickets();
+                }
+            } else {
+                toast.error(data.error || "Failed to send email reply.");
+            }
+        } catch (_err) {
+            toast.error("Network error sending email reply.");
+        } finally {
+            setSendingReply(false);
+        }
     };
 
     const handleSaveTicket = async (statusOverride?: "resolved" | "in_progress" | "open") => {
@@ -499,14 +584,53 @@ export default function AdminSupportPage() {
                             <p className="text-slate-300 leading-relaxed whitespace-pre-wrap">{selectedTicket.message}</p>
                         </div>
 
+                        {/* Student Attachments / Screenshots */}
+                        {selectedTicket.attachments && selectedTicket.attachments.length > 0 && (
+                            <div className="p-3.5 rounded-xl bg-[#060a12] border border-slate-800 space-y-2 mb-5 text-xs">
+                                <span className="text-[10px] text-emerald-400 uppercase font-bold flex items-center gap-1.5">
+                                    <Paperclip size={12} />
+                                    <span>Attached Files & Screenshots ({selectedTicket.attachments.length}):</span>
+                                </span>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                                    {selectedTicket.attachments.map((att, i) => (
+                                        <a
+                                            key={i}
+                                            href={att.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="group flex items-center gap-2.5 p-2 rounded-lg bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/40 transition-colors"
+                                        >
+                                            <div className="w-9 h-9 rounded-md bg-slate-800 flex items-center justify-center shrink-0 text-emerald-400 group-hover:scale-105 transition-transform overflow-hidden">
+                                                {att.isImage ? (
+                                                    <img src={att.url} alt={att.name || "Attachment"} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <FileText size={16} />
+                                                )}
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <p className="font-semibold text-slate-200 truncate group-hover:text-emerald-400 transition-colors text-xs">
+                                                    {att.name || `Attachment ${i + 1}`}
+                                                </p>
+                                                <p className="text-[10px] text-slate-500 flex items-center gap-1">
+                                                    <span>{att.isImage ? "Image" : "Document"}</span>
+                                                    {att.size ? <span>• {(att.size / 1024).toFixed(0)} KB</span> : null}
+                                                </p>
+                                            </div>
+                                            <ExternalLink size={12} className="text-slate-500 group-hover:text-emerald-400 shrink-0" />
+                                        </a>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                         {/* Direct Contact Buttons */}
-                        <div className="flex flex-wrap items-center gap-2 mb-5">
+                        <div className="flex flex-wrap items-center gap-2 mb-4">
                             <a
                                 href={`mailto:${selectedTicket.email}?subject=Re: [${selectedTicket.ticketId}] ${encodeURIComponent(selectedTicket.subject)}`}
                                 className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm"
                             >
                                 <Mail size={13} />
-                                <span>Reply to {selectedTicket.name}</span>
+                                <span>Open Blank Email to {selectedTicket.name}</span>
                             </a>
                             {selectedTicket.phone && (
                                 <a
@@ -519,6 +643,108 @@ export default function AdminSupportPage() {
                                     <span>WhatsApp Student</span>
                                 </a>
                             )}
+                        </div>
+
+                        {/* Send Direct Email Response to Student */}
+                        <div className="p-4 rounded-2xl bg-[#060a12] border border-slate-800 space-y-3 mb-5 text-xs">
+                            <div className="flex items-center justify-between">
+                                <label className="font-bold text-emerald-400 flex items-center gap-1.5 text-xs">
+                                    <Send size={14} />
+                                    <span>Official Branded Email Response to {selectedTicket.name}</span>
+                                </label>
+                                <span className="text-[10px] text-slate-500 font-mono">from support@weboryskills.in</span>
+                            </div>
+
+                            {/* Quick Response Templates */}
+                            <div>
+                                <span className="text-[10px] text-slate-500 uppercase font-bold block mb-1.5 flex items-center gap-1">
+                                    <Sparkles size={11} className="text-amber-400" />
+                                    <span>Quick Response Templates:</span>
+                                </span>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {QUICK_REPLIES.map((qr, idx) => (
+                                        <button
+                                            key={idx}
+                                            type="button"
+                                            onClick={() => setDirectReplyText(qr.text)}
+                                            className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/40 text-[11px] text-slate-300 hover:text-white transition-all flex items-center gap-1 cursor-pointer active:scale-95"
+                                        >
+                                            <span>{qr.icon}</span>
+                                            <span>{qr.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <textarea
+                                rows={4}
+                                placeholder="Type official response to student or select a quick template above..."
+                                value={directReplyText}
+                                onChange={(e) => setDirectReplyText(e.target.value)}
+                                className="w-full bg-[#0b101b] border border-slate-800 rounded-xl p-3 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-emerald-500 leading-relaxed resize-y font-sans"
+                            />
+
+                            {/* Toggle Live Preview */}
+                            {directReplyText.trim() && (
+                                <div className="flex items-center justify-between">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowEmailPreview(!showEmailPreview)}
+                                        className="text-[11px] text-slate-400 hover:text-emerald-400 flex items-center gap-1.5 transition-colors cursor-pointer"
+                                    >
+                                        {showEmailPreview ? <EyeOff size={13} /> : <Eye size={13} />}
+                                        <span>{showEmailPreview ? "Hide Email Preview" : "Preview Student Email Format"}</span>
+                                    </button>
+                                    <span className="text-[10px] text-slate-500">
+                                        ⚡ Dispatched via clean official template
+                                    </span>
+                                </div>
+                            )}
+
+                            {/* Live Email Preview Box */}
+                            {showEmailPreview && directReplyText.trim() && (
+                                <div className="p-3.5 rounded-xl bg-white text-slate-800 space-y-2 border border-slate-300 text-left shadow-lg animate-in fade-in duration-150">
+                                    <div className="bg-[#05080e] p-2.5 rounded-lg flex items-center justify-between text-white">
+                                        <span className="font-bold text-xs tracking-tight">
+                                            Webory <span className="text-emerald-400">Skills</span> Support Desk
+                                        </span>
+                                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                                            {selectedTicket.ticketId}
+                                        </span>
+                                    </div>
+                                    <p className="text-[11px] text-slate-500 font-medium">Hello {selectedTicket.name},</p>
+                                    <div className="p-3 rounded-lg bg-slate-50 border-l-4 border-emerald-500 text-slate-800 text-xs whitespace-pre-wrap leading-relaxed">
+                                        {directReplyText}
+                                    </div>
+                                    <div className="text-[10px] text-slate-400 pt-1 border-t border-slate-100 flex items-center justify-between">
+                                        <span>Ticket: {selectedTicket.subject}</span>
+                                        <span>support@weboryskills.in</span>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Action Buttons */}
+                            <div className="flex flex-wrap items-center justify-end gap-2 pt-1">
+                                <Button
+                                    type="button"
+                                    onClick={() => handleSendDirectReply()}
+                                    disabled={sendingReply || !directReplyText.trim()}
+                                    variant="outline"
+                                    className="border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-200 text-xs h-8 px-3.5 rounded-xl font-medium gap-1.5"
+                                >
+                                    {sendingReply ? <Loader2 size={12} className="animate-spin" /> : <Send size={12} />}
+                                    <span>Send Reply Only</span>
+                                </Button>
+                                <Button
+                                    type="button"
+                                    onClick={() => handleSendDirectReply("resolved")}
+                                    disabled={sendingReply || !directReplyText.trim()}
+                                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs h-8 px-4 rounded-xl font-bold gap-1.5 shadow-md shadow-emerald-950/40"
+                                >
+                                    {sendingReply ? <Loader2 size={12} className="animate-spin" /> : <CheckCheck size={13} />}
+                                    <span>Send Reply & Mark Resolved ✓</span>
+                                </Button>
+                            </div>
                         </div>
 
                         {/* Status Update Form */}
