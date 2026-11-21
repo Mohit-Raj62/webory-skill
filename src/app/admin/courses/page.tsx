@@ -27,6 +27,7 @@ interface Course {
     createdAt: string;
     isPopular?: boolean;
     isAvailable?: boolean;
+    status?: string;
     color?: string;
     instructor?: string;
     coInstructors?: string[];
@@ -172,6 +173,30 @@ export default function CoursesAdminPage() {
         }
     };
 
+    const handleStatusChange = async (course: Course, newStatus: string) => {
+        try {
+            setCourses(courses.map(c => 
+                c._id === course._id ? { ...c, status: newStatus } : c
+            ));
+
+            const res = await fetch(`/api/admin/courses/${course._id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: newStatus }),
+            });
+
+            if (!res.ok) {
+                setCourses(courses.map(c => 
+                    c._id === course._id ? { ...c, status: course.status } : c
+                ));
+                alert("Failed to update course status");
+            }
+        } catch (error) {
+            console.error("Error updating course status:", error);
+            alert("Failed to update course status");
+        }
+    };
+
     const filteredCourses = courses.filter((course) =>
         course.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -310,7 +335,24 @@ export default function CoursesAdminPage() {
                                     
                                     <div className="p-7 flex-1 flex flex-col relative z-10">
                                         <div className="flex items-start justify-between mb-5">
-                                            <div className="flex gap-2">
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                {/* 1-Click Status Dropdown */}
+                                                <select
+                                                    value={course.status || "open"}
+                                                    onChange={(e) => handleStatusChange(course, e.target.value)}
+                                                    className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border outline-none cursor-pointer transition-colors ${
+                                                        course.status === "coming_soon"
+                                                            ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                                                            : course.status === "closed"
+                                                            ? "bg-rose-500/20 text-rose-300 border-rose-500/40"
+                                                            : "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                                                    }`}
+                                                >
+                                                    <option value="open" className="bg-slate-900 text-white">🟢 Open</option>
+                                                    <option value="coming_soon" className="bg-slate-900 text-amber-300">🟡 Coming Soon</option>
+                                                    <option value="closed" className="bg-slate-900 text-rose-300">🔴 Closed</option>
+                                                </select>
+
                                                 {course.isPopular && (
                                                     <Badge className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20 shadow-sm shadow-yellow-900/20">
                                                         Popular
@@ -318,7 +360,7 @@ export default function CoursesAdminPage() {
                                                 )}
                                                 {!course.isAvailable && (
                                                     <Badge variant="destructive" className="bg-red-900/20 text-red-400 border-red-500/20">
-                                                        Unavailable
+                                                        Hidden
                                                     </Badge>
                                                 )}
                                             </div>

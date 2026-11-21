@@ -30,6 +30,7 @@ interface CourseItem {
     thumbnail?: string;
     isPopular?: boolean;
     isFree?: boolean;
+    status?: string;
     modulesCount?: number;
     videosCount?: number;
     studentsCount?: string | number;
@@ -149,12 +150,22 @@ export function CoursesView({ courses, enrolledCourseIds = [] }: CoursesViewProp
                                             </div>
                                         )}
 
-                                        {/* Simple level pill on thumbnail */}
+                                        {/* Simple level / status pill on thumbnail */}
                                         <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-                                            <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-black/75 backdrop-blur-sm text-gray-200 border border-white/10">
-                                                {course.level || "Beginner"}
-                                            </span>
-                                            {isFree && (
+                                            {course.status === "coming_soon" ? (
+                                                <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500 text-black shadow-lg">
+                                                    Coming Soon
+                                                </span>
+                                            ) : course.status === "closed" ? (
+                                                <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-500 text-white shadow-lg">
+                                                    Closed
+                                                </span>
+                                            ) : (
+                                                <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-black/75 backdrop-blur-sm text-gray-200 border border-white/10">
+                                                    {course.level || "Beginner"}
+                                                </span>
+                                            )}
+                                            {isFree && !course.status && (
                                                 <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500 text-black">
                                                     Free
                                                 </span>
@@ -231,6 +242,14 @@ export function CoursesView({ courses, enrolledCourseIds = [] }: CoursesViewProp
                                                     <PlayCircle className="w-3.5 h-3.5" />
                                                     <span>Continue</span>
                                                 </Link>
+                                            ) : course.status === "coming_soon" ? (
+                                                <span className="h-8 px-3 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-semibold flex items-center gap-1.5 cursor-not-allowed">
+                                                    <span>Coming Soon</span>
+                                                </span>
+                                            ) : course.status === "closed" ? (
+                                                <span className="h-8 px-3 rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs font-semibold flex items-center gap-1.5 cursor-not-allowed">
+                                                    <span>Closed</span>
+                                                </span>
                                             ) : (
                                                 <Link 
                                                     href={courseUrl}

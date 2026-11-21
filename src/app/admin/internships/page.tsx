@@ -91,6 +91,29 @@ export default function InternshipsAdminPage() {
         }
     };
 
+    const handleStatusChange = async (internshipId: string, newStatus: string) => {
+        try {
+            const res = await fetch(`/api/admin/internships/${internshipId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ status: newStatus }),
+            });
+
+            if (res.ok) {
+                setInternships(internships.map((i: any) => 
+                    i._id === internshipId ? { ...i, status: newStatus } : i
+                ));
+            } else {
+                alert("Failed to update status");
+            }
+        } catch (error) {
+            console.error("Status update error:", error);
+            alert("Failed to update status");
+        }
+    };
+
     const filteredInternships = internships.filter((internship) =>
         internship.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         internship.company.toLowerCase().includes(searchTerm.toLowerCase())
@@ -195,13 +218,27 @@ export default function InternshipsAdminPage() {
                                             const filled = internship.filledSeats ?? 0;
                                             const rem = Math.max(0, total - filled);
                                             const isFull = rem <= 0;
+                                            const currentStatus = internship.status || (isFull ? "closed" : "open");
+
                                             return (
-                                                <div className="flex flex-col gap-1">
-                                                    <span className="text-xs text-white font-medium">{filled} / {total} filled</span>
-                                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold w-fit ${
-                                                        isFull ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                                                    }`}>
-                                                        {isFull ? 'Batch Full' : `${rem} left`}
+                                                <div className="flex flex-col gap-1.5 min-w-[130px]">
+                                                    <select
+                                                        value={currentStatus}
+                                                        onChange={(e) => handleStatusChange(internship._id, e.target.value)}
+                                                        className={`text-[10px] font-bold px-2 py-1 rounded-lg border outline-none cursor-pointer transition-colors ${
+                                                            currentStatus === "coming_soon"
+                                                                ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                                                                : currentStatus === "closed"
+                                                                ? "bg-rose-500/20 text-rose-300 border-rose-500/40"
+                                                                : "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                                                        }`}
+                                                    >
+                                                        <option value="open" className="bg-slate-900 text-white">🟢 Open</option>
+                                                        <option value="coming_soon" className="bg-slate-900 text-amber-300">🟡 Coming Soon</option>
+                                                        <option value="closed" className="bg-slate-900 text-rose-300">🔴 Closed</option>
+                                                    </select>
+                                                    <span className="text-[10px] text-gray-400">
+                                                        {filled} / {total} filled ({rem} left)
                                                     </span>
                                                 </div>
                                             );

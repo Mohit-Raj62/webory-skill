@@ -254,6 +254,11 @@ const CourseSchema = new Schema({
     type: Boolean,
     default: true,
   },
+  status: {
+    type: String,
+    enum: ["open", "coming_soon", "closed"],
+    default: "open",
+  },
   isFree: {
     type: Boolean,
     default: false,

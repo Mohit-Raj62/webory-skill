@@ -59,6 +59,7 @@ export default function EditCoursePage() {
             partner: { name: "Partner Rep.", title: "Authorized Signatory" }
         },
         isAvailable: true,
+        status: "open" as "open" | "coming_soon" | "closed",
         isFree: false
     });
 
@@ -121,6 +122,7 @@ export default function EditCoursePage() {
                 
                 setFormData({
                     ...data.course,
+                    status: data.course.status || "open",
                     modules: modules,
                     collaboration: data.course.collaboration || "",
                     collaborations: data.course.collaborations || [],
@@ -909,6 +911,59 @@ export default function EditCoursePage() {
                                 >
                                     <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formData.isFree ? 'right-1' : 'left-1'}`} />
                                 </button>
+                            </div>
+
+                            {/* Course Availability Status (Open / Coming Soon / Closed) */}
+                            <div className="mt-4 pt-4 border-t border-white/5">
+                                <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block mb-2">
+                                    Registration / Buy Status
+                                </label>
+                                <div className="grid grid-cols-1 gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setFormData({ ...formData, status: "open" })}
+                                        className={`p-2.5 rounded-xl border text-left flex items-center gap-2.5 transition-all cursor-pointer ${
+                                            formData.status === "open" || !formData.status
+                                                ? "bg-emerald-500/15 border-emerald-500 text-white"
+                                                : "bg-white/[0.02] border-white/10 text-gray-400 hover:border-white/20"
+                                        }`}
+                                    >
+                                        <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${formData.status === "open" || !formData.status ? "bg-emerald-500 animate-pulse" : "bg-gray-600"}`} />
+                                        <div>
+                                            <p className="text-xs font-bold text-white">🟢 Open (Available to Buy)</p>
+                                        </div>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setFormData({ ...formData, status: "coming_soon" })}
+                                        className={`p-2.5 rounded-xl border text-left flex items-center gap-2.5 transition-all cursor-pointer ${
+                                            formData.status === "coming_soon"
+                                                ? "bg-amber-500/15 border-amber-500 text-white"
+                                                : "bg-white/[0.02] border-white/10 text-gray-400 hover:border-white/20"
+                                        }`}
+                                    >
+                                        <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${formData.status === "coming_soon" ? "bg-amber-400 animate-pulse" : "bg-gray-600"}`} />
+                                        <div>
+                                            <p className="text-xs font-bold text-white">🟡 Coming Soon (Launch Soon)</p>
+                                        </div>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setFormData({ ...formData, status: "closed" })}
+                                        className={`p-2.5 rounded-xl border text-left flex items-center gap-2.5 transition-all cursor-pointer ${
+                                            formData.status === "closed"
+                                                ? "bg-rose-500/15 border-rose-500 text-white"
+                                                : "bg-white/[0.02] border-white/10 text-gray-400 hover:border-white/20"
+                                        }`}
+                                    >
+                                        <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${formData.status === "closed" ? "bg-rose-500" : "bg-gray-600"}`} />
+                                        <div>
+                                            <p className="text-xs font-bold text-white">🔴 Registration Closed</p>
+                                        </div>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 

@@ -49,6 +49,7 @@ export default function NewCoursePage() {
             partner: { name: "Partner Rep.", title: "Authorized Signatory" }
         },
         isAvailable: true,
+        status: "open" as "open" | "coming_soon" | "closed",
         outcome: "",
         whoIsThisFor: [] as string[],
         projects: [] as { title: string; description: string }[],

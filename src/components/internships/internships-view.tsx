@@ -4,7 +4,7 @@ import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/ui/footer";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Clock, IndianRupee, CheckCircle2, X, Search, Zap, Sparkles, GraduationCap, Globe, ArrowUpRight, ShieldCheck, Briefcase, Download, Eye, ExternalLink } from "lucide-react";
+import { Clock, IndianRupee, CheckCircle2, X, Search, Zap, Sparkles, GraduationCap, Globe, ArrowUpRight, ShieldCheck, Briefcase, Download, Eye, ExternalLink, Lock } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -405,6 +405,8 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                 const app = userApplications.find(a => a.internshipId === job._id);
                                 const hasApplied = !!app;
                                 const isJobFree = Boolean(job.isFree || job.price === 0 || job.type?.toLowerCase() === "free");
+                                const isJobComingSoon = job.status === "coming_soon";
+                                const isJobClosed = job.status === "closed" || isFull;
 
                                 return (
                                     <motion.div 
@@ -440,122 +442,171 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                                     <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-white/[0.05] border border-white/10 text-slate-300">
                                                         {job.type}
                                                     </span>
-                                                    <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-500/10 rounded-full border border-emerald-500/20">
-                                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                                        <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-wider">Active</span>
-                                                    </div>
+                                                    {isJobComingSoon ? (
+                                                        <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-amber-500/10 rounded-full border border-amber-500/20 shadow-[0_0_10px_rgba(245,158,11,0.2)]">
+                                                            <Sparkles size={11} className="text-amber-400 animate-pulse" />
+                                                            <span className="text-[9px] font-bold text-amber-400 uppercase tracking-wider">Coming Soon</span>
+                                                        </div>
+                                                    ) : isJobClosed ? (
+                                                        <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-rose-500/10 rounded-full border border-rose-500/20">
+                                                            <Lock size={11} className="text-rose-400" />
+                                                            <span className="text-[9px] font-bold text-rose-400 uppercase tracking-wider">Closed</span>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-500/10 rounded-full border border-emerald-500/20">
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                            <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-wider">Active</span>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
 
                                             {/* Main Content Grid: 8 Cols Left + 4 Cols Right */}
                                             <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-start">
-                                                {/* Left: Info (8 cols) */}
-                                                <div className="lg:col-span-8 space-y-3.5 text-left">
-                                                    <div>
-                                                        <h3 
-                                                            onClick={() => setDetailJob(job)}
-                                                            className="text-lg sm:text-xl md:text-2xl font-bold text-white group-hover:text-emerald-400 transition-colors leading-snug tracking-tight cursor-pointer inline-block"
-                                                        >
-                                                            {job.title}
-                                                        </h3>
-                                                        <div className="flex flex-wrap gap-2 mt-2">
-                                                            <div className="flex items-center gap-1.5 bg-white/[0.03] border border-white/[0.08] px-2.5 py-1 rounded-lg">
-                                                                <Globe size={13} className="text-blue-400" />
-                                                                <span className="text-xs font-medium text-slate-300">{job.type} ({job.location})</span>
+                                                {/* Left: Info with Thumbnail Preview (8 cols) */}
+                                                <div className="lg:col-span-8 flex flex-col sm:flex-row gap-4 items-start text-left">
+                                                    {/* Thumbnail preview */}
+                                                    <div 
+                                                        onClick={() => router.push(`/internships/${job.slug || job._id}`)}
+                                                        className="w-full sm:w-44 md:w-48 aspect-video sm:aspect-[4/3] rounded-xl overflow-hidden border border-white/10 shrink-0 bg-slate-900 group/thumb relative cursor-pointer shadow-md hover:border-emerald-500/40 transition-all"
+                                                    >
+                                                        {job.thumbnail ? (
+                                                            <img 
+                                                                src={job.thumbnail} 
+                                                                alt={job.title} 
+                                                                className="w-full h-full object-cover group-hover/thumb:scale-105 transition-transform duration-500" 
+                                                            />
+                                                        ) : (
+                                                            <div className="w-full h-full bg-gradient-to-br from-[#0c1222] via-[#09151e] to-[#040810] p-3 flex flex-col justify-between">
+                                                                <span className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[8px] font-black uppercase tracking-wider w-fit">
+                                                                    Cohort 2026
+                                                                </span>
+                                                                <div>
+                                                                    <p className="text-[9px] text-emerald-400 font-bold uppercase">Fellowship</p>
+                                                                    <p className="text-xs font-bold text-white line-clamp-2">{job.title}</p>
+                                                                </div>
+                                                                <span className="text-[9px] text-slate-400">{job.company}</span>
                                                             </div>
-                                                            <div className="flex items-center gap-1.5 bg-white/[0.03] border border-white/[0.08] px-2.5 py-1 rounded-lg">
-                                                                <Clock size={13} className="text-slate-400" />
-                                                                <span className="text-xs font-medium text-slate-300">{job.duration || "3-6 Months"}</span>
-                                                            </div>
-                                                            <div className="flex items-center gap-1.5 bg-white/[0.03] border border-white/[0.08] px-2.5 py-1 rounded-lg">
-                                                                <Briefcase size={13} className="text-emerald-500" />
-                                                                <span className="text-xs font-medium text-slate-300">{job.perks && job.perks.length > 0 ? job.perks[0] : "Performance Bonus"}</span>
-                                                            </div>
+                                                        )}
+                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-end p-2">
+                                                            <span className="text-[10px] text-white font-semibold flex items-center gap-1">
+                                                                <Eye size={12} /> View Details
+                                                            </span>
                                                         </div>
                                                     </div>
 
-                                                    {/* Brief Overview */}
-                                                    <p className="text-xs md:text-sm text-slate-300 leading-relaxed font-normal line-clamp-2">
-                                                        {job.tagline || job.description}
-                                                    </p>
-
-                                                    {/* Tech Stack Section */}
-                                                    <div className="bg-white/[0.02] border border-white/[0.05] p-3 rounded-xl space-y-2">
-                                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                                            <div>
-                                                                <p className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">{job.tagline || "Industry Standard"}</p>
-                                                                <p className="text-xs font-medium text-slate-300">Production-Ready Tech Stack</p>
+                                                    {/* Information details */}
+                                                    <div className="flex-1 space-y-3">
+                                                        <div>
+                                                            <h3 
+                                                                onClick={() => router.push(`/internships/${job.slug || job._id}`)}
+                                                                className="text-base sm:text-lg md:text-xl font-bold text-white hover:text-emerald-400 transition-colors leading-snug tracking-tight cursor-pointer inline-block"
+                                                            >
+                                                                {job.title}
+                                                            </h3>
+                                                            <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                                                <div className="flex items-center gap-1 bg-white/[0.03] border border-white/[0.08] px-2 py-0.5 rounded-md text-[11px] text-slate-300">
+                                                                    <Globe size={11} className="text-blue-400" />
+                                                                    <span>{job.type} ({job.location})</span>
+                                                                </div>
+                                                                <div className="flex items-center gap-1 bg-white/[0.03] border border-white/[0.08] px-2 py-0.5 rounded-md text-[11px] text-slate-300">
+                                                                    <Clock size={11} className="text-slate-400" />
+                                                                    <span>{job.duration || "3-6 Months"}</span>
+                                                                </div>
+                                                                <div className="flex items-center gap-1 bg-white/[0.03] border border-white/[0.08] px-2 py-0.5 rounded-md text-[11px] text-slate-300">
+                                                                    <Briefcase size={11} className="text-emerald-400" />
+                                                                    <span>{job.perks && job.perks.length > 0 ? job.perks[0] : (job.stipend || "Performance Bonus")}</span>
+                                                                </div>
                                                             </div>
-                                                            <div className="flex flex-wrap gap-1.5 sm:justify-end">
-                                                                {job.tags && job.tags.slice(0, 6).map((tag: string, i: number) => (
-                                                                    <div key={i} className="px-2 py-0.5 rounded-md bg-white/[0.03] border border-white/[0.08] flex items-center gap-1.5 hover:border-emerald-500/30 transition-colors">
-                                                                        <div className="w-1 h-1 rounded-full bg-emerald-500/60" />
-                                                                        <span className="text-[10px] font-medium text-slate-300">{tag}</span>
-                                                                    </div>
+                                                        </div>
+
+                                                        {/* Brief Overview */}
+                                                        <p className="text-xs text-slate-300 leading-relaxed font-normal line-clamp-2">
+                                                            {job.tagline || job.description}
+                                                        </p>
+
+                                                        {/* Tech Stack Pills */}
+                                                        {job.tags && job.tags.length > 0 && (
+                                                            <div className="flex flex-wrap gap-1.5 items-center">
+                                                                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mr-1">Skills:</span>
+                                                                {job.tags.slice(0, 5).map((tag: string, i: number) => (
+                                                                    <span key={i} className="px-2 py-0.5 rounded bg-white/[0.03] border border-white/[0.08] text-[10px] font-medium text-slate-300 flex items-center gap-1">
+                                                                        <span className="w-1 h-1 rounded-full bg-emerald-400/70" />
+                                                                        {tag}
+                                                                    </span>
                                                                 ))}
-                                                                {job.tags && job.tags.length > 6 && (
-                                                                    <span className="text-[10px] text-slate-500 font-medium px-1 self-center">
-                                                                        +{job.tags.length - 6} more
+                                                                {job.tags.length > 5 && (
+                                                                    <span className="text-[10px] text-slate-500 font-medium">
+                                                                        +{job.tags.length - 5} more
                                                                     </span>
                                                                 )}
                                                             </div>
-                                                        </div>
-                                                    </div>
+                                                        )}
 
-                                                    {/* View Details Link */}
-                                                    <div>
-                                                        <button
-                                                            onClick={() => setDetailJob(job)}
-                                                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition-colors group/link cursor-pointer"
-                                                        >
-                                                            <Eye size={13} className="text-emerald-400 group-hover/link:scale-110 transition-transform" />
-                                                            <span>View Complete Internship Details, Requirements & Syllabus</span>
-                                                            <ArrowUpRight size={13} className="group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
-                                                        </button>
+                                                        {/* Navigation Buttons */}
+                                                        <div className="flex items-center gap-4 pt-1">
+                                                            <Link
+                                                                href={`/internships/${job.slug || job._id}`}
+                                                                className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 hover:text-emerald-300 transition-colors group/link"
+                                                            >
+                                                                <span>View Full Program & Syllabus</span>
+                                                                <ArrowUpRight size={13} className="group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
+                                                            </Link>
+                                                            <button
+                                                                onClick={() => setDetailJob(job)}
+                                                                className="text-xs text-slate-400 hover:text-white transition-colors flex items-center gap-1"
+                                                            >
+                                                                <Eye size={12} /> Quick Preview
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
 
                                                 {/* Right: CTA / Pricing Widget (4 cols) */}
                                                 <div className="lg:col-span-4 w-full">
-                                                    <div className="bg-gradient-to-br from-white/[0.04] to-transparent border border-white/[0.08] rounded-xl p-4 md:p-5 backdrop-blur-xl shadow-lg relative overflow-hidden group/cta flex flex-col justify-between">
+                                                    <div className="bg-[#0b101b] border border-white/[0.08] rounded-xl p-4 md:p-5 backdrop-blur-xl shadow-lg relative overflow-hidden group/cta flex flex-col justify-between">
                                                         <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 blur-[50px] rounded-full pointer-events-none" />
                                                         
                                                         <div className="mb-4 text-center lg:text-left relative z-10">
-                                                            <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-1">
-                                                                {isJobFree ? "Training Program Access" : "Training Program Fee"}
+                                                            <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-1">
+                                                                {hasApplied ? "Your Enrollment Status" : isJobFree ? "Fellowship Access" : "Training Program Fee"}
                                                             </p>
-                                                            <div className="flex flex-col items-center lg:items-start gap-1.5 w-full">
-                                                                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 w-full">
-                                                                    {isJobFree ? (
-                                                                        <div className="flex items-center gap-2">
-                                                                            <span className="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-green-400 tracking-tight">
-                                                                                FREE
+                                                            <div className="flex flex-col items-center lg:items-start gap-1 w-full">
+                                                                {hasApplied ? (
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span className="text-xl font-bold text-emerald-400 flex items-center gap-1.5">
+                                                                            <ShieldCheck size={18} />
+                                                                            {app.status === 'accepted' ? 'Enrolled' : 'Active'}
+                                                                        </span>
+                                                                        <span className="text-[10px] text-slate-400 font-medium">({app.status.replace('_', ' ')})</span>
+                                                                    </div>
+                                                                ) : isJobFree ? (
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span className="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-green-400 tracking-tight">
+                                                                            FREE
+                                                                        </span>
+                                                                        {(job.originalPrice || 2999) > 0 && (
+                                                                            <span className="text-xs text-slate-500 line-through">₹{job.originalPrice || 2999}</span>
+                                                                        )}
+                                                                        <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                                                                            100% SCHOLARSHIP
+                                                                        </span>
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">₹{job.price}</span>
+                                                                        {(job.originalPrice || 2999) > (job.price || 0) && (
+                                                                            <span className="text-xs text-slate-500 line-through">₹{job.originalPrice || 2999}</span>
+                                                                        )}
+                                                                        {(job.originalPrice || 2999) > (job.price || 0) && (
+                                                                            <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                                                                                {Math.round((((job.originalPrice || 2999) - (job.price || 0)) / (job.originalPrice || 2999)) * 100)}% OFF
                                                                             </span>
-                                                                            {(job.originalPrice || 2999) > 0 && (
-                                                                                <div className="flex items-center gap-1.5">
-                                                                                    <span className="text-xs text-slate-500 line-through shrink-0">₹{job.originalPrice || 2999}</span>
-                                                                                    <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 whitespace-nowrap shrink-0">
-                                                                                        100% SCHOLARSHIP
-                                                                                    </span>
-                                                                                </div>
-                                                                            )}
-                                                                        </div>
-                                                                    ) : (
-                                                                        <>
-                                                                            <span className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">₹{job.price}</span>
-                                                                            {(job.originalPrice || 2999) > (job.price || 0) && (
-                                                                                <div className="flex items-center gap-1.5">
-                                                                                    <span className="text-xs text-slate-500 line-through shrink-0">₹{job.originalPrice || 2999}</span>
-                                                                                    <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 whitespace-nowrap shrink-0">
-                                                                                        {Math.round((((job.originalPrice || 2999) - (job.price || 0)) / (job.originalPrice || 2999)) * 100)}% OFF
-                                                                                    </span>
-                                                                                </div>
-                                                                            )}
-                                                                        </>
-                                                                    )}
-                                                                </div>
+                                                                        )}
+                                                                    </div>
+                                                                )}
                                                             </div>
-                                                            <p className="text-[10px] text-slate-400 mt-2 leading-relaxed font-normal">
+                                                            <p className="text-[10px] text-slate-400 mt-1.5 leading-relaxed font-normal">
                                                                 Verified certificate & IIT Mandi mentor LOR included.
                                                             </p>
                                                         </div>
@@ -563,52 +614,53 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                                         {/* Action Buttons */}
                                                         {hasApplied ? (
                                                             <div className="flex flex-col gap-2 w-full">
-                                                                <div className="w-full py-2 px-3 rounded-lg bg-[#0a0a0b] border border-emerald-500/20 flex items-center gap-2">
-                                                                    <ShieldCheck size={16} className="text-emerald-400 shrink-0" />
-                                                                    <div className="text-left">
-                                                                        <span className="text-[10px] font-bold text-white uppercase tracking-wider block">Application Active</span>
-                                                                        <p className="text-[9px] text-slate-400">{app.status === 'accepted' ? 'Enrollment Confirmed' : `Status: ${app.status.replace('_', ' ')}`}</p>
-                                                                    </div>
-                                                                </div>
+                                                                <Link href={`/internships/${job.slug || job._id}`}>
+                                                                    <Button 
+                                                                        className="w-full h-10 rounded-lg font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-md"
+                                                                    >
+                                                                        View Program / Tasks
+                                                                    </Button>
+                                                                </Link>
                                                                 <button 
                                                                     onClick={() => handleDownloadInvoice(job, app)}
-                                                                    className="w-full h-9 rounded-lg font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-all border border-white/10"
+                                                                    className="w-full h-8 rounded-lg font-semibold text-[11px] uppercase tracking-wider flex items-center justify-center gap-1.5 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-all border border-white/10"
                                                                 >
-                                                                    <Download size={13} className="text-emerald-400" />
-                                                                    {isJobFree ? "Download Enrollment Slip" : "Download Invoice"}
+                                                                    <Download size={12} className="text-emerald-400" />
+                                                                    {isJobFree ? "Download Slip" : "Download Invoice"}
                                                                 </button>
                                                             </div>
+                                                        ) : isJobComingSoon ? (
+                                                            <Button
+                                                                disabled
+                                                                className="w-full h-10 rounded-lg font-bold text-xs tracking-wider uppercase bg-amber-500/15 text-amber-300 border border-amber-500/30 cursor-not-allowed shadow-none px-3"
+                                                            >
+                                                                <Sparkles size={14} className="mr-1.5 text-amber-400" />
+                                                                <span>COMING SOON</span>
+                                                            </Button>
+                                                        ) : isJobClosed ? (
+                                                            <Button
+                                                                disabled
+                                                                className="w-full h-10 rounded-lg font-bold text-xs tracking-wider uppercase opacity-50 grayscale cursor-not-allowed bg-slate-800 text-slate-400 px-3"
+                                                            >
+                                                                <span>REGISTRATION CLOSED</span>
+                                                            </Button>
                                                         ) : (
                                                             <Button
-                                                                onClick={() => !isFull && handleApplyClick(job._id)}
-                                                                disabled={isFull}
-                                                                className={`w-full h-11 rounded-lg font-bold text-xs tracking-wider uppercase relative overflow-hidden transition-all duration-300 px-3 ${
-                                                                    isFull 
-                                                                        ? 'opacity-40 grayscale cursor-not-allowed bg-slate-800' 
-                                                                        : 'hover:scale-[1.01] active:scale-[0.99] hover:shadow-[0_8px_25px_-5px_rgba(16,185,129,0.4)] shadow-md'
-                                                                }`}
+                                                                onClick={() => handleApplyClick(job._id)}
+                                                                className="w-full h-10 rounded-lg font-bold text-xs tracking-wider uppercase relative overflow-hidden transition-all duration-300 px-3 hover:scale-[1.01] active:scale-[0.99] shadow-md text-white"
                                                                 style={{
-                                                                    background: isFull 
-                                                                        ? '#1e293b' 
-                                                                        : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                                                                    color: 'white'
+                                                                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                                                                 }}
                                                             >
-                                                                <div className="relative z-10 flex items-center justify-center gap-2 w-full">
-                                                                    {isFull ? (
-                                                                        <span className="whitespace-nowrap tracking-wider text-xs">REGISTRATION CLOSED</span>
-                                                                    ) : (
-                                                                        <>
-                                                                            <span className="whitespace-nowrap font-bold">{isJobFree ? "APPLY FOR FREE" : "ENROLL NOW"}</span> 
-                                                                            <ArrowUpRight size={15} />
-                                                                        </>
-                                                                    )}
+                                                                <div className="relative z-10 flex items-center justify-center gap-1.5 w-full">
+                                                                    <span className="whitespace-nowrap font-bold">{isJobFree ? "APPLY FOR FREE" : "ENROLL NOW"}</span> 
+                                                                    <ArrowUpRight size={14} />
                                                                 </div>
                                                             </Button>
                                                         )}
 
                                                         {/* Deadline & Seats */}
-                                                        <div className="mt-3 flex flex-col gap-1.5">
+                                                        <div className="mt-3 flex flex-col gap-1.5 pt-2 border-t border-white/[0.06]">
                                                             <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider">
                                                                 <span className="text-slate-500">Deadline</span>
                                                                 <span className="text-white">{job.deadline || "Soon"}</span>
@@ -830,12 +882,52 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                         </div>
                                     </div>
                                 </div>
+
+                                {/* Official Verified Certificate & LOR Specimen Preview */}
+                                <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.02] p-4 sm:p-5">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <div className="flex items-center gap-2">
+                                            <ShieldCheck size={16} className="text-emerald-400" />
+                                            <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+                                                Official Dual Certification & IIT Mandi Mentor LOR
+                                            </h4>
+                                        </div>
+                                        <span className="text-[10px] text-emerald-400 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                                            Verified Template
+                                        </span>
+                                    </div>
+                                    <div className="flex flex-col sm:flex-row gap-4 items-center">
+                                        <div className="w-full sm:w-48 aspect-[4/3] rounded-xl overflow-hidden border border-white/10 shrink-0 bg-black/60 p-1 relative group flex items-center justify-center">
+                                            <img 
+                                                src={detailJob.certificateImage || "/assets/certificate-clean-format.png"} 
+                                                alt="Certificate Specimen" 
+                                                className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300 rounded-lg" 
+                                            />
+                                        </div>
+                                        <div className="space-y-1.5 text-left">
+                                            <p className="text-xs font-semibold text-white">Dual Credential Included</p>
+                                            <p className="text-[11px] text-slate-400 leading-relaxed">
+                                                Receive an official certificate with unique QR code verification and a personalized Letter of Recommendation (LOR) signed by IIT Mandi alumnus Vijay Kumar.
+                                            </p>
+                                            <div className="flex flex-wrap gap-2 pt-1 text-[10px] text-emerald-400 font-medium">
+                                                <span>✓ LinkedIn Shareable</span>
+                                                <span>•</span>
+                                                <span>✓ QR Code Verifiable</span>
+                                                <span>•</span>
+                                                <span>✓ IIT Mandi Faculty Signed</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Modal Sticky Footer */}
                             <div className="p-4 md:p-5 border-t border-white/10 bg-[#090a10] flex flex-col sm:flex-row items-center justify-between gap-4 sticky bottom-0 z-20">
                                 {(() => {
                                     const isDetailFree = Boolean(detailJob.isFree || detailJob.price === 0 || detailJob.type?.toLowerCase() === "free");
+                                    const isDetailComingSoon = detailJob.status === "coming_soon";
+                                    const isDetailClosed = detailJob.status === "closed" || ((detailJob.totalSeats ?? 50) - (detailJob.filledSeats ?? 0) <= 0);
+
                                     return (
                                         <>
                                             <div className="flex items-center gap-2.5">
@@ -878,17 +970,35 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                                     Open Full Page
                                                     <ExternalLink size={13} />
                                                 </Button>
-                                                <Button
-                                                    onClick={() => {
-                                                        const idToApply = detailJob._id;
-                                                        setDetailJob(null);
-                                                        handleApplyClick(idToApply);
-                                                    }}
-                                                    className="h-10 px-5 rounded-xl font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 shadow-md shadow-emerald-500/20 w-full sm:w-auto flex items-center justify-center gap-1.5 border-none"
-                                                >
-                                                    {isDetailFree ? "Apply For Free" : "Enroll Now"}
-                                                    <ArrowUpRight size={14} />
-                                                </Button>
+
+                                                {isDetailComingSoon ? (
+                                                    <Button
+                                                        disabled
+                                                        className="h-10 px-5 rounded-xl font-bold text-xs uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30 cursor-not-allowed w-full sm:w-auto flex items-center justify-center gap-1.5"
+                                                    >
+                                                        <Sparkles size={14} className="text-amber-400" />
+                                                        Coming Soon
+                                                    </Button>
+                                                ) : isDetailClosed ? (
+                                                    <Button
+                                                        disabled
+                                                        className="h-10 px-5 rounded-xl font-bold text-xs uppercase tracking-wider bg-slate-800 text-slate-400 border border-white/5 cursor-not-allowed w-full sm:w-auto flex items-center justify-center gap-1.5"
+                                                    >
+                                                        Registration Closed
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        onClick={() => {
+                                                            const idToApply = detailJob._id;
+                                                            setDetailJob(null);
+                                                            handleApplyClick(idToApply);
+                                                        }}
+                                                        className="h-10 px-5 rounded-xl font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 shadow-md shadow-emerald-500/20 w-full sm:w-auto flex items-center justify-center gap-1.5 border-none"
+                                                    >
+                                                        {isDetailFree ? "Apply For Free" : "Enroll Now"}
+                                                        <ArrowUpRight size={14} />
+                                                    </Button>
+                                                )}
                                             </div>
                                         </>
                                     );

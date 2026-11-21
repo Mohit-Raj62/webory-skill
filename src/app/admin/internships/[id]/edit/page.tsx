@@ -42,6 +42,7 @@ export default function EditInternshipPage() {
         filledSeats: 0,
         isFree: false,
         isActive: true,
+        status: "open" as "open" | "coming_soon" | "closed",
         thumbnail: "",
         certificateImage: "",
         benefits: [
@@ -160,6 +161,7 @@ export default function EditInternshipPage() {
                     filledSeats: data.internship.filledSeats ?? prev.filledSeats,
                     isFree: data.internship.isFree ?? prev.isFree,
                     isActive: data.internship.isActive ?? prev.isActive,
+                    status: data.internship.status || prev.status || "open",
                     thumbnail: data.internship.thumbnail || prev.thumbnail,
                     certificateImage: data.internship.certificateImage || prev.certificateImage,
                     hasTiers: data.internship.hasTiers ?? prev.hasTiers,
@@ -416,11 +418,78 @@ export default function EditInternshipPage() {
                                 <input type="text" className="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-white focus:border-blue-500 outline-none" value={formData.deadline} onChange={(e) => setFormData({ ...formData, deadline: e.target.value })} />
                             </div>
                             <div className="md:col-span-2 bg-white/[0.02] border border-white/10 rounded-2xl p-5 my-2">
+                                {/* Direct Status Switcher */}
+                                <div className="mb-5 pb-4 border-b border-white/5">
+                                    <label className="text-xs font-bold text-gray-300 uppercase tracking-wider block mb-2">
+                                        Registration & Visibility Status (Direct Control)
+                                    </label>
+                                    <p className="text-xs text-gray-400 mb-3">
+                                        Yahan se aap kisi bhi internship par <strong>Coming Soon</strong> ya <strong>Registration Closed</strong> laga sakte hain:
+                                    </p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData({ ...formData, status: "open" })}
+                                            className={`p-3 rounded-xl border text-left flex items-center gap-3 transition-all cursor-pointer ${
+                                                formData.status === "open" || !formData.status
+                                                    ? "bg-emerald-500/15 border-emerald-500 text-white shadow-lg shadow-emerald-500/10"
+                                                    : "bg-white/[0.02] border-white/10 text-gray-400 hover:border-white/20"
+                                            }`}
+                                        >
+                                            <div className={`w-3 h-3 rounded-full shrink-0 ${formData.status === "open" || !formData.status ? "bg-emerald-500 animate-pulse" : "bg-gray-600"}`} />
+                                            <div>
+                                                <p className="text-xs font-bold text-white">Active / Open</p>
+                                                <p className="text-[10px] text-gray-400">Applications open normally</p>
+                                            </div>
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData({ ...formData, status: "coming_soon" })}
+                                            className={`p-3 rounded-xl border text-left flex items-center gap-3 transition-all cursor-pointer ${
+                                                formData.status === "coming_soon"
+                                                    ? "bg-amber-500/15 border-amber-500 text-white shadow-lg shadow-amber-500/10"
+                                                    : "bg-white/[0.02] border-white/10 text-gray-400 hover:border-white/20"
+                                            }`}
+                                        >
+                                            <div className={`w-3 h-3 rounded-full shrink-0 ${formData.status === "coming_soon" ? "bg-amber-400 animate-pulse" : "bg-gray-600"}`} />
+                                            <div>
+                                                <p className="text-xs font-bold text-white">Coming Soon</p>
+                                                <p className="text-[10px] text-gray-400">Shows "Coming Soon" button</p>
+                                            </div>
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData({ ...formData, status: "closed" })}
+                                            className={`p-3 rounded-xl border text-left flex items-center gap-3 transition-all cursor-pointer ${
+                                                formData.status === "closed"
+                                                    ? "bg-rose-500/15 border-rose-500 text-white shadow-lg shadow-rose-500/10"
+                                                    : "bg-white/[0.02] border-white/10 text-gray-400 hover:border-white/20"
+                                            }`}
+                                        >
+                                            <div className={`w-3 h-3 rounded-full shrink-0 ${formData.status === "closed" ? "bg-rose-500" : "bg-gray-600"}`} />
+                                            <div>
+                                                <p className="text-xs font-bold text-white">Registration Closed</p>
+                                                <p className="text-[10px] text-gray-400">Batch closed / Full</p>
+                                            </div>
+                                        </button>
+                                    </div>
+                                </div>
+
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-white/5">
                                     <div>
                                         <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                                            <span>Seats & Registration Status</span>
-                                            {Math.max(0, (formData.totalSeats || 0) - (formData.filledSeats || 0)) > 0 ? (
+                                            <span>Seats Status</span>
+                                            {formData.status === "coming_soon" ? (
+                                                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                                                    STATUS: COMING SOON
+                                                </span>
+                                            ) : formData.status === "closed" ? (
+                                                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30">
+                                                    STATUS: REGISTRATION CLOSED
+                                                </span>
+                                            ) : Math.max(0, (formData.totalSeats || 0) - (formData.filledSeats || 0)) > 0 ? (
                                                 <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                                                     Registration OPEN ({Math.max(0, (formData.totalSeats || 0) - (formData.filledSeats || 0))} seats available)
                                                 </span>

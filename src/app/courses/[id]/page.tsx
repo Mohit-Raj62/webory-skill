@@ -565,9 +565,19 @@ export default function CourseDetailsPage() {
                                                 </>
                                             )}
                                         </div>
-                                        <Button onClick={handleBuyClick} className={`w-full h-11 font-bold text-sm ${course.isFree ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-blue-600 hover:bg-blue-500'} text-white`}>
-                                            {course.isFree ? "Enroll Now — Free" : "Buy Now"}
-                                        </Button>
+                                        {course.status === "coming_soon" ? (
+                                            <Button disabled className="w-full h-11 font-bold text-sm bg-amber-500/15 text-amber-300 border border-amber-500/30 cursor-not-allowed">
+                                                Coming Soon
+                                            </Button>
+                                        ) : course.status === "closed" ? (
+                                            <Button disabled className="w-full h-11 font-bold text-sm bg-rose-500/15 text-rose-300 border border-rose-500/30 cursor-not-allowed">
+                                                Registration Closed
+                                            </Button>
+                                        ) : (
+                                            <Button onClick={handleBuyClick} className={`w-full h-11 font-bold text-sm ${course.isFree ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-blue-600 hover:bg-blue-500'} text-white`}>
+                                                {course.isFree ? "Enroll Now — Free" : "Buy Now"}
+                                            </Button>
+                                        )}
                                         <Button
                                             type="button"
                                             onClick={handleDownloadCurriculumPdf}
@@ -1132,9 +1142,19 @@ export default function CourseDetailsPage() {
                                             )}
                                         </div>
 
-                                        <Button onClick={handleBuyClick} className={`w-full h-12 text-[15px] font-bold mb-2.5 shadow-lg ${course.isFree ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-600/20' : 'bg-blue-600 hover:bg-blue-500 shadow-blue-600/20'} text-white`}>
-                                            {course.isFree ? "Enroll Now — Free" : "Buy Now"}
-                                        </Button>
+                                        {course.status === "coming_soon" ? (
+                                            <Button disabled className="w-full h-12 text-[15px] font-bold mb-2.5 bg-amber-500/15 text-amber-300 border border-amber-500/30 cursor-not-allowed">
+                                                Coming Soon
+                                            </Button>
+                                        ) : course.status === "closed" ? (
+                                            <Button disabled className="w-full h-12 text-[15px] font-bold mb-2.5 bg-rose-500/15 text-rose-300 border border-rose-500/30 cursor-not-allowed">
+                                                Registration Closed
+                                            </Button>
+                                        ) : (
+                                            <Button onClick={handleBuyClick} className={`w-full h-12 text-[15px] font-bold mb-2.5 shadow-lg ${course.isFree ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-600/20' : 'bg-blue-600 hover:bg-blue-500 shadow-blue-600/20'} text-white`}>
+                                                {course.isFree ? "Enroll Now — Free" : "Buy Now"}
+                                            </Button>
+                                        )}
 
                                         <Button
                                             type="button"

@@ -243,6 +243,11 @@ const InternshipSchema = new Schema({
     type: Boolean,
     default: true,
   },
+  status: {
+    type: String,
+    enum: ["open", "coming_soon", "closed"],
+    default: "open",
+  },
 });
 
 const Internship = models.Internship || model("Internship", InternshipSchema);

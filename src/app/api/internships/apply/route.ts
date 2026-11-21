@@ -65,6 +65,20 @@ export async function POST(req: Request) {
       );
     }
 
+    if (internshipDoc.status === "coming_soon") {
+      return NextResponse.json(
+        { error: "Applications for this internship are coming soon. Please stay tuned!" },
+        { status: 400 }
+      );
+    }
+
+    if (internshipDoc.status === "closed") {
+      return NextResponse.json(
+        { error: "Registrations for this batch are currently closed." },
+        { status: 400 }
+      );
+    }
+
     const actualInternshipId = internshipDoc._id;
 
     // Check if already applied
