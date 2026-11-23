@@ -1,22 +1,59 @@
 import { NextResponse } from "next/server";
+import dbConnect from "@/lib/db";
+import mongoose from "mongoose";
 
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const fileUrl = searchParams.get("url");
+    const gridfsId = searchParams.get("gridfsId");
     const filename = searchParams.get("filename") || "document.pdf";
+
+    // 1. If stored in MongoDB GridFS (for large PDFs > 10MB)
+    if (gridfsId) {
+      await dbConnect();
+      const db = mongoose.connection.db;
+      if (!db) {
+        return NextResponse.json(
+          { error: "Database not connected" },
+          { status: 500 }
+        );
+      }
+
+      const bucket = new mongoose.mongo.GridFSBucket(db, {
+        bucketName: "coursePdfs",
+      });
+
+      const downloadStream = bucket.openDownloadStream(
+        new mongoose.Types.ObjectId(gridfsId)
+      );
+
+      const chunks: Buffer[] = [];
+      for await (const chunk of downloadStream) {
+        chunks.push(chunk);
+      }
+      const fileBuffer = Buffer.concat(chunks);
+
+      return new NextResponse(fileBuffer, {
+        headers: {
+          "Content-Type": "application/pdf",
+          "Content-Disposition": `inline; filename="${filename}"`,
+          "Cache-Control": "public, max-age=86400",
+        },
+      });
+    }
 
     if (!fileUrl) {
       return NextResponse.json({ error: "No URL provided" }, { status: 400 });
     }
 
-    // Fetch the file from Cloudinary (which is .txt but contains PDF data)
+    // 2. Fetch the file from Cloudinary (which is .txt but contains PDF data)
     const response = await fetch(fileUrl);
 
     if (!response.ok) {
       return NextResponse.json(
         { error: "Failed to fetch file" },
-        { status: response.status },
+        { status: response.status }
       );
     }
 

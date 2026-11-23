@@ -107,29 +107,41 @@ export async function DELETE(
 
     const cloudinaryId = course.pdfResources[pdfIndex].cloudinaryId;
 
-    // Delete from Cloudinary
-    try {
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/raw/destroy`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            public_id: cloudinaryId,
-            api_key: process.env.CLOUDINARY_API_KEY,
-            api_secret: process.env.CLOUDINARY_API_SECRET,
-          }),
+    // Delete from MongoDB GridFS or Cloudinary
+    if (cloudinaryId?.startsWith("gridfs-")) {
+      try {
+        const rawId = cloudinaryId.replace("gridfs-", "");
+        const db = mongoose.connection.db;
+        if (db) {
+          const bucket = new mongoose.mongo.GridFSBucket(db, { bucketName: "coursePdfs" });
+          await bucket.delete(new mongoose.Types.ObjectId(rawId));
         }
-      );
-
-      if (!response.ok) {
-        console.error("Failed to delete from Cloudinary");
+      } catch (gridErr) {
+        console.error("GridFS deletion error:", gridErr);
       }
-    } catch (error) {
-      console.error("Cloudinary deletion error:", error);
-      // Continue with database deletion even if Cloudinary fails
+    } else if (cloudinaryId) {
+      try {
+        const response = await fetch(
+          `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/raw/destroy`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              public_id: cloudinaryId,
+              api_key: process.env.CLOUDINARY_API_KEY,
+              api_secret: process.env.CLOUDINARY_API_SECRET,
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          console.error("Failed to delete from Cloudinary");
+        }
+      } catch (error) {
+        console.error("Cloudinary deletion error:", error);
+      }
     }
 
     // Remove from database
