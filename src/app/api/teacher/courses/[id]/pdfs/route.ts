@@ -37,14 +37,16 @@ export async function GET(
 
     await dbConnect();
     const courseQuery = mongoose.isValidObjectId(id) ? { _id: id } : { slug: id };
-    const course = await Course.findOne(courseQuery).select("pdfResources instructor");
+    const course = await Course.findOne(courseQuery).select("pdfResources instructor coInstructors");
 
     if (!course) {
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 
-    // Check if teacher owns this course
-    if (course.instructor?.toString() !== user._id.toString()) {
+    // Check if teacher owns or is assigned to this course
+    const isInstructor = course.instructor?.toString() === user._id.toString();
+    const isCoInstructor = Array.isArray(course.coInstructors) && course.coInstructors.some((ci: any) => ci?.toString() === user._id.toString());
+    if (!isInstructor && !isCoInstructor && user.role !== "admin" && user.role !== "superadmin") {
       return NextResponse.json(
         { error: "Not authorized for this course" },
         { status: 403 }
@@ -108,8 +110,10 @@ export async function POST(
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 
-    // Check if teacher owns this course
-    if (course.instructor?.toString() !== user._id.toString()) {
+    // Check if teacher owns or is assigned to this course
+    const isInstructor = course.instructor?.toString() === user._id.toString();
+    const isCoInstructor = Array.isArray(course.coInstructors) && course.coInstructors.some((ci: any) => ci?.toString() === user._id.toString());
+    if (!isInstructor && !isCoInstructor && user.role !== "admin" && user.role !== "superadmin") {
       return NextResponse.json(
         { error: "Not authorized for this course" },
         { status: 403 }

@@ -847,18 +847,27 @@ export default function EditInternshipPage() {
                     <div className="glass-card border border-white/10 bg-black/40 backdrop-blur-xl p-8 rounded-3xl shadow-xl">
                         <div className="flex items-center gap-3 mb-6">
                             <div className="p-3 bg-orange-500/20 rounded-xl"><FileText className="w-6 h-6 text-orange-400" /></div>
-                            <h2 className="text-xl font-bold text-white">PDF Resources</h2>
+                            <h2 className="text-xl font-bold text-white">Curriculum & PDF Resources</h2>
                         </div>
                         
                         <div className="space-y-6">
                             <div className="p-4 bg-white/5 rounded-2xl border border-white/10 space-y-4">
                                 <h3 className="text-sm font-medium text-white">Upload New PDF</h3>
-                                <input type="text" placeholder="PDF Title *" className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-white" value={pdfInput.title} onChange={(e) => setPdfInput({ ...pdfInput, title: e.target.value })} />
+                                <input type="text" placeholder="PDF Title * (e.g. Complete Curriculum / Syllabus)" className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-white" value={pdfInput.title} onChange={(e) => setPdfInput({ ...pdfInput, title: e.target.value })} />
                                 <input type="text" placeholder="Description (Optional)" className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-white" value={pdfInput.description} onChange={(e) => setPdfInput({ ...pdfInput, description: e.target.value })} />
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="text-xs text-gray-400 block mb-1">After Module #</label>
-                                        <input type="number" className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-white" value={pdfInput.afterModule} onChange={(e) => setPdfInput({ ...pdfInput, afterModule: Number(e.target.value) })} />
+                                        <label className="text-xs text-gray-400 block mb-1">Release / Unlock</label>
+                                        <select 
+                                            className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-white focus:border-orange-500 outline-none cursor-pointer"
+                                            value={pdfInput.afterModule}
+                                            onChange={(e) => setPdfInput({ ...pdfInput, afterModule: Number(e.target.value) })}
+                                        >
+                                            <option value={0} className="bg-gray-900 text-white">Immediately</option>
+                                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                                                <option key={num} value={num} className="bg-gray-900 text-white">After Module {num}</option>
+                                            ))}
+                                        </select>
                                     </div>
                                     <div>
                                         <label className="text-xs text-gray-400 block mb-1">Display Order</label>
@@ -879,7 +888,9 @@ export default function EditInternshipPage() {
                                         <div key={pdf._id} className="p-4 bg-black/40 rounded-xl border border-white/10 flex items-start justify-between group">
                                             <div>
                                                 <p className="text-sm font-medium text-white">{pdf.title}</p>
-                                                <p className="text-xs text-gray-400">Module {pdf.afterModule} • Order {pdf.order}</p>
+                                                <p className="text-xs text-gray-400">
+                                                    {pdf.afterModule === 0 ? "Unlock: Immediately" : `Unlock: Module ${pdf.afterModule}`} • Order {pdf.order || 0}
+                                                </p>
                                                 <a href={pdf.fileUrl} target="_blank" rel="noreferrer" className="text-xs text-blue-400 hover:underline mt-1 inline-block">View PDF</a>
                                             </div>
                                             <Button variant="ghost" size="sm" onClick={() => deletePDF(pdf._id)} className="text-red-400 opacity-0 group-hover:opacity-100 transition-opacity p-2"><Trash2 size={14} /></Button>

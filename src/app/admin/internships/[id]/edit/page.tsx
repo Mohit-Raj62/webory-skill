@@ -955,8 +955,17 @@ export default function EditInternshipPage() {
                                 <input type="text" placeholder="Description (Optional)" className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-white" value={pdfInput.description} onChange={(e) => setPdfInput({ ...pdfInput, description: e.target.value })} />
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="text-xs text-gray-400 block mb-1">After Module #</label>
-                                        <input type="number" className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-white" value={pdfInput.afterModule} onChange={(e) => setPdfInput({ ...pdfInput, afterModule: Number(e.target.value) })} />
+                                        <label className="text-xs text-gray-400 block mb-1">Release / Unlock</label>
+                                        <select 
+                                            className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-white focus:border-orange-500 outline-none cursor-pointer"
+                                            value={pdfInput.afterModule}
+                                            onChange={(e) => setPdfInput({ ...pdfInput, afterModule: Number(e.target.value) })}
+                                        >
+                                            <option value={0} className="bg-gray-900 text-white">Immediately</option>
+                                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                                                <option key={num} value={num} className="bg-gray-900 text-white">After Module {num}</option>
+                                            ))}
+                                        </select>
                                     </div>
                                     <div>
                                         <label className="text-xs text-gray-400 block mb-1">Display Order</label>

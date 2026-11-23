@@ -4,6 +4,7 @@ import Internship from "@/models/Internship";
 import Enrollment from "@/models/Enrollment";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 // DELETE internship
 export async function DELETE(

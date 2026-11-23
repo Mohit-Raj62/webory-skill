@@ -46,8 +46,10 @@ export async function PUT(
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 
-    // Check if teacher owns this course
-    if (course.instructor?.toString() !== user._id.toString()) {
+    // Check if teacher owns or is assigned to this course
+    const isInstructor = course.instructor?.toString() === user._id.toString();
+    const isCoInstructor = Array.isArray(course.coInstructors) && course.coInstructors.some((ci: any) => ci?.toString() === user._id.toString());
+    if (!isInstructor && !isCoInstructor && user.role !== "admin" && user.role !== "superadmin") {
       return NextResponse.json(
         { error: "Not authorized for this course" },
         { status: 403 }
@@ -105,8 +107,10 @@ export async function DELETE(
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 
-    // Check if teacher owns this course
-    if (course.instructor?.toString() !== user._id.toString()) {
+    // Check if teacher owns or is assigned to this course
+    const isInstructor = course.instructor?.toString() === user._id.toString();
+    const isCoInstructor = Array.isArray(course.coInstructors) && course.coInstructors.some((ci: any) => ci?.toString() === user._id.toString());
+    if (!isInstructor && !isCoInstructor && user.role !== "admin" && user.role !== "superadmin") {
       return NextResponse.json(
         { error: "Not authorized for this course" },
         { status: 403 }

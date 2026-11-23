@@ -1277,26 +1277,26 @@ export default function EditCoursePage() {
                             </h2>
                             
                             <div className="space-y-4">
-                                <div className="bg-white/5 p-4 rounded-xl border border-white/5">
+                                <div className="bg-white/5 p-4 rounded-xl border border-white/5 space-y-2.5">
                                     <input
                                         type="text"
-                                        placeholder="Resource Title"
-                                        className="w-full bg-black/20 border border-white/10 rounded-lg p-2 text-sm text-white focus:border-red-500/50 outline-none mb-2"
+                                        placeholder="Title (e.g. Course Curriculum)"
+                                        className="w-full bg-black/20 border border-white/10 rounded-lg p-2 text-xs text-white focus:border-red-500/50 outline-none"
                                         value={pdfInput.title}
                                         onChange={(e) => setPdfInput({ ...pdfInput, title: e.target.value })}
                                     />
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-2 items-center">
                                         <select
-                                            className="flex-1 bg-white/5 border border-white/10 rounded-lg p-2 text-xs text-white outline-none focus:border-red-500/50 cursor-pointer"
+                                            className="flex-1 min-w-0 bg-white/5 border border-white/10 rounded-lg p-2 text-xs text-white outline-none focus:border-red-500/50 cursor-pointer"
                                             value={pdfInput.afterModule}
                                             onChange={(e) => setPdfInput({ ...pdfInput, afterModule: Number(e.target.value) })}
                                         >
-                                            <option value={0} className="bg-gray-900 text-white">Global Resource</option>
-                                            {formData.modules.map((m, i) => (
-                                                <option key={i} value={i + 1} className="bg-gray-900 text-white">Mod {i+1}</option>
+                                            <option value={0} className="bg-gray-900 text-white">Immediately</option>
+                                            {formData.modules.map((_, i) => (
+                                                <option key={i} value={i + 1} className="bg-gray-900 text-white">Module {i + 1}</option>
                                             ))}
                                         </select>
-                                        <div className="relative">
+                                        <div className="shrink-0">
                                             <input
                                                 type="file"
                                                 id="pdf-upload"
@@ -1307,9 +1307,10 @@ export default function EditCoursePage() {
                                             />
                                             <label 
                                                 htmlFor="pdf-upload"
-                                                className="block px-3 py-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded-lg text-xs cursor-pointer"
+                                                className="p-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg cursor-pointer flex items-center justify-center transition-colors"
+                                                title="Upload PDF"
                                             >
-                                                {uploadingPdf ? "..." : <Upload size={14}/>}
+                                                {uploadingPdf ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
                                             </label>
                                         </div>
                                     </div>
@@ -1322,19 +1323,26 @@ export default function EditCoursePage() {
                                                 <FileText size={14} className="text-red-400 flex-shrink-0" />
                                                 <div className="truncate">
                                                     <p className="text-white text-xs truncate font-medium">{pdf.title}</p>
-                                                    <p className="text-gray-500 text-[10px]">{(pdf.fileSize / 1024 / 1024).toFixed(1)}MB</p>
+                                                    <p className="text-gray-400 text-[10px]">
+                                                        {pdf.afterModule === 0 ? "Unlock: Immediately" : `Unlock: Module ${pdf.afterModule}`} • {(pdf.fileSize / 1024 / 1024).toFixed(1)}MB
+                                                    </p>
                                                 </div>
                                             </div>
-                                            <button
-                                                type="button"
-                                                onClick={() => handleDeletePDF(pdf._id)}
-                                                className="text-gray-500 hover:text-red-400 p-1"
-                                            >
-                                                <Trash2 size={12} />
-                                            </button>
+                                            <div className="flex items-center gap-2 shrink-0">
+                                                <a href={pdf.fileUrl} target="_blank" rel="noreferrer" className="text-xs text-blue-400 hover:underline">
+                                                    View
+                                                </a>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleDeletePDF(pdf._id)}
+                                                    className="text-gray-500 hover:text-red-400 p-1"
+                                                >
+                                                    <Trash2 size={12} />
+                                                </button>
+                                            </div>
                                         </div>
                                     ))}
-                                    {pdfs.length === 0 && <p className="text-center text-gray-600 text-xs">No PDFs uploaded</p>}
+                                    {pdfs.length === 0 && <p className="text-center text-gray-600 text-xs py-2">No PDFs uploaded yet. Add a curriculum PDF above.</p>}
                                 </div>
                             </div>
                         </div>

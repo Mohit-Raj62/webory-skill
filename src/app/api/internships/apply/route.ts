@@ -7,6 +7,7 @@ import { sendEmail, emailTemplates } from "@/lib/mail";
 import User from "@/models/User";
 import Internship from "@/models/Internship";
 import Activity from "@/models/Activity";
+import mongoose from "mongoose";
 
 export async function POST(req: Request) {
   try {
@@ -46,7 +47,6 @@ export async function POST(req: Request) {
       );
     }
 
-    const mongoose = require("mongoose");
     const isIdValid = mongoose.isValidObjectId(internshipId);
     
     // Check if internship exists and is currently active

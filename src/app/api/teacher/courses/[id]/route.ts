@@ -4,6 +4,7 @@ import Course from "@/models/Course";
 import Enrollment from "@/models/Enrollment";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 // DELETE course
 export async function DELETE(

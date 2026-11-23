@@ -402,9 +402,9 @@ export function InternshipsView({ internships, user, userApplications }: Interns
                                 const filledSeats = typeof job.filledSeats === 'number' ? job.filledSeats : 0;
                                 const remainingSeats = Math.max(0, totalSeats - filledSeats);
                                 const isFull = remainingSeats <= 0;
-                                const app = userApplications.find(a => a.internshipId === job._id);
+                                const app = userApplications.find(a => a.internshipId === job._id || a.internshipId === job._id?.toString());
                                 const hasApplied = !!app;
-                                const isJobFree = Boolean(job.isFree || job.price === 0 || job.type?.toLowerCase() === "free");
+                                const isJobFree = Boolean(job.isFree === true || job.isFree === "true" || job.price === 0 || Number(job.price) === 0 || job.type?.toLowerCase() === "free");
                                 const isJobComingSoon = job.status === "coming_soon";
                                 const isJobClosed = job.status === "closed" || isFull;
 

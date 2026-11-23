@@ -13,6 +13,7 @@ import {
   calculateDiscountedPrice,
   applyPromoDiscount,
 } from "@/lib/pricing-utils";
+import mongoose from "mongoose";
 
 export async function POST(req: Request) {
   try {
@@ -36,7 +37,6 @@ export async function POST(req: Request) {
       );
     }
 
-    const mongoose = require("mongoose");
     let actualCourseId = courseId;
     if (!mongoose.isValidObjectId(courseId)) {
         const courseDoc = await Course.findOne({ slug: courseId }).select("_id");

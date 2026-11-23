@@ -182,7 +182,14 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
     const filledSeats = typeof internship.filledSeats === 'number' ? internship.filledSeats : 0;
     const remainingSeats = Math.max(0, totalSeats - filledSeats);
     const isClosed = internship.status === "closed" || remainingSeats <= 0;
-    const isJobFree = Boolean(internship.isFree || internship.price === 0);
+    const isJobFree = Boolean(
+        internship.isFree === true ||
+        internship.isFree === "true" ||
+        internship.price === 0 ||
+        Number(internship.price) === 0 ||
+        internship.type?.toLowerCase() === "free" ||
+        (internship.hasTiers && Array.isArray(internship.tiers) && internship.tiers.length > 0 && Number(internship.tiers[0].price) === 0)
+    );
     const originalPrice = internship.originalPrice || 2999;
     const price = internship.price || 0;
     const discountPercent = originalPrice > price ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0;
@@ -929,10 +936,20 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                             {/* Pricing & Scholarship Section */}
                             <div className="mb-4 pb-3 border-b border-white/[0.08]">
                                 <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-1">
-                                    {isJobFree ? "Fellowship Program Access" : "Training Program Fee"}
+                                    {applicationStatus ? "Your Enrollment Status" : isJobFree ? "Fellowship Program Access" : "Training Program Fee"}
                                 </p>
                                 <div className="flex items-center gap-2.5">
-                                    {isJobFree ? (
+                                    {applicationStatus ? (
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xl font-bold text-emerald-400 flex items-center gap-1.5">
+                                                <ShieldCheck size={18} />
+                                                {isAccepted ? 'Enrolled' : 'Application Active'}
+                                            </span>
+                                            <span className="text-[10px] text-slate-400 font-medium capitalize">
+                                                ({applicationStatus.replace('_', ' ')})
+                                            </span>
+                                        </div>
+                                    ) : isJobFree ? (
                                         <div className="flex items-center gap-2">
                                             <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-green-400">
                                                 FREE
@@ -959,7 +976,11 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                                     )}
                                 </div>
                                 <p className="text-[11px] text-slate-400 mt-1">
-                                    Zero tuition fee. Includes verifiable certificate & IIT Mandi mentor LOR.
+                                    {applicationStatus 
+                                        ? "Your application is active on record. Verified certificate & IIT Mandi mentor LOR included upon completion."
+                                        : isJobFree 
+                                            ? "Zero tuition fee. Includes verifiable certificate & IIT Mandi mentor LOR." 
+                                            : "Verified certificate & IIT Mandi mentor LOR included."}
                                 </p>
                             </div>
 
@@ -1100,10 +1121,10 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
             {showCertificateModal && (
                 <div 
                     onClick={() => setShowCertificateModal(false)}
-                    className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto"
+                    className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
                 >
                     <div 
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(e) => e.stopPropagation()} 
                         className="bg-[#0b101b] border border-slate-700/80 rounded-2xl p-4 sm:p-5 max-w-3xl w-full shadow-2xl relative my-auto max-h-[92vh] flex flex-col"
                     >
                         <div className="flex items-center justify-between pb-3 border-b border-white/[0.08] shrink-0">
