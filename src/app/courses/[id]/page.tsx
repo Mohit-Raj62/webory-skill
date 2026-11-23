@@ -121,22 +121,23 @@ export default function CourseDetailsPage() {
             if (fetchingRef.current) return;
             fetchingRef.current = true;
             try {
-                const courseRes = await fetch(`/api/courses/${id}`).then(r => r.ok ? r.json() : null).catch(() => null);
+                const courseRes = await fetch(`/api/courses/${id}`, { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => null);
                 if (!courseRes?.course) throw new Error("Course not found");
                 
                 const courseObj = courseRes.course;
                 setCourse(courseObj);
                 const actualId = courseObj._id;
 
-                if (courseObj.slug && id !== courseObj.slug) {
-                    router.replace(`/courses/${courseObj.slug}`);
-                    return;
-                }
                 if (courseObj.pdfResources) {
                     setPdfs(courseObj.pdfResources.sort((a: any, b: any) => {
                         if (a.afterModule !== b.afterModule) return a.afterModule - b.afterModule;
                         return (a.order || 0) - (b.order || 0);
                     }));
+                }
+
+                if (courseObj.slug && id !== courseObj.slug) {
+                    router.replace(`/courses/${courseObj.slug}`);
+                    return;
                 }
 
                 const [quizData, assignmentData, liveClassData] = await Promise.all([
@@ -222,10 +223,18 @@ export default function CourseDetailsPage() {
         } catch { /* silent */ }
     };
 
-    const curriculumPdf = pdfs.find(p => 
-        p.title?.toLowerCase().includes("curriculum") || 
-        p.title?.toLowerCase().includes("syllabus")
-    ) || pdfs[0];
+    const allPdfs: any[] = (pdfs && pdfs.length > 0)
+        ? pdfs
+        : (Array.isArray(course?.pdfResources) ? course.pdfResources : []);
+
+    const curriculumPdf = allPdfs.find((p: any) => 
+        (p.afterModule === 0 || !p.afterModule) && 
+        (p.title?.toLowerCase().includes("curriculum") || p.title?.toLowerCase().includes("syllabus"))
+    ) || allPdfs.find((p: any) => 
+        p.afterModule === 0 || !p.afterModule
+    ) || allPdfs.find((p: any) => 
+        p.title?.toLowerCase().includes("curriculum") || p.title?.toLowerCase().includes("syllabus")
+    ) || allPdfs[0];
 
     const trackPDFAccess = async (pdfId: string, downloaded = false) => {
         try {
@@ -237,7 +246,8 @@ export default function CourseDetailsPage() {
     };
 
     const handleDownloadCurriculumPdf = () => {
-        if (!curriculumPdf?.fileUrl) {
+        const targetPdf = curriculumPdf;
+        if (!targetPdf?.fileUrl) {
             if (user && (user.role === "admin" || user.role === "superadmin" || user.role === "teacher")) {
                 toast.info("Curriculum PDF has not been uploaded yet.", {
                     action: {
@@ -256,17 +266,28 @@ export default function CourseDetailsPage() {
             return;
         }
 
-        trackPDFAccess(curriculumPdf._id, true);
-        const fileName = curriculumPdf.fileName || `${(course?.title || 'Course').replace(/[^a-zA-Z0-9]/g, '_')}_Curriculum.pdf`;
-        const proxyUrl = `/api/pdf-proxy?url=${encodeURIComponent(curriculumPdf.fileUrl)}&download=true&filename=${encodeURIComponent(fileName)}`;
+        if (targetPdf._id) {
+            trackPDFAccess(targetPdf._id, true);
+        }
+        const rawFileName = targetPdf.fileName || `${(course?.title || 'Course').replace(/[^a-zA-Z0-9]/g, '_')}_Curriculum.pdf`;
+        const fileName = rawFileName.toLowerCase().endsWith(".pdf") ? rawFileName : `${rawFileName}.pdf`;
+        
+        let targetUrl = targetPdf.fileUrl;
+        if (targetUrl.includes("/api/view-pdf")) {
+            const separator = targetUrl.includes("?") ? "&" : "?";
+            targetUrl = `${targetUrl}${separator}download=true&filename=${encodeURIComponent(fileName)}`;
+        } else if (!targetUrl.startsWith("/api/")) {
+            targetUrl = `/api/pdf-proxy?url=${encodeURIComponent(targetPdf.fileUrl)}&download=true&filename=${encodeURIComponent(fileName)}`;
+        }
 
         const link = document.createElement("a");
-        link.href = proxyUrl;
+        link.href = targetUrl;
         link.download = fileName;
+        link.target = "_blank";
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        toast.success(`Downloading Curriculum PDF: ${curriculumPdf.title}`);
+        toast.success(`Downloading Curriculum PDF: ${targetPdf.title}`);
     };
 
     const handleDownloadInvoice = () => {
@@ -1006,27 +1027,27 @@ export default function CourseDetailsPage() {
                                 )}
 
                                 {/* PDF Resources */}
-                                {pdfs.filter(p => !p.afterModule || p.afterModule === 0).length > 0 && (
+                                {allPdfs.filter((p: any) => !p.afterModule || p.afterModule === 0).length > 0 && (
                                     <div className="rounded-xl border border-white/10 bg-[#0B0F19]/50 p-6">
                                         <h2 className="text-base font-bold text-white mb-4">PDF Resources</h2>
                                         <div className="space-y-3">
-                                            {pdfs.filter(p => !p.afterModule || p.afterModule === 0).map(pdf => (
-                                                <div key={pdf._id} className="flex items-center justify-between p-4 rounded-xl bg-white/[0.03] border border-white/8 hover:bg-white/[0.06] transition-colors">
+                                            {allPdfs.filter((p: any) => !p.afterModule || p.afterModule === 0).map((pdf: any) => (
+                                                <div key={pdf._id || pdf.title} className="flex items-center justify-between p-4 rounded-xl bg-white/[0.03] border border-white/8 hover:bg-white/[0.06] transition-colors">
                                                     <div className="flex items-center gap-3 min-w-0">
                                                         <FileText size={15} className="text-blue-400 shrink-0" />
                                                         <div className="min-w-0">
                                                             <p className="text-sm text-white font-medium truncate">{pdf.title}</p>
-                                                            <p className="text-xs text-gray-500">{(pdf.fileSize / (1024 * 1024)).toFixed(2)} MB</p>
+                                                            <p className="text-xs text-gray-500">{pdf.fileSize ? `${(pdf.fileSize / (1024 * 1024)).toFixed(2)} MB` : "PDF"}</p>
                                                         </div>
                                                     </div>
-                                                    <a href={pdf.fileUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackPDFAccess(pdf._id)} className="text-xs text-blue-400 hover:text-blue-300 ml-3 shrink-0 font-medium">View PDF</a>
+                                                    <a href={pdf.fileUrl} target="_blank" rel="noopener noreferrer" onClick={() => pdf._id && trackPDFAccess(pdf._id)} className="text-xs text-blue-400 hover:text-blue-300 ml-3 shrink-0 font-medium">View PDF</a>
                                                 </div>
                                             ))}
                                         </div>
                                     </div>
                                 )}
 
-                                {quizzes.length === 0 && assignments.length === 0 && pdfs.length === 0 && (
+                                {quizzes.length === 0 && assignments.length === 0 && allPdfs.length === 0 && (
                                     <div className="text-center py-16 text-gray-500 text-sm">No resources yet. Check back soon.</div>
                                 )}
                             </div>

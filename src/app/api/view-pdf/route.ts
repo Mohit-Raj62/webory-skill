@@ -8,6 +8,11 @@ export async function GET(req: Request) {
     const fileUrl = searchParams.get("url");
     const gridfsId = searchParams.get("gridfsId");
     const filename = searchParams.get("filename") || "document.pdf";
+    const isDownload = searchParams.get("download") === "true";
+    const safeFilename = filename.replace(/["\r\n]/g, "");
+    const disposition = isDownload
+      ? `attachment; filename="${safeFilename}"`
+      : `inline; filename="${safeFilename}"`;
 
     // 1. If stored in MongoDB GridFS (for large PDFs > 10MB)
     if (gridfsId) {
@@ -37,7 +42,7 @@ export async function GET(req: Request) {
       return new NextResponse(fileBuffer, {
         headers: {
           "Content-Type": "application/pdf",
-          "Content-Disposition": `inline; filename="${filename}"`,
+          "Content-Disposition": disposition,
           "Cache-Control": "public, max-age=86400",
         },
       });
@@ -68,11 +73,11 @@ export async function GET(req: Request) {
       contentType = "image/png";
     }
 
-    // Return as file with inline disposition to view in browser
+    // Return as file with disposition to view or download in browser
     return new NextResponse(fileBuffer, {
       headers: {
         "Content-Type": contentType,
-        "Content-Disposition": `inline; filename="${filename}"`,
+        "Content-Disposition": disposition,
         "Cache-Control": "public, max-age=3600",
       },
     });

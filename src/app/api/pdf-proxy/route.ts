@@ -11,7 +11,14 @@ export async function GET(req: Request) {
   }
 
   try {
-    const response = await fetch(url);
+    let fetchUrl = url;
+    if (fetchUrl.startsWith("/")) {
+      const host = req.headers.get("host") || "localhost:3000";
+      const protocol = req.headers.get("x-forwarded-proto") || "http";
+      fetchUrl = `${protocol}://${host}${fetchUrl}`;
+    }
+
+    const response = await fetch(fetchUrl);
 
     if (!response.ok) {
       return NextResponse.json(
@@ -20,8 +27,6 @@ export async function GET(req: Request) {
       );
     }
 
-    const contentType =
-      response.headers.get("content-type") || "application/pdf";
     const buffer = await response.arrayBuffer();
 
     return new NextResponse(buffer, {

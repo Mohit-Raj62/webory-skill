@@ -73,16 +73,17 @@ export default function InternshipDetailsPage({ params }: { params: Promise<{ id
                 if (!internshipData || !internshipData.internship) throw new Error("Internship not found");
 
                 setInternship(internshipData.internship);
-                if (internshipData.internship.slug && id !== internshipData.internship.slug) {
-                    router.replace(`/internships/${internshipData.internship.slug}`);
-                    return;
-                }
                 
                 if (internshipData.internship.pdfResources) {
                     setPdfs(internshipData.internship.pdfResources.sort((a: any, b: any) => {
                         if (a.afterModule !== b.afterModule) return a.afterModule - b.afterModule;
                         return (a.order || 0) - (b.order || 0);
                     }));
+                }
+
+                if (internshipData.internship.slug && id !== internshipData.internship.slug) {
+                    router.replace(`/internships/${internshipData.internship.slug}`);
+                    return;
                 }
                 
                 if (liveClassData) setLiveClasses(liveClassData.liveClasses || []);
