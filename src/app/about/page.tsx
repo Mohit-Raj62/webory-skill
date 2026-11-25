@@ -176,6 +176,7 @@ const aboutSchemaJsonLd = {
             "@id": "https://weboryskills.com/#ridhima-singh",
             "name": "Ridhima Singh",
             "jobTitle": "Head of Human Resources (HR), Webory Skills",
+            "image": "https://weboryskills.com/ridhima-singh.jpg",
             "email": "hr@weboryskills.in",
             "sameAs": [
                 "https://www.linkedin.com/in/ridhima-singh-5928b93ba/",

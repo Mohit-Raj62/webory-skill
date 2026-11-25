@@ -50,6 +50,7 @@ const teamMembers: TeamMember[] = [
         badgeColor: "text-rose-400 bg-rose-500/10 border-rose-500/20",
         ringColor: "ring-rose-500/20 border-rose-500/30",
         quote: "“Empowering students with ethical workplace practices, interview confidence, and career readiness.”",
+        image: "/ridhima-singh.jpg",
         initials: "RS",
         avatarGradient: "from-rose-500/20 via-pink-600/15 to-purple-900/30 text-rose-300",
         bio: "Spearheading people operations, mentor talent acquisition, intern welfare, and corporate recruitment channels. Dedicated to bridging student capability with leading industry hiring benchmarks and workplace culture.",
@@ -148,7 +149,7 @@ export function TeamSection() {
                                 {/* Top Profile Presentation Banner */}
                                 <div className="flex items-start gap-3 sm:gap-4 md:gap-5">
                                     {member.image ? (
-                                        <div className="relative w-20 h-20 xs:w-24 xs:h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-xl sm:rounded-2xl overflow-hidden border-2 bg-slate-900 shadow-xl shrink-0 group-hover:scale-102 transition-transform duration-500 ring-2 sm:ring-4 ring-amber-500/10 border-amber-500/30">
+                                        <div className={`relative w-20 h-20 xs:w-24 xs:h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-xl sm:rounded-2xl overflow-hidden border-2 bg-slate-900 shadow-xl shrink-0 group-hover:scale-102 transition-transform duration-500 ring-2 sm:ring-4 ${member.ringColor}`}>
                                             <Image
                                                 src={member.image}
                                                 alt={`${member.name} - ${member.role}`}
