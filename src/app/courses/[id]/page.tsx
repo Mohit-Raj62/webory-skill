@@ -467,7 +467,7 @@ export default function CourseDetailsPage() {
 
                             <div className="space-y-3 max-w-2xl">
                                 <p className="text-gray-300 text-sm sm:text-[15px] leading-relaxed font-normal">
-                                    {parsedDescription.leadText || course.description}
+                                    {parsedDescription.heroSummary || parsedDescription.leadText || course.description}
                                 </p>
                                 {parsedDescription.sections && parsedDescription.sections.length > 0 && (
                                     <button

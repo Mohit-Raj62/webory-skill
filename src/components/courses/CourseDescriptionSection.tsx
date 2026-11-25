@@ -28,7 +28,7 @@ interface ParsedSection {
 }
 
 export function parseCourseDescription(raw: string, title?: string) {
-  if (!raw) return { leadText: "", sections: [], closingNote: "" };
+  if (!raw) return { leadText: "", heroSummary: "", sections: [], closingNote: "" };
   let text = raw.trim();
 
   // Strip duplicate course title if text begins with it
@@ -38,17 +38,33 @@ export function parseCourseDescription(raw: string, title?: string) {
 
   const sectionKeywords = [
     "What This Program Covers",
+    "What This Course Covers",
     "What You Will Learn",
     "What You’ll Learn",
     "What You'll Learn",
+    "Topics Covered",
+    "Modules Covered",
+    "Curriculum Highlights",
+    "Course Curriculum",
     "Why Choose Webory Skills",
+    "Why Choose This Course",
     "Why Choose Us",
+    "Why Enroll",
+    "Key Highlights",
+    "Key Features",
+    "Key Benefits",
+    "Course Highlights",
     "Program Details",
     "Course Details",
+    "Course Specifications",
+    "Program Specifications",
     "Who Can Enroll",
     "Who Should Enroll",
+    "Who Is This Course For",
+    "Target Audience",
     "Eligibility",
-    "Key Highlights",
+    "Prerequisites",
+    "Requirements",
   ];
 
   const firstMatch = text.search(
@@ -63,7 +79,21 @@ export function parseCourseDescription(raw: string, title?: string) {
     restOfText = text.substring(firstMatch).trim();
   } else {
     leadText = text;
-    return { leadText, sections: [], closingNote: "" };
+  }
+
+  // Generate crisp hero summary (up to first 2-3 sentences or ~280-320 chars)
+  let heroSummary = leadText;
+  if (heroSummary.length > 320) {
+    const periodIdx = heroSummary.indexOf(".", 180);
+    if (periodIdx !== -1 && periodIdx < 360) {
+      heroSummary = heroSummary.substring(0, periodIdx + 1).trim();
+    } else {
+      heroSummary = heroSummary.substring(0, 280).trim() + "...";
+    }
+  }
+
+  if (firstMatch === -1) {
+    return { leadText, heroSummary, sections: [], closingNote: "" };
   }
 
   const splitRegex = new RegExp(
@@ -75,8 +105,10 @@ export function parseCourseDescription(raw: string, title?: string) {
     .map((s) => s.trim())
     .filter((s) => {
       if (!s) return false;
-      // Filter out single matching keywords that split() might produce
-      return s.length > 3 && !sectionKeywords.some((k) => k.toLowerCase() === s.toLowerCase());
+      return (
+        s.length > 3 &&
+        !sectionKeywords.some((k) => k.toLowerCase() === s.toLowerCase())
+      );
     });
 
   const sections: ParsedSection[] = [];
@@ -109,7 +141,7 @@ export function parseCourseDescription(raw: string, title?: string) {
     });
   });
 
-  return { leadText, sections, closingNote };
+  return { leadText, heroSummary, sections, closingNote };
 }
 
 export const CourseDescriptionSection: React.FC<CourseDescriptionSectionProps> = ({
@@ -123,33 +155,85 @@ export const CourseDescriptionSection: React.FC<CourseDescriptionSectionProps> =
 
   // Fallback if description is standard plain text / markdown without special sections
   if (!sections || sections.length === 0) {
+    const lines = (description || "").split("\n");
+    const bullets: string[] = [];
+    const paragraphs: string[] = [];
+
+    lines.forEach((line) => {
+      const trimmed = line.trim();
+      if (!trimmed) return;
+      if (
+        trimmed.startsWith("- ") ||
+        trimmed.startsWith("* ") ||
+        trimmed.startsWith("• ")
+      ) {
+        bullets.push(trimmed.replace(/^[-*•]\s*/, ""));
+      } else {
+        paragraphs.push(trimmed);
+      }
+    });
+
     return (
-      <div className="rounded-2xl border border-white/10 bg-[#0B0F19]/60 backdrop-blur-sm p-6 sm:p-8 space-y-4 shadow-xl">
+      <div className="rounded-2xl border border-white/10 bg-[#0B0F19]/60 backdrop-blur-sm p-6 sm:p-8 space-y-6 shadow-xl">
         <div className="flex items-center gap-2.5 text-blue-400">
           <BookOpen size={18} />
-          <h2 className="text-lg font-bold text-white tracking-tight">About This Course</h2>
+          <h2 className="text-lg font-bold text-white tracking-tight">
+            About This Course
+          </h2>
         </div>
-        <div className="text-gray-300 text-sm sm:text-base leading-relaxed whitespace-pre-line space-y-3 font-normal">
-          {leadText || description}
-        </div>
+
+        {paragraphs.length > 0 && (
+          <div className="space-y-3 text-gray-300 text-sm sm:text-base leading-relaxed font-normal">
+            {paragraphs.map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
+          </div>
+        )}
+
+        {bullets.length > 0 && (
+          <div className="pt-2">
+            <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+              <span className="w-1.5 h-3.5 bg-blue-500 rounded-full" />
+              Key Topics & Highlights
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {bullets.map((b, i) => (
+                <div
+                  key={i}
+                  className="flex items-start gap-2.5 p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] text-xs sm:text-sm text-gray-200"
+                >
+                  <CheckCircle2
+                    size={15}
+                    className="text-blue-400 shrink-0 mt-0.5"
+                  />
+                  <span>{b}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     );
   }
 
   // Find specific sections
   const coversSection = sections.find((s) =>
-    /what this program covers|what you will learn|what you'll learn|curriculum/i.test(
+    /what this program covers|what this course covers|what you will learn|what you'll learn|curriculum|topics covered|modules covered/i.test(
       s.heading
     )
   );
   const whyChooseSection = sections.find((s) =>
-    /why choose/i.test(s.heading)
+    /why choose|why enroll|key highlights|key benefits|course highlights/i.test(
+      s.heading
+    )
   );
   const detailsSection = sections.find((s) =>
-    /program details|course details/i.test(s.heading)
+    /program details|course details|specifications/i.test(s.heading)
   );
   const eligibilitySection = sections.find((s) =>
-    /who can enroll|who should enroll|eligibility/i.test(s.heading)
+    /who can enroll|who should enroll|who is this course for|target audience|eligibility|prerequisites|requirements/i.test(
+      s.heading
+    )
   );
 
   // Other remaining sections
@@ -198,7 +282,9 @@ export const CourseDescriptionSection: React.FC<CourseDescriptionSectionProps> =
               <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">
                 {detailsSection.heading}
               </h2>
-              <p className="text-xs text-gray-400">Key training format & parameters</p>
+              <p className="text-xs text-gray-400">
+                Key training format & parameters
+              </p>
             </div>
           </div>
 
@@ -255,7 +341,8 @@ export const CourseDescriptionSection: React.FC<CourseDescriptionSectionProps> =
                   {coversSection.heading}
                 </h2>
                 <p className="text-xs text-cyan-300/70">
-                  {coversSection.items.length} hands-on modules and practical competencies
+                  {coversSection.items.length} hands-on modules and practical
+                  competencies
                 </p>
               </div>
             </div>
@@ -331,7 +418,10 @@ export const CourseDescriptionSection: React.FC<CourseDescriptionSectionProps> =
           </div>
           <div className="space-y-2">
             {eligibilitySection.items.map((item, idx) => (
-              <p key={idx} className="text-xs sm:text-sm text-gray-300 leading-relaxed font-normal">
+              <p
+                key={idx}
+                className="text-xs sm:text-sm text-gray-300 leading-relaxed font-normal"
+              >
                 {item}
               </p>
             ))}
@@ -355,7 +445,10 @@ export const CourseDescriptionSection: React.FC<CourseDescriptionSectionProps> =
                 key={i}
                 className="flex items-start gap-2.5 p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] text-xs sm:text-sm text-gray-300"
               >
-                <CheckCircle2 size={15} className="text-blue-400 shrink-0 mt-0.5" />
+                <CheckCircle2
+                  size={15}
+                  className="text-blue-400 shrink-0 mt-0.5"
+                />
                 <span>{item}</span>
               </div>
             ))}
