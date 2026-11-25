@@ -9,17 +9,18 @@ const PaymentModal = nextDynamic(() => import("@/components/courses/payment-moda
 const Invoice = nextDynamic(() => import("@/components/courses/invoice").then(mod => mod.Invoice), { ssr: false });
 import { LeadCaptureModal } from "@/components/lead-capture-modal";
 import { useAuth } from "@/components/auth/session-provider";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
     CheckCircle, Clock, Globe, PlayCircle, Lock,
     ClipboardList, FileText, Video, ChevronDown, ChevronUp,
     Star, Shield, Trophy, Zap, Play, X, ArrowRight,
-    BookOpen, Award, Download, Briefcase, Home, HelpCircle, Sparkles, GraduationCap
+    BookOpen, Award, Download, Sparkles
 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 import { SyllabusRenderer } from "@/components/SyllabusRenderer";
+import { CourseDescriptionSection, parseCourseDescription } from "@/components/courses/CourseDescriptionSection";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -58,6 +59,11 @@ export default function CourseDetailsPage() {
     const [openFaq, setOpenFaq] = useState<number | null>(null);
     const heroRef = useRef<HTMLDivElement>(null);
     const fetchingRef = useRef(false);
+
+    const parsedDescription = useMemo(
+        () => parseCourseDescription(course?.description || "", course?.title || ""),
+        [course?.description, course?.title]
+    );
 
     const FAQS = [
         {
@@ -459,9 +465,28 @@ export default function CourseDetailsPage() {
                                 {course.title}
                             </h1>
 
-                            <p className="text-gray-300 text-[15px] leading-relaxed max-w-2xl">
-                                {course.description}
-                            </p>
+                            <div className="space-y-3 max-w-2xl">
+                                <p className="text-gray-300 text-sm sm:text-[15px] leading-relaxed font-normal">
+                                    {parsedDescription.leadText || course.description}
+                                </p>
+                                {parsedDescription.sections && parsedDescription.sections.length > 0 && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setActiveTab("overview");
+                                            setTimeout(() => {
+                                                const el = document.getElementById("program-breakdown");
+                                                if (el) el.scrollIntoView({ behavior: "smooth" });
+                                            }, 50);
+                                        }}
+                                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-400 hover:text-blue-300 text-xs font-semibold transition-all cursor-pointer group"
+                                    >
+                                        <Sparkles size={13} className="text-blue-400" />
+                                        <span>Explore Curriculum Breakdown & Details</span>
+                                        <ChevronDown size={14} className="group-hover:translate-y-0.5 transition-transform" />
+                                    </button>
+                                )}
+                            </div>
 
                             {/* Rating row */}
                             <div className="flex flex-wrap items-center gap-3 text-sm">
@@ -663,8 +688,18 @@ export default function CourseDetailsPage() {
                         {/* ── OVERVIEW TAB ── */}
                         {activeTab === "overview" && (
                             <div className="space-y-8">
+                                {/* Course Description & Program Breakdown */}
+                                {course.description && (
+                                    <div id="program-breakdown">
+                                        <CourseDescriptionSection 
+                                            description={course.description} 
+                                            title={course.title} 
+                                        />
+                                    </div>
+                                )}
+
                                 {/* What you'll learn */}
-                                {course.curriculum && course.curriculum.length > 0 && (
+                                {course.curriculum && course.curriculum.length > 0 && (!parsedDescription.sections || parsedDescription.sections.length === 0) && (
                                     <div className="rounded-xl border border-white/10 bg-[#0B0F19]/50 p-6">
                                         <h2 className="text-lg font-bold text-white mb-5">What You'll Learn</h2>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
