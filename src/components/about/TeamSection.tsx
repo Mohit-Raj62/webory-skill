@@ -31,6 +31,7 @@ interface TeamMember {
     ringColor: string;
     quote: string;
     image?: string;
+    imageClassName?: string;
     initials?: string;
     avatarGradient?: string;
     bio: string;
@@ -154,7 +155,7 @@ export function TeamSection() {
                                                 src={member.image}
                                                 alt={`${member.name} - ${member.role}`}
                                                 fill
-                                                className="object-cover object-top"
+                                                className={member.imageClassName || "object-cover object-center"}
                                                 sizes="(max-width: 640px) 80px, (max-width: 768px) 112px, 128px"
                                                 priority={idx === 0}
                                             />
